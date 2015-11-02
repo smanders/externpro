@@ -92,7 +92,11 @@ find_path(@CMAKE_PROJECT_NAME@_DIR
   DOC "@CMAKE_PROJECT_NAME@ directory"
   )
 if(NOT @CMAKE_PROJECT_NAME@_DIR)
-  message(FATAL_ERROR "@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG} not found")
+  if(DEFINED @CMAKE_PROJECT_NAME@_INSTALLER_LOCATION)
+    message(FATAL_ERROR "@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG} not found.\n${@CMAKE_PROJECT_NAME@_INSTALLER_LOCATION}")
+  else()
+    message(FATAL_ERROR "@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG} not found")
+  endif()
 else()
   set(findFile ${@CMAKE_PROJECT_NAME@_DIR}/share/cmake/Find@CMAKE_PROJECT_NAME@.cmake)
   set(useFile ${@CMAKE_PROJECT_NAME@_DIR}/share/cmake/usexp-@CMAKE_PROJECT_NAME@.cmake)
