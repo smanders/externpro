@@ -23,6 +23,23 @@ index 66cb312..5751a32 100755
    else:
      o['variables']['node_use_mdb'] = 'false'
  
+diff --git a/deps/npm/lib/config/defaults.js b/deps/npm/lib/config/defaults.js
+index a90d4c2..3083eb9 100644
+--- a/deps/npm/lib/config/defaults.js
++++ b/deps/npm/lib/config/defaults.js
+@@ -321,7 +321,11 @@ function getLocalAddresses () {
+   // interfaces, and synchronously throw EPERM when run without
+   // elevated privileges
+   try {
+-    interfaces = os.networkInterfaces()
++    if(process.platform === 'sunos' && os.release() != '5.11') {
++      interfaces = {} // Solaris < 11 doesn't support getifaddrs which is called by node's os.networkInterfaces()
++    } else {
++      interfaces = os.networkInterfaces()
++    }
+   } catch (e) {
+     interfaces = {}
+   }
 diff --git a/deps/v8/src/allocation.cc b/deps/v8/src/allocation.cc
 index b5aa984..1b6a6f4 100644
 --- a/deps/v8/src/allocation.cc
