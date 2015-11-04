@@ -771,3 +771,20 @@ index 32e4561..92a3b1d 100644
    if(OPENSSL_FOUND)
      list(APPEND CURL_LIBS ${OPENSSL_LIBRARIES})
      set(USE_SSLEAY ON)
+diff --git a/Utilities/cmlibarchive/CMakeLists.txt b/Utilities/cmlibarchive/CMakeLists.txt
+index b150408..08c0e6b 100644
+--- a/Utilities/cmlibarchive/CMakeLists.txt
++++ b/Utilities/cmlibarchive/CMakeLists.txt
+@@ -456,7 +456,11 @@ ENDIF(ENABLE_NETTLE)
+ # (Except on Mac, where OpenSSL is deprecated.)
+ #
+ IF(ENABLE_OPENSSL AND NOT CMAKE_SYSTEM_NAME MATCHES "Darwin")
+-  FIND_PACKAGE(OpenSSL)
++  IF(CMAKE_USE_OPENSSL_MODULE_PATH)
++    FIND_PACKAGE(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  ELSE()
++    FIND_PACKAGE(OpenSSL)
++  ENDIF()
+ ELSE()
+   SET(OPENSSL_FOUND FALSE) # Override cached value
+ ENDIF()
