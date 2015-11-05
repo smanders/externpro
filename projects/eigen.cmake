@@ -1,7 +1,7 @@
 ########################################
 # eigen
 xpProOption(eigen)
-set(VER 3.2.5)
+set(VER 3.2.7)
 set(PRO_EIGEN
   NAME Eigen
   WEB "Eigen" http://eigen.tuxfamily.org/ "Eigen website"
@@ -10,7 +10,7 @@ set(PRO_EIGEN
   REPO "repo" https://bitbucket.org/eigen/eigen "eigen hg repo on bitbucket"
   VER ${VER}
   DLURL http://bitbucket.org/eigen/eigen/get/${VER}.tar.bz2
-  DLMD5 21a928f6e0f1c7f24b6f63ff823593f5
+  DLMD5 cc1bacbad97558b97da6b77c9644f184
   DLNAME eigen-${VER}.tar.bz2
   )
 ########################################
