@@ -19,6 +19,10 @@ if(NOT DEFINED wx_libs)
   # http://docs.wxwidgets.org/trunk/page_libs.html
   # TRICKY: reverse dependency order (base should be last)
   set(wx_libs aui richtext adv gl html core net xml base)
+  if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
+    # wxGL brings in -lGL -lGLU, and -lGLU caused us segfaults on Solaris
+    list(REMOVE_ITEM wx_libs gl)
+  endif()
 endif()
 if(UNIX)
   set(wxWidgets_CONFIG_OPTIONS --prefix=${XP_ROOTDIR} --version=${wxVersion})
