@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 262690e..a3a356a 100644
+index 262690e..34e69d7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -20,31 +20,36 @@
+@@ -20,31 +20,43 @@
  PROJECT(libRaptorQ)
  CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
  AUX_SOURCE_DIRECTORY(. SRC_LIST)
@@ -53,10 +53,17 @@ index 262690e..a3a356a 100644
 +OPTION(PROFILING "Optimize library assembly" ON)
 +
 +OPTION(BUILD_SHARED_LIB "Build and install Shared library" ON)
++
++# internal compiler error from eigen Core/MatrixBase.h
++# in splice_child_die at dwarf2out.c:4706
++# unless we turn OFF LTO for this case (gcc 4.8)
++IF(BUILD_SHARED_LIB AND LTO AND CMAKE_BUILD_TYPE STREQUAL Debug)
++  SET(LTO OFF)
++ENDIF()
  
  SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake; ${CMAKE_MODULE_PATH})
  
-@@ -54,33 +59,33 @@ FIND_PACKAGE(eigen REQUIRED)
+@@ -54,33 +66,33 @@ FIND_PACKAGE(eigen REQUIRED)
  INCLUDE_DIRECTORIES(SYSTEM ${EIGEN3_INCLUDE_DIR})
  
  #This only works if *FIRST* you checkout a commit and *THEN* you run cmake
@@ -101,7 +108,7 @@ index 262690e..a3a356a 100644
  	IF(${STDLIB} STREQUAL "libc++" AND NOT (${CMAKE_CXX_COMPILER} MATCHES "^.*c[+][+]$" OR ${CMAKE_CXX_COMPILER} MATCHES "^(.*/)g[+][+]$"))
  		# gcc is particoularly unhappy with libc++ headers...
  		INCLUDE_DIRECTORIES(SYSTEM ${CLANG_C_INCLUDE_DIR})
-@@ -92,45 +97,86 @@ IF(STDLIB)
+@@ -92,45 +104,86 @@ IF(STDLIB)
  		FIND_PACKAGE(std_gcc REQUIRED)
  		INCLUDE_DIRECTORIES(SYSTEM ${GCC_STD_INCLUDE_DIR})
  	ENDIF()
@@ -205,7 +212,7 @@ index 262690e..a3a356a 100644
  		SET (PROFILE_GET           "-fprofile-generate")
  		# gcc creates a couple more files than clang for prifiling. Track them.
  		SET (PROFILE_GET_FILE
-@@ -144,23 +190,27 @@ CMakeFiles/test_c_profiled.dir/test/test_c.c.gcda)
+@@ -144,23 +197,27 @@ CMakeFiles/test_c_profiled.dir/test/test_c.c.gcda)
  		SET (PROFILE_SET_FILE      ${PROFILE_GET_FILE})
  		SET (PROFILE_SET           "-fprofile-use")
  	ENDIF()
@@ -230,11 +237,6 @@ index 262690e..a3a356a 100644
 +			SET(CMAKE_NM ${GCC_NM})
 +			SET(CMAKE_RANLIB ${GCC_RANLIB})
 +		ENDIF()
-+	ENDIF()
-+	xpCheckCompilerFlags(CMAKE_CXX_FLAGS "-std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv")
-+	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wno-aggressive-loop-optimizations -ftrapv -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute")
-+	IF(HAS_LIBUBSAN)
-+		xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow")
  	ENDIF()
 -	SET(CMAKE_CXX_FLAGS		   "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Wall -pedantic -Wno-padded  -fstack-protector-all -fstrict-aliasing -fwrapv")
 -# FIXME: some of these are gcc4.9+ only
@@ -242,13 +244,18 @@ index 262690e..a3a356a 100644
 -	SET(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Os -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing ")
 -	SET(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Ofast -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
 -	SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS "-std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wno-aggressive-loop-optimizations -ftrapv -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute")
++	IF(HAS_LIBUBSAN)
++		xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow")
++	ENDIF()
 +	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
 +	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELEASE "-Ofast -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wformat -Wformat-security -fPIE -fPIC")
 +	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wformat -Wformat-security -fPIE -fPIC")
  	ENDIF()
  	# else I do not know your compiler options :)
  ENDIF()
-@@ -169,20 +219,22 @@ ENDIF()
+@@ -169,20 +226,22 @@ ENDIF()
  # set the proper options for that, too
  #
  IF(${CMAKE_C_COMPILER} MATCHES ".*clang.*")
@@ -280,7 +287,7 @@ index 262690e..a3a356a 100644
  	ENDIF()
  	# else I do not know your compiler options :)
  ENDIF()
-@@ -194,9 +246,14 @@ ENDIF()
+@@ -194,9 +253,14 @@ ENDIF()
  IF(UNIX)
    MESSAGE(STATUS "UNIX system found")
    ADD_DEFINITIONS(-DUNIX)
@@ -297,7 +304,7 @@ index 262690e..a3a356a 100644
  ENDIF()
  
  
-@@ -227,7 +284,7 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+@@ -227,7 +291,7 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
  # LATEX documentation
  add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
  
@@ -306,7 +313,7 @@ index 262690e..a3a356a 100644
  	# we need to build a profiling version of the static library.
  	# then we will run the profiling,  and then finally rebuild
  	# everything with the profiling optimizations
-@@ -247,7 +304,7 @@ IF(PROFILING STREQUAL "yes")
+@@ -247,7 +311,7 @@ IF(PROFILING STREQUAL "yes")
  	ADD_EXECUTABLE(test_c_profiled test/test_c.c)
  	ADD_DEPENDENCIES(test_c_profiled RaptorQ_static_profiling)
  	SET_TARGET_PROPERTIES(test_c_profiled PROPERTIES COMPILE_FLAGS ${PROFILE_GET})
@@ -315,7 +322,7 @@ index 262690e..a3a356a 100644
  	STRING(SUBSTRING ${STDLIB} 3 -1 STDLIB_NAME)
  	TARGET_LINK_LIBRARIES(test_c_profiled ${STDLIB_NAME})
  	TARGET_LINK_LIBRARIES(test_c_profiled m) # math library
-@@ -295,7 +352,7 @@ SET_TARGET_PROPERTIES (
+@@ -295,7 +359,7 @@ SET_TARGET_PROPERTIES (
  	PROPERTIES
  	LINK_FLAGS "-Wl,-z,now,-z,relro -pie"
  )
@@ -324,7 +331,7 @@ index 262690e..a3a356a 100644
  	ADD_DEPENDENCIES(RaptorQ_static profile)
  	SET_TARGET_PROPERTIES(RaptorQ_static PROPERTIES COMPILE_FLAGS ${PROFILE_SET})
  ENDIF()
-@@ -303,7 +360,7 @@ ENDIF()
+@@ -303,7 +367,7 @@ ENDIF()
  ADD_EXECUTABLE(make_deterministic src/deterministic.cpp)
  add_custom_command(
    OUTPUT deterministic.run
@@ -333,7 +340,7 @@ index 262690e..a3a356a 100644
    DEPENDS RaptorQ_static
    COMMENT "Removing creation date from library..."
    VERBATIM
-@@ -313,51 +370,61 @@ add_custom_target(
+@@ -313,51 +377,61 @@ add_custom_target(
    DEPENDS deterministic.run
  )
  
