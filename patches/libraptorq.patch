@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index efd8191..2ce90a0 100644
+index 262690e..850f9de 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,31 +20,36 @@
@@ -186,13 +186,13 @@ index efd8191..2ce90a0 100644
 +		ENDIF()
  	ENDIF()
 -	SET(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing ")
--	SET(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -g -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing ")
+-	SET(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -O0 -g -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing ")
 -	SET(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -Os -DNDEBUG -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing ")
 -	SET(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -Ofast -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
 -	SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
 +	xpCheckCompilerFlags(CMAKE_CXX_FLAGS "${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing")
-+	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-g")
-+	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG ")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
 +	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELEASE "-Ofast -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
 +	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
  	ADD_DEFINITIONS(-DUSING_CLANG)
@@ -205,7 +205,7 @@ index efd8191..2ce90a0 100644
  		SET (PROFILE_GET           "-fprofile-generate")
  		# gcc creates a couple more files than clang for prifiling. Track them.
  		SET (PROFILE_GET_FILE
-@@ -144,23 +190,28 @@ CMakeFiles/test_c_profiled.dir/test/test_c.c.gcda)
+@@ -144,23 +190,27 @@ CMakeFiles/test_c_profiled.dir/test/test_c.c.gcda)
  		SET (PROFILE_SET_FILE      ${PROFILE_GET_FILE})
  		SET (PROFILE_SET           "-fprofile-use")
  	ENDIF()
@@ -230,36 +230,35 @@ index efd8191..2ce90a0 100644
 +			SET(CMAKE_NM ${GCC_NM})
 +			SET(CMAKE_RANLIB ${GCC_RANLIB})
 +		ENDIF()
++	ENDIF()
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS "-std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wno-aggressive-loop-optimizations -ftrapv -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute")
++	IF(HAS_LIBUBSAN)
++		xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow")
  	ENDIF()
 -	SET(CMAKE_CXX_FLAGS		   "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Wall -pedantic -Wno-padded  -fstack-protector-all -fstrict-aliasing -fwrapv")
 -# FIXME: some of these are gcc4.9+ only
--	SET(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -g -Wall -pedantic -Wno-padded -fstack-protector-all -Wno-aggressive-loop-optimizations -fstrict-aliasing -ftrapv -fwrapv -fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute ")
+-	SET(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -O0 -g -Wall -pedantic -Wno-padded -fstack-protector-all -Wno-aggressive-loop-optimizations -fstrict-aliasing -ftrapv -fwrapv -fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute ")
 -	SET(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Os -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing ")
 -	SET(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Ofast -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
 -	SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
-+	xpCheckCompilerFlags(CMAKE_CXX_FLAGS "-std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv")
-+	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-g -Wno-aggressive-loop-optimizations -ftrapv -fwrapv -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute")
-+	IF(HAS_LIBUBSAN)
-+		xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow")
-+	ENDIF()
 +	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
-+	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELEASE "-Ofast -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
-+	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
-+
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELEASE "-Ofast -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wformat -Wformat-security -fPIE -fPIC")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wformat -Wformat-security -fPIE -fPIC")
  	ENDIF()
  	# else I do not know your compiler options :)
  ENDIF()
-@@ -169,20 +220,22 @@ ENDIF()
+@@ -169,20 +219,22 @@ ENDIF()
  # set the proper options for that, too
  #
  IF(${CMAKE_C_COMPILER} MATCHES ".*clang.*")
 -	SET(CMAKE_C_FLAGS                "${CMAKE_C_FLAGS} ${DETERMINISTIC} -std=c11 -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -Wno-disabled-macro-expansion ")
--	SET(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS} ${DETERMINISTIC} -std=c11 -g -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -Wno-disabled-macro-expansion ")
+-	SET(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS} ${DETERMINISTIC} -std=c11 -O0 -g -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -Wno-disabled-macro-expansion ")
 -	SET(CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS} ${DETERMINISTIC} -std=c11 -Os    -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC -Wno-disabled-macro-expansion ")
 -	SET(CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS} ${DETERMINISTIC} -std=c11 -Ofast -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC -Wno-disabled-macro-expansion ")
 +	xpCheckCompilerFlags(CMAKE_C_FLAGS "${DETERMINISTIC} -std=c11 -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -Wno-disabled-macro-expansion")
-+	xpCheckCompilerFlags(CMAKE_C_FLAGS_DEBUG "-g")
-+	checkComiplerFlags(CMAKE_C_FLAGS_MINSIZEREL "-Os -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
++	xpCheckCompilerFlags(CMAKE_C_FLAGS_DEBUG "-O0 -g")
++	xpcheckCompilerFlags(CMAKE_C_FLAGS_MINSIZEREL "-Os -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
 +	xpCheckCompilerFlags(CMAKE_C_FLAGS_RELEASE "-Ofast -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
  	ADD_DEFINITIONS(-DUSING_CLANG)
  ELSE()
@@ -268,20 +267,20 @@ index efd8191..2ce90a0 100644
  
 -	SET(CMAKE_C_FLAGS		   "${CMAKE_C_FLAGS} -std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -Wall -pedantic -Wno-padded  -fstack-protector-all -fstrict-aliasing -fwrapv")
 -# FIXME: some of these are gcc4.9+ only
--	SET(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS} -std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -g -Wall -pedantic -Wno-padded -fstack-protector-all -Wno-aggressive-loop-optimizations -fstrict-aliasing -ftrapv -fwrapv -fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute ")
+-	SET(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS} -std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -O0 -g -Wall -pedantic -Wno-padded -fstack-protector-all -Wno-aggressive-loop-optimizations -fstrict-aliasing -ftrapv -fwrapv -fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute ")
 -	SET(CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS} -std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -Os -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing ")
 -	SET(CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS} -std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -Ofast -fvisibility=hidden -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
 +	xpCheckCompilerFlags(CMAKE_C_FLAGS "-std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv")
-+	xpCheckCompilerFlags(CMAKE_C_FLAGS_DEBUG "-g -Wno-aggressive-loop-optimizations -ftrapv -fwrapv -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute")
++	xpCheckCompilerFlags(CMAKE_C_FLAGS_DEBUG "-O0 -g -Wno-aggressive-loop-optimizations -ftrapv -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute")
 +	IF(HAS_LIBUBSAN)
-+		xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow")
++		xpCheckCompilerFlags(CMAKE_C_FLAGS_DEBUG "-fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow")
 +	ENDIF()
 +	xpCheckCompilerFlags(CMAKE_C_FLAGS_MINSIZEREL "-Os -DNDEBUG")
-+	xpCheckCompilerFlags(CMAKE_C_FLAGS_RELEASE "-Ofast -fvisibility=hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
++	xpCheckCompilerFlags(CMAKE_C_FLAGS_RELEASE "-Ofast -fvisibility=hidden -DNDEBUG -Wformat -Wformat-security -fPIE -fPIC")
  	ENDIF()
  	# else I do not know your compiler options :)
  ENDIF()
-@@ -194,9 +247,14 @@ ENDIF()
+@@ -194,9 +246,14 @@ ENDIF()
  IF(UNIX)
    MESSAGE(STATUS "UNIX system found")
    ADD_DEFINITIONS(-DUNIX)
@@ -298,7 +297,7 @@ index efd8191..2ce90a0 100644
  ENDIF()
  
  
-@@ -227,7 +285,7 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+@@ -227,7 +284,7 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
  # LATEX documentation
  add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
  
@@ -307,7 +306,7 @@ index efd8191..2ce90a0 100644
  	# we need to build a profiling version of the static library.
  	# then we will run the profiling,  and then finally rebuild
  	# everything with the profiling optimizations
-@@ -247,7 +305,7 @@ IF(PROFILING STREQUAL "yes")
+@@ -247,7 +304,7 @@ IF(PROFILING STREQUAL "yes")
  	ADD_EXECUTABLE(test_c_profiled test/test_c.c)
  	ADD_DEPENDENCIES(test_c_profiled RaptorQ_static_profiling)
  	SET_TARGET_PROPERTIES(test_c_profiled PROPERTIES COMPILE_FLAGS ${PROFILE_GET})
@@ -316,7 +315,7 @@ index efd8191..2ce90a0 100644
  	STRING(SUBSTRING ${STDLIB} 3 -1 STDLIB_NAME)
  	TARGET_LINK_LIBRARIES(test_c_profiled ${STDLIB_NAME})
  	TARGET_LINK_LIBRARIES(test_c_profiled m) # math library
-@@ -295,15 +353,16 @@ SET_TARGET_PROPERTIES (
+@@ -295,15 +352,16 @@ SET_TARGET_PROPERTIES (
  	PROPERTIES
  	LINK_FLAGS "-Wl,-z,now,-z,relro -pie"
  )
@@ -335,7 +334,7 @@ index efd8191..2ce90a0 100644
    DEPENDS RaptorQ_static
    COMMENT "Removing creation date from library..."
    VERBATIM
-@@ -313,51 +372,60 @@ add_custom_target(
+@@ -313,51 +371,60 @@ add_custom_target(
    DEPENDS deterministic.run
  )
  
@@ -436,7 +435,7 @@ index d466667..5fde0d0 100644
  				Only for gcc/clang.
  STDLIB		libc++,libstdc++. Choose the standard library to use.
 diff --git a/src/Interleaver.hpp b/src/Interleaver.hpp
-index 216a17f..35f80e5 100644
+index 094927c..2da3329 100644
 --- a/src/Interleaver.hpp
 +++ b/src/Interleaver.hpp
 @@ -29,6 +29,9 @@

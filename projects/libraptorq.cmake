@@ -2,7 +2,7 @@
 # libRaptorQ
 xpProOption(libraptorq)
 set(REPO https://github.com/smanders/libRaptorQ)
-set(VER 0.1.2)
+set(VER 0.1.4)
 set(PRO_LIBRAPTORQ
   NAME libraptorq
   WEB "libRaptorQ" https://www.fenrirproject.org/projects/libraptorq/wiki "libRaptorQ wiki"
@@ -15,7 +15,7 @@ set(PRO_LIBRAPTORQ
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL ${REPO}/archive/v${VER}.tar.gz
-  DLMD5 6e3132556df7ceb424f2324f088034a2
+  DLMD5 ec0af3ca687bfd5c446ca5eccef4c1e1
   DLNAME libraptorq-${VER}.tar.gz
   PATCH ${PATCH_DIR}/libraptorq.patch
   DIFF ${REPO}/compare/LucaFulchir:
