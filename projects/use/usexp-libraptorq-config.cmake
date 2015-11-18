@@ -10,6 +10,8 @@ include(${XP_ROOTDIR}/lib/cmake/${prj}-targets.cmake)
 string(TOUPPER ${prj} PRJ)
 unset(${PRJ}_INCLUDE_DIRS CACHE)
 find_path(${PRJ}_INCLUDE_DIRS RaptorQ/RaptorQ.hpp PATHS ${XP_ROOTDIR}/include NO_DEFAULT_PATH)
+# needed for libRaptorQ (internally) to find eigen's includes
+include_directories(SYSTEM ${XP_ROOTDIR}/include/eigen3)
 set(${PRJ}_LIBRARIES RaptorQ_static)
 set(reqVars ${PRJ}_INCLUDE_DIRS ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
