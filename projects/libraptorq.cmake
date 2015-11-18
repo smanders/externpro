@@ -47,7 +47,7 @@ function(build_libraptorq)
   set(XP_CONFIGURE
     -DOVERRIDE_CMAKE_GENERATOR=OFF
     -DPROFILING=OFF
-    -DBUILD_SHARED_LIB=OFF
+    -DBUILD_SHARED_LIB=ON
     )
   if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
     # TODO: Solaris linker error when LTO turned ON

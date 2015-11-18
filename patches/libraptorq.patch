@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 262690e..850f9de 100644
+index 262690e..a3a356a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,31 +20,36 @@
@@ -315,7 +315,7 @@ index 262690e..850f9de 100644
  	STRING(SUBSTRING ${STDLIB} 3 -1 STDLIB_NAME)
  	TARGET_LINK_LIBRARIES(test_c_profiled ${STDLIB_NAME})
  	TARGET_LINK_LIBRARIES(test_c_profiled m) # math library
-@@ -295,15 +352,16 @@ SET_TARGET_PROPERTIES (
+@@ -295,7 +352,7 @@ SET_TARGET_PROPERTIES (
  	PROPERTIES
  	LINK_FLAGS "-Wl,-z,now,-z,relro -pie"
  )
@@ -324,8 +324,7 @@ index 262690e..850f9de 100644
  	ADD_DEPENDENCIES(RaptorQ_static profile)
  	SET_TARGET_PROPERTIES(RaptorQ_static PROPERTIES COMPILE_FLAGS ${PROFILE_SET})
  ENDIF()
-+SET(INSTALL_LIBS RaptorQ_static)
- 
+@@ -303,7 +360,7 @@ ENDIF()
  ADD_EXECUTABLE(make_deterministic src/deterministic.cpp)
  add_custom_command(
    OUTPUT deterministic.run
@@ -334,7 +333,7 @@ index 262690e..850f9de 100644
    DEPENDS RaptorQ_static
    COMMENT "Removing creation date from library..."
    VERBATIM
-@@ -313,51 +371,60 @@ add_custom_target(
+@@ -313,51 +370,61 @@ add_custom_target(
    DEPENDS deterministic.run
  )
  
@@ -363,9 +362,10 @@ index 262690e..850f9de 100644
 -)
 -
 +  )
-+  LIST(APPEND INSTALL_LIBS RaptorQ)
++  SET(INSTALL_LIBS RaptorQ)
 +  SET(theRaptorQLib RaptorQ)
 +ELSE()
++  SET(INSTALL_LIBS RaptorQ_static)
 +  SET(theRaptorQLib RaptorQ_static)
 +ENDIF()
  
