@@ -49,8 +49,8 @@ function(build_libraptorq)
     -DPROFILING=OFF
     -DBUILD_SHARED_LIB=ON
     )
-  if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
-    # TODO: Solaris linker error when LTO turned ON
+  if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS OR ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+    # TODO: Solaris and MacOSX linker error when LTO turned ON
     list(APPEND XP_CONFIGURE -DLTO=OFF)
   else()
     list(APPEND XP_CONFIGURE -DLTO=ON)
