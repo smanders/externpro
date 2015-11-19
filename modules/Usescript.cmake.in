@@ -1,0 +1,8 @@
+get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
+get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
+include(${externpro_DIR}/share/cmake/xpfunmac.cmake)
+link_directories(${XP_ROOTDIR}/lib)
+include_directories(SYSTEM ${XP_ROOTDIR}/include)
+# TODO: append to the cmake module path (issue with spaces in path and cmake's check_type_size?)
+#list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
+list(APPEND XP_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})

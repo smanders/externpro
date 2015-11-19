@@ -1,0 +1,606 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index efd8191..2ce90a0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,31 +20,36 @@
+ PROJECT(libRaptorQ)
+ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+ AUX_SOURCE_DIRECTORY(. SRC_LIST)
++INCLUDE(flags OPTIONAL)
+ 
+-SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build mode") # default build type
+-SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
++IF(NOT CMAKE_BUILD_TYPE) # if not specified, default to "Release"
++  SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build mode") # default build type
++  SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
++ENDIF()
+ 
+ MESSAGE(STATUS "Build selected: ${CMAKE_BUILD_TYPE}")
+ 
+-# easy compiler choice...
+-SET(CMAKE_CXX_COMPILER "g++" CACHE STRING "C++ Compiler") # default compiler
+-SET(CMAKE_C_COMPILER "gcc" CACHE STRING "C Compiler") # default compiler
+-SET(STDLIB "libstdc++" CACHE STRING "Standard library to use")
+-SET_PROPERTY(CACHE CMAKE_CXX_COMPILER PROPERTY STRINGS clang++ g++ c++)
+-SET_PROPERTY(CACHE CMAKE_C_COMPILER PROPERTY STRINGS clang gcc cc)
+-SET_PROPERTY(CACHE STDLIB PROPERTY STRINGS libc++ libstdc++)
+-MARK_AS_ADVANCED(CLEAR
+-	CMAKE_CXX_COMPILER
+-	CMAKE_C_COMPILER
+-)
++OPTION(OVERRIDE_CMAKE_GENERATOR "override cmake generator" ON)
++IF(OVERRIDE_CMAKE_GENERATOR)
++  SET(CMAKE_CXX_COMPILER "g++" CACHE STRING "C++ Compiler") # default compiler
++  SET(CMAKE_C_COMPILER "gcc" CACHE STRING "C Compiler") # default compiler
++  SET(STDLIB "libstdc++" CACHE STRING "Standard library to use")
++  SET_PROPERTY(CACHE CMAKE_CXX_COMPILER PROPERTY STRINGS clang++ g++ c++)
++  SET_PROPERTY(CACHE CMAKE_C_COMPILER PROPERTY STRINGS clang gcc cc)
++  SET_PROPERTY(CACHE STDLIB PROPERTY STRINGS libc++ libstdc++)
++  MARK_AS_ADVANCED(CLEAR
++          CMAKE_CXX_COMPILER
++          CMAKE_C_COMPILER
++  )
++ENDIF()
+ 
+ # Link time optimization: smaller, better optimized libraries
+-SET(LTO "yes" CACHE STRING "Link Time Optimization")
+-SET_PROPERTY(CACHE LTO PROPERTY STRINGS yes no)
++OPTION(LTO "Link Time Optimization" ON)
+ 
+ # profiling support: optimize the library
+-SET(PROFILING "yes" CACHE STRING "Optimize library assembly")
+-SET_PROPERTY(CACHE PROFILING PROPERTY STRINGS yes no)
++OPTION(PROFILING "Optimize library assembly" ON)
++
++OPTION(BUILD_SHARED_LIB "Build and install Shared library" ON)
+ 
+ SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake; ${CMAKE_MODULE_PATH})
+ 
+@@ -54,33 +59,33 @@ FIND_PACKAGE(eigen REQUIRED)
+ INCLUDE_DIRECTORIES(SYSTEM ${EIGEN3_INCLUDE_DIR})
+ 
+ #This only works if *FIRST* you checkout a commit and *THEN* you run cmake
+-IF(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/.git/)
+-MESSAGE(STATUS "directory found")
+ IF(GIT_FOUND)
+-    EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} rev-parse --sq HEAD OUTPUT_VARIABLE SEED)
+-    SET(DETERMINISTIC "-frandom-seed=${SEED}")
+-ENDIF()
++  EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} rev-parse --sq HEAD OUTPUT_VARIABLE SEED ERROR_VARIABLE gitErr)
++  IF(gitErr)
++    SET(SEED "RaptorQ_giterr")
++    MESSAGE(WARNING "git rev-parse failed. compiler seed is now constant.")
++  ENDIF()
+ ELSE()
+-    SET(DETERMINISTIC "-frandom-seed=RaptorQ_nongit")
+-    MESSAGE(WARNING "Not inside a git repository. compiler seed is now constant.")
++  SET(SEED "RaptorQ_nongit")
++  MESSAGE(WARNING "Not inside a git repository. compiler seed is now constant.")
+ ENDIF()
++SET(DETERMINISTIC "-frandom-seed=${SEED}")
+ 
+-IF("${LTO}" STREQUAL "yes")
++IF(LTO)
+ 	MESSAGE(STATUS "Link Time Optimization activated")
+ ELSE()
+ 	MESSAGE(STATUS "Link Time Optimization deactivated")
+ ENDIF()
+ #activate profiling if requested.
+ # profiling needs to build a test, which needs threading.
+-IF (PROFILING STREQUAL "yes")
++IF (PROFILING)
+ 	MESSAGE(STATUS "Profiling activated")
+ ELSE()
+ 	MESSAGE(STATUS "Profiling deactivated")
+-	SET (PROFILING	"no")
+ ENDIF()
+ 
+ # setup the compiler and the standard library
+-IF(STDLIB)
++IF(STDLIB AND OVERRIDE_CMAKE_GENERATOR)
+ 	IF(${STDLIB} STREQUAL "libc++" AND NOT (${CMAKE_CXX_COMPILER} MATCHES "^.*c[+][+]$" OR ${CMAKE_CXX_COMPILER} MATCHES "^(.*/)g[+][+]$"))
+ 		# gcc is particoularly unhappy with libc++ headers...
+ 		INCLUDE_DIRECTORIES(SYSTEM ${CLANG_C_INCLUDE_DIR})
+@@ -92,45 +97,86 @@ IF(STDLIB)
+ 		FIND_PACKAGE(std_gcc REQUIRED)
+ 		INCLUDE_DIRECTORIES(SYSTEM ${GCC_STD_INCLUDE_DIR})
+ 	ENDIF()
+-ENDIF(STDLIB)
++ENDIF()
+ # generic standard library support, put it as compiler option:
+ IF(${STDLIB} MATCHES "^.+$")
+ 	SET(STDLIB_FLAG		"-stdlib=${STDLIB}")
+ ENDIF()
++INCLUDE(CheckLibraryExists)
++check_library_exists(ubsan __ubsan_handle_type_mismatch "" HAS_LIBUBSAN)
++
++if(NOT COMMAND xpStringAppendIfDne)
++  function(xpStringAppendIfDne appendTo str)
++    if("${${appendTo}}" STREQUAL "")
++      set(${appendTo} ${str} PARENT_SCOPE)
++    else()
++      string(FIND ${${appendTo}} ${str} pos)
++      if(${pos} EQUAL -1)
++        set(${appendTo} "${${appendTo}} ${str}" PARENT_SCOPE)
++      endif()
++    endif()
++  endfunction()
++endif()
++
++if(NOT COMMAND xpCheckCompilerFlags)
++  include(CheckCCompilerFlag)
++  include(CheckCXXCompilerFlag)
++  function(xpCheckCompilerFlags flagVar flags)
++    separate_arguments(flags)
++    foreach(flag ${flags})
++      string(REPLACE "-" "_" flag_ ${flag})
++      string(REPLACE "=" "_" flag_ ${flag_})
++      if(flagVar MATCHES ".*CXX_FLAGS.*")
++        check_cxx_compiler_flag("${flag}" has_cxx${flag_})
++        if(has_cxx${flag_})
++          xpStringAppendIfDne(${flagVar} "${flag}")
++        endif()
++      elseif(flagVar MATCHES ".*C_FLAGS.*")
++        check_c_compiler_flag("${flag}" has_c${flag_})
++        if(has_c${flag_})
++          xpStringAppendIfDne(${flagVar} "${flag}")
++        endif()
++      endif()
++    endforeach()
++    set(${flagVar} "${${flagVar}}" PARENT_SCOPE)
++  endfunction()
++endif()
+ 
+ #
+ # C++ options
+ #
+ IF(${CMAKE_CXX_COMPILER} MATCHES ".*clang.*")
+-	IF (PROFILING STREQUAL "yes")
++	IF (PROFILING)
+ 		MESSAGE(WARNING		"Profiling and clang breaks deterministic builds")
+ 		SET (PROFILE_GET           "-fprofile-instr-generate -g")
+ 		SET (PROFILE_GET_FILE      "RaptorQ.profraw")
+ 		SET (PROFILE_SET_FILE      "RaptorQ.profdata")
+ 		SET (PROFILE_SET           "-fprofile-instr-use=${PROFILE_SET_FILE}")
+ 	ENDIF()
+-	IF("${LTO}" STREQUAL "yes")
+-		SET(CMAKE_CXX_FLAGS		"${CMAKE_CXX_FLAGS} -flto -fuse-ld=gold")
+-		SET(CMAKE_C_FLAGS		"${CMAKE_C_FLAGS} -flto -fuse-ld=gold")
+-		FIND_PROGRAM(LLVM_AR "llvm-ar")
+-		FIND_PROGRAM(LLVM_NM "llvm-nm")
+-		FIND_PROGRAM(LLVM_RANLIB "llvm-ranlib")
+-		SET(CMAKE_AR ${LLVM_AR})
++	IF(LTO)
++		xpCheckCompilerFlags(CMAKE_CXX_FLAGS "-flto -fuse-ld=gold")
++		xpCheckCompilerFlags(CMAKE_C_FLAGS "-flto -fuse-ld=gold")
+ 		SET(LINK_FLAGS "-rng-seed=${SEED} --build-id=none")
+-		SET(CMAKE_NM ${LLVM_NM})
+-		SET(CMAKE_RANLIB ${LLVM_RANLIB})
++		IF(OVERRIDE_CMAKE_GENERATOR)
++			FIND_PROGRAM(LLVM_AR "llvm-ar")
++			FIND_PROGRAM(LLVM_NM "llvm-nm")
++			FIND_PROGRAM(LLVM_RANLIB "llvm-ranlib")
++			SET(CMAKE_AR ${LLVM_AR})
++			SET(CMAKE_NM ${LLVM_NM})
++			SET(CMAKE_RANLIB ${LLVM_RANLIB})
++		ENDIF()
+ 	ENDIF()
+-	SET(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing ")
+-	SET(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -g -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing ")
+-	SET(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -Os -DNDEBUG -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing ")
+-	SET(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -Ofast -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
+-	SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} ${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS "${STDLIB_FLAG} ${DETERMINISTIC} -std=c++11 -fno-rtti -fno-exceptions -Wall -pedantic -Weverything -Wno-c++98-compat-pedantic -Wno-c++98-compat -Wno-padded -fstack-protector-all -fstrict-aliasing")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-g")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG ")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELEASE "-Ofast -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
+ 	ADD_DEFINITIONS(-DUSING_CLANG)
+ 	SET(USE_CLANG 1)
+ ELSE()
+ 	# warn: clang+ and g++ get the same *g++ regexp, keep the "else" above or match the "/" in the regexp
+ 	IF(${CMAKE_CXX_COMPILER} MATCHES "^.*c[+][+]$" OR ${CMAKE_CXX_COMPILER} MATCHES "^(.*/)g[+][+]$")
+-	IF (PROFILING STREQUAL "yes")
++	IF (PROFILING)
+ 		SET (PROFILE_GET           "-fprofile-generate")
+ 		# gcc creates a couple more files than clang for prifiling. Track them.
+ 		SET (PROFILE_GET_FILE
+@@ -144,23 +190,28 @@ CMakeFiles/test_c_profiled.dir/test/test_c.c.gcda)
+ 		SET (PROFILE_SET_FILE      ${PROFILE_GET_FILE})
+ 		SET (PROFILE_SET           "-fprofile-use")
+ 	ENDIF()
+-	IF("${LTO}" STREQUAL "yes")
+-		SET(CMAKE_CXX_FLAGS		"${CMAKE_CXX_FLAGS} -flto -fuse-ld=gold")
+-		SET(CMAKE_C_FLAGS		"${CMAKE_C_FLAGS} -flto -fuse-ld=gold")
+-		FIND_PROGRAM(GCC_AR "gcc-ar")
+-		FIND_PROGRAM(GCC_NM "gcc-nm")
+-		FIND_PROGRAM(GCC_RANLIB "gcc-ranlib")
+-		SET(CMAKE_AR ${GCC_AR})
++	IF(LTO)
++		xpCheckCompilerFlags(CMAKE_CXX_FLAGS "-flto -fuse-ld=gold")
++		xpCheckCompilerFlags(CMAKE_C_FLAGS "-flto -fuse-ld=gold")
+ 		SET(LINK_FLAGS "-D")
+-		SET(CMAKE_NM ${GCC_NM})
+-	SET(CMAKE_RANLIB ${GCC_RANLIB})
++		IF(OVERRIDE_CMAKE_GENERATOR)
++			FIND_PROGRAM(GCC_AR "gcc-ar")
++			FIND_PROGRAM(GCC_NM "gcc-nm")
++			FIND_PROGRAM(GCC_RANLIB "gcc-ranlib")
++			SET(CMAKE_AR ${GCC_AR})
++			SET(CMAKE_NM ${GCC_NM})
++			SET(CMAKE_RANLIB ${GCC_RANLIB})
++		ENDIF()
+ 	ENDIF()
+-	SET(CMAKE_CXX_FLAGS		   "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Wall -pedantic -Wno-padded  -fstack-protector-all -fstrict-aliasing -fwrapv")
+-# FIXME: some of these are gcc4.9+ only
+-	SET(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -g -Wall -pedantic -Wno-padded -fstack-protector-all -Wno-aggressive-loop-optimizations -fstrict-aliasing -ftrapv -fwrapv -fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute ")
+-	SET(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Os -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing ")
+-	SET(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Ofast -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
+-	SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS "-std=c++11 ${DETERMINISTIC} -fno-rtti -fno-exceptions -Wno-unknown-pragmas -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-g -Wno-aggressive-loop-optimizations -ftrapv -fwrapv -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute")
++	IF(HAS_LIBUBSAN)
++		xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow")
++	ENDIF()
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -DNDEBUG")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELEASE "-Ofast -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
++	xpCheckCompilerFlags(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fvisibility=hidden -fvisibility-inlines-hidden -O4 -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
++
+ 	ENDIF()
+ 	# else I do not know your compiler options :)
+ ENDIF()
+@@ -169,20 +220,22 @@ ENDIF()
+ # set the proper options for that, too
+ #
+ IF(${CMAKE_C_COMPILER} MATCHES ".*clang.*")
+-	SET(CMAKE_C_FLAGS                "${CMAKE_C_FLAGS} ${DETERMINISTIC} -std=c11 -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -Wno-disabled-macro-expansion ")
+-	SET(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS} ${DETERMINISTIC} -std=c11 -g -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -Wno-disabled-macro-expansion ")
+-	SET(CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS} ${DETERMINISTIC} -std=c11 -Os    -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC -Wno-disabled-macro-expansion ")
+-	SET(CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS} ${DETERMINISTIC} -std=c11 -Ofast -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC -Wno-disabled-macro-expansion ")
++	xpCheckCompilerFlags(CMAKE_C_FLAGS "${DETERMINISTIC} -std=c11 -Wall -pedantic -Weverything -Wno-padded -fstack-protector-all -fstrict-aliasing -Wno-disabled-macro-expansion")
++	xpCheckCompilerFlags(CMAKE_C_FLAGS_DEBUG "-g")
++	checkComiplerFlags(CMAKE_C_FLAGS_MINSIZEREL "-Os -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
++	xpCheckCompilerFlags(CMAKE_C_FLAGS_RELEASE "-Ofast -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
+ 	ADD_DEFINITIONS(-DUSING_CLANG)
+ ELSE()
+ 	# warn: clang+ and g++ get the same *g++ regexp, keep the "else" above or match the "/" in the regexp
+ 	IF(${CMAKE_C_COMPILER} MATCHES "^.*cc$" OR ${CMAKE_C_COMPILER} MATCHES "^(.*/)gcc$")
+ 
+-	SET(CMAKE_C_FLAGS		   "${CMAKE_C_FLAGS} -std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -Wall -pedantic -Wno-padded  -fstack-protector-all -fstrict-aliasing -fwrapv")
+-# FIXME: some of these are gcc4.9+ only
+-	SET(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS} -std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -g -Wall -pedantic -Wno-padded -fstack-protector-all -Wno-aggressive-loop-optimizations -fstrict-aliasing -ftrapv -fwrapv -fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute ")
+-	SET(CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS} -std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -Os -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing ")
+-	SET(CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS} -std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -Ofast -fvisibility=hidden -DNDEBUG -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv -Wformat -Wformat-security -fPIE -fPIC ")
++	xpCheckCompilerFlags(CMAKE_C_FLAGS "-std=c11 ${DETERMINISTIC} -Wno-unknown-pragmas -Wall -pedantic -Wno-padded -fstack-protector-all -fstrict-aliasing -fwrapv")
++	xpCheckCompilerFlags(CMAKE_C_FLAGS_DEBUG "-g -Wno-aggressive-loop-optimizations -ftrapv -fwrapv -fisolate-erroneous-paths-dereference -fisolate-erroneous-paths-attribute")
++	IF(HAS_LIBUBSAN)
++		xpCheckCompilerFlags(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=undefined -fsanitize=shift -fsanitize=integer-divide-by-zero -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow")
++	ENDIF()
++	xpCheckCompilerFlags(CMAKE_C_FLAGS_MINSIZEREL "-Os -DNDEBUG")
++	xpCheckCompilerFlags(CMAKE_C_FLAGS_RELEASE "-Ofast -fvisibility=hidden -DNDEBUG -fwrapv -Wformat -Wformat-security -fPIE -fPIC")
+ 	ENDIF()
+ 	# else I do not know your compiler options :)
+ ENDIF()
+@@ -194,9 +247,14 @@ ENDIF()
+ IF(UNIX)
+   MESSAGE(STATUS "UNIX system found")
+   ADD_DEFINITIONS(-DUNIX)
++  IF(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
++    # Avoid bringing in /usr/include/sys/regset.h on Solaris, which has ugly
++    # macro polution which breaks the build. (Encoder.hpp ESI conflict)
++    ADD_DEFINITIONS(-D_SYS_REGSET_H -D_SYS_UCONTEXT_H)
++  ENDIF()
+ ELSEIF(WIN32)
+-  MESSAGE(STATUS "Wndows system found. WARN: not tested!")
+-  ADD_DEFINITION(-DWIN32)
++  MESSAGE(STATUS "Windows system found. WARN: not tested!")
++  ADD_DEFINITIONS(-DWIN32)
+ ENDIF()
+ 
+ 
+@@ -227,7 +285,7 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+ # LATEX documentation
+ add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
+ 
+-IF(PROFILING STREQUAL "yes")
++IF(PROFILING)
+ 	# we need to build a profiling version of the static library.
+ 	# then we will run the profiling,  and then finally rebuild
+ 	# everything with the profiling optimizations
+@@ -247,7 +305,7 @@ IF(PROFILING STREQUAL "yes")
+ 	ADD_EXECUTABLE(test_c_profiled test/test_c.c)
+ 	ADD_DEPENDENCIES(test_c_profiled RaptorQ_static_profiling)
+ 	SET_TARGET_PROPERTIES(test_c_profiled PROPERTIES COMPILE_FLAGS ${PROFILE_GET})
+-	TARGET_LINK_LIBRARIES(test_c_profiled ${LIBRARY_OUTPUT_PATH}/libRaptorQ_static_profiling.a)
++	TARGET_LINK_LIBRARIES(test_c_profiled RaptorQ_static_profiling)
+ 	STRING(SUBSTRING ${STDLIB} 3 -1 STDLIB_NAME)
+ 	TARGET_LINK_LIBRARIES(test_c_profiled ${STDLIB_NAME})
+ 	TARGET_LINK_LIBRARIES(test_c_profiled m) # math library
+@@ -295,15 +353,16 @@ SET_TARGET_PROPERTIES (
+ 	PROPERTIES
+ 	LINK_FLAGS "-Wl,-z,now,-z,relro -pie"
+ )
+-IF(PROFILING STREQUAL "yes")
++IF(PROFILING)
+ 	ADD_DEPENDENCIES(RaptorQ_static profile)
+ 	SET_TARGET_PROPERTIES(RaptorQ_static PROPERTIES COMPILE_FLAGS ${PROFILE_SET})
+ ENDIF()
++SET(INSTALL_LIBS RaptorQ_static)
+ 
+ ADD_EXECUTABLE(make_deterministic src/deterministic.cpp)
+ add_custom_command(
+   OUTPUT deterministic.run
+-  COMMAND make_deterministic ${LIBRARY_OUTPUT_PATH}/libRaptorQ_static.a
++  COMMAND make_deterministic $<TARGET_FILE:RaptorQ_static>
+   DEPENDS RaptorQ_static
+   COMMENT "Removing creation date from library..."
+   VERBATIM
+@@ -313,51 +372,60 @@ add_custom_target(
+   DEPENDS deterministic.run
+ )
+ 
+-ADD_DEFINITIONS(-DRAPTORQ_DLL)
+-ADD_DEFINITIONS(-DRAPTORQ_DLL_EXPORTS)
++IF(BUILD_SHARED_LIB)
++  ADD_DEFINITIONS(-DRAPTORQ_DLL)
++  ADD_DEFINITIONS(-DRAPTORQ_DLL_EXPORTS)
+ 
+-ADD_LIBRARY(RaptorQ SHARED ${SOURCES} ${HEADERS})
+-# add profiling dependency if requested
+-IF(PROFILING STREQUAL "yes")
+-	ADD_DEPENDENCIES(RaptorQ profile)
++  ADD_LIBRARY(RaptorQ SHARED ${SOURCES} ${HEADERS})
++  # add profiling dependency if requested
++  IF(PROFILING)
++  	ADD_DEPENDENCIES(RaptorQ profile)
+ 	SET_TARGET_PROPERTIES(RaptorQ PROPERTIES COMPILE_FLAGS ${PROFILE_SET})
+-ENDIF()
+-SET_TARGET_PROPERTIES (
++  ENDIF()
++  SET_TARGET_PROPERTIES (
+ 	RaptorQ
+ 	PROPERTIES
+ 	LINK_FLAGS "-Wl,-z,now,-z,relro"
+-)
+-
++  )
++  LIST(APPEND INSTALL_LIBS RaptorQ)
++  SET(theRaptorQLib RaptorQ)
++ELSE()
++  SET(theRaptorQLib RaptorQ_static)
++ENDIF()
+ 
+ # add main tests
+ ADD_EXECUTABLE(libRaptorQ-test EXCLUDE_FROM_ALL test/rfc_test.cpp)
+-ADD_DEPENDENCIES(libRaptorQ-test RaptorQ)
++ADD_DEPENDENCIES(libRaptorQ-test ${theRaptorQLib})
+ TARGET_LINK_LIBRARIES(libRaptorQ-test ${CMAKE_THREAD_LIBS_INIT})
+ # link the library we just built, too
+-TARGET_LINK_LIBRARIES(libRaptorQ-test ${LIBRARY_OUTPUT_PATH}/libRaptorQ.so)
+-INSTALL(TARGETS libRaptorQ-test RUNTIME DESTINATION bin/ OPTIONAL)
++TARGET_LINK_LIBRARIES(libRaptorQ-test ${theRaptorQLib})
++# see EXCLUDE_FROM_ALL in cmake-properties, Properties on Targets:
++# "Installing a target with EXCLUDE_FROM_ALL set to true has undefined behavior."
++#INSTALL(TARGETS libRaptorQ-test RUNTIME DESTINATION bin/ OPTIONAL)
+ ADD_CUSTOM_TARGET(tests DEPENDS libRaptorQ-test)
+ 
+ # build examples
+ # C interface
+ ADD_EXECUTABLE(test_c EXCLUDE_FROM_ALL test/test_c.c)
+-ADD_DEPENDENCIES(test_c RaptorQ)
++ADD_DEPENDENCIES(test_c ${theRaptorQLib})
+ TARGET_LINK_LIBRARIES(test_c ${CMAKE_THREAD_LIBS_INIT})
+ # link the library we just built, too
+-TARGET_LINK_LIBRARIES(test_c ${LIBRARY_OUTPUT_PATH}/libRaptorQ.so)
++TARGET_LINK_LIBRARIES(test_c ${theRaptorQLib})
+ # CPP interface
+ ADD_EXECUTABLE(test_cpp EXCLUDE_FROM_ALL test/test_cpp.cpp)
+-ADD_DEPENDENCIES(test_cpp RaptorQ)
++ADD_DEPENDENCIES(test_cpp ${theRaptorQLib})
+ TARGET_LINK_LIBRARIES(test_cpp ${CMAKE_THREAD_LIBS_INIT})
+ # link the library we just built, too
+-TARGET_LINK_LIBRARIES(test_cpp ${LIBRARY_OUTPUT_PATH}/libRaptorQ.so)
++TARGET_LINK_LIBRARIES(test_cpp ${theRaptorQLib})
+ ADD_CUSTOM_TARGET(examples DEPENDS test_c test_cpp)
+ 
+ ADD_CUSTOM_TARGET(everything DEPENDS Make_static_deterministic tests examples docs)
+ 
+ 
+ INSTALL(FILES ${HEADERS} DESTINATION include/RaptorQ/)
+-INSTALL(TARGETS RaptorQ RaptorQ_static
++INSTALL(TARGETS ${INSTALL_LIBS} EXPORT libraptorq-targets
+ 	 LIBRARY DESTINATION lib COMPONENT libraries
+-	 ARCHIVE DESTINATION lib COMPONENT libraries)
++	 ARCHIVE DESTINATION lib COMPONENT libraries
++	 RUNTIME DESTINATION bin COMPONENT libraries)
++INSTALL(EXPORT libraptorq-targets DESTINATION lib/cmake)
+ 
+diff --git a/README b/README
+index d466667..5fde0d0 100644
+--- a/README
++++ b/README
+@@ -126,12 +126,12 @@ currently is the clang + profiling one. It probably can not
+ be fixed.
+ 
+ You can customize the CMake build with tthe following variables:
+-PROFILING	yes/no: Default:yes. Activate or deactivate profiling.
++PROFILING	ON/OFF: Default:ON. Activate or deactivate profiling.
+ 				Profiling compiles everything, then runs a test to see
+ 				which code paths are more used. Then it recompiles everything
+-				but optimizing for for those code paths.
++				but optimizing for those code paths.
+ 				Only for gcc/clang.
+-LTO			yes/no: Default:yes. Activate or deactivate Link time Optimization
++LTO			ON/OFF: Default:ON. Activate or deactivate Link time Optimization
+ 				Makes the library smaller and better optimized.
+ 				Only for gcc/clang.
+ STDLIB		libc++,libstdc++. Choose the standard library to use.
+diff --git a/src/Interleaver.hpp b/src/Interleaver.hpp
+index 216a17f..35f80e5 100644
+--- a/src/Interleaver.hpp
++++ b/src/Interleaver.hpp
+@@ -29,6 +29,9 @@
+ #include <tuple>
+ #include <utility>
+ #include <vector>
++#if defined _MSC_VER && _MSC_VER <= 1800 // Visual Studio 2013, MSVC++ 12.0
++#define constexpr const
++#endif
+ 
+ // force promotion to double in division
+ namespace {
+diff --git a/src/Parameters.hpp b/src/Parameters.hpp
+index 7e31dd8..90a544d 100644
+--- a/src/Parameters.hpp
++++ b/src/Parameters.hpp
+@@ -27,6 +27,11 @@
+ #include <cmath>
+ #include <Eigen/Core>
+ #include <vector>
++#if defined(_MSC_VER)
++#define WIN32_LEAN_AND_MEAN
++#include <windows.h>
++typedef SSIZE_T ssize_t;
++#endif
+ 
+ //
+ // This implements both phase 1 and phase 2 of the encoding
+diff --git a/src/Rand.cpp b/src/Rand.cpp
+index cf2444c..b3740a2 100644
+--- a/src/Rand.cpp
++++ b/src/Rand.cpp
+@@ -46,10 +46,13 @@ uint32_t Rand::get (const uint32_t y, const uint8_t i, const uint32_t m)
+ }
+ 
+ 
++#pragma warning(push)
++#pragma warning(disable : 4068) // MSVC unknown pragma
+ #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-Wmissing-braces"
+ #pragma clang diagnostic ignored "-Wglobal-constructors"
+ #pragma clang diagnostic ignored "-Wexit-time-destructors"
++#pragma warning(pop)
+ 
+ /* RFC, section 5.5:  Random Numbers
+  *
+@@ -278,7 +281,10 @@ const std::array<uint32_t, 256> Rand::V3 = {
+ 	3432275192
+ 	};
+ 
++#pragma warning(push)
++#pragma warning(disable : 4068) // MSVC unknown pragma
+ #pragma clang diagnostic pop
++#pragma warning(pop)
+ 
+ }	// namespace Impl
+ }	// namespace RaptorQ
+diff --git a/src/degree.hpp b/src/degree.hpp
+index 711afe6..3068eae 100644
+--- a/src/degree.hpp
++++ b/src/degree.hpp
+@@ -22,14 +22,18 @@
+ #define RAPTORQ_DEGREE_HPP
+ 
+ #include <array>
++#include <cstdint>
+ 
+ namespace RaptorQ {
+ namespace Impl {
+ 
++#pragma warning(push)
++#pragma warning(disable : 4068) // MSVC unknown pragma
+ #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-Wmissing-braces"
+ #pragma clang diagnostic ignored "-Wglobal-constructors"
+ #pragma clang diagnostic ignored "-Wexit-time-destructors"
++#pragma warning(pop)
+ 
+ static const std::array<uint32_t, 31> degree_distribution = {
+ 							  0,    5243,  529531,  704294,  791675,  844104,
+@@ -39,7 +43,10 @@ static const std::array<uint32_t, 31> degree_distribution = {
+ 						1010129, 1011876, 1013490, 1014983, 1016370, 1017662,
+ 						1048576};
+ 
++#pragma warning(push)
++#pragma warning(disable : 4068) // MSVC unknown pragma
+ #pragma clang diagnostic pop
++#pragma warning(pop)
+ 
+ }	// namespace Impl
+ }	// namespace RaptorQ
+diff --git a/src/deterministic.cpp b/src/deterministic.cpp
+index fc1048d..61b08dd 100644
+--- a/src/deterministic.cpp
++++ b/src/deterministic.cpp
+@@ -19,8 +19,14 @@
+  */
+ 
+ #include <array>
++#include <cstdint>
+ #include <fstream>
+ #include <iostream>
++#if defined(_MSC_VER)
++#define WIN32_LEAN_AND_MEAN
++#include <windows.h>
++typedef SSIZE_T ssize_t;
++#endif
+ 
+ //
+ // We work on the "ar" format. refer to
+diff --git a/src/multiplication.hpp b/src/multiplication.hpp
+index 53504a6..f0e1c50 100644
+--- a/src/multiplication.hpp
++++ b/src/multiplication.hpp
+@@ -22,10 +22,13 @@
+ namespace RaptorQ {
+ namespace Impl {
+ 
++#pragma warning(push)
++#pragma warning(disable : 4068) // MSVC unknown pragma
+ #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-Wmissing-braces"
+ #pragma clang diagnostic ignored "-Wglobal-constructors"
+ #pragma clang diagnostic ignored "-Wexit-time-destructors"
++#pragma warning(pop)
+ 
+ static const std::array<uint8_t, 510> oct_exp = {
+    1, 2, 4, 8, 16, 32, 64, 128, 29, 58, 116, 232, 205, 135, 19, 38, 76,
+@@ -84,7 +87,10 @@ static const std::array<uint8_t, 255> oct_log = {
+    79, 174, 213, 233, 230, 231, 173, 232, 116, 214, 244, 234, 168, 80,
+    88, 175};
+ 
++#pragma warning(push)
++#pragma warning(disable : 4068) // MSVC unknown pragma
+ #pragma clang diagnostic pop
++#pragma warning(pop)
+ 
+ }	// namespace Impl
+ }	// namespace RaptorQ
+diff --git a/test/rfc_test.cpp b/test/rfc_test.cpp
+index 4df776a..d9608c2 100644
+--- a/test/rfc_test.cpp
++++ b/test/rfc_test.cpp
+@@ -32,6 +32,9 @@
+ #include <thread>
+ #include <tuple>
+ #include <vector>
++#if _MSC_VER <= 1800 // Visual Studio 2013, MSVC++ 12.0
++#define noexcept throw()
++#endif
+ 
+ 
+ uint64_t decode (uint32_t mysize, std::mt19937_64 &rnd, float drop_prob,
+@@ -291,9 +294,13 @@ private:
+ 
+ 	    static time_point now() noexcept
+ 	    {
++#ifdef _MSC_VER
++	        return time_point(duration(static_cast<rep>(__rdtsc())));
++#else
+ 	        unsigned lo, hi;
+ 	        asm volatile("rdtsc" : "=a" (lo), "=d" (hi));
+ 	        return time_point(duration(static_cast<rep>(hi) << 32 | lo));
++#endif
+ 	    }
+ 	};
+ 	// typedef std::chrono::microseconds microseconds;

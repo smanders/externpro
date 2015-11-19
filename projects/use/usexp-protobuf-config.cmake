@@ -1,0 +1,22 @@
+# PROTOBUF_FOUND - protobuf was found
+# PROTOBUF_INCLUDE_DIRS - the protobuf include directory
+# PROTOBUF_LIBRARIES - the protobuf libraries
+# PROTOBUF_PROTOC_EXECUTABLE - the protobuf compiler (protoc) executable
+if(COMMAND xpFindPkg)
+  xpFindPkg(PKGS zlib) # dependencies
+endif()
+set(prj protobuf)
+# this file (-config) installed to share/cmake
+get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
+get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
+# protobuf installs a config file which includes -targets.cmake and -module.cmake
+include(${XP_ROOTDIR}/lib/cmake/protobuf/${prj}-config.cmake)
+string(TOUPPER ${prj} PRJ)
+unset(${PRJ}_INCLUDE_DIRS CACHE)
+find_path(${PRJ}_INCLUDE_DIRS google/protobuf/service.h PATHS ${XP_ROOTDIR}/include NO_DEFAULT_PATH)
+set(${PRJ}_LIBRARIES libprotobuf)
+set(${PRJ}_PROTOC_EXECUTABLE protoc) # TRICKY: must be named this to match what's used in -module.cmake
+set(reqVars ${PRJ}_INCLUDE_DIRS ${PRJ}_LIBRARIES ${PRJ}_PROTOC_EXECUTABLE)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
+mark_as_advanced(${reqVars})

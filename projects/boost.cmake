@@ -1,0 +1,297 @@
+########################################
+# boost
+# http://sourceforge.net/projects/boost/files/boost/
+# * to build iostreams on Linux: need to install zlib, bz2 dev pkgs
+# *   sudo apt-get install zlib1g-dev libbz2-dev python-dev [ubuntu]
+# *   sudo yum install zlib-devel.x86_64 bzip2-devel.x86_64 python-devel.x86_64 [rhel6]
+xpProOption(boost)
+set(VER 1.57.0)
+string(REPLACE "." "_" VER_ ${VER})
+set(REPO https://github.com/boostorg/boost)
+set(PRO_BOOST
+  NAME boost
+  WEB "boost" http://www.boost.org/ "Boost website"
+  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
+  DESC "libraries that give C++ a boost"
+  REPO "repo" ${REPO} "boost repo on github"
+  VER ${VER}
+  GIT_ORIGIN git://github.com/boostorg/boost.git
+  GIT_TAG boost-${VER} # what to 'git checkout'
+  DLURL http://downloads.sourceforge.net/project/boost/boost/${VER}/boost_${VER_}.tar.bz2
+  DLMD5 1be49befbdd9a5ce9def2983ba3e7b76
+  )
+########################################
+function(mkpatch_boost)
+  xpRepo(${PRO_BOOST})
+endfunction()
+########################################
+function(download_boost)
+  xpNewDownload(${PRO_BOOST})
+endfunction()
+########################################
+function(patch_boost)
+  xpPatch(${PRO_BOOST})
+endfunction()
+########################################
+function(build_boost)
+  if(NOT (XP_DEFAULT OR XP_PRO_BOOST))
+    return()
+  endif()
+  cmake_parse_arguments(boost "" TARGETS "" ${ARGN})
+  list(APPEND tgts # patched submodules
+    boostgil
+    boostlog
+    boostmpl
+    boostunits
+    )
+  ExternalProject_Get_Property(boost SOURCE_DIR)
+  build_boostb2(PRO boost BOOTSTRAP ${SOURCE_DIR}/tools/build
+    B2PATH b2path TARGETS tgts
+    )
+  build_boostlibs(PRO boost B2PATH ${b2path} TARGETS tgts)
+  if(DEFINED boost_TARGETS)
+    xpListAppendIfDne(${boost_TARGETS} "${tgts}")
+    set(${boost_TARGETS} "${${boost_TARGETS}}" PARENT_SCOPE)
+  endif()
+endfunction()
+####################
+function(build_boostb2)
+  # @param[in] PRO - project id (boost, boostold)
+  # @param[in] BOOTSTRAP - path to bootstrap.[bat|sh]
+  # @param[out] B2PATH - location of built b2
+  # @param[out] TARGETS - external project target name
+  set(oneValueArgs PRO BOOTSTRAP B2PATH TARGETS)
+  cmake_parse_arguments(bb "" "${oneValueArgs}" "" ${ARGN})
+  if(NOT DEFINED bb_PRO OR NOT DEFINED bb_BOOTSTRAP)
+    message(FATAL_ERROR "boost.cmake: build_boostb2: required inputs not set")
+  endif()
+  if(DEFINED bb_TARGETS)
+    xpListAppendIfDne(${bb_TARGETS} ${bb_PRO}.build)
+    set(${bb_TARGETS} "${${bb_TARGETS}}" PARENT_SCOPE)
+  endif()
+  get_property(base_DIR DIRECTORY PROPERTY "EP_BASE")
+  set(boostbld_DIR ${base_DIR}/bld.${bb_PRO})
+  if(DEFINED bb_B2PATH)
+    if(MSVC)
+      set(${bb_B2PATH} ${boostbld_DIR}/bin/b2.exe PARENT_SCOPE)
+    else()
+      set(${bb_B2PATH} ${boostbld_DIR}/bin/b2 PARENT_SCOPE)
+    endif()
+  endif()
+  if(TARGET ${bb_PRO}.build)
+    return()
+  endif()
+  if(MSVC)
+    set(XP_CONFIGURE <SOURCE_DIR>/bootstrap.bat)
+    set(boost_b2 <SOURCE_DIR>/b2.exe toolset=msvc)
+  else()
+    set(XP_CONFIGURE <SOURCE_DIR>/bootstrap.sh)
+    # NOTE: specifying the toolset (clang) here gives output similar to this:
+    #   [ 20%] Performing configure step for 'boost.build'
+    #   Bootstrapping the build engine with toolset clang... engine/bin.linuxx86_64/b2
+    # But there are still warnings:
+    #   [ 23%] Performing install step for 'boost.build'
+    #   warning: No toolsets are configured.
+    #   warning: Configuring default toolset "gcc".
+    #   warning: If the default is wrong, your build may not work correctly.
+    #   warning: Use the "toolset=xxxxx" option to override our guess.
+    #   warning: For more configuration options, please consult
+    #   warning: http://boost.org/boost-build2/doc/html/bbv2/advanced/configuration.html
+    # So, even though we specify the toolset to be clang, it still uses the default gcc.
+    # Apparently, we would also need to have a user-config.jam if we cared that b2 was built
+    # with clang instaed of gcc?
+    if(CMAKE_COMPILER_IS_GNUCXX)
+      list(APPEND XP_CONFIGURE --with-toolset=gcc)
+    elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # LLVM/Apple Clang
+      list(APPEND XP_CONFIGURE --with-toolset=clang)
+    else()
+      message(FATAL_ERROR "boost.cmake: compiler support lacking: ${CMAKE_CXX_COMPILER_ID}")
+    endif()
+    set(boost_b2 <SOURCE_DIR>/b2 --ignore-site-config)
+  endif()
+  ExternalProject_Add(${bb_PRO}.build DEPENDS ${bb_PRO}
+    DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
+    SOURCE_DIR ${bb_BOOTSTRAP}
+    CONFIGURE_COMMAND ${XP_CONFIGURE}
+    BUILD_COMMAND "" BUILD_IN_SOURCE 1 # bootstrap fails if we don't build in source
+    # BUILD_IN_SOURCE NOTE: introduces the following files on MSW...
+    #       tools/build/bootstrap.log
+    #       tools/build/v2/b2.exe
+    #       tools/build/v2/bin/
+    #       tools/build/v2/bjam.exe
+    #       tools/build/v2/engine/bin.ntx86/
+    #       tools/build/v2/engine/bootstrap/
+    INSTALL_COMMAND ${boost_b2} install --prefix=${boostbld_DIR} INSTALL_DIR ${NULL_DIR}
+    )
+  set_property(TARGET ${bb_PRO}.build PROPERTY FOLDER ${bld_folder})
+endfunction()
+####################
+function(stringToList stringlist lvalue)
+  if(NOT "${stringlist}" STREQUAL "")
+    string(STRIP ${stringlist} stringlist) # remove leading and trailing spaces
+    string(REPLACE " -" ";-" listlist ${stringlist})
+    foreach(item ${listlist})
+      list(APPEND templist ${lvalue}="${item}")
+    endforeach()
+    set(${lvalue} "${templist}" PARENT_SCOPE)
+  endif()
+endfunction()
+####################
+function(build_boostlibs)
+  # @param[in] PRO - project id (boost, boostold)
+  # @param[in] B2PATH - path to b2
+  # @param[in/out] TARGETS - input deps, output list of all targets
+  set(oneValueArgs PRO B2PATH TARGETS)
+  cmake_parse_arguments(bl "" "${oneValueArgs}" "" ${ARGN})
+  if(NOT DEFINED bl_PRO OR NOT DEFINED bl_B2PATH)
+    message(FATAL_ERROR "boost.cmake: build_boostlibs: required inputs not set")
+  endif()
+  if(DEFINED bl_TARGETS)
+    set(${bl_PRO}_DEPENDS ${${bl_TARGETS}})
+  endif()
+  configure_file(${PRO_DIR}/use/usexp-boost-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
+  if(MSVC)
+    # Boost.Python build
+    # The python-config.jam installed by the boost.build target above, as of 1_49_0,
+    # (in xpbase/share/boost-build/tools/python-config.jam) looks for R 2.4 2.3 2.2
+    # As of this writing, python 2.7.5 is the latest on MSW, so we use cmake to find it.
+    find_package(PythonInterp)
+    find_package(PythonLibs)
+    if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
+      if(XP_BUILD_VERBOSE)
+        message(STATUS "PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
+        message(STATUS "PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
+        message(STATUS "PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
+        message(STATUS "PYTHON_LIBRARIES: ${PYTHON_LIBRARIES}")
+      endif()
+      get_property(base_DIR DIRECTORY PROPERTY "EP_BASE")
+      set(boostbld_DIR ${base_DIR}/bld.${bl_PRO})
+      get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARIES} PATH)
+      file(WRITE ${boostbld_DIR}/python-config.jam
+        "using python\n"
+        "  : ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}\n"
+        "  : ${PYTHON_EXECUTABLE}\n"
+        "  : ${PYTHON_INCLUDE_DIRS}\n"
+        "  : ${PYTHON_LIB_DIR}\n"
+        "  : <python-debugging>off ;\n"
+        )
+      set(boost_FLAGS "--user-config=${boostbld_DIR}/python-config.jam")
+    else()
+      set(boost_FLAGS "--without-python")
+    endif()
+  elseif(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
+    # python on Solaris is fragile, so we will build boost without python
+    set(boost_FLAGS "--without-python")
+  else()
+    set(boost_FLAGS)
+  endif()
+  if(XP_BUILD_DEBUG AND XP_BUILD_RELEASE)
+    set(boost_VARIANT "debug,release")
+  elseif(XP_BUILD_RELEASE)
+    set(boost_VARIANT "release")
+  # NOTE: currently externpro doesn't support building *only* Debug
+  elseif(XP_BUILD_DEBUG) # so this elseif is "just in case..."
+    set(boost_VARIANT "debug")
+  endif()
+  if(MSVC)
+    if(MSVC12)
+      set(boost_TOOLSET msvc-12.0)
+    elseif(MSVC11)
+      set(boost_TOOLSET msvc-11.0)
+    elseif(MSVC10)
+      set(boost_TOOLSET msvc-10.0)
+    elseif(MSVC90)
+      set(boost_TOOLSET msvc-9.0)
+    elseif(MSVC80)
+      set(boost_TOOLSET msvc-8.0)
+    elseif(MSVC71)
+      set(boost_TOOLSET msvc-7.1)
+    else()
+      message(FATAL_ERROR "boost.cmake: MSVC compiler support lacking")
+    endif()
+    if(XP_BUILD_STATIC)
+      set(boost_RUNTIME_LINK static)
+    else()
+      set(boost_RUNTIME_LINK shared)
+    endif()
+  else()
+    if(CMAKE_COMPILER_IS_GNUCXX)
+      set(boost_TOOLSET gcc)
+    elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # LLVM/Apple Clang
+      set(boost_TOOLSET clang)
+    else()
+      message(FATAL_ERROR "boost.cmake: compiler support lacking: ${CMAKE_CXX_COMPILER_ID}")
+    endif()
+    include(${MODULES_DIR}/flags.cmake) # populates CMAKE_*_FLAGS
+    if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+      # clang: warning: argument unused during compilation: '-arch x86_64'
+      xpStringRemoveIfExists(CMAKE_CXX_FLAGS "-arch x86_64")
+      xpStringRemoveIfExists(CMAKE_C_FLAGS "-arch x86_64")
+      xpStringRemoveIfExists(CMAKE_EXE_LINKER_FLAGS "-arch x86_64")
+    endif()
+    stringToList("${CMAKE_CXX_FLAGS}" cxxflags)
+    list(APPEND boost_FLAGS "${cxxflags}")
+    stringToList("${CMAKE_C_FLAGS}" cflags)
+    list(APPEND boost_FLAGS "${cflags}")
+    stringToList("${CMAKE_EXE_LINKER_FLAGS}" linkflags)
+    list(APPEND boost_FLAGS "${linkflags}")
+    set(boost_RUNTIME_LINK static)
+  endif()
+  set(boost_BUILD ${bl_B2PATH}
+    --ignore-site-config --layout=versioned --without-locale --without-mpi
+    link=static threading=multi address-model=${BUILD_PLATFORM} variant=${boost_VARIANT}
+    runtime-link=${boost_RUNTIME_LINK} toolset=${boost_TOOLSET} ${boost_FLAGS}
+    )
+  if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
+    # Memory exhausted errors (/opt/csw/i386-pc-solaris2.10/bin/ranlib)
+    # wave/build/gcc-4.8.0/debug/address-model-64/link-static/runtime-link-static/threading-multi/
+    # libboost_wave-gcc48-mt-sd-1_55.a
+    list(APPEND boost_BUILD --without-wave)
+  endif()
+  if(${CMAKE_SYSTEM_NAME} STREQUAL Linux AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    list(APPEND boost_BUILD --without-math)
+  endif()
+  set(boost_INSTALL install --libdir=${STAGE_DIR}/lib --includedir=${STAGE_DIR}/include)
+  addproject_boost(${bl_PRO}_bld)
+  list(APPEND ${bl_PRO}_DEPENDS ${bl_PRO}_bld) # serialize the build
+  if(DEFINED bl_TARGETS)
+    xpListAppendIfDne(${bl_TARGETS} "${${bl_PRO}_DEPENDS}")
+    set(${bl_TARGETS} "${${bl_TARGETS}}" PARENT_SCOPE)
+  endif()
+endfunction()
+####################
+function(addproject_boost XP_TARGET)
+  if(NOT TARGET ${XP_TARGET})
+    get_property(baseDir DIRECTORY PROPERTY "EP_BASE")
+    if(UNIX) # TODO hopefully this conditional will be only temporary
+      list(APPEND boost_BUILD --build-dir=${baseDir}/Build/${XP_TARGET})
+      # non-critical errors on MSW, that cause automated build server to report FAILURE:
+      # * libs\regex\build\has_icu_test.cpp(12):
+      #   fatal error C1083: Cannot open include file: 'unicode/uversion.h': No such file or directory
+      # * libs\math\config\has_gcc_visibility.cpp(7):
+      #   fatal error C1189: #error :  "This is a GCC specific test case".
+      # reported here: http://permalink.gmane.org/gmane.comp.lib.boost.user/75695
+      # if we build boost (on MSW) within source tree, the errors don't happen
+    endif()
+    set(boost_STAGE stage --stagedir=${baseDir}/Build/${XP_TARGET}/stage)
+    ExternalProject_Get_Property(${bl_PRO} SOURCE_DIR)
+    ExternalProject_Add(${XP_TARGET} DEPENDS ${${bl_PRO}_DEPENDS}
+      DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
+      SOURCE_DIR ${SOURCE_DIR} CONFIGURE_COMMAND ""
+      BUILD_COMMAND ${boost_BUILD} ${boost_STAGE} BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
+      INSTALL_COMMAND ${boost_BUILD} ${boost_INSTALL} INSTALL_DIR ${NULL_DIR}
+      )
+    set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
+    if(XP_BUILD_VERBOSE)
+      message(STATUS "target ${XP_TARGET}")
+      xpVerboseListing("[BUILD]" "${boost_BUILD}")
+      xpVerboseListing("[STAGE]" "${boost_STAGE}")
+      xpVerboseListing("[INSTALL]" "${boost_INSTALL}")
+      xpVerboseListing("[DEPENDS]" "${${bl_PRO}_DEPENDS}")
+    else()
+      message(STATUS "target ${XP_TARGET}")
+    endif()
+  endif()
+endfunction()

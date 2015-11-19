@@ -1,0 +1,37 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..a6cd5a2
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,31 @@
++cmake_minimum_required(VERSION 3.0)
++project(shapelib)
++include(flags OPTIONAL)
++set(lib_name shape)
++#######################################
++# preprocessor
++if(MSVC)
++  add_definitions(
++    -D_CRT_SECURE_NO_WARNINGS
++    )
++endif()
++#######################################
++# library sources
++set(${lib_name}_libsrcs
++  dbfopen.c
++  shpopen.c
++  shptree.c
++  shapefil.h
++  )
++#######################################
++# library
++add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++#######################################
++# install
++install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++  RUNTIME DESTINATION bin
++  LIBRARY DESTINATION lib
++  ARCHIVE DESTINATION lib
++  )
++install(FILES shapefil.h DESTINATION include/shape)
++install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)

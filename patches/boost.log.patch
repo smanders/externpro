@@ -1,0 +1,12 @@
+diff --git a/build/Jamfile.v2 b/build/Jamfile.v2
+index fb72bb9..2856722 100644
+--- a/build/Jamfile.v2
++++ b/build/Jamfile.v2
+@@ -178,7 +178,6 @@ project boost/log
+         <target-os>linux:<define>_XOPEN_SOURCE=600
+         <target-os>linux:<define>_GNU_SOURCE=1
+ 
+-        <target-os>solaris:<define>_XOPEN_SOURCE=500
+         <target-os>solaris:<define>__EXTENSIONS__
+         <target-os>solaris:<library>socket
+         <target-os>solaris:<library>nsl

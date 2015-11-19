@@ -1,0 +1,146 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8aa44bb..ecaf3e5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -44,6 +44,7 @@ include(Utilities)
+ include(Macros)
+ 
+ project( CURL C )
++include(flags OPTIONAL)
+ 
+ message(WARNING "the curl cmake build system is poorly maintained. Be aware")
+ 
+@@ -102,10 +103,16 @@ if(ENABLE_THREADED_RESOLVER AND ENABLE_ARES)
+ endif()
+ 
+ if(ENABLE_ARES)
++  option(FIND_ARES_MODULE_PATH "Find c-ares in CMAKE_MODULE_PATH" OFF)
++  mark_as_advanced(FIND_ARES_MODULE_PATH)
+   set(USE_ARES 1)
+-  find_package(CARES REQUIRED)
++  if(FIND_ARES_MODULE_PATH)
++    find_package(usexp-CARES REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  else()
++    find_package(CARES REQUIRED)
++  endif()
+   list(APPEND CURL_LIBS ${CARES_LIBRARY} )
+-  set(CURL_LIBS ${CURL_LIBS} ${CARES_LIBRARY})
++  include_directories(${CARES_INCLUDE_DIR})
+ endif()
+ 
+ option(BUILD_DASHBOARD_REPORTS "Set to ON to activate reporting of cURL builds here http://www.cdash.org/CDashPublic/index.php?project=CURL" OFF)
+@@ -303,7 +310,13 @@ set(HAVE_LIBCRYPTO OFF)
+ set(HAVE_LIBSSL OFF)
+ 
+ if(CMAKE_USE_OPENSSL)
+-  find_package(OpenSSL)
++  option(CMAKE_USE_OPENSSL_MODULE_PATH "Find OpenSSL in CMAKE_MODULE_PATH." OFF)
++  mark_as_advanced(CMAKE_USE_OPENSSL_MODULE_PATH)
++  if(CMAKE_USE_OPENSSL_MODULE_PATH)
++    find_package(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  else()
++    find_package(OpenSSL)
++  endif()
+   if(OPENSSL_FOUND)
+     list(APPEND CURL_LIBS ${OPENSSL_LIBRARIES})
+     set(USE_OPENSSL ON)
+@@ -431,7 +444,10 @@ if(NOT CURL_DISABLE_LDAPS)
+ endif()
+ 
+ # Check for idn
+-check_library_exists_concat("idn" idna_to_ascii_lz HAVE_LIBIDN)
++option(ENABLE_LIBIDN "Set to ON to enable libidn support" ON)
++if(ENABLE_LIBIDN)
++  check_library_exists_concat("idn" idna_to_ascii_lz HAVE_LIBIDN)
++endif()
+ 
+ # Check for symbol dlopen (same as HAVE_LIBDL)
+ check_library_exists("${CURL_LIBS}" dlopen "" HAVE_DLOPEN)
+@@ -441,7 +457,13 @@ set(HAVE_LIBZ OFF)
+ set(HAVE_ZLIB_H OFF)
+ set(HAVE_ZLIB OFF)
+ if(CURL_ZLIB)
+-  find_package(ZLIB QUIET)
++  option(CURL_ZLIB_MODULE_PATH "Find zlib in CMAKE_MODULE_PATH." OFF)
++  mark_as_advanced(CURL_ZLIB_MODULE_PATH)
++  if(CURL_ZLIB_MODULE_PATH)
++    find_package(usexp-ZLIB REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  else()
++    find_package(ZLIB QUIET)
++  endif()
+   if(ZLIB_FOUND)
+     set(HAVE_ZLIB_H ON)
+     set(HAVE_ZLIB ON)
+@@ -459,7 +481,13 @@ set(HAVE_LIBSSH2 OFF)
+ set(HAVE_LIBSSH2_H OFF)
+ 
+ if(CMAKE_USE_LIBSSH2)
+-  find_package(LibSSH2)
++  option(CMAKE_USE_LIBSSH2_MODULE_PATH "Find libSSH2 in CMAKE_MODULE_PATH." OFF)
++  mark_as_advanced(CMAKE_USE_LIBSSH2_MODULE_PATH)
++  if(CMAKE_USE_LIBSSH2_MODULE_PATH)
++    find_package(usexp-LibSSH2 REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  else()
++    find_package(LibSSH2)
++  endif()
+   if(LIBSSH2_FOUND)
+     list(APPEND CURL_LIBS ${LIBSSH2_LIBRARY})
+     set(CMAKE_REQUIRED_LIBRARIES ${LIBSSH2_LIBRARY})
+@@ -482,6 +510,8 @@ if(CMAKE_USE_LIBSSH2)
+     check_function_exists(libssh2_session_handshake HAVE_LIBSSH2_SESSION_HANDSHAKE)
+     set(CMAKE_EXTRA_INCLUDE_FILES "")
+ 
++    set(CMAKE_REQUIRED_INCLUDES)
++    set(CMAKE_REQUIRED_LIBRARIES)
+   endif(LIBSSH2_FOUND)
+ endif(CMAKE_USE_LIBSSH2)
+ 
+@@ -1110,8 +1140,8 @@ set(CURLVERSION             "${CURL_VERSION}")
+ set(ENABLE_SHARED           "yes")
+ if(CURL_STATICLIB)
+   # Broken: LIBCURL_LIBS below; .a lib is not built
+-  message(WARNING "Static linking is broken!")
+-  set(ENABLE_STATIC         "no")
++  #message(WARNING "Static linking is broken!")
++  set(ENABLE_STATIC         "yes")
+ else()
+   set(ENABLE_STATIC         "no")
+ endif()
+diff --git a/include/curl/curl.h b/include/curl/curl.h
+index ae1b0e4..aad4974 100644
+--- a/include/curl/curl.h
++++ b/include/curl/curl.h
+@@ -179,7 +179,7 @@ typedef int (*curl_xferinfo_callback)(void *clientp,
+      time for those who feel adventurous. The practical minimum is about
+      400 bytes since libcurl uses a buffer of this size as a scratch area
+      (unrelated to network send operations). */
+-#define CURL_MAX_WRITE_SIZE 16384
++#define CURL_MAX_WRITE_SIZE 524288 /* = 32 * 16384 (the default) */
+ #endif
+ 
+ #ifndef CURL_MAX_HTTP_HEADER
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index 49a3409..457c363 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -98,7 +98,8 @@ if(WIN32)
+   endif()
+ endif()
+ 
+-install(TARGETS ${LIB_NAME}
++install(TARGETS ${LIB_NAME} EXPORT libcurl-targets
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+   RUNTIME DESTINATION bin)
++install(EXPORT libcurl-targets DESTINATION lib/cmake)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index bfb866b..855ffd4 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -75,4 +75,5 @@ set_target_properties(${EXE_NAME} PROPERTIES
+ 
+ #INCLUDE(ModuleInstall OPTIONAL)
+ 
+-install(TARGETS ${EXE_NAME} DESTINATION bin)
++install(TARGETS ${EXE_NAME} EXPORT curl-targets DESTINATION bin)
++install(EXPORT curl-targets DESTINATION bin/cmake)

@@ -1,0 +1,205 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..e1bb70e
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,63 @@
++cmake_minimum_required(VERSION 3.0)
++project(wxInclude)
++include(flags OPTIONAL)
++set(externpro ${CMAKE_INSTALL_PREFIX})
++########################################
++# find boost
++# see FindBoost.cmake for details on the following variables
++set(BOOST_ROOT ${externpro})
++set(BOOST_LIBRARYDIR ${externpro}/lib)
++set(Boost_NO_BOOST_CMAKE TRUE)
++set(Boost_NO_SYSTEM_PATHS TRUE)
++set(Boost_USE_MULTITHREADED ON)
++set(Boost_USE_STATIC_LIBS ON)
++set(Boost_USE_STATIC_RUNTIME ON)
++#set(Boost_DEBUG TRUE) # enable debugging output of FindBoost.cmake
++#set(Boost_DETAILED_FAILURE_MSG TRUE) # output detailed information
++# TODO: remove the following conditional (setting Boost_COMPILER)
++#       once FindBoost.cmake detects clang
++if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
++  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
++    exec_program(${CMAKE_CXX_COMPILER}
++      ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpversion
++      OUTPUT_VARIABLE CLANG_VERSION
++      )
++    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?"
++      "-clang-darwin\\1\\2"
++      Boost_COMPILER ${CLANG_VERSION}
++      )
++  else()
++    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?"
++      "-clang\\1\\2"
++      Boost_COMPILER ${CMAKE_CXX_COMPILER_VERSION}
++      )
++  endif()
++endif()
++if(DEFINED BOOST_VER)
++  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1.\\2" BOOST_VER2 ${BOOST_VER})
++  set(Boost_ADDITIONAL_VERSIONS ${BOOST_VER} ${BOOST_VER2})
++  message(STATUS "Searching for specific Boost version: ${BOOST_VER}, ${BOOST_VER2}")
++endif()
++if(MSVC)
++  # NOTE: use automatic linking of boost libraries with MSVC
++  find_package(Boost ${BOOST_VER} REQUIRED)
++  link_directories(${externpro}/lib)
++  add_definitions(-D_CRT_SECURE_NO_WARNINGS) # wxInclude.cpp calls snprintf
++else()
++  find_package(Boost ${BOOST_VER} REQUIRED COMPONENTS
++    filesystem
++    program_options
++    system
++    )
++endif()
++include_directories(${Boost_INCLUDE_DIRS})
++########################################
++add_executable(${CMAKE_PROJECT_NAME} wxInclude.cpp)
++target_link_libraries(${CMAKE_PROJECT_NAME} ${Boost_LIBRARIES})
++string(TOLOWER ${PROJECT_NAME} prj)
++install(TARGETS ${CMAKE_PROJECT_NAME} EXPORT ${prj}-targets
++  RUNTIME DESTINATION bin
++  LIBRARY DESTINATION lib
++  ARCHIVE DESTINATION lib
++  )
++install(EXPORT ${prj}-targets DESTINATION bin/cmake)
+diff --git a/wxInclude.cpp b/wxInclude.cpp
+index c2109e3..85d7a00 100644
+--- a/wxInclude.cpp
++++ b/wxInclude.cpp
+@@ -1,5 +1,5 @@
+ /*
+-  wxInclude version 1.0
++  wxInclude
+   Kim De Deyn
+ */
+ 
+@@ -15,6 +15,10 @@
+ namespace po = boost::program_options;
+ namespace fs = boost::filesystem;
+ 
++#ifdef _MSC_VER
++#define snprintf _snprintf
++#endif
++
+ #define WXINCLUDE_INFO	"wxInclude by Kim De Deyn, use --help for more information.\n"
+ 
+ #define WXINCLUDE_HELP	"This tool can be used to convert binary files into a useful C/C++ header.\n" \
+@@ -25,9 +29,11 @@ namespace fs = boost::filesystem;
+   "Example of use:\n\n" \
+   "  wxInclude.exe --const --input-file=mydata1.bin\n" \
+   "    --input-type=.png --input-type=.bmp\n" \
+-  "    --output-file=myheader.h mydata2.bin myimage.png\n"
++  "    --output-file=myheader.h mydata2.bin myimage.png\n\n" \
++  "Recommended usage (at Space Dynamics Lab):\n" \
++  "  wxInclude --const --appendtype --wxnone --output-file=foo.hrc foo.png\n"
+ 
+-#define WXINCLUDE_VERSION "Version 1.0, compiled at " __DATE__ " " __TIME__
++#define WXINCLUDE_VERSION "Version 1.1, compiled on " __DATE__ " at " __TIME__
+ 
+ #define BUFFER_SIZE 4096
+ 
+@@ -106,7 +112,7 @@ void definefile( std::ostringstream& data, fs::ifstream& input, std::string& nam
+   /* Define array */
+   data << "static" << ( useconst ? " const " : " " ) << "unsigned char " << name << "[] = {" << std::endl;
+ 
+-  int size = input.tellg();
++  int size = static_cast<int>(input.tellg()); // conversion from std::streamoff to int, possible loss of data
+   input.seekg( 0, std::ios::beg );
+ 
+   int c = 0;
+@@ -130,7 +136,7 @@ void definefile( std::ostringstream& data, fs::ifstream& input, std::string& nam
+       Still faster then the optimized boost::format use, but not that much!
+     */
+     static char temp[5];
+-    _snprintf( temp, 5, "0x%02X", c );
++    snprintf( temp, 5, "0x%02X", c );
+     data << temp;
+ 
+     if ( i >= size )
+@@ -156,7 +162,7 @@ void definefile( std::ostringstream& data, fs::ifstream& input, std::string& nam
+   data << "};" << std::endl << std::endl;
+ }
+ 
+-int _tmain(int argc, _TCHAR* argv[])
++int main(int argc, char* argv[])
+ {
+   try
+   {
+@@ -165,8 +171,8 @@ int _tmain(int argc, _TCHAR* argv[])
+       ( "help,h", "Show detailed help." )
+       ( "options,p", "Show parameter information." )
+       ( "version,p", "Show version information." )
+-      ( "input-file,i", po::value<std::vector<std::string>>(), "Define file(s) for the convertion input." )
+-      ( "input-type,I", po::value<std::vector<std::string>>(), "Define file type(s) for automatic conversion of files in the working directory." )
++      ( "input-file,i", po::value<std::vector<std::string> >(), "Define file(s) for the convertion input." )
++      ( "input-type,I", po::value<std::vector<std::string> >(), "Define file type(s) for automatic conversion of files in the working directory." )
+       ( "output-file,o", po::value<std::string>(), "Define file for the convertion output." )
+       ( "noheader,h", "Disable adding of header support defines." )
+       ( "const,C", "Define array as const." )
+@@ -174,7 +180,6 @@ int _tmain(int argc, _TCHAR* argv[])
+       ( "wxnone,w", "Disable adding of wxWidgets support macro's." )
+       ( "wxheader,W", po::value<std::string>()->default_value( "wx/wx.h" ), "Select the header that includes wxWidgets (precompiled header?)." )
+       ( "appendtype,t", "Add the file type at the end of the identifier (myimage_png)." )
+-                        ( "text,T", "Disable binary output and use text output, converts feed codes to systems defaults." )
+     ;
+ 
+     po::positional_options_description posdesc;
+@@ -182,7 +187,8 @@ int _tmain(int argc, _TCHAR* argv[])
+ 
+     po::variables_map opt;
+     po::store( po::command_line_parser( argc, argv ).options( desc ).positional( posdesc ).run(), opt );
+-    po::store( po::parse_config_file( fs::ifstream( fs::path( "default.cfg" ) ), desc ), opt );
++    fs::ifstream ifs(fs::path("default.cfg"));
++    po::store( po::parse_config_file( ifs, desc ), opt );
+     po::notify( opt );
+ 
+     std::cout << WXINCLUDE_INFO << std::endl;
+@@ -221,15 +227,12 @@ int _tmain(int argc, _TCHAR* argv[])
+         std::string headername( opt[ "output-file" ].as<std::string>() );
+ 
+         fs::path outputpath( headername );
+-        fs::ofstream output( outputpath, std::ios::out | std::ios::trunc );
++        fs::ofstream output( outputpath, std::ios::out | std::ios::trunc | std::ios::binary );
+ 
+         /* Use buffer */
+         char outbuffer[BUFFER_SIZE];
+         output.rdbuf()->pubsetbuf( outbuffer, BUFFER_SIZE );
+ 
+-                                if ( !opt.count( "text" ) )
+-                                        output.setf( std::ios::binary );
+-
+         if ( !output )
+           throw std::runtime_error( "Failed to create output file!" );
+ 
+@@ -259,7 +262,7 @@ int _tmain(int argc, _TCHAR* argv[])
+         /* Process input files based on provided list */
+         if ( opt.count( "input-file" ) )
+         {
+-          std::vector<std::string> files( opt[ "input-file" ].as<std::vector<std::string>>() );
++          std::vector<std::string> files( opt[ "input-file" ].as<std::vector<std::string> >() );
+ 
+           BOOST_FOREACH( std::string& file, files )
+           {
+@@ -308,7 +311,7 @@ int _tmain(int argc, _TCHAR* argv[])
+         /* Process input files based on provided type */
+         if ( opt.count( "input-type" ) )
+         {
+-          std::vector<std::string> types( opt[ "input-type" ].as<std::vector<std::string>>() );
++          std::vector<std::string> types( opt[ "input-type" ].as<std::vector<std::string> >() );
+ 
+           for ( fs::directory_iterator dir_itr( fs::initial_path() ); dir_itr != fs::directory_iterator(); ++dir_itr )
+           {
+@@ -332,7 +335,7 @@ int _tmain(int argc, _TCHAR* argv[])
+                   fs::ifstream input( dir_itr->path(), std::ios::in | std::ios::binary | std::ios::ate );
+                   input.rdbuf()->pubsetbuf( inbuffer, BUFFER_SIZE );
+ 
+-                  std::string file( dir_itr->path().leaf() );
++                  std::string file( dir_itr->path().leaf().string() );
+ 
+                   if ( input.is_open() )
+                   {

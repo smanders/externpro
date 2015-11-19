@@ -1,0 +1,462 @@
+diff --git a/art/ledgreen.xpm b/art/ledgreen.xpm
+index fba2bda..453f51b 100644
+--- a/art/ledgreen.xpm
++++ b/art/ledgreen.xpm
+@@ -1,5 +1,5 @@
+ /* XPM */
+-static char * ledgreen_xpm[] = {
++static const char * ledgreen_xpm[] = {
+ "15 15 99 2",
+ "  	c None",
+ ". 	c #012B00",
+diff --git a/art/ledgrey.xpm b/art/ledgrey.xpm
+index f0c3c2c..42469fc 100644
+--- a/art/ledgrey.xpm
++++ b/art/ledgrey.xpm
+@@ -1,5 +1,5 @@
+ /* XPM */
+-static char *ledgrey_xpm[]={
++static const char *ledgrey_xpm[]={
+ "15 15 75 2",
+ "Qt c None",
+ ".# c #000000",
+diff --git a/build/CMakeLists.txt b/build/CMakeLists.txt
+new file mode 100644
+index 0000000..70ea9a7
+--- /dev/null
++++ b/build/CMakeLists.txt
+@@ -0,0 +1,54 @@
++set(lib_name plotctrl)
++#######################################
++# include directories
++include_directories( 
++  ../../wxthings/include
++  ../include
++  )
++#######################################
++# library sources
++########################
++# source
++set(plot_srcs
++  ../src/fourier.c
++  ../src/fparser.cpp
++  ../src/fpoptimizer.cc
++  ../src/lm_lsqr.cpp
++  ../src/plotctrl.cpp
++  ../src/plotcurv.cpp
++  ../src/plotdata.cpp
++  ../src/plotdraw.cpp
++  ../src/plotfunc.cpp
++  ../src/plotmark.cpp
++  ../src/plotprnt.cpp
++  )
++list(APPEND ${lib_name}_libsrcs ${plot_srcs})
++########################
++# headers
++set(plot_hdrs
++  ../include/wx/plotctrl/fourier.h
++  ../include/wx/plotctrl/fparser.h
++  ../include/wx/plotctrl/lm_lsqr.h
++  ../include/wx/plotctrl/plotctrl.h
++  ../include/wx/plotctrl/plotcurv.h
++  ../include/wx/plotctrl/plotdata.h
++  ../include/wx/plotctrl/plotdefs.h
++  ../include/wx/plotctrl/plotdraw.h
++  ../include/wx/plotctrl/plotfunc.h
++  ../include/wx/plotctrl/plotmark.h
++  ../include/wx/plotctrl/plotprnt.h
++  )
++list(APPEND ${lib_name}_libsrcs ${plot_hdrs})
++#######################################
++# library
++add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++set_wxxtarget_properties(${lib_name})
++#######################################
++# install
++install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++  RUNTIME DESTINATION bin
++  LIBRARY DESTINATION lib
++  ARCHIVE DESTINATION lib
++  )
++install(FILES ${plot_hdrs} DESTINATION include/${wxinc}/wx/plotctrl)
++install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
+diff --git a/include/wx/plotctrl/plotctrl.h b/include/wx/plotctrl/plotctrl.h
+index 26f3afb..595c211 100644
+--- a/include/wx/plotctrl/plotctrl.h
++++ b/include/wx/plotctrl/plotctrl.h
+@@ -23,6 +23,9 @@
+ #include "wx/plotctrl/plotfunc.h"
+ #include "wx/things/range.h"
+ 
++//This line added by SC@SDL on 10/8/07 for Solaris build:
++#include <wx/window.h>
++
+ class WXDLLEXPORT wxDC;
+ class WXDLLEXPORT wxNotifyEvent;
+ class WXDLLEXPORT wxPaintEvent;
+diff --git a/include/wx/plotctrl/plotcurv.h b/include/wx/plotctrl/plotcurv.h
+index 6b8c9d5..73ca1a1 100644
+--- a/include/wx/plotctrl/plotcurv.h
++++ b/include/wx/plotctrl/plotcurv.h
+@@ -43,7 +43,7 @@ extern double LinearInterpolateX( double x0, double y0,
+ //----------------------------------------------------------------------------
+ 
+ // defines wxArrayDouble for use as necessary
+-WX_DEFINE_USER_EXPORTED_ARRAY_DOUBLE(double, wxArrayDouble, class WXDLLIMPEXP_PLOTCTRL);
++//WX_DEFINE_USER_EXPORTED_ARRAY_DOUBLE(double, wxArrayDouble, class WXDLLIMPEXP_PLOTCTRL);
+ 
+ // wxNullPlotBounds = wxRect2DDouble(0,0,0,0)
+ WXDLLIMPEXP_DATA_PLOTCTRL(extern const wxRect2DDouble) wxNullPlotBounds;
+@@ -102,7 +102,11 @@ public:
+     wxArrayGenericPen m_pens;
+     static wxArrayGenericPen sm_defaultPens;
+ 
++#if wxUSE_STD_CONTAINERS
++    wxArrayString       m_optionNames;
++#else
+     wxSortedArrayString m_optionNames;
++#endif
+     wxArrayString       m_optionValues;
+ };
+ 
+diff --git a/samples/plotctrl/wxplotctrl.rc b/samples/plotctrl/wxplotctrl.rc
+index 306a634..774fbfb 100644
+--- a/samples/plotctrl/wxplotctrl.rc
++++ b/samples/plotctrl/wxplotctrl.rc
+@@ -2,5 +2,5 @@
+ 
+ #define wxUSE_NO_MANIFEST 0
+ 
+-#include "wx/msw/wx.rc"
++//#include "wx/msw/wx.rc"
+ 
+diff --git a/src/fourier.c b/src/fourier.c
+index 8b72bb4..63a8fa0 100644
+--- a/src/fourier.c
++++ b/src/fourier.c
+@@ -67,7 +67,8 @@ unsigned NumberOfBitsNeeded ( unsigned PowerOfTwo )
+             return i;
+     }
+ 
+-    return 0;
++    // unreachable code...
++    // return 0;
+ }
+ 
+ unsigned ReverseBits ( unsigned index, unsigned NumBits )
+diff --git a/src/lm_lsqr.cpp b/src/lm_lsqr.cpp
+index 08142c9..7ca8f93 100644
+--- a/src/lm_lsqr.cpp
++++ b/src/lm_lsqr.cpp
+@@ -24,6 +24,11 @@
+     #include "wx/log.h"
+ #endif // WX_PRECOMP
+ 
++//These 3 lines added by SC@SDL on 10/8/07 for wxplotctrl Solaris build:
++#if defined(__sun__)
++#include <ieeefp.h>
++#endif
++
+ #include "wx/math.h"
+ 
+ #include "wx/plotctrl/lm_lsqr.h"
+diff --git a/src/plotctrl.cpp b/src/plotctrl.cpp
+index a8beb1c..01f7e5a 100644
+--- a/src/plotctrl.cpp
++++ b/src/plotctrl.cpp
+@@ -32,6 +32,7 @@
+     #include "wx/textctrl.h"
+ #endif // WX_PRECOMP
+ 
++#include "wx/dcclient.h"
+ #include "wx/splitter.h"
+ #include "wx/math.h"
+ #include "wx/image.h"
+@@ -39,6 +40,11 @@
+ #include "wx/plotctrl/plotctrl.h"
+ #include "wx/plotctrl/plotdraw.h"
+ 
++//These 3 lines added by SC@SDL on 10/8/07 for wxplotctrl Solaris build:
++#if defined(__sun__)
++#include <ieeefp.h>
++#endif
++
+ #include <math.h>
+ #include <float.h>
+ #include <limits.h>
+@@ -298,7 +304,7 @@ void wxPlotCtrlArea::OnPaint( wxPaintEvent &WXUNUSED(event) )
+     if (m_bitmap.Ok())
+         dc.DrawBitmap(m_bitmap, 0, 0, false);
+ 
+-    if (m_owner->GetCrossHairCursor() && m_owner->GetPlotAreaRect().Inside(m_mousePt))
++    if (m_owner->GetCrossHairCursor() && m_owner->GetPlotAreaRect().Contains(m_mousePt))
+         m_owner->DrawCrosshairCursor( &dc, m_mousePt );
+ 
+     m_owner->DrawMouseMarker(&dc, m_owner->GetAreaMouseMarker(), m_mouseRect);
+@@ -576,8 +582,13 @@ bool wxPlotCtrl::Create( wxWindow *parent, wxWindowID win_id,
+     {
+         m_axisFontSize.x = 6;
+         m_axisFontSize.y = 12;
++#if wxCHECK_VERSION(2,9,0) // concatenating mismatched strings
++        wxFAIL_MSG("Can't determine the font size for the axis! I'll guess.\n"
++                   "The display might be corrupted, however you may continue.");
++#else
+         wxFAIL_MSG(wxT("Can't determine the font size for the axis! I'll guess.\n"
+                        "The display might be corrupted, however you may continue."));
++#endif
+     }
+ 
+     m_xAxisDrawer->SetTickFont(axisFont);
+@@ -705,9 +716,9 @@ void wxPlotCtrl::OnMouse( wxMouseEvent &event )
+     wxSize size(GetClientSize());
+     wxPoint mousePt(event.GetPosition());
+ 
+-    if ((m_show_title  && m_titleRect.Inside(mousePt)) ||
+-        (m_show_xlabel && m_xLabelRect.Inside(mousePt)) ||
+-        (m_show_ylabel && m_yLabelRect.Inside(mousePt)))
++    if ((m_show_title  && m_titleRect.Contains(mousePt)) ||
++        (m_show_xlabel && m_xLabelRect.Contains(mousePt)) ||
++        (m_show_ylabel && m_yLabelRect.Contains(mousePt)))
+     {
+         SetPlotWinMouseCursor(wxCURSOR_IBEAM);
+     }
+@@ -716,11 +727,11 @@ void wxPlotCtrl::OnMouse( wxMouseEvent &event )
+ 
+     if (event.ButtonDClick(1) && !IsTextCtrlShown())
+     {
+-        if (m_show_title && m_titleRect.Inside(mousePt))
++        if (m_show_title && m_titleRect.Contains(mousePt))
+             ShowTextCtrl(wxPLOTCTRL_EDIT_TITLE, true);
+-        else if (m_show_xlabel && m_xLabelRect.Inside(mousePt))
++        else if (m_show_xlabel && m_xLabelRect.Contains(mousePt))
+             ShowTextCtrl(wxPLOTCTRL_EDIT_XAXIS, true);
+-        else if (m_show_ylabel && m_yLabelRect.Inside(mousePt))
++        else if (m_show_ylabel && m_yLabelRect.Contains(mousePt))
+             ShowTextCtrl(wxPLOTCTRL_EDIT_YAXIS, true);
+     }
+ }
+@@ -2566,7 +2577,11 @@ void wxPlotCtrl::DrawMouseMarker( wxDC *dc, int type, const wxRect &rect )
+     if ((rect.width == 0) || (rect.height == 0))
+         return;
+ 
++#if wxCHECK_VERSION(2,9,0)
++    wxRasterOperationMode logical_fn = dc->GetLogicalFunction();
++#else
+     int logical_fn = dc->GetLogicalFunction();
++#endif
+     dc->SetLogicalFunction( wxINVERT );
+     dc->SetBrush( *wxTRANSPARENT_BRUSH );
+     dc->SetPen(*wxThePenList->FindOrCreatePen(*wxBLACK, 1, wxDOT));
+@@ -2614,7 +2629,11 @@ void wxPlotCtrl::DrawCrosshairCursor( wxDC *dc, const wxPoint &pos )
+     wxCHECK_RET(dc, wxT("invalid window"));
+ 
+     dc->SetPen(*wxBLACK_PEN);
++#if wxCHECK_VERSION(2,9,0)
++    wxRasterOperationMode logical_fn = dc->GetLogicalFunction();
++#else
+     int logical_fn = dc->GetLogicalFunction();
++#endif
+     dc->SetLogicalFunction( wxINVERT );
+ 
+     dc->CrossHair(pos.x, pos.y);
+@@ -3330,7 +3349,7 @@ void wxPlotCtrl::ProcessAreaEVT_MOUSE_EVENTS( wxMouseEvent &event )
+         // Move the origin
+         if (m_area_mouse_func == wxPLOTCTRL_MOUSE_PAN)
+         {
+-            if (!m_areaClientRect.Inside(event.GetPosition()))
++            if (!m_areaClientRect.Contains(event.GetPosition()))
+             {
+                 StartMouseTimer(ID_AREA_TIMER);
+             }
+@@ -3514,12 +3533,12 @@ void wxPlotCtrl::OnChar(wxKeyEvent &event)
+     switch (event.GetKeyCode())
+     {
+         // cursor keys moves the plot origin around
+-        case WXK_LEFT  : SetOrigin(m_viewRect.GetLeft() - m_viewRect.m_width/10.0, m_viewRect.GetTop()); return;
+-        case WXK_RIGHT : SetOrigin(m_viewRect.GetLeft() + m_viewRect.m_width/10.0, m_viewRect.GetTop()); return;
+-        case WXK_UP    : SetOrigin(m_viewRect.GetLeft(), m_viewRect.GetTop() + m_viewRect.m_height/10.0); return;
+-        case WXK_DOWN  : SetOrigin(m_viewRect.GetLeft(), m_viewRect.GetTop() - m_viewRect.m_height/10.0); return;
+-        case WXK_PRIOR : SetOrigin(m_viewRect.GetLeft(), m_viewRect.GetTop() + m_viewRect.m_height/2.0); return;
+-        case WXK_NEXT  : SetOrigin(m_viewRect.GetLeft(), m_viewRect.GetTop() - m_viewRect.m_height/2.0); return;
++        case WXK_LEFT      : SetOrigin(m_viewRect.GetLeft() - m_viewRect.m_width/10.0, m_viewRect.GetTop()); return;
++        case WXK_RIGHT     : SetOrigin(m_viewRect.GetLeft() + m_viewRect.m_width/10.0, m_viewRect.GetTop()); return;
++        case WXK_UP        : SetOrigin(m_viewRect.GetLeft(), m_viewRect.GetTop() + m_viewRect.m_height/10.0); return;
++        case WXK_DOWN      : SetOrigin(m_viewRect.GetLeft(), m_viewRect.GetTop() - m_viewRect.m_height/10.0); return;
++        case WXK_PAGEUP    : SetOrigin(m_viewRect.GetLeft(), m_viewRect.GetTop() + m_viewRect.m_height/2.0); return;
++        case WXK_PAGEDOWN  : SetOrigin(m_viewRect.GetLeft(), m_viewRect.GetTop() - m_viewRect.m_height/2.0); return;
+ 
+         // Center the plot on the cursor point, or 0,0
+         case WXK_HOME :
+diff --git a/src/plotcurv.cpp b/src/plotcurv.cpp
+index 9f72820..5c31384 100644
+--- a/src/plotcurv.cpp
++++ b/src/plotcurv.cpp
+@@ -236,7 +236,17 @@ int wxPlotCurve::SetOption(const wxString& name, const wxString& value, bool upd
+     int n = M_PLOTCURVEDATA->m_optionNames.Index(name);
+     if (n == wxNOT_FOUND)
+     {
++#if wxUSE_STD_CONTAINERS
++        // following suggestion from wxWidgets "Container Classes" documentatation:
++        // http://docs.wxwidgets.org/3.0/overview_container.html#overview_container_std
++        // avoid use of wxSortedArrayString by using a normal array and called its
++        // Sort() method when needed
++        M_PLOTCURVEDATA->m_optionNames.Add(name);
++        M_PLOTCURVEDATA->m_optionNames.Sort();
++        n = M_PLOTCURVEDATA->m_optionNames.Index(name);
++#else
+         n = M_PLOTCURVEDATA->m_optionNames.Add(name);
++#endif
+         M_PLOTCURVEDATA->m_optionValues.Insert(value, n);
+     }
+     else if (update)
+diff --git a/src/plotdata.cpp b/src/plotdata.cpp
+index f452eed..a595f89 100644
+--- a/src/plotdata.cpp
++++ b/src/plotdata.cpp
+@@ -37,6 +37,11 @@
+ #include "wx/things/range.h"
+ #include <math.h>
+ 
++//These 3 lines added by SC@SDL on 10/8/07 for wxplotctrl Solaris build:
++#if defined(__sun__)
++#include <ieeefp.h>
++#endif
++
+ #define wxPLOTDATA_MAX_DATA_COLUMNS 64
+ 
+ #define CHECK_INDEX_COUNT_MSG(index, count, max_count, ret) \
+@@ -774,9 +779,15 @@ bool wxPlotData::LoadFile( const wxString &filename, int x_col, int y_col, int o
+                 while (select_cols && !stop_load )
+                 {
+                     wxString colStr = wxGetTextFromUser(
++#if wxCHECK_VERSION(2,9,0) // concatenating mismatched strings
++                        wxString::Format("Data file: '%s'\n%d columns found.\n"
++                                         "Enter x and y cols separated by a space starting from 1.\n"
++                                         "If x = y then x values are 0,1,2... and y is given col.", filename.c_str(), n),
++#else
+                         wxString::Format(wxT("Data file: '%s'\n%d columns found.\n"
+                                              "Enter x and y cols separated by a space starting from 1.\n"
+                                              "If x = y then x values are 0,1,2... and y is given col."), filename.c_str(), n),
++#endif
+                                              wxT("Enter two columns of data file to use"));
+ 
+                     if (colStr.IsEmpty())
+@@ -805,8 +816,9 @@ bool wxPlotData::LoadFile( const wxString &filename, int x_col, int y_col, int o
+                             }
+                             else
+                             {
++                              //static_cast<int>(*)'s added by SC@SDL on 10/8/07 for Solaris wxplotctrl build:
+                                 int ret = wxMessageBox(
+-                                    wxString::Format(wxT("Invalid data columns '%d %d', limited to 1 to %d"), xcol+1, ycol+1, n),
++                                    wxString::Format(wxT("Invalid data columns '%d %d', limited to 1 to %d"), static_cast<int>(xcol+1), static_cast<int>(ycol+1), n),
+                                     wxT("Invalid data columns"), wxOK|wxCANCEL|wxICON_ERROR);
+                                 if (ret == wxCANCEL)
+                                     stop_load = true;
+@@ -836,11 +848,19 @@ bool wxPlotData::LoadFile( const wxString &filename, int x_col, int y_col, int o
+                 }
+ 
+                 wxMessageBox(
++#if wxCHECK_VERSION(2,9,0) // concatenating mismatched strings
++                    wxString::Format("Loading cols (%d,%d) aborted after %d points\n\n"
++                                     "First 100 characters of offending line number: %d\n"
++                                     "\"%s\"\n\n"
++                                     "# for comments, blank lines Ok, comma, tab, space for separators\n"
++                                     "7   4\n33  2.5e-2\n...\n",
++#else
+                     wxString::Format(wxT("Loading cols (%d,%d) aborted after %d points\n\n"
+                                          "First 100 characters of offending line number: %d\n"
+                                          "\"%s\"\n\n"
+                                          "# for comments, blank lines Ok, comma, tab, space for separators\n"
+                                          "7   4\n33  2.5e-2\n...\n"),
++#endif
+                                          x_col, y_col, points, line_number, wxstr.Left(100).c_str()),
+                                          wxT("Error loading ")+filename, wxOK|wxICON_ERROR);
+                 stop_load = true;
+@@ -2906,8 +2926,8 @@ void wxPlotData::SetSymbol( wxPlotSymbol_Type type, wxPlotPen_Type colour_type,
+     }
+ }
+ 
+-wxBitmap wxPlotData::CreateSymbol( wxPlotSymbol_Type type, wxPlotPen_Type colour_type, int width, int height,
+-                                   const wxPen *pen, const wxBrush *brush)
++wxBitmap wxPlotData::CreateSymbol( wxPlotSymbol_Type type, wxPlotPen_Type WXUNUSED(colour_type), int width, int height,
++                                   const wxPen *WXUNUSED(pen), const wxBrush *WXUNUSED(brush))
+ {
+     wxBitmap b(width, height);
+ 
+diff --git a/src/plotdraw.cpp b/src/plotdraw.cpp
+index 1cf748c..54b17eb 100644
+--- a/src/plotdraw.cpp
++++ b/src/plotdraw.cpp
+@@ -23,6 +23,7 @@
+     #include "wx/dcmemory.h"
+ #endif // WX_PRECOMP
+ 
++#include "wx/dcclient.h"
+ #include "wx/math.h"
+ 
+ #include "wx/plotctrl/plotdraw.h"
+@@ -36,6 +37,11 @@
+ #include <float.h>
+ #include <limits.h>
+ 
++//These 3 lines added by SC@SDL on 10/8/07 for wxplotctrl Solaris build:
++#if defined(__sun__)
++#include <ieeefp.h>
++#endif
++
+ // MSVC hogs global namespace with these min/max macros - remove them
+ #ifdef max
+     #undef max
+@@ -59,6 +65,22 @@
+ extern "C" {
+     #include <gdk/gdk.h>
+ }
++#if wxCHECK_VERSION(2,9,0)
++    #include <wx/gtk/dcclient.h>
++    #define INITIALIZE_FAST_GRAPHICS \
++        double dc_scale_x = 1, dc_scale_y = 1; \
++        dc->GetUserScale( &dc_scale_x, &dc_scale_y ); \
++        wxPoint dc_origin = dc->GetDeviceOrigin(); \
++        wxDCImpl *dcImpl = dc->GetImpl(); \
++        wxWindowDCImpl *winDC = wxDynamicCast(dcImpl, wxWindowDCImpl); \
++        GdkWindow *window = NULL; \
++        GdkGC     *pen = NULL; \
++        if (winDC && (dc_scale_x == 1.0) && (dc_scale_y == 1.0) && (dc_origin == wxPoint(0,0))) \
++        { \
++            window = winDC->m_gdkwindow; \
++            pen = winDC->m_penGC; \
++        }
++#else
+     #define INITIALIZE_FAST_GRAPHICS \
+         double dc_scale_x = 1, dc_scale_y = 1; \
+         dc->GetUserScale( &dc_scale_x, &dc_scale_y ); \
+@@ -71,6 +93,7 @@ extern "C" {
+             window = winDC->m_window; \
+             pen = winDC->m_penGC; \
+         }
++#endif
+ 
+     // inline void wxPLOTCTRL_DRAW_LINE(wxDC *dc, GdkWindow *win, GdkGC *pen, int x0, int y0, int x1, int y1)
+     #define wxPLOTCTRL_DRAW_LINE(dc, win, pen, x0, y0, x1, y1) \
+@@ -495,7 +518,7 @@ wxPlotDrawerAxisBase::wxPlotDrawerAxisBase(wxPlotCtrl* owner)
+ //-----------------------------------------------------------------------------
+ IMPLEMENT_ABSTRACT_CLASS(wxPlotDrawerArea, wxPlotDrawerBase)
+ 
+-void wxPlotDrawerArea::Draw(wxDC *dc, bool refresh)
++void wxPlotDrawerArea::Draw(wxDC *WXUNUSED(dc), bool WXUNUSED(refresh))
+ {
+ }
+ 
+diff --git a/src/plotfunc.cpp b/src/plotfunc.cpp
+index c7be906..ccc30de 100644
+--- a/src/plotfunc.cpp
++++ b/src/plotfunc.cpp
+@@ -21,6 +21,8 @@
+ 
+ #ifndef WX_PRECOMP
+     #include "wx/bitmap.h"
++    //Next line added by SC@SDL on 10/8/07 for Solaris build:
++    #include "wx/dataobj.h"
+     #include "wx/textdlg.h"
+     #include "wx/msgdlg.h"
+     #include "wx/dcmemory.h"

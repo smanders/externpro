@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.2)
+project(externpro)
+include(modules/macpro.cmake)
+proInit()
+proAddProjectDir(projects)
+proExecuteStep()

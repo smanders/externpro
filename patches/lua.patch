@@ -1,0 +1,56 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cc303f5..c2c8db3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -6,6 +6,7 @@
+ 
+ project ( lua C )
+ cmake_minimum_required ( VERSION 2.8 )
++include ( flags OPTIONAL )
+ include ( cmake/dist.cmake )
+ 
+ ## CONFIGURATION
+@@ -88,7 +89,7 @@ if ( LUA_USE_DLOPEN )
+   # Link to dynamic linker library "dl"
+ 	find_library ( DL_LIBRARY NAMES dl )
+ 	if ( DL_LIBRARY )
+-  	list ( APPEND LIBS ${DL_LIBRARY} )
++  	list ( APPEND LIBS dl )
+ 	endif ( )
+ endif ( )
+ 
+@@ -151,7 +152,7 @@ install_executable ( lua luac )
+ install_library ( liblua )
+ install_data ( README.md )
+ #install_lua_module ( strict etc/strict.lua )
+-install_header ( src/lua.h src/lualib.h src/lauxlib.h src/lua.hpp ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h )
++install_header ( src/lua.h src/lualib.h src/lauxlib.h src/lua.hpp ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h INTO lua )
+ install_doc ( doc/ )
+ install_foo ( etc/ )
+ #install_test ( test/ )
+diff --git a/cmake/dist.cmake b/cmake/dist.cmake
+index 310ef94..2e1e9c3 100644
+--- a/cmake/dist.cmake
++++ b/cmake/dist.cmake
+@@ -141,6 +141,7 @@ macro ( install_executable )
+       set_target_properties ( ${_file} PROPERTIES VERSION ${DIST_VERSION}
+                               SOVERSION ${DIST_VERSION} )
+     endif ()
++    set_target_properties ( ${_file} PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}" )
+     install ( TARGETS ${_file} RUNTIME DESTINATION ${INSTALL_BIN}
+               COMPONENT Runtime )
+   endforeach()
+@@ -159,11 +160,12 @@ macro ( install_library )
+       set_target_properties ( ${_file} PROPERTIES VERSION ${DIST_VERSION}
+                               SOVERSION ${DIST_VERSION} )
+     endif ()
+-    install ( TARGETS ${_file}
++    install ( TARGETS ${_file} EXPORT ${PROJECT_NAME}-targets
+               RUNTIME DESTINATION ${INSTALL_BIN} COMPONENT Runtime
+               LIBRARY DESTINATION ${INSTALL_LIB} COMPONENT Runtime 
+               ARCHIVE DESTINATION ${INSTALL_LIB} COMPONENT Library )
+   endforeach()
++  install ( EXPORT ${PROJECT_NAME}-targets DESTINATION ${INSTALL_LIB}/cmake )
+ endmacro ()
+ 
+ # helper function for various install_* functions, for PATTERN/REGEX args.

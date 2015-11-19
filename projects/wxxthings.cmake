@@ -1,0 +1,37 @@
+########################################
+# wxxthings
+# repo http://wxcode.svn.sourceforge.net/viewvc/wxcode/trunk/wxCode/components/wxthings/
+# dwnl http://sourceforge.net/projects/wxcode/files/Components/wxThings/
+set(VER 2006.04.28)
+string(REPLACE "." "_" VER_ ${VER})
+set(REPO https://github.com/smanders/wxthings)
+set(PRO_WXXTHINGS
+  NAME wxxthings
+  SUPERPRO wxx
+  SUBDIR wxthings
+  WEB "wxThings" http://wxcode.sourceforge.net/showcomp.php?name=wxThings "wxthings on sourceforge"
+  LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
+  DESC "a variety of data containers and controls"
+  REPO "repo" ${REPO} "wxthings repo on github"
+  VER ${VER}
+  GIT_ORIGIN git://github.com/smanders/wxthings.git
+  GIT_TAG sdl_${VER_} # TODO: rename tag
+  GIT_REF v${VER}
+  DLURL http://downloads.sourceforge.net/project/wxcode/Components/wxThings/wxthings_${VER_}.tar.gz
+  DLMD5 1d769a677c0f3f10d51de579873c2613
+  PATCH ${PATCH_DIR}/wxx.things.patch
+  DIFF ${REPO}/compare/
+  )
+########################################
+function(mkpatch_wxxthings)
+  xpRepo(${PRO_WXXTHINGS})
+endfunction()
+########################################
+function(download_wxxthings)
+  xpNewDownload(${PRO_WXXTHINGS})
+endfunction()
+########################################
+function(patch_wxxthings)
+  patch_wxx()
+  xpPatch(${PRO_WXXTHINGS})
+endfunction()

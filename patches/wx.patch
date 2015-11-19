@@ -1,0 +1,258 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..c44ab6f
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,3 @@
++cmake_minimum_required(VERSION 3.0)
++project(wxwidgets)
++include(build/cmake/wx.cmake)
+diff --git a/include/wx/defs.h b/include/wx/defs.h
+index 397ddd7..b14ee41 100644
+--- a/include/wx/defs.h
++++ b/include/wx/defs.h
+@@ -3169,14 +3169,22 @@ DECLARE_WXCOCOA_OBJC_CLASS(UIImage);
+ DECLARE_WXCOCOA_OBJC_CLASS(UIEvent);
+ DECLARE_WXCOCOA_OBJC_CLASS(NSSet);
+ DECLARE_WXCOCOA_OBJC_CLASS(EAGLContext);
++DECLARE_WXCOCOA_OBJC_CLASS(UIWebView);
+ 
+ typedef WX_UIWindow WXWindow;
+ typedef WX_UIView WXWidget;
+ typedef WX_EAGLContext WXGLContext;
+ typedef WX_NSString* WXGLPixelFormat;
++typedef WX_UIWebView OSXWebViewPtr;
+ 
+ #endif
+ 
++#if wxOSX_USE_COCOA_OR_CARBON
++DECLARE_WXCOCOA_OBJC_CLASS(WebView);
++typedef WX_WebView OSXWebViewPtr;
++#endif
++
++
+ #endif /* __WXMAC__ */
+ 
+ /* ABX: check __WIN32__ instead of __WXMSW__ for the same MSWBase in any Win32 port */
+diff --git a/include/wx/html/webkit.h b/include/wx/html/webkit.h
+index 8700367..f805099 100644
+--- a/include/wx/html/webkit.h
++++ b/include/wx/html/webkit.h
+@@ -18,7 +18,6 @@
+ #endif
+ 
+ #include "wx/control.h"
+-DECLARE_WXCOCOA_OBJC_CLASS(WebView); 
+ 
+ // ----------------------------------------------------------------------------
+ // Web Kit Control
+@@ -107,7 +106,7 @@ private:
+     wxString m_currentURL;
+     wxString m_pageTitle;
+ 
+-    WX_WebView m_webView;
++    OSXWebViewPtr m_webView;
+ 
+     // we may use this later to setup our own mouse events,
+     // so leave it in for now.
+diff --git a/include/wx/msw/setup.h b/include/wx/msw/setup.h
+index eed28c7..97a4f1a 100644
+--- a/include/wx/msw/setup.h
++++ b/include/wx/msw/setup.h
+@@ -331,7 +331,7 @@
+ //
+ // Recommended setting: 1 unless compatibility with the official wxWidgets
+ // build and/or the existing code is a concern.
+-#define wxUSE_STD_CONTAINERS 0
++#define wxUSE_STD_CONTAINERS 1
+ 
+ // Use standard C++ streams if 1 instead of wx streams in some places. If
+ // disabled, wx streams are used everywhere and wxWidgets doesn't depend on the
+diff --git a/include/wx/osx/webview_webkit.h b/include/wx/osx/webview_webkit.h
+index 803f8b0..438e532 100644
+--- a/include/wx/osx/webview_webkit.h
++++ b/include/wx/osx/webview_webkit.h
+@@ -158,7 +158,7 @@ private:
+     wxWindowID m_windowID;
+     wxString m_pageTitle;
+ 
+-    wxObjCID m_webView;
++    OSXWebViewPtr m_webView;
+ 
+     // we may use this later to setup our own mouse events,
+     // so leave it in for now.
+diff --git a/src/generic/statbmpg.cpp b/src/generic/statbmpg.cpp
+index a21ef57..9c4c1ab 100644
+--- a/src/generic/statbmpg.cpp
++++ b/src/generic/statbmpg.cpp
+@@ -15,6 +15,8 @@
+     #include "wx/dcclient.h"
+ #endif
+ 
++#include "wx/dcbuffer.h"
++#include "wx/graphics.h"
+ #include "wx/generic/statbmpg.h"
+ 
+ bool wxGenericStaticBitmap::Create(wxWindow *parent, wxWindowID id,
+@@ -25,16 +27,25 @@ bool wxGenericStaticBitmap::Create(wxWindow *parent, wxWindowID id,
+     if (! wxControl::Create(parent, id, pos, size, style,
+                             wxDefaultValidator, name))
+         return false;
++    SetBackgroundStyle(wxBG_STYLE_PAINT);
+     SetBitmap(bitmap);
+     Connect(wxEVT_PAINT, wxPaintEventHandler(wxGenericStaticBitmap::OnPaint));
++    // reduce flickering
++    Bind(wxEVT_ERASE_BACKGROUND, [](wxEraseEvent&){});
+     return true;
+ }
+ 
+ void wxGenericStaticBitmap::OnPaint(wxPaintEvent& WXUNUSED(event))
+ {
+-    wxPaintDC dc(this);
++    wxAutoBufferedPaintDC dc(this);
++    wxScopedPtr<wxGraphicsContext> gc(wxGraphicsContext::Create(dc));
++    auto bgClr = GetParent()->GetBackgroundColour();
++    if (UseBgCol())
++        bgClr = GetBackgroundColour();
++    dc.SetBackground(wxBrush(bgClr));
++    dc.Clear();
+     if (m_bitmap.IsOk())
+-        dc.DrawBitmap(m_bitmap, 0, 0, true);
++        gc->DrawBitmap(m_bitmap, 0, 0, m_bitmap.GetWidth(), m_bitmap.GetHeight());
+ }
+ 
+ // under OSX_cocoa is a define, avoid duplicate info
+diff --git a/src/generic/stattextg.cpp b/src/generic/stattextg.cpp
+index 74843fa..5b91421 100644
+--- a/src/generic/stattextg.cpp
++++ b/src/generic/stattextg.cpp
+@@ -21,6 +21,7 @@
+     #include "wx/validate.h"
+ #endif
+ 
++#include "wx/dcbuffer.h"
+ #include "wx/generic/stattextg.h"
+ 
+ #if wxUSE_MARKUP
+@@ -42,9 +43,13 @@ bool wxGenericStaticText::Create(wxWindow *parent,
+                             wxDefaultValidator, name) )
+         return false;
+ 
++    SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
++    SetBackgroundStyle(wxBG_STYLE_PAINT);
+     SetLabel(label);
+     SetInitialSize(size);
+     Connect(wxEVT_PAINT, wxPaintEventHandler(wxGenericStaticText::OnPaint));
++    // reduce flickering
++    Bind(wxEVT_ERASE_BACKGROUND, [](wxEraseEvent&){});
+     return true;
+ }
+ 
+@@ -67,13 +72,18 @@ void wxGenericStaticText::DoDrawLabel(wxDC& dc, const wxRect& rect)
+ 
+ void wxGenericStaticText::OnPaint(wxPaintEvent& WXUNUSED(event))
+ {
+-    wxPaintDC dc(this);
++    wxAutoBufferedPaintDC dc(this);
++
++    auto bgClr = GetParent()->GetBackgroundColour();
++    if ( UseBgCol() )
++        bgClr = GetBackgroundColour();
++    dc.SetBackground(wxBrush(bgClr));
++    dc.Clear();
+ 
+     wxRect rect = GetClientRect();
+     if ( IsEnabled() )
+     {
+-        dc.SetTextForeground(
+-                       wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
++        dc.SetTextForeground(GetForegroundColour());
+     }
+     else // paint disabled text
+     {
+diff --git a/src/msw/statbmp.cpp b/src/msw/statbmp.cpp
+index 1205600..34cc236 100644
+--- a/src/msw/statbmp.cpp
++++ b/src/msw/statbmp.cpp
+@@ -136,6 +136,9 @@ bool wxStaticBitmap::Create(wxWindow *parent,
+     }
+ #endif // !__WXWINCE__
+ 
++    // reduce flickering
++    Bind(wxEVT_ERASE_BACKGROUND, [](wxEraseEvent&){});
++
+     return true;
+ }
+ 
+diff --git a/src/msw/stattext.cpp b/src/msw/stattext.cpp
+index 1eb8b24..2dd5f78 100644
+--- a/src/msw/stattext.cpp
++++ b/src/msw/stattext.cpp
+@@ -52,6 +52,9 @@ bool wxStaticText::Create(wxWindow *parent,
+     InvalidateBestSize();
+     SetInitialSize(size);
+ 
++    // reduce flickering
++    Bind(wxEVT_ERASE_BACKGROUND, [](wxEraseEvent&){});
++
+     // NOTE: if the label contains ampersand characters which are interpreted as
+     //       accelerators, they will be rendered (at least on WinXP) only if the
+     //       static text is placed inside a window class which correctly handles
+diff --git a/src/osx/webview_webkit.mm b/src/osx/webview_webkit.mm
+index ab75865..074d959 100644
+--- a/src/osx/webview_webkit.mm
++++ b/src/osx/webview_webkit.mm
+@@ -442,7 +442,7 @@ void wxWebViewWebKit::GoBack()
+     if ( !m_webView )
+         return;
+ 
+-    [(WebView*)m_webView goBack];
++    [m_webView goBack];
+ }
+ 
+ void wxWebViewWebKit::GoForward()
+@@ -450,7 +450,7 @@ void wxWebViewWebKit::GoForward()
+     if ( !m_webView )
+         return;
+ 
+-    [(WebView*)m_webView goForward];
++    [m_webView goForward];
+ }
+ 
+ void wxWebViewWebKit::Reload(wxWebViewReloadFlags flags)
+@@ -849,7 +849,7 @@ void wxWebViewWebKit::Cut()
+     if ( !m_webView )
+         return;
+ 
+-    [(WebView*)m_webView cut:m_webView];
++    [m_webView cut:m_webView];
+ }
+ 
+ void wxWebViewWebKit::Copy()
+@@ -857,7 +857,7 @@ void wxWebViewWebKit::Copy()
+     if ( !m_webView )
+         return;
+ 
+-    [(WebView*)m_webView copy:m_webView];
++    [m_webView copy:m_webView];
+ }
+ 
+ void wxWebViewWebKit::Paste()
+@@ -865,7 +865,7 @@ void wxWebViewWebKit::Paste()
+     if ( !m_webView )
+         return;
+ 
+-    [(WebView*)m_webView paste:m_webView];
++    [m_webView paste:m_webView];
+ }
+ 
+ void wxWebViewWebKit::DeleteSelection()
+@@ -873,7 +873,7 @@ void wxWebViewWebKit::DeleteSelection()
+     if ( !m_webView )
+         return;
+ 
+-    [(WebView*)m_webView deleteSelection];
++    [m_webView deleteSelection];
+ }
+ 
+ bool wxWebViewWebKit::HasSelection() const

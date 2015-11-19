@@ -1,0 +1,62 @@
+########################################
+# libRaptorQ
+xpProOption(libraptorq)
+set(REPO https://github.com/smanders/libRaptorQ)
+set(VER 0.1.2)
+set(PRO_LIBRAPTORQ
+  NAME libraptorq
+  WEB "libRaptorQ" https://www.fenrirproject.org/projects/libraptorq/wiki "libRaptorQ wiki"
+  LICENSE "open" https://github.com/LucaFulchir/libRaptorQ/blob/master/LICENSE.lgpl3.txt "LGPL3"
+  DESC "RaptorQ is a Forward Error Correction algorithm, implements RFC6330"
+  REPO "repo" ${REPO} "forked libRaptorQ repo on github"
+  VER ${VER}
+  GIT_ORIGIN git://github.com/smanders/libRaptorQ.git
+  GIT_UPSTREAM git://github.com/LucaFulchir/libRaptorQ.git
+  GIT_TAG xp${VER} # what to 'git checkout'
+  GIT_REF v${VER} # create patch from this tag to 'git checkout'
+  DLURL ${REPO}/archive/v${VER}.tar.gz
+  DLMD5 6e3132556df7ceb424f2324f088034a2
+  DLNAME libraptorq-${VER}.tar.gz
+  PATCH ${PATCH_DIR}/libraptorq.patch
+  DIFF ${REPO}/compare/LucaFulchir:
+  )
+########################################
+function(mkpatch_libraptorq)
+  xpRepo(${PRO_LIBRAPTORQ})
+endfunction()
+########################################
+function(download_libraptorq)
+  xpNewDownload(${PRO_LIBRAPTORQ})
+endfunction()
+########################################
+function(patch_libraptorq)
+  xpPatch(${PRO_LIBRAPTORQ})
+endfunction()
+########################################
+function(build_libraptorq)
+  if(NOT (XP_DEFAULT OR XP_PRO_LIBRAPTORQ))
+    return()
+  endif()
+  if(NOT (XP_DEFAULT OR XP_PRO_EIGEN))
+    message(FATAL_ERROR "libraptorq.cmake: requires eigen")
+    return()
+  endif()
+  if(NOT DEFINED eigenTgts)
+    build_eigen(eigenTgts)
+  endif()
+  set(XP_CONFIGURE
+    -DOVERRIDE_CMAKE_GENERATOR=OFF
+    -DPROFILING=OFF
+    -DBUILD_SHARED_LIB=OFF
+    )
+  if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
+    # TODO: Solaris linker error when LTO turned ON
+    list(APPEND XP_CONFIGURE -DLTO=OFF)
+  else()
+    list(APPEND XP_CONFIGURE -DLTO=ON)
+  endif()
+  configure_file(${PRO_DIR}/use/usexp-libraptorq-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
+  xpCmakeBuild(libraptorq "${eigenTgts}" "${XP_CONFIGURE}")
+endfunction()

@@ -1,0 +1,83 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..9b676c3
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,25 @@
++cmake_minimum_required(VERSION 3.0)
++project(vld)
++if(CMAKE_CONFIGURATION_TYPES)
++  set(CMAKE_CONFIGURATION_TYPES Release CACHE STRING
++    "Set the configurations to what we need" FORCE)
++endif()
++include_external_msproject(vld ${CMAKE_CURRENT_SOURCE_DIR}/vld.vcxproj)
++#######################################
++# install
++if(${CMAKE_GENERATOR} MATCHES "Win64$")
++  set(dbghelp setup/dbghelp/x64/dbghelp.dll)
++  set(manifest setup/dbghelp/x64/Microsoft.DTfW.DHL.manifest)
++  set(outdirlib bin/x64/Release/vld.lib)
++  set(outdirdll bin/x64/Release/vld_x64.dll)
++else()
++  set(dbghelp setup/dbghelp/x86/dbghelp.dll)
++  set(manifest setup/dbghelp/x86/Microsoft.DTfW.DHL.manifest)
++  set(outdirlib bin/Win32/Release/vld.lib)
++  set(outdirdll bin/Win32/Release/vld_x86.dll)
++endif()
++if(MSVC)
++  install(PROGRAMS ${dbghelp} ${outdirlib} ${outdirdll} DESTINATION lib)
++  install(FILES ${manifest} DESTINATION lib)
++endif()
++install(FILES vld.h vld_def.h vld.ini vldrt.cmake DESTINATION include/visualleakdetector)
+diff --git a/vld.vcxproj b/vld.vcxproj
+index 478ffa8..3af173f 100644
+--- a/vld.vcxproj
++++ b/vld.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -37,6 +37,18 @@
+   </PropertyGroup>
+   <!-- Import Default Property Sheets -->
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
++  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
++    <PlatformToolset>v120</PlatformToolset>
++  </PropertyGroup>
++  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
++    <PlatformToolset>v120</PlatformToolset>
++  </PropertyGroup>
++  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
++    <PlatformToolset>v120</PlatformToolset>
++  </PropertyGroup>
++  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
++    <PlatformToolset>v120</PlatformToolset>
++  </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+   <!-- Global properties -->
+   <PropertyGroup>
+diff --git a/vldrt.cmake b/vldrt.cmake
+new file mode 100644
+index 0000000..c549743
+--- /dev/null
++++ b/vldrt.cmake
+@@ -0,0 +1,16 @@
++if(WIN32)
++  set(vld_DIR ${externpro_DIR}/lib)
++  if(${CMAKE_GENERATOR} MATCHES "Win64$")
++    set(dll_suffix "_x64")
++  else()
++    set(dll_suffix "_x86")
++  endif()
++  set(vld_runtime
++    debug ${externpro_DIR}/include/visualleakdetector/vld.ini
++    debug ${vld_DIR}/dbghelp.dll
++    debug ${vld_DIR}/Microsoft.DTfW.DHL.manifest
++    debug ${vld_DIR}/vld${dll_suffix}.dll
++    )
++else()
++  set(vld_runtime)
++endif()

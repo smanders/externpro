@@ -1,0 +1,51 @@
+diff --git a/configure b/configure
+index 66cb312..5751a32 100755
+--- a/configure
++++ b/configure
+@@ -282,6 +282,11 @@ parser.add_option('--without-etw',
+     dest='without_etw',
+     help='build without ETW')
+ 
++parser.add_option('--without-mdb',
++    action='store_true',
++    dest='without_mdb',
++    help='build without mdb')
++
+ parser.add_option('--without-npm',
+     action='store_true',
+     dest='without_npm',
+@@ -554,7 +559,7 @@ def configure_node(o):
+   # if we're on illumos based systems wrap the helper library into the
+   # executable
+   if flavor == 'solaris':
+-    o['variables']['node_use_mdb'] = 'true'
++    o['variables']['node_use_mdb'] = b(not options.without_mdb)
+   else:
+     o['variables']['node_use_mdb'] = 'false'
+ 
+diff --git a/deps/v8/src/allocation.cc b/deps/v8/src/allocation.cc
+index b5aa984..1b6a6f4 100644
+--- a/deps/v8/src/allocation.cc
++++ b/deps/v8/src/allocation.cc
+@@ -87,7 +87,7 @@ void* AlignedAlloc(size_t size, size_t alignment) {
+   void* ptr;
+ #if V8_OS_WIN
+   ptr = _aligned_malloc(size, alignment);
+-#elif V8_LIBC_BIONIC
++#elif V8_LIBC_BIONIC || V8_OS_SOLARIS
+   // posix_memalign is not exposed in some Android versions, so we fall back to
+   // memalign. See http://code.google.com/p/android/issues/detail?id=35391.
+   ptr = memalign(alignment, size);
+diff --git a/deps/v8/tools/gyp/v8.gyp b/deps/v8/tools/gyp/v8.gyp
+index c703155..3a86877 100644
+--- a/deps/v8/tools/gyp/v8.gyp
++++ b/deps/v8/tools/gyp/v8.gyp
+@@ -1248,7 +1248,7 @@
+         ['OS=="solaris"', {
+             'link_settings': {
+               'libraries': [
+-                '-lnsl',
++                '-lnsl -lrt',
+             ]},
+             'sources': [
+               '../../src/base/platform/platform-solaris.cc',

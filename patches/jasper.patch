@@ -1,0 +1,290 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..7b9c9d0
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,4 @@
++cmake_minimum_required(VERSION 3.0)
++project(jasper)
++include(flags OPTIONAL)
++add_subdirectory(src/libjasper)
+diff --git a/src/libjasper/CMakeLists.txt b/src/libjasper/CMakeLists.txt
+new file mode 100644
+index 0000000..38afcab
+--- /dev/null
++++ b/src/libjasper/CMakeLists.txt
+@@ -0,0 +1,195 @@
++set(lib_name libjasper)
++#######################################
++# preprocessor
++if(MSVC)
++  add_definitions(
++    -DJAS_WIN_MSVC_BUILD
++    -D_CRT_NONSTDC_NO_DEPRECATE
++    -D_CRT_SECURE_NO_WARNINGS
++    )
++endif()
++#######################################
++# include directories
++include_directories(
++  ${CMAKE_CURRENT_SOURCE_DIR}/include
++  )
++#######################################
++# library sources
++###################
++# base
++set(base_srcs
++  base/jas_cm.c
++  base/jas_debug.c
++  base/jas_getopt.c
++  base/jas_icc.c
++  base/jas_iccdata.c
++  base/jas_image.c
++  base/jas_init.c
++  base/jas_malloc.c
++  base/jas_seq.c
++  base/jas_stream.c
++  base/jas_string.c
++  base/jas_tmr.c
++  base/jas_tvp.c
++  base/jas_version.c
++  )
++source_group(base FILES ${base_srcs})
++list(APPEND ${lib_name}_libsrcs ${base_srcs})
++###################
++# bmp
++set(bmp_srcs
++  bmp/bmp_cod.c
++  bmp/bmp_cod.h
++  bmp/bmp_dec.c
++  bmp/bmp_enc.c
++  bmp/bmp_enc.h
++  )
++source_group(bmp FILES ${bmp_srcs})
++list(APPEND ${lib_name}_libsrcs ${bmp_srcs})
++###################
++# include
++set(include_srcs
++  include/jasper/jas_cm.h
++  include/jasper/jas_config2.h
++  include/jasper/jas_config.h
++  include/jasper/jas_debug.h
++  include/jasper/jas_fix.h
++  include/jasper/jas_getopt.h
++  include/jasper/jas_icc.h
++  include/jasper/jas_image.h
++  include/jasper/jas_init.h
++  include/jasper/jas_malloc.h
++  include/jasper/jas_math.h
++  include/jasper/jasper.h
++  include/jasper/jas_seq.h
++  include/jasper/jas_stream.h
++  include/jasper/jas_string.h
++  include/jasper/jas_tmr.h
++  include/jasper/jas_tvp.h
++  include/jasper/jas_types.h
++  include/jasper/jas_version.h
++  )
++source_group(include FILES ${include_srcs})
++list(APPEND ${lib_name}_libsrcs ${include_srcs})
++###################
++# jp2
++set(jp2_srcs
++  jp2/jp2_cod.c
++  jp2/jp2_cod.h
++  jp2/jp2_dec.c
++  jp2/jp2_dec.h
++  jp2/jp2_enc.c
++  )
++source_group(jp2 FILES ${jp2_srcs})
++list(APPEND ${lib_name}_libsrcs ${jp2_srcs})
++###################
++# jpc
++set(jpc_srcs
++  jpc/jpc_bs.c
++  jpc/jpc_bs.h
++  jpc/jpc_cod.h
++  jpc/jpc_cs.c
++  jpc/jpc_cs.h
++  jpc/jpc_dec.c
++  jpc/jpc_dec.h
++  jpc/jpc_enc.c
++  jpc/jpc_enc.h
++  jpc/jpc_fix.h
++  jpc/jpc_flt.h
++  jpc/jpc_math.c
++  jpc/jpc_math.h
++  jpc/jpc_mct.c
++  jpc/jpc_mct.h
++  jpc/jpc_mqcod.c
++  jpc/jpc_mqcod.h
++  jpc/jpc_mqdec.c
++  jpc/jpc_mqdec.h
++  jpc/jpc_mqenc.c
++  jpc/jpc_mqenc.h
++  jpc/jpc_qmfb.c
++  jpc/jpc_qmfb.h
++  jpc/jpc_t1cod.c
++  jpc/jpc_t1cod.h
++  jpc/jpc_t1dec.c
++  jpc/jpc_t1dec.h
++  jpc/jpc_t1enc.c
++  jpc/jpc_t1enc.h
++  jpc/jpc_t2cod.c
++  jpc/jpc_t2cod.h
++  jpc/jpc_t2dec.c
++  jpc/jpc_t2dec.h
++  jpc/jpc_t2enc.c
++  jpc/jpc_t2enc.h
++  jpc/jpc_tagtree.c
++  jpc/jpc_tagtree.h
++  jpc/jpc_tsfb.c
++  jpc/jpc_tsfb.h
++  jpc/jpc_util.c
++  jpc/jpc_util.h
++  )
++source_group(jpc FILES ${jpc_srcs})
++list(APPEND ${lib_name}_libsrcs ${jpc_srcs})
++###################
++# jpg
++set(jpg_srcs
++  jpg/jpg_cod.h
++  jpg/jpg_dummy.c
++  jpg/jpg_val.c
++  )
++source_group(jpg FILES ${jpg_srcs})
++list(APPEND ${lib_name}_libsrcs ${jpg_srcs})
++###################
++# mif
++set(mif_srcs
++  mif/mif_cod.c
++  mif/mif_cod.h
++  )
++source_group(mif FILES ${mif_srcs})
++list(APPEND ${lib_name}_libsrcs ${mif_srcs})
++###################
++# pgx
++set(pgx_srcs
++  pgx/pgx_cod.c
++  pgx/pgx_cod.h
++  pgx/pgx_dec.c
++  pgx/pgx_enc.c
++  pgx/pgx_enc.h
++  )
++source_group(pgx FILES ${pgx_srcs})
++list(APPEND ${lib_name}_libsrcs ${pgx_srcs})
++###################
++# pnm
++set(pnm_srcs
++  pnm/pnm_cod.c
++  pnm/pnm_cod.h
++  pnm/pnm_dec.c
++  pnm/pnm_enc.c
++  pnm/pnm_enc.h
++  )
++source_group(pnm FILES ${pnm_srcs})
++list(APPEND ${lib_name}_libsrcs ${pnm_srcs})
++###################
++# ras
++set(ras_srcs
++  ras/ras_cod.c
++  ras/ras_cod.h
++  ras/ras_dec.c
++  ras/ras_enc.c
++  ras/ras_enc.h
++  )
++source_group(ras FILES ${ras_srcs})
++list(APPEND ${lib_name}_libsrcs ${ras_srcs})
++#######################################
++# library
++add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++# strip off the "lib" prefix, since it's already libjasper
++set_target_properties(${lib_name} PROPERTIES PREFIX "")
++#######################################
++# install
++install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++  RUNTIME DESTINATION bin
++  LIBRARY DESTINATION lib
++  ARCHIVE DESTINATION lib
++  )
++install(FILES ${include_srcs} DESTINATION include/jasper)
++install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
+diff --git a/src/libjasper/base/jas_stream.c b/src/libjasper/base/jas_stream.c
+index 9a88556..4533624 100644
+--- a/src/libjasper/base/jas_stream.c
++++ b/src/libjasper/base/jas_stream.c
+@@ -345,6 +345,7 @@ jas_stream_t *jas_stream_tmpfile()
+ {
+ 	jas_stream_t *stream;
+ 	jas_stream_fileobj_t *obj;
++	char *temppathname;
+ 
+ 	if (!(stream = jas_stream_create())) {
+ 		return 0;
+@@ -365,7 +366,9 @@ jas_stream_t *jas_stream_tmpfile()
+ 	stream->obj_ = obj;
+ 
+ 	/* Choose a file name. */
+-	tmpnam(obj->pathname);
++	temppathname = tempnam(NULL, "jas");
++	strcpy(obj->pathname, temppathname);
++	free(temppathname);
+ 
+ 	/* Open the underlying file. */
+ 	if ((obj->fd = open(obj->pathname, O_CREAT | O_EXCL | O_RDWR | O_TRUNC | O_BINARY,
+diff --git a/src/libjasper/include/jasper/jas_config.h b/src/libjasper/include/jasper/jas_config.h
+index 987fb81..3e3b0d6 100644
+--- a/src/libjasper/include/jasper/jas_config.h
++++ b/src/libjasper/include/jasper/jas_config.h
+@@ -14,7 +14,12 @@
+ /* The preprocessor symbol JAS_WIN_MSVC_BUILD should not be defined
+   unless the JasPer software is being built under Microsoft Windows
+   using Microsoft Visual C. */
+-#if !defined(JAS_WIN_MSVC_BUILD)
++/* SDL mod: What about our own MSVC projects that include JasPer headers?
++  Looking for JAS_WIN_MSVC_BUILD would mean that our MSVC projects would need
++  to add this as a preprocessor symbol. That's lame. So I've added a _MSC_VER
++  check that will determine whether this is built with MSVC. I could probably
++  get rid of their JAS_WIN_MSVC_BUILD stuff, but I'll leave it... */
++#if !defined(JAS_WIN_MSVC_BUILD) && !defined(_MSC_VER)
+ /* A configure-based build is being used. */
+ 
+ 
+@@ -59,7 +64,7 @@
+ #define HAVE_MEMORY_H 1
+ 
+ /* Define to 1 if you have the <stdbool.h> header file. */
+-#define HAVE_STDBOOL_H 1
++#undef HAVE_STDBOOL_H
+ 
+ /* Define to 1 if you have the <stddef.h> header file. */
+ #define HAVE_STDDEF_H 1
+diff --git a/src/libjasper/include/jasper/jas_stream.h b/src/libjasper/include/jasper/jas_stream.h
+index 651bea9..be79d98 100644
+--- a/src/libjasper/include/jasper/jas_stream.h
++++ b/src/libjasper/include/jasper/jas_stream.h
+@@ -84,8 +84,15 @@
+ #if defined(HAVE_UNISTD_H)
+ #include <unistd.h>
+ #endif
++#if defined(HAVE_LIMITS_H)
++#include <limits.h>
++#endif
+ #include <jasper/jas_types.h>
+ 
++#ifndef PATH_MAX
++#define PATH_MAX MAX_PATH
++#endif
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+@@ -251,7 +258,7 @@ typedef struct {
+ typedef struct {
+ 	int fd;
+ 	int flags;
+-	char pathname[L_tmpnam + 1];
++	char pathname[PATH_MAX + 1];
+ } jas_stream_fileobj_t;
+ 
+ #define	JAS_STREAM_FILEOBJ_DELONCLOSE	0x01
