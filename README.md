@@ -5,7 +5,7 @@ an extensible project to build (or copy pre-built) external (3rd-party) [project
 
 ## description
 
-externpro supports options for [4 steps](https://isrhub.usurf.usu.edu/smanders/externpro/blob/14.11/modules/macpro.cmake#L50-L55): mkpatch (make patch), download, patch, build -- with patch being the default option
+externpro supports options for [4 steps](https://github.com/smanders/externpro/blob/15.10.2/modules/macpro.cmake#L67-L72): mkpatch (make patch), download, patch, build -- with patch being the default option
 
 externpro makes heavy use of cmake's [ExternalProject](http://www.kitware.com/media/html/BuildingExternalProjectsWithCMake2.8.html) module
 
