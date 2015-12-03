@@ -98,7 +98,7 @@ function(build_node)
   set(nodeHdrs ${SOURCE_DIR}/src/*.h)
   set(uvDir ${SOURCE_DIR}/deps/uv/include)
   set(v8Hdrs ${SOURCE_DIR}/deps/v8/include/*.h)
-  set(nmpDir ${SOURCE_DIR}/deps/npm)
+  set(npmDir ${SOURCE_DIR}/deps/npm)
   set(XP_TARGET node_stage_hdrs)
   if(NOT TARGET ${XP_TARGET})
     ExternalProject_Add(${XP_TARGET} DEPENDS ${node_DEPS}
@@ -110,12 +110,15 @@ function(build_node)
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${v8Hdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
-    # copy npm to STAGE_DIR
-    ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node_modules/npm
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${nmpDir} ${STAGE_DIR}/node_modules/npm
-      DEPENDEES install
-      )
+    option(XP_PRO_NODE_NPM "copy npm to installer" ON)
+    if(XP_PRO_NODE_NPM)
+      # copy npm to STAGE_DIR
+      ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node_modules/npm
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmDir} ${STAGE_DIR}/node_modules/npm
+        DEPENDEES install
+        )
+    endif()
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
 endfunction()
