@@ -13,15 +13,15 @@ set(PRO_ACTIVEMQCPP
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/${PROJ}.git
   GIT_UPSTREAM git://github.com/apache/${PROJ}.git
-  GIT_TAG ${PROJ}-${VER} # what to 'git checkout'
+  GIT_TAG xp-${VER} # what to 'git checkout'
   GIT_REF ${PROJ}-${VER} # create patch from this tag to 'git checkout'
   # Download ActiveMQ-CPP following links at http://activemq.apache.org/cms/download.html (mirrors)
-  DLURL http://mirrors.koehn.com/apache/activemq/${PROJ}/${VER}/${PROJ}-library-${VER}-src.tar.gz
-  DLMD5 414ac7de16d305058c7f0e2a333a5960
-  #DLURL ${REPO}/archive/${PROJ}-${VER}.tar.gz
-  #DLMD5 fe454166de637245987e859a2793208a
-  #PATCH ${PATCH_DIR}/activemqcpp.patch
-  #DIFF ${REPO}/compare/apache:
+  #DLURL http://mirrors.koehn.com/apache/activemq/${PROJ}/${VER}/${PROJ}-library-${VER}-src.tar.gz
+  #DLMD5 414ac7de16d305058c7f0e2a333a5960
+  DLURL ${REPO}/archive/${PROJ}-${VER}.tar.gz
+  DLMD5 fe454166de637245987e859a2793208a
+  PATCH ${PATCH_DIR}/activemqcpp.patch
+  DIFF ${REPO}/compare/apache:
   )
 ########################################
 function(mkpatch_activemqcpp)

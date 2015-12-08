@@ -2,7 +2,7 @@
 
 |project|license|description|version|repository|patch/diff|
 |-------|-------|-----------|-------|----------|----------|
-|[ActiveMQ-CPP](http://activemq.apache.org/cms/ 'ActiveMQ CMS website')|[open](http://www.apache.org/licenses/LICENSE-2.0.html 'Apache 2.0')|ActiveMQ C++ Messaging Service (CMS) client library|3.9.0|[repo](https://github.com/smanders/activemq-cpp 'forked activemq-cpp repo on github')|none|
+|[ActiveMQ-CPP](http://activemq.apache.org/cms/ 'ActiveMQ CMS website')|[open](http://www.apache.org/licenses/LICENSE-2.0.html 'Apache 2.0')|ActiveMQ C++ Messaging Service (CMS) client library|3.9.0|[repo](https://github.com/smanders/activemq-cpp 'forked activemq-cpp repo on github')|[diff](https://github.com/smanders/activemq-cpp/compare/apache:activemq-cpp-3.9.0...xp-3.9.0 'patch/diff')|
 |[boost](http://www.boost.org/ 'Boost website')|[open](http://www.boost.org/users/license.html 'Boost Software License')|libraries that give C++ a boost|1.57.0|[repo](https://github.com/boostorg/boost 'boost repo on github')|none|
 |[c-ares](http://c-ares.haxx.se/ 'c-ares website')|[open](http://c-ares.haxx.se/license.html 'c-ares license: MIT license')|C library for asynchronous DNS requests (including name resolves)|1.10.0|[repo](https://github.com/smanders/c-ares 'c-ares repo on github')|[diff](https://github.com/smanders/c-ares/compare/bagder:cares-1_10_0...xp-1_10_0 'patch/diff')|
 |[CMake](http://cmake.org/ 'CMake website')|[open](http://www.cmake.org/cmake/project/license.html 'CMake License')|the cross-platform, open-source build system|3.3.2|[repo](https://github.com/smanders/CMake 'forked CMake repo on github')|[diff](https://github.com/smanders/CMake/compare/Kitware:v3.3.2...xp3.3.2 'patch/diff')|
