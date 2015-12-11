@@ -40,9 +40,19 @@ function(build_activemqcpp)
   if(NOT (XP_DEFAULT OR XP_PRO_ACTIVEMQCPP))
     return()
   endif()
-  return() # no build, yet
+  if(NOT (XP_DEFAULT OR XP_PRO_APR))
+    message(FATAL_ERROR "activemqcpp.cmake: requires apr")
+    return()
+  endif()
+  if(NOT DEFINED aprTgts)
+    build_apr(aprTgts)
+    list(APPEND depTgts ${aprTgts})
+  endif()
+  set(XP_CONFIGURE
+    -DFIND_APR_MODULE_PATH=ON
+    )
   configure_file(${PRO_DIR}/use/usexp-activemqcpp-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(activemqcpp)
+  xpCmakeBuild(activemqcpp "${depTgts}" "${XP_CONFIGURE}")
 endfunction()

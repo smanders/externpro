@@ -58,5 +58,8 @@ function(build_apr)
   configure_file(${PRO_DIR}/use/usexp-apr-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(apr "${depTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(apr "${depTgts}" "${XP_CONFIGURE}" aprTargets)
+  if(ARGN)
+    set(${ARGN} "${aprTargets}" PARENT_SCOPE)
+  endif()
 endfunction()

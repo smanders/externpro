@@ -1,10 +1,26 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..45d8dbb
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,10 @@
++cmake_minimum_required(VERSION 3.0)
++project(ActiveMQ-CPP)
++include(flags OPTIONAL)
++option(FIND_APR_MODULE_PATH "Find APR in CMAKE_MODULE_PATH" OFF)
++if(FIND_APR_MODULE_PATH)
++  find_package(usexp-APR REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++else()
++  find_package(APR REQUIRED)
++endif()
++add_subdirectory(activemq-cpp/src/main)
 diff --git a/activemq-cpp/src/main/CMakeLists.txt b/activemq-cpp/src/main/CMakeLists.txt
 new file mode 100644
-index 0000000..03356f0
+index 0000000..5aa385b
 --- /dev/null
 +++ b/activemq-cpp/src/main/CMakeLists.txt
-@@ -0,0 +1,1677 @@
-+set(lib_name activemq-cpp)
+@@ -0,0 +1,1695 @@
++set(lib_name activemqcpp)
 +#######################################
 +# library sources
 +########################
@@ -955,14 +971,18 @@ index 0000000..03356f0
 +  decaf/internal/security/unix/SecureRandomImpl.h
 +  )
 +source_group(decaf\\internal\\security\\unix FILES ${decaf_internal_security_unix_srcs})
-+list(APPEND ${lib_name}_libsrcs ${decaf_internal_security_unix_srcs})
++if(UNIX)
++  list(APPEND ${lib_name}_libsrcs ${decaf_internal_security_unix_srcs})
++endif()
 +##########
 +set(decaf_internal_security_windows_srcs
 +  decaf/internal/security/windows/SecureRandomImpl.cpp
 +  decaf/internal/security/windows/SecureRandomImpl.h
 +  )
 +source_group(decaf\\internal\\security\\windows FILES ${decaf_internal_security_windows_srcs})
-+list(APPEND ${lib_name}_libsrcs ${decaf_internal_security_windows_srcs})
++if(WIN32)
++  list(APPEND ${lib_name}_libsrcs ${decaf_internal_security_windows_srcs})
++endif()
 +##########
 +set(decaf_internal_util_srcs
 +  decaf/internal/util/ByteArrayAdapter.cpp
@@ -1008,7 +1028,9 @@ index 0000000..03356f0
 +  decaf/internal/util/concurrent/unix/PlatformThread.cpp
 +  )
 +source_group(decaf\\internal\\util\\concurrent\\unix FILES ${decaf_internal_util_concurrent_unix_srcs})
-+list(APPEND ${lib_name}_libsrcs ${decaf_internal_util_concurrent_unix_srcs})
++if(UNIX)
++  list(APPEND ${lib_name}_libsrcs ${decaf_internal_util_concurrent_unix_srcs})
++endif()
 +##########
 +set(decaf_internal_util_concurrent_windows_srcs
 +  decaf/internal/util/concurrent/windows/Atomics.cpp
@@ -1016,7 +1038,9 @@ index 0000000..03356f0
 +  decaf/internal/util/concurrent/windows/PlatformThread.cpp
 +  )
 +source_group(decaf\\internal\\util\\concurrent\\windows FILES ${decaf_internal_util_concurrent_windows_srcs})
-+list(APPEND ${lib_name}_libsrcs ${decaf_internal_util_concurrent_windows_srcs})
++if(WIN32)
++  list(APPEND ${lib_name}_libsrcs ${decaf_internal_util_concurrent_windows_srcs})
++endif()
 +##########
 +set(decaf_internal_util_zip_srcs
 +  decaf/internal/util/zip/adler32.c
@@ -1681,3 +1705,13 @@ index 0000000..03356f0
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
 +target_include_directories(${lib_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
++install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
++  DESTINATION include/${lib_name}
++  FILES_MATCHING PATTERN "*.h"
++  )
++install(TARGETS ${lib_name} EXPORT ${lib_name}-targets
++  ARCHIVE DESTINATION lib
++  LIBRARY DESTINATION lib
++  RUNTIME DESTINATION bin
++  )
++install(EXPORT ${lib_name}-targets DESTINATION lib/cmake)
