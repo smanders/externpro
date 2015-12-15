@@ -99,7 +99,6 @@ if(NOT @CMAKE_PROJECT_NAME@_DIR)
   endif()
 else()
   set(findFile ${@CMAKE_PROJECT_NAME@_DIR}/share/cmake/Find@CMAKE_PROJECT_NAME@.cmake)
-  set(useFile ${@CMAKE_PROJECT_NAME@_DIR}/share/cmake/usexp-@CMAKE_PROJECT_NAME@.cmake)
   execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_CURRENT_LIST_FILE} ${findFile}
     RESULT_VARIABLE filesDiff
     OUTPUT_QUIET
@@ -111,5 +110,5 @@ else()
     message(AUTHOR_WARNING "Find scripts don't match. You may want to update the local with the @CMAKE_PROJECT_NAME@ version.")
   endif()
   message(STATUS "Found @CMAKE_PROJECT_NAME@: ${@CMAKE_PROJECT_NAME@_DIR}")
-  include(${useFile})
+  list(APPEND XP_MODULE_PATH ${@CMAKE_PROJECT_NAME@_DIR}/share/cmake)
 endif()
