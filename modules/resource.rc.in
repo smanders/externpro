@@ -37,7 +37,9 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
+    "#ifdef __WXMSW__\r\n"
     "#include ""wx\\msw\\wx.rc""\r\n"
+    "#endif\r\n"
     "\0"
 END
 
@@ -100,7 +102,9 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
+#ifdef __WXMSW__
 #include "wx\msw\wx.rc"
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
