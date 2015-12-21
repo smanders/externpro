@@ -62,6 +62,9 @@ function(build_glew)
   if(NOT (XP_DEFAULT OR XP_PRO_GLEW))
     return()
   endif()
+  configure_file(${PRO_DIR}/use/usexp-glew-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
   if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     getGlewOs()
     set(pf ${BUILD_PLATFORM})

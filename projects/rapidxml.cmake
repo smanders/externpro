@@ -36,6 +36,9 @@ function(build_rapidxml)
   if(NOT (XP_DEFAULT OR XP_PRO_RAPIDXML))
     return()
   endif()
+  configure_file(${PRO_DIR}/use/usexp-rapidxml-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
   ExternalProject_Get_Property(rapidxml SOURCE_DIR)
   ExternalProject_Add(rapidxml_bld DEPENDS rapidxml
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} CONFIGURE_COMMAND ""

@@ -34,6 +34,9 @@ function(build_rapidjson)
   if(NOT (XP_DEFAULT OR XP_PRO_RAPIDJSON))
     return()
   endif()
+  configure_file(${PRO_DIR}/use/usexp-rapidjson-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
   ExternalProject_Get_Property(rapidjson SOURCE_DIR)
   ExternalProject_Add(rapidjson_bld DEPENDS rapidjson
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${DWNLD_DIR} CONFIGURE_COMMAND ""
