@@ -272,10 +272,6 @@ macro(proSetStageDir) # NOTE: called by cmake-generated pro_build.cmake file
     ${STAGE_DIR}/share/cmake/Find${CMAKE_PROJECT_NAME}.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  configure_file(${MODULES_DIR}/Usescript.cmake.in
-    ${STAGE_DIR}/share/cmake/usexp-${CMAKE_PROJECT_NAME}.cmake
-    @ONLY NEWLINE_STYLE LF
-    )
   if(${CMAKE_PROJECT_NAME} STREQUAL externpro)
     configure_file(${MODULES_DIR}/xpopts.cmake.in
       ${STAGE_DIR}/share/cmake/xpopts.cmake

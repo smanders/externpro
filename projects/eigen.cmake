@@ -26,6 +26,9 @@ function(build_eigen)
   if(NOT (XP_DEFAULT OR XP_PRO_EIGEN))
     return()
   endif()
+  configure_file(${PRO_DIR}/use/usexp-eigen-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
   # since eigen is currently header only, do a single build config
   set(BUILD_CONFIGS Release)
   xpCmakeBuild(eigen "" "" eigenTargets)

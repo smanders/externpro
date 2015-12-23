@@ -10,6 +10,7 @@ include(${XP_ROOTDIR}/lib/cmake/${prj}-targets.cmake)
 string(TOUPPER ${prj} PRJ)
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR gsoap/stdsoap2.h PATHS ${XP_ROOTDIR}/include NO_DEFAULT_PATH)
+list(APPEND ${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include/gsoap) # for internal header includes
 set(${PRJ}_LIBRARIES gsoap)
 set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
