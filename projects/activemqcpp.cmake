@@ -16,11 +16,11 @@ set(PRO_ACTIVEMQCPP
   GIT_TAG xp-${VER} # what to 'git checkout'
   GIT_REF ${PROJ}-${VER} # create patch from this tag to 'git checkout'
   # Download ActiveMQ-CPP following links at http://activemq.apache.org/cms/download.html (mirrors)
-  #DLURL http://mirrors.koehn.com/apache/activemq/${PROJ}/${VER}/${PROJ}-library-${VER}-src.tar.gz
-  #DLMD5 414ac7de16d305058c7f0e2a333a5960
-  DLURL ${REPO}/archive/${PROJ}-${VER}.tar.gz
-  DLMD5 fe454166de637245987e859a2793208a
+  DLURL http://mirrors.koehn.com/apache/activemq/${PROJ}/${VER}/${PROJ}-library-${VER}-src.tar.gz
+  DLMD5 414ac7de16d305058c7f0e2a333a5960
   PATCH ${PATCH_DIR}/activemqcpp.patch
+  # TRICKY: PATCH_STRIP because the repo has an extra level of directories that the .tar.gz file doesn't have
+  PATCH_STRIP 2 # Strip NUM leading components from file names (defaults to 1)
   DIFF ${REPO}/compare/apache:
   )
 ########################################
