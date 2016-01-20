@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 75f35c7..7b03a2c 100644
+index 75f35c7..69887c1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -19,13 +19,20 @@ PROJECT(APR C)
@@ -49,12 +49,12 @@ index 75f35c7..7b03a2c 100644
    OUTPUT ${PROJECT_BINARY_DIR}/apr_escape_test_char.h
  )
  ADD_CUSTOM_TARGET(
-@@ -71,16 +81,19 @@ ADD_CUSTOM_TARGET(
+@@ -71,16 +81,22 @@ ADD_CUSTOM_TARGET(
  SET(APR_INCLUDE_DIRECTORIES
    ${PROJECT_BINARY_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}/include
 -  ${CMAKE_CURRENT_SOURCE_DIR}/include/arch/win32
-   ${CMAKE_CURRENT_SOURCE_DIR}/include/arch/unix
+-  ${CMAKE_CURRENT_SOURCE_DIR}/include/arch/unix
 -  ${CMAKE_CURRENT_SOURCE_DIR}/include/private
  )
  
@@ -68,10 +68,14 @@ index 75f35c7..7b03a2c 100644
    rpcrt4
  )
 +endif(WIN32)
++# TRICKY: include/arch/unix must be after include/arch/win32
++LIST(APPEND APR_INCLUDE_DIRECTORIES
++  ${CMAKE_CURRENT_SOURCE_DIR}/include/arch/unix
++)
  
  INCLUDE_DIRECTORIES(${APR_INCLUDE_DIRECTORIES})
  
-@@ -127,6 +140,7 @@ SET(APR_PUBLIC_HEADERS_GENERATED
+@@ -127,6 +143,7 @@ SET(APR_PUBLIC_HEADERS_GENERATED
    ${PROJECT_BINARY_DIR}/apr.h
  )
  
@@ -79,7 +83,7 @@ index 75f35c7..7b03a2c 100644
  SET(APR_SOURCES
    atomic/win32/apr_atomic.c
    dso/win32/dso.c
-@@ -201,6 +215,90 @@ SET(APR_SOURCES
+@@ -201,6 +218,90 @@ SET(APR_SOURCES
    user/win32/groupinfo.c
    user/win32/userinfo.c
  )
@@ -170,7 +174,7 @@ index 75f35c7..7b03a2c 100644
  
  SET(APR_TEST_SOURCES
    test/abts.c
-@@ -255,27 +353,39 @@ SET(install_targets)
+@@ -255,27 +356,41 @@ SET(install_targets)
  SET(install_bin_pdb)
  
  # libapr-1 is shared, apr-1 is static
@@ -179,22 +183,22 @@ index 75f35c7..7b03a2c 100644
  SET(install_targets ${install_targets} libapr-1)
  SET(install_bin_pdb ${install_bin_pdb} ${PROJECT_BINARY_DIR}/libapr-1.pdb)
  TARGET_LINK_LIBRARIES(libapr-1 ${APR_SYSTEM_LIBS})
--SET_TARGET_PROPERTIES(libapr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_EXPORT;WINNT")
-+SET_TARGET_PROPERTIES(libapr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_EXPORT")
 +if(WIN32)
-+SET_TARGET_PROPERTIES(libapr-1 PROPERTIES COMPILE_DEFINITIONS "WINNT")
-+endif(WIN32)
+ SET_TARGET_PROPERTIES(libapr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_EXPORT;WINNT")
++elseif(UNIX)
++SET_TARGET_PROPERTIES(libapr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_EXPORT")
++endif()
  ADD_DEPENDENCIES(libapr-1 test_char_header)
 +endif()
  
  ADD_LIBRARY(apr-1 STATIC ${APR_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
  SET(install_targets ${install_targets} apr-1)
  TARGET_LINK_LIBRARIES(apr-1 ${APR_SYSTEM_LIBS})
--SET_TARGET_PROPERTIES(apr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC;WINNT")
-+SET_TARGET_PROPERTIES(apr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC")
 +if(WIN32)
-+SET_TARGET_PROPERTIES(apr-1 PROPERTIES COMPILE_DEFINITIONS "WINNT")
-+endif(WIN32)
+ SET_TARGET_PROPERTIES(apr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC;WINNT")
++elseif(UNIX)
++SET_TARGET_PROPERTIES(apr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC")
++endif()
  ADD_DEPENDENCIES(apr-1 test_char_header)
  
 +if(WIN32)
@@ -212,7 +216,7 @@ index 75f35c7..7b03a2c 100644
  
  IF(APR_BUILD_TESTAPR)
    ENABLE_TESTING()
-@@ -303,8 +413,12 @@ IF(APR_BUILD_TESTAPR)
+@@ -303,8 +418,12 @@ IF(APR_BUILD_TESTAPR)
    ENDIF()
  
    ADD_EXECUTABLE(testapp test/testapp.c)
@@ -225,7 +229,7 @@ index 75f35c7..7b03a2c 100644
    IF(apiflag)
      SET_TARGET_PROPERTIES(testapp PROPERTIES COMPILE_FLAGS ${apiflag})
    ENDIF()
-@@ -319,12 +433,14 @@ IF(APR_BUILD_TESTAPR)
+@@ -319,12 +438,14 @@ IF(APR_BUILD_TESTAPR)
  
    ADD_LIBRARY(mod_test MODULE test/mod_test.c)
    TARGET_LINK_LIBRARIES(mod_test ${whichapr} ${APR_SYSTEM_LIBS})
@@ -240,7 +244,7 @@ index 75f35c7..7b03a2c 100644
    IF(apiflag)
      SET_TARGET_PROPERTIES(mod_test PROPERTIES COMPILE_FLAGS ${apiflag})
    ENDIF()
-@@ -333,7 +449,7 @@ IF(APR_BUILD_TESTAPR)
+@@ -333,7 +454,7 @@ IF(APR_BUILD_TESTAPR)
    # requirements.
    SET(single_source_programs
      test/echod.c
@@ -249,7 +253,7 @@ index 75f35c7..7b03a2c 100644
      test/sockperf.c
      test/testlockperf.c
      test/testmutexscope.c
-@@ -345,8 +461,10 @@ IF(APR_BUILD_TESTAPR)
+@@ -345,8 +466,10 @@ IF(APR_BUILD_TESTAPR)
      test/testshmproducer.c
      test/testshmconsumer.c
      test/tryread.c
@@ -261,7 +265,7 @@ index 75f35c7..7b03a2c 100644
  
    FOREACH(sourcefile ${single_source_programs})
      STRING(REGEX REPLACE ".*/([^\\]+)\\.c" "\\1" proggie ${sourcefile})
-@@ -362,6 +480,9 @@ IF(APR_BUILD_TESTAPR)
+@@ -362,6 +485,9 @@ IF(APR_BUILD_TESTAPR)
      testmutexscope
      testucs
    )
@@ -271,7 +275,7 @@ index 75f35c7..7b03a2c 100644
  
    FOREACH(simple ${simple_tests})
      ADD_TEST(NAME ${simple} COMMAND ${simple})
-@@ -370,9 +491,9 @@ IF(APR_BUILD_TESTAPR)
+@@ -370,9 +496,9 @@ IF(APR_BUILD_TESTAPR)
    # testlockperf takes forever on Windows with default counter limit
    ADD_TEST(NAME testlockperf COMMAND testlockperf -c 50000)
  
@@ -283,7 +287,7 @@ index 75f35c7..7b03a2c 100644
    ENDFOREACH()
  
    # No test is added for echod+sockperf.  Those will have to be run manually.
-@@ -381,11 +502,12 @@ ENDIF (APR_BUILD_TESTAPR)
+@@ -381,11 +507,12 @@ ENDIF (APR_BUILD_TESTAPR)
  
  # Installation
  
@@ -297,7 +301,7 @@ index 75f35c7..7b03a2c 100644
  
  IF(INSTALL_PDB)
    INSTALL(FILES ${install_bin_pdb}
-@@ -393,7 +515,7 @@ IF(INSTALL_PDB)
+@@ -393,7 +520,7 @@ IF(INSTALL_PDB)
            CONFIGURATIONS RelWithDebInfo Debug)
  ENDIF()
  
@@ -306,7 +310,7 @@ index 75f35c7..7b03a2c 100644
  IF(APR_INSTALL_PRIVATE_H)
    # Kludges for unexpected dependencies of httpd 2.x, not installed by default
    SET(APR_PRIVATE_H_FOR_HTTPD
-@@ -402,8 +524,8 @@ IF(APR_INSTALL_PRIVATE_H)
+@@ -402,8 +529,8 @@ IF(APR_INSTALL_PRIVATE_H)
      include/arch/win32/apr_arch_utf8.h
      include/arch/win32/apr_private.h
      )
@@ -317,7 +321,7 @@ index 75f35c7..7b03a2c 100644
  ENDIF()
  
  STRING(TOUPPER "${CMAKE_BUILD_TYPE}" buildtype)
-@@ -417,7 +539,9 @@ MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
+@@ -417,7 +544,9 @@ MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
  MESSAGE(STATUS "  Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
  MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
  MESSAGE(STATUS "  IPv6 ............................ : ${APR_HAVE_IPV6}")
