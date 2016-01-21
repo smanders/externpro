@@ -41,16 +41,6 @@ function(build_apr)
   if(NOT (XP_DEFAULT OR XP_PRO_APR))
     return()
   endif()
-  if(USE_OPENSSL)
-  if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL))
-    message(FATAL_ERROR "apr.cmake: requires openssl")
-    return()
-  endif()
-  if(NOT DEFINED opensslTgts)
-    build_openssl(opensslTgts)
-    list(APPEND depTgts ${opensslTgts})
-  endif()
-  endif()
   set(XP_CONFIGURE
     -DAPR_BUILD_TESTAPR=ON
     -DTEST_STATIC_LIBS=ON
@@ -58,7 +48,7 @@ function(build_apr)
   configure_file(${PRO_DIR}/use/usexp-apr-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(apr "${depTgts}" "${XP_CONFIGURE}" aprTargets)
+  xpCmakeBuild(apr "" "${XP_CONFIGURE}" aprTargets)
   if(ARGN)
     set(${ARGN} "${aprTargets}" PARENT_SCOPE)
   endif()

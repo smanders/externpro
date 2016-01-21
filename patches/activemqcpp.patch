@@ -1,17 +1,25 @@
 diff --git a/activemq-cpp/CMakeLists.txt b/activemq-cpp/CMakeLists.txt
 new file mode 100644
-index 0000000..fbbca7f
+index 0000000..adea229
 --- /dev/null
 +++ b/activemq-cpp/CMakeLists.txt
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,21 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(activemq-cpp)
 +include(flags OPTIONAL)
 +option(FIND_APR_MODULE_PATH "Find APR in CMAKE_MODULE_PATH" OFF)
++option(FIND_OPENSSL_MODULE_PATH "Find OpenSSL in CMAKE_MODULE_PATH" OFF)
++mark_as_advanced(FIND_APR_MODULE_PATH)
++mark_as_advanced(FIND_OPENSSL_MODULE_PATH)
 +if(FIND_APR_MODULE_PATH)
 +  find_package(usexp-APR REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
 +else()
 +  find_package(APR REQUIRED)
++endif()
++if(FIND_OPENSSL_MODULE_PATH)
++  find_package(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++else()
++  find_package(OpenSSL)
 +endif()
 +if(UNIX)
 +  include(configure.cmake)
@@ -261,7 +269,7 @@ index 0000000..b8ee1ab
 +#cmakedefine size_t @size_t@
 diff --git a/activemq-cpp/configure.cmake b/activemq-cpp/configure.cmake
 new file mode 100644
-index 0000000..7ccb65d
+index 0000000..9e5927a
 --- /dev/null
 +++ b/activemq-cpp/configure.cmake
 @@ -0,0 +1,396 @@
@@ -388,7 +396,7 @@ index 0000000..7ccb65d
 +endif()
 +set(CMAKE_EXTRA_INCLUDE_FILES)
 +########################################
-+set(HAVE_OPENSSL FALSE) #TODO: determine
++set(HAVE_OPENSSL ${OPENSSL_FOUND})
 +set_define(HAVE_OPENSSL 1)
 +########################################
 +# Define if building universal (internal helper macro)

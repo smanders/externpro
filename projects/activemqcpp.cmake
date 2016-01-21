@@ -44,12 +44,21 @@ function(build_activemqcpp)
     message(FATAL_ERROR "activemqcpp.cmake: requires apr")
     return()
   endif()
+  if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL))
+    message(FATAL_ERROR "activemqcpp.cmake: requires openssl")
+    return()
+  endif()
   if(NOT DEFINED aprTgts)
     build_apr(aprTgts)
     list(APPEND depTgts ${aprTgts})
   endif()
+  if(NOT DEFINED osslTgts)
+    build_openssl(osslTgts)
+    list(APPEND depTgts ${osslTgts})
+  endif()
   set(XP_CONFIGURE
     -DFIND_APR_MODULE_PATH=ON
+    -DFIND_OPENSSL_MODULE_PATH=ON
     )
   configure_file(${PRO_DIR}/use/usexp-activemqcpp-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
