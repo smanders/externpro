@@ -761,7 +761,7 @@ index 0000000..7a229f2
 +endforeach()
 diff --git a/activemq-cpp/src/main/CMakeLists.txt b/activemq-cpp/src/main/CMakeLists.txt
 new file mode 100644
-index 0000000..7db5d62
+index 0000000..aba2ba7
 --- /dev/null
 +++ b/activemq-cpp/src/main/CMakeLists.txt
 @@ -0,0 +1,1697 @@
@@ -2451,7 +2451,7 @@ index 0000000..7db5d62
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
 +target_link_libraries(${lib_name} ${APR_LIBRARIES} ${OPENSSL_LIBRARIES})
 +target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-+target_include_directories(${lib_name} SYSTEM PUBLIC ${APR_INCLUDE_DIR})
++target_include_directories(${lib_name} SYSTEM PUBLIC $<BUILD_INTERFACE:${APR_INCLUDE_DIR}>)
 +install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 +  DESTINATION include/${lib_name}
 +  FILES_MATCHING PATTERN "*.h"
