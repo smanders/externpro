@@ -22,18 +22,18 @@ function(getCompilerPrefix _ret)
     elseif(MSVC60)
       set(prefix vc60)
     else()
-      message(SEND_ERROR "functions.cmake: MSVC compiler support lacking")
+      message(SEND_ERROR "Find@CMAKE_PROJECT_NAME@.cmake: MSVC compiler support lacking")
     endif()
   elseif(CMAKE_COMPILER_IS_GNUCXX)
     exec_program(${CMAKE_CXX_COMPILER}
       ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpversion
       OUTPUT_VARIABLE GCC_VERSION
       )
-    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1\\2"
+    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)?" "\\1\\2\\3"
       GCC_VERSION ${GCC_VERSION}
       )
     set(prefix gcc${GCC_VERSION})
-  elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # LLVM Clang (clang.llvm.org)
+  elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang") # LLVM/Apple Clang (clang.llvm.org)
     if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
       exec_program(${CMAKE_CXX_COMPILER}
         ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpversion
@@ -50,7 +50,7 @@ function(getCompilerPrefix _ret)
         )
     endif()
   else()
-    message(SEND_ERROR "functions.cmake: compiler support lacking")
+    message(SEND_ERROR "Find@CMAKE_PROJECT_NAME@.cmake: compiler support lacking: ${CMAKE_CXX_COMPILER_ID}")
   endif()
   set(${_ret} ${prefix} PARENT_SCOPE)
 endfunction()
