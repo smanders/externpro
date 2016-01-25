@@ -1,6 +1,9 @@
 # ACTIVEMQCPP_FOUND - ActiveMqCpp was found
 # ACTIVEMQCPP_INCLUDE_DIR - the ActiveMqCpp include directory
 # ACTIVEMQCPP_LIBRARIES - the ActiveMqCpp libraries
+if(COMMAND xpFindPkg)
+  xpFindPkg(PKGS APR OpenSSL) # dependencies
+endif()
 set(prj activemqcpp)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
