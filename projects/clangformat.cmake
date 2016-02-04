@@ -15,7 +15,7 @@ function(build_clangformat)
   if(NOT (XP_DEFAULT OR XP_PRO_LLVM))
     return()
   endif()
-  if(${CMAKE_SYSTE_NAME} STREQUAL "SunOS")
+  if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
     return() # we don't build clang-format on Solaris
     # at first we didn't have the right version of python
     # but even after getting python 2.7, we had linker errors
