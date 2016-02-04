@@ -32,7 +32,7 @@ function(build_fftw)
   if(MSVC)
     xpCmakeBuild(fftw fftwcmake)
   else()
-    list(APPEND removeFlags -std=c++0x -std=c++11 -stdlib=libc++)
+    list(APPEND removeFlags -std=c++0x -std=c++11 -std=c++14 -stdlib=libc++)
     xpGetConfigureFlags(CPP fftw_CONFIGURE_FLAGS "${removeFlags}")
     set(precisions double float long-double)
     # NOTE: double won't be recognized as a configure option, but default will be double

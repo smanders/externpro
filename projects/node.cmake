@@ -55,7 +55,7 @@ function(build_node)
     set(XP_CONFIGURE_Debug ${XP_CONFIGURE_BASE} debug ${destcpu})
   elseif(UNIX)
     # TODO: can we add flags? -fPIC, etc?
-    #list(APPEND removeFlags -std=c++0x -std=c++11 -stdlib=libc++)
+    #list(APPEND removeFlags -std=c++0x -std=c++11 -std=c++14 -stdlib=libc++)
     #xpGetConfigureFlags(CXX node_CONFIGURE_FLAGS "${removeFlags}")
     if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
       set(XP_CONFIGURE_BASE CC=gcc)
