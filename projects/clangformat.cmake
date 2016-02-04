@@ -15,13 +15,14 @@ function(build_clangformat)
   if(NOT (XP_DEFAULT OR XP_PRO_LLVM))
     return()
   endif()
+  if(${CMAKE_SYSTE_NAME} STREQUAL "SunOS")
+    return() # we don't build clang-format on Solaris
+    # at first we didn't have the right version of python
+    # but even after getting python 2.7, we had linker errors
+  endif()
   find_package(PythonInterp 2.7)
   if(NOT PYTHONINTERP_FOUND)
-    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
-      # we don't expect to build clang-format on Solaris
-      # so only show this message on non-Solaris systems
-      message(AUTHOR_WARNING "Unable to build clang-format, required python not found")
-    endif()
+    message(AUTHOR_WARNING "Unable to build clang-format, required python not found")
     return()
   endif()
   set(XP_DEPS llvm clang)
