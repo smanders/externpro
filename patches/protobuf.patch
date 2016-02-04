@@ -78,6 +78,19 @@ index 64a9cae..9d35a1b 100644
  target_include_directories(libprotobuf PUBLIC ${protobuf_source_dir}/src)
  set_target_properties(libprotobuf PROPERTIES
      COMPILE_DEFINITIONS LIBPROTOBUF_EXPORTS
+diff --git a/cmake/protobuf-module.cmake.in b/cmake/protobuf-module.cmake.in
+index d81dc45..5627d1f 100644
+--- a/cmake/protobuf-module.cmake.in
++++ b/cmake/protobuf-module.cmake.in
+@@ -25,7 +25,7 @@ function(PROTOBUF_GENERATE_CPP SRCS HDRS)
+ 
+   # Add well-known type protos include path
+   list(APPEND _protobuf_include_path
+-    -I "${_PROTOBUF_IMPORT_PREFIX}/@CMAKE_INSTALL_INCLUDEDIR@")
++    -I "${PROTOBUF_INCLUDE_DIR}")
+ 
+   if(DEFINED PROTOBUF_IMPORT_DIRS)
+     foreach(DIR ${PROTOBUF_IMPORT_DIRS})
 diff --git a/cmake/protoc.cmake b/cmake/protoc.cmake
 index 4f07c38..2be9c39 100644
 --- a/cmake/protoc.cmake
