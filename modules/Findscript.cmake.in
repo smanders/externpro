@@ -5,7 +5,9 @@
 # NOTE: wanted to use externpro version, but chicken-egg problem
 function(getCompilerPrefix _ret)
   if(MSVC)
-    if(MSVC12)
+    if(MSVC14)
+      set(prefix vc140)
+    elseif(MSVC12)
       set(prefix vc120)
     elseif(MSVC11)
       set(prefix vc110)

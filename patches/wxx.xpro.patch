@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..168d5a2
+index 0000000..4a4ab77
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,118 @@
+@@ -0,0 +1,120 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(wxx)
 +include(flags OPTIONAL)
@@ -77,7 +77,9 @@ index 0000000..168d5a2
 +function(set_wxxtarget_properties target)
 +  if(MSVC)
 +    # toolset
-+    if(MSVC12)
++    if(MSVC14)
++      set(toolset vc140)
++    elseif(MSVC12)
 +      set(toolset vc120)
 +    elseif(MSVC11)
 +      set(toolset vc110)
