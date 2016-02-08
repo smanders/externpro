@@ -546,10 +546,10 @@ index 0000000..7da160e
 +include_directories(${CMAKE_BINARY_DIR})
 diff --git a/src/libssh2_config.in b/src/libssh2_config.in
 new file mode 100644
-index 0000000..83a3e07
+index 0000000..b819c47
 --- /dev/null
 +++ b/src/libssh2_config.in
-@@ -0,0 +1,264 @@
+@@ -0,0 +1,266 @@
 +/* src/libssh2_config.h. Generated from src/libssh2_config.cmake by cmake.  */
 +/* src/libssh2_config.in. Adapted from src/libssh2_config.h.in manually.  */
 +
@@ -806,7 +806,9 @@ index 0000000..83a3e07
 +# ifndef _CRT_SECURE_NO_DEPRECATE
 +#  define _CRT_SECURE_NO_DEPRECATE 1
 +# endif
-+# define snprintf _snprintf
++# if _MSC_VER < 1900
++#  define snprintf _snprintf
++# endif
 +# if _MSC_VER < 1500
 +#  define vsnprintf _vsnprintf
 +# endif
