@@ -41,6 +41,7 @@
 
 |project|sub|description|version|repository|patch/diff|
 |-------|---|-----------|-------|----------|----------|
+|boost|[config](http://boost.org/libs/config 'boost config website')|config helps Boost library developers adapt to compiler idiosyncrasies|1.57.0|[repo](https://github.com/smanders/config 'forked config repo on github')|[diff](https://github.com/smanders/config/compare/boostorg:boost-1.57.0...xp1.57.0 'patch/diff')|
 |boost|[gil](http://boost.org/libs/gil 'boost gil website')|gil (generic image library)|1.57.0|[repo](https://github.com/smanders/gil 'forked gil repo on github')|[diff](https://github.com/smanders/gil/compare/boostorg:boost-1.57.0...xp1.57.0 'patch/diff')|
 |boost|[log](http://boost.org/libs/log 'boost log website')|logging library|1.57.0|[repo](https://github.com/smanders/log 'forked log repo on github')|[diff](https://github.com/smanders/log/compare/boostorg:boost-1.57.0...xp1.57.0 'patch/diff')|
 |boost|[mpl](http://boost.org/libs/mpl 'boost mpl website')|mpl (metaprogramming library)|1.57.0|[repo](https://github.com/smanders/mpl 'forked mpl repo on github')|[diff](https://github.com/smanders/mpl/compare/boostorg:boost-1.57.0...xp1.57.0 'patch/diff')|

@@ -39,6 +39,7 @@ function(build_boost)
   endif()
   cmake_parse_arguments(boost "" TARGETS "" ${ARGN})
   list(APPEND tgts # patched submodules
+    boostconfig
     boostgil
     boostlog
     boostmpl
