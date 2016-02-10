@@ -13,6 +13,7 @@ set(PRO_BOOSTGIL
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/gil.git
   GIT_UPSTREAM git://github.com/boostorg/gil.git
+  GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}
   PATCH ${PATCH_DIR}/boost.gil.patch

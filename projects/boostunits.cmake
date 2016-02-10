@@ -13,6 +13,7 @@ set(PRO_BOOSTUNITS
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/units.git
   GIT_UPSTREAM git://github.com/boostorg/units.git
+  GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}
   PATCH ${PATCH_DIR}/boost.units.patch

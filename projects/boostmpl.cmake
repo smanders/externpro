@@ -15,6 +15,7 @@ set(PRO_BOOSTMPL
   GIT_TAG boost-${VER}
   GIT_ORIGIN git://github.com/smanders/mpl.git
   GIT_UPSTREAM git://github.com/boostorg/mpl.git
+  GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}
   PATCH ${PATCH_DIR}/boost.mpl.patch

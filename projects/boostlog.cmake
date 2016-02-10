@@ -13,6 +13,7 @@ set(PRO_BOOSTLOG
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/log.git
   GIT_UPSTREAM git://github.com/boostorg/log.git
+  GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}
   PATCH ${PATCH_DIR}/boost.log.patch
