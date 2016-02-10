@@ -11,9 +11,9 @@ set(PRO_JPEGXP
   LICENSE "open" https://github.com/smanders/libjpeg/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
   DESC "JPEG codec with mods for Lossless, 12-bit lossy (XP)"
   REPO "repo" ${REPO} "jpegxp repo on github"
-  VER 15.06.03 # latest sdljxp branch commit date
+  VER 15.06.03 # latest jxp branch commit date
   GIT_ORIGIN git://github.com/smanders/jpegxp.git
-  GIT_TAG sdljxp # what to 'git checkout'
+  GIT_TAG jxp # what to 'git checkout'
   GIT_REF jxp.130220 # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/jpegxp.patch
   DIFF ${REPO}/compare/

@@ -15,7 +15,7 @@ set(PRO_WXXPLOTCTRL
   REPO "repo" ${REPO} "wxplotctrl repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/wxplotctrl.git
-  GIT_TAG sdl_${VER_} # TODO: rename tag
+  GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL http://downloads.sourceforge.net/project/wxcode/Components/wxPlotCtrl/wxplotctrl_${VER_}.tar.gz
   DLMD5 3a0a4feddc5fead1152e6752bfe473bc

@@ -14,7 +14,7 @@ set(PRO_WXXTLC
   REPO "repo" ${REPO} "wxTLC repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/wxTLC.git
-  GIT_TAG sdl_${VER} # TODO: rename tag
+  GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL http://downloads.sourceforge.net/project/wxcode/Components/treelistctrl/treelistctrl_${VER}.zip
   DLMD5 49252811c837c74b6b627cc36468c2fc

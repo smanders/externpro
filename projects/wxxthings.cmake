@@ -15,7 +15,7 @@ set(PRO_WXXTHINGS
   REPO "repo" ${REPO} "wxthings repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/wxthings.git
-  GIT_TAG sdl_${VER_} # TODO: rename tag
+  GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL http://downloads.sourceforge.net/project/wxcode/Components/wxThings/wxthings_${VER_}.tar.gz
   DLMD5 1d769a677c0f3f10d51de579873c2613
