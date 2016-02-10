@@ -12,6 +12,7 @@ set(PRO_JPEGLOSSLESS
   REPO "repo" ${REPO} "forked libjpeg repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libjpeg.git
+  GIT_UPSTREAM git://github.com/LuaDist/libjpeg.git
   GIT_TAG lossless.6b # what to 'git checkout'
   GIT_REF eccc424 # create patch from this tag to 'git checkout'
   DLURL http://downloads.sourceforge.net/project/jpeg/ljpeg/ljpeg%20${VER}/ljpeg-${VER}.0.tar.bz2

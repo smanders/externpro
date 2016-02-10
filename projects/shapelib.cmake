@@ -14,6 +14,7 @@ set(PRO_SHAPELIB
   REPO "repo" ${REPO} "forked shapelib repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/shapelib.git
+  GIT_UPSTREAM git://github.com/asapnet/shapelib.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://shapelib.maptools.org/dl/shapelib-${VER}.tar.gz
