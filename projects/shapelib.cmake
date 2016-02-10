@@ -11,7 +11,7 @@ set(PRO_SHAPELIB
   WEB "shapelib" http://shapelib.maptools.org/ "Shapefile C Library website"
   LICENSE "open" http://shapelib.maptools.org/license.html "MIT Style -or- LGPL"
   DESC "reading, writing, updating ESRI Shapefiles"
-  REPO "repo" ${REPO} "shapelib repo on github"
+  REPO "repo" ${REPO} "forked shapelib repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/shapelib.git
   GIT_TAG xp${VER} # what to 'git checkout'

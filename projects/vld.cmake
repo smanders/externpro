@@ -8,7 +8,7 @@ set(PRO_VLD
   WEB "vld" http://vld.codeplex.com/ "vld website"
   LICENSE "open" http://vld.codeplex.com/license "LGPL"
   DESC "(MSW-only) Visual Leak Detector for Visual C++"
-  REPO "repo" ${REPO} "vld repo on github"
+  REPO "repo" ${REPO} "forked vld repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/vld.git
   GIT_UPSTREAM git://github.com/KindDragon/vld.git

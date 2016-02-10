@@ -9,7 +9,7 @@ set(PRO_JPEGLOSSLESS
   WEB "jpeglossless" http://sourceforge.net/projects/jpeg/ "JPEG on sourceforge"
   LICENSE "open" ${REPO}/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
   DESC "lossless decode"
-  REPO "repo" ${REPO} "libjpeg repo on github"
+  REPO "repo" ${REPO} "forked libjpeg repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libjpeg.git
   GIT_TAG lossless.6b # what to 'git checkout'

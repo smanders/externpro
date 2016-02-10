@@ -9,7 +9,7 @@ set(PRO_JPEGLOSSY12
   WEB "jpeglossy12" http://libjpeg.sourceforge.net/ "libjpeg on sourceforge"
   LICENSE "open" ${REPO}/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
   DESC "lossy 12-bit encode and decode"
-  REPO "repo" ${REPO} "libjpeg repo on github"
+  REPO "repo" ${REPO} "forked libjpeg repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libjpeg.git
   GIT_UPSTREAM git://github.com/LuaDist/libjpeg.git

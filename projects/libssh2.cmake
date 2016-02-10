@@ -8,7 +8,7 @@ set(PRO_LIBSSH2
   WEB "libssh2" http://www.libssh2.org/ "libssh2 website"
   LICENSE "open" http://www.libssh2.org/license.html "BSD 3-Clause License - https://www.openhub.net/licenses/BSD-3-Clause"
   DESC "client-side C library implementing SSH2 protocol"
-  REPO "repo" ${REPO} "libssh2 repo on github"
+  REPO "repo" ${REPO} "forked libssh2 repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libssh2.git
   GIT_UPSTREAM git://github.com/libssh2/libssh2.git

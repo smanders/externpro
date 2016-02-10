@@ -11,7 +11,7 @@ set(PRO_GSOAP
   WEB "gSOAP" http://www.cs.fsu.edu/~engelen/soap.html "gSOAP website"
   LICENSE "??" http://www.cs.fsu.edu/~engelen/soaplicense.html "gSOAP Public License 1.3, based on Mozilla public license 1.1 -- some components are GPL v2"
   DESC "toolkit for SOAP/XML Web services"
-  REPO "repo" ${REPO} "gSOAP repo on github"
+  REPO "repo" ${REPO} "forked gSOAP repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/gSOAP.git
   GIT_UPSTREAM git://github.com/stoneyrh/gSOAP.git
