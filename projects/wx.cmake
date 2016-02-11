@@ -36,6 +36,7 @@ endfunction()
 ########################################
 function(patch_wx)
   xpPatch(${PRO_WX})
+  xpPatch(${PRO_WXCMAKE})
 endfunction()
 ########################################
 function(build_wx)

@@ -20,8 +20,3 @@ set(PRO_WXCMAKE
 function(mkpatch_wxcmake)
   xpRepo(${PRO_WXCMAKE})
 endfunction()
-########################################
-function(patch_wxcmake)
-  patch_wx()
-  xpPatch(${PRO_WXCMAKE})
-endfunction()
