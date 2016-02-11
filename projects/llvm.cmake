@@ -27,4 +27,5 @@ endfunction()
 ########################################
 function(patch_llvm)
   xpPatch(${PRO_LLVM})
+  xpPatch(${PRO_CLANG})
 endfunction()

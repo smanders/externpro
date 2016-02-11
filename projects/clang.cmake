@@ -29,8 +29,3 @@ endfunction()
 function(download_clang)
   xpNewDownload(${PRO_CLANG})
 endfunction()
-########################################
-function(patch_clang)
-  patch_llvm()
-  xpPatch(${PRO_CLANG})
-endfunction()
