@@ -38,12 +38,11 @@ function(build_libraptorq)
     return()
   endif()
   if(NOT (XP_DEFAULT OR XP_PRO_EIGEN))
-    message(FATAL_ERROR "libraptorq.cmake: requires eigen")
-    return()
+    message(STATUS "libraptorq.cmake: requires eigen")
+    set(XP_PRO_EIGEN ON CACHE BOOL "include eigen" FORCE)
+    patch_eigen()
   endif()
-  if(NOT DEFINED eigenTgts)
-    build_eigen(eigenTgts)
-  endif()
+  build_eigen(eigenTgts)
   set(XP_CONFIGURE
     -DOVERRIDE_CMAKE_GENERATOR=OFF
     -DPROFILING=OFF

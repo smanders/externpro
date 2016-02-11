@@ -29,8 +29,9 @@ function(build_wxx)
     return()
   endif()
   if(NOT (XP_DEFAULT OR XP_PRO_WX))
-    message(FATAL_ERROR "wxx.cmake: requires wx")
-    return()
+    message(STATUS "wxx.cmake: requires wx")
+    set(XP_PRO_WX ON CACHE BOOL "include wx" FORCE)
+    patch_wx()
   endif()
   configure_file(${PRO_DIR}/use/usexp-wxx-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
