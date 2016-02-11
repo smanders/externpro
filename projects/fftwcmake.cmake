@@ -20,8 +20,3 @@ set(PRO_FFTWCMAKE
 function(mkpatch_fftwcmake)
   xpRepo(${PRO_FFTWCMAKE})
 endfunction()
-########################################
-function(patch_fftwcmake)
-  patch_fftw()
-  xpPatch(${PRO_FFTWCMAKE})
-endfunction()

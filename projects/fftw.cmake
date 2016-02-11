@@ -20,6 +20,7 @@ endfunction()
 ########################################
 function(patch_fftw)
   xpPatch(${PRO_FFTW})
+  xpPatch(${PRO_FFTWCMAKE})
 endfunction()
 ########################################
 function(build_fftw)
