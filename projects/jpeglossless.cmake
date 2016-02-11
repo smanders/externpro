@@ -28,8 +28,3 @@ endfunction()
 function(download_jpeglossless)
   xpNewDownload(${PRO_JPEGLOSSLESS})
 endfunction()
-########################################
-function(patch_jpeglossless)
-  patch_jpegxp()
-  xpPatch(${PRO_JPEGLOSSLESS})
-endfunction()

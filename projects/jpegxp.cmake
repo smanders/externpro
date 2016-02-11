@@ -25,6 +25,9 @@ endfunction()
 ########################################
 function(patch_jpegxp)
   xpPatch(${PRO_JPEGXP})
+  xpPatch(${PRO_JPEGLOSSY8})
+  xpPatch(${PRO_JPEGLOSSY12})
+  xpPatch(${PRO_JPEGLOSSLESS})
 endfunction()
 ########################################
 function(build_jpegxp)

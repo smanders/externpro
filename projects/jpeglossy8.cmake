@@ -28,8 +28,3 @@ endfunction()
 function(download_jpeglossy8)
   xpNewDownload(${PRO_JPEGLOSSY8})
 endfunction()
-########################################
-function(patch_jpeglossy8)
-  patch_jpegxp()
-  xpPatch(${PRO_JPEGLOSSY8})
-endfunction()
