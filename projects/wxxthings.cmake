@@ -30,8 +30,3 @@ endfunction()
 function(download_wxxthings)
   xpNewDownload(${PRO_WXXTHINGS})
 endfunction()
-########################################
-function(patch_wxxthings)
-  patch_wxx()
-  xpPatch(${PRO_WXXTHINGS})
-endfunction()

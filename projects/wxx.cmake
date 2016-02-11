@@ -22,6 +22,9 @@ endfunction()
 ########################################
 function(patch_wxx)
   xpPatch(${PRO_WXX})
+  xpPatch(${PRO_WXXPLOTCTRL})
+  xpPatch(${PRO_WXXTHINGS})
+  xpPatch(${PRO_WXXTLC})
 endfunction()
 ########################################
 function(build_wxx)

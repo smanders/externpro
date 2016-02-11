@@ -30,8 +30,3 @@ endfunction()
 function(download_wxxplotctrl)
   xpNewDownload(${PRO_WXXPLOTCTRL})
 endfunction()
-########################################
-function(patch_wxxplotctrl)
-  patch_wxx()
-  xpPatch(${PRO_WXXPLOTCTRL})
-endfunction()

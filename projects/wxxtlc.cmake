@@ -29,8 +29,3 @@ endfunction()
 function(download_wxxtlc)
   xpNewDownload(${PRO_WXXTLC})
 endfunction()
-########################################
-function(patch_wxxtlc)
-  patch_wxx()
-  xpPatch(${PRO_WXXTLC})
-endfunction()
