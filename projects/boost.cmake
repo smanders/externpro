@@ -31,6 +31,11 @@ endfunction()
 ########################################
 function(patch_boost)
   xpPatch(${PRO_BOOST})
+  xpPatch(${PRO_BOOSTCONFIG})
+  xpPatch(${PRO_BOOSTGIL})
+  xpPatch(${PRO_BOOSTLOG})
+  xpPatch(${PRO_BOOSTMPL})
+  xpPatch(${PRO_BOOSTUNITS})
 endfunction()
 ########################################
 function(build_boost)

@@ -26,8 +26,3 @@ set(PRO_BOOSTMPL
 function(mkpatch_boostmpl)
   xpRepo(${PRO_BOOSTMPL})
 endfunction()
-########################################
-function(patch_boostmpl)
-  patch_boost()
-  xpPatch(${PRO_BOOSTMPL})
-endfunction()

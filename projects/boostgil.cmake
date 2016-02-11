@@ -24,8 +24,3 @@ set(PRO_BOOSTGIL
 function(mkpatch_boostgil)
   xpRepo(${PRO_BOOSTGIL})
 endfunction()
-########################################
-function(patch_boostgil)
-  patch_boost()
-  xpPatch(${PRO_BOOSTGIL})
-endfunction()

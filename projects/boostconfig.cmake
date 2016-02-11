@@ -24,8 +24,3 @@ set(PRO_BOOSTCONFIG
 function(mkpatch_boostconfig)
   xpRepo(${PRO_BOOSTCONFIG})
 endfunction()
-########################################
-function(patch_boostconfig)
-  patch_boost()
-  xpPatch(${PRO_BOOSTCONFIG})
-endfunction()

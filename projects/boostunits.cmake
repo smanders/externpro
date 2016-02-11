@@ -24,8 +24,3 @@ set(PRO_BOOSTUNITS
 function(mkpatch_boostunits)
   xpRepo(${PRO_BOOSTUNITS})
 endfunction()
-########################################
-function(patch_boostunits)
-  patch_boost()
-  xpPatch(${PRO_BOOSTUNITS})
-endfunction()

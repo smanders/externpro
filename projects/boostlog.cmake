@@ -23,8 +23,3 @@ set(PRO_BOOSTLOG
 function(mkpatch_boostlog)
   xpRepo(${PRO_BOOSTLOG})
 endfunction()
-########################################
-function(patch_boostlog)
-  patch_boost()
-  xpPatch(${PRO_BOOSTLOG})
-endfunction()
