@@ -265,7 +265,7 @@ function(build_boostlibs)
     )
   #list(APPEND boost_BUILD --without-locale --without-mpi)
   list(APPEND boost_BUILD --with-iostreams)
-  list(APPEND boost_BUILD -s ZLIB_INCLUDE=${STAGE_DIR}/include/zlib -s ZLIB_LIBPATH=${STAGE_DIR}/lib)
+  list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic-s -s ZLIB_INCLUDE=${STAGE_DIR}/include/zlib -s ZLIB_LIBPATH=${STAGE_DIR}/lib)
   if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
     # Memory exhausted errors (/opt/csw/i386-pc-solaris2.10/bin/ranlib)
     # wave/build/gcc-4.8.0/debug/address-model-64/link-static/runtime-link-static/threading-multi/
