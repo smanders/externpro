@@ -264,7 +264,7 @@ function(build_boostlibs)
     runtime-link=${boost_RUNTIME_LINK} toolset=${boost_TOOLSET} ${boost_FLAGS}
     )
   #list(APPEND boost_BUILD --without-locale --without-mpi)
-  list(APPEND boost_BUILD --with-iostreams)
+  list(APPEND boost_BUILD --with-iostreams --with-filesystem)
   list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic-s -s ZLIB_INCLUDE=${STAGE_DIR}/include/zlib -s ZLIB_LIBPATH=${STAGE_DIR}/lib)
   if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
     # Memory exhausted errors (/opt/csw/i386-pc-solaris2.10/bin/ranlib)
