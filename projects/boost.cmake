@@ -1,9 +1,6 @@
 ########################################
 # boost
 # http://sourceforge.net/projects/boost/files/boost/
-# * to build boost.iostreams on Linux: need to install bz2 dev pkgs
-# *   sudo apt-get install libbz2-dev [ubuntu]
-# *   sudo yum install bzip2-devel.x86_64 [rhel6]
 # * to build boost.python on Linux: need to install python dev pkgs
 # *   sudo apt-get install python-dev [ubuntu]
 # *   sudo yum install python-devel.x86_64 [rhel6]
@@ -51,9 +48,16 @@ function(build_boost)
     set(XP_PRO_ZLIB ON CACHE BOOL "include zlib" FORCE)
     patch_zlib()
   endif()
+  if(NOT (XP_DEFAULT OR XP_PRO_BZIP2))
+    message(STATUS "boost.cmake: requires bzip2")
+    set(XP_PRO_BZIP2 ON CACHE BOOL "include bzip2" FORCE)
+    patch_bzip2()
+  endif()
   build_zlib(zlibTgts)
+  build_bzip2(bzip2Tgts)
   list(APPEND tgts
     ${zlibTgts}
+    ${bzip2Tgts}
     # patched submodules
     boostconfig
     boostgil
@@ -265,7 +269,11 @@ function(build_boostlibs)
     )
   #list(APPEND boost_BUILD --without-locale --without-mpi)
   list(APPEND boost_BUILD --with-iostreams --with-filesystem)
-  list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic-s -s ZLIB_INCLUDE=${STAGE_DIR}/include/zlib -s ZLIB_LIBPATH=${STAGE_DIR}/lib)
+  list(APPEND boost_BUILD -s ZLIB_INCLUDE=${STAGE_DIR}/include/zlib -s ZLIB_LIBPATH=${STAGE_DIR}/lib)
+  list(APPEND boost_BUILD -s BZIP2_INCLUDE=${STAGE_DIR}/include/bzip2 -s BZIP2_LIBPATH=${STAGE_DIR}/lib)
+  if(WIN32)
+    list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic-s -s BZIP2_BINARY=bz2-s)
+  endif()
   if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
     # Memory exhausted errors (/opt/csw/i386-pc-solaris2.10/bin/ranlib)
     # wave/build/gcc-4.8.0/debug/address-model-64/link-static/runtime-link-static/threading-multi/
