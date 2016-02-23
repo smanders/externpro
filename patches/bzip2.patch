@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..49ccf9f
+index 0000000..ede8c4a
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,65 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(bzip2 C)
 +include(flags OPTIONAL)
@@ -62,7 +62,10 @@ index 0000000..49ccf9f
 +  RUNTIME DESTINATION bin
 +  CONFIGURATIONS Release
 +  )
-+install(PROGRAMS $<TARGET_FILE:bzip2> DESTINATION bin CONFIGURATIONS Release RENAME bunzip2)
-+install(PROGRAMS $<TARGET_FILE:bzip2> DESTINATION bin CONFIGURATIONS Release RENAME bzcat)
++if(WIN32)
++  set(ext ".exe")
++endif()
++install(PROGRAMS $<TARGET_FILE:bzip2> DESTINATION bin CONFIGURATIONS Release RENAME bunzip2${ext})
++install(PROGRAMS $<TARGET_FILE:bzip2> DESTINATION bin CONFIGURATIONS Release RENAME bzcat${ext})
 +install(FILES bzlib.h DESTINATION include/bzip2)
 +install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
