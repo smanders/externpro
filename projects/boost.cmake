@@ -267,8 +267,7 @@ function(build_boostlibs)
     address-model=${BUILD_PLATFORM} variant=${boost_VARIANT}
     runtime-link=${boost_RUNTIME_LINK} toolset=${boost_TOOLSET} ${boost_FLAGS}
     )
-  #list(APPEND boost_BUILD --without-locale --without-mpi)
-  list(APPEND boost_BUILD --with-iostreams --with-filesystem)
+  list(APPEND boost_BUILD --without-locale --without-mpi)
   list(APPEND boost_BUILD -s ZLIB_INCLUDE=${STAGE_DIR}/include/zlib -s ZLIB_LIBPATH=${STAGE_DIR}/lib)
   list(APPEND boost_BUILD -s BZIP2_INCLUDE=${STAGE_DIR}/include/bzip2 -s BZIP2_LIBPATH=${STAGE_DIR}/lib)
   if(WIN32)
