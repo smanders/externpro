@@ -1,9 +1,9 @@
 ########################################
 # boost
 # http://sourceforge.net/projects/boost/files/boost/
-# * to build iostreams on Linux: need to install zlib, bz2 dev pkgs
-# *   sudo apt-get install zlib1g-dev libbz2-dev python-dev [ubuntu]
-# *   sudo yum install zlib-devel.x86_64 bzip2-devel.x86_64 python-devel.x86_64 [rhel6]
+# * to build boost.python on Linux: need to install python dev pkgs
+# *   sudo apt-get install python-dev [ubuntu]
+# *   sudo yum install python-devel.x86_64 [rhel6]
 xpProOption(boost)
 set(VER 1.57.0)
 string(REPLACE "." "_" VER_ ${VER})
@@ -43,7 +43,22 @@ function(build_boost)
     return()
   endif()
   cmake_parse_arguments(boost "" TARGETS "" ${ARGN})
-  list(APPEND tgts # patched submodules
+  if(NOT (XP_DEFAULT OR XP_PRO_ZLIB))
+    message(STATUS "boost.cmake: requires zlib")
+    set(XP_PRO_ZLIB ON CACHE BOOL "include zlib" FORCE)
+    patch_zlib()
+  endif()
+  if(NOT (XP_DEFAULT OR XP_PRO_BZIP2))
+    message(STATUS "boost.cmake: requires bzip2")
+    set(XP_PRO_BZIP2 ON CACHE BOOL "include bzip2" FORCE)
+    patch_bzip2()
+  endif()
+  build_zlib(zlibTgts)
+  build_bzip2(bzip2Tgts)
+  list(APPEND tgts
+    ${zlibTgts}
+    ${bzip2Tgts}
+    # patched submodules
     boostconfig
     boostgil
     boostlog
@@ -248,10 +263,20 @@ function(build_boostlibs)
     set(boost_RUNTIME_LINK static)
   endif()
   set(boost_BUILD ${bl_B2PATH}
-    --ignore-site-config --layout=versioned --without-locale --without-mpi
-    link=static threading=multi address-model=${BUILD_PLATFORM} variant=${boost_VARIANT}
+    --ignore-site-config --layout=versioned link=static threading=multi
+    address-model=${BUILD_PLATFORM} variant=${boost_VARIANT}
     runtime-link=${boost_RUNTIME_LINK} toolset=${boost_TOOLSET} ${boost_FLAGS}
     )
+  list(APPEND boost_BUILD --without-locale --without-mpi)
+  list(APPEND boost_BUILD -s ZLIB_INCLUDE=${STAGE_DIR}/include/zlib -s ZLIB_LIBPATH=${STAGE_DIR}/lib)
+  list(APPEND boost_BUILD -s BZIP2_INCLUDE=${STAGE_DIR}/include/bzip2 -s BZIP2_LIBPATH=${STAGE_DIR}/lib)
+  if(WIN32)
+    include(${STAGE_DIR}/share/cmake/xpopts.cmake)
+    xpSetPostfix()
+    # TRICKY: BINARY (zlibstatic, bz2) needs to match ${PRJ}_LIBRARIES in zlib, bzip2 use scripts
+    list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic${CMAKE_RELEASE_POSTFIX})
+    list(APPEND boost_BUILD -s BZIP2_BINARY=bz2${CMAKE_RELEASE_POSTFIX})
+  endif()
   if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
     # Memory exhausted errors (/opt/csw/i386-pc-solaris2.10/bin/ranlib)
     # wave/build/gcc-4.8.0/debug/address-model-64/link-static/runtime-link-static/threading-multi/
