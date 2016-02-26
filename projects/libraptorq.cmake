@@ -47,13 +47,8 @@ function(build_libraptorq)
     -DOVERRIDE_CMAKE_GENERATOR=OFF
     -DPROFILING=OFF
     -DBUILD_SHARED_LIB=OFF
+    -DLTO=OFF # Solaris and MacOSX linker error when LTO turned ON, Linux incomplete library
     )
-  if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS OR ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
-    # TODO: Solaris and MacOSX linker error when LTO turned ON
-    list(APPEND XP_CONFIGURE -DLTO=OFF)
-  else()
-    list(APPEND XP_CONFIGURE -DLTO=ON)
-  endif()
   configure_file(${PRO_DIR}/use/usexp-libraptorq-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
