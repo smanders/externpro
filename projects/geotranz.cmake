@@ -15,12 +15,7 @@ set(PRO_GEOTRANZ
   GIT_ORIGIN git://github.com/smanders/geotranz.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  # no longer available
-  #DLURL ftp://priede.bf.lu.lv/pub/TIS/koordinatas/GEOTRANS/${VER}/master.tgz
-  #DLMD5 15ec0e3ab75fb5ada9a39e97e8c28bf5
-  # no longer valid? 26 B, should be 9.33 MB
-  #DLURL http://geotranz.sourcearchive.com/downloads/${VER}/geotranz_${VER}.orig.tar.gz
-  DLURL http://ftp.de.debian.org/debian/pool/main/g/geotranz/geotranz_${VER}.orig.tar.gz
+  DLURL http://ftp.gnome.org/ubuntu/ubuntu/pool/universe/g/geotranz/geotranz_${VER}.orig.tar.gz
   DLMD5 1d370d5b0daed2a541a9aa14bd3172a8
   PATCH ${PATCH_DIR}/geotranz.patch
   DIFF ${REPO}/compare/
