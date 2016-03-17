@@ -600,7 +600,7 @@ index 77514dd..c30f339 100644
  	invlut->size = n;
  	for (i = 0; i < invlut->size; ++i) {
 diff --git a/src/libjasper/base/jas_icc.c b/src/libjasper/base/jas_icc.c
-index e5a0a2e..988cb3a 100644
+index e5a0a2e..c13d7ac 100644
 --- a/src/libjasper/base/jas_icc.c
 +++ b/src/libjasper/base/jas_icc.c
 @@ -266,7 +266,6 @@ jas_iccprof_t *jas_iccprof_load(jas_stream_t *in)
@@ -611,7 +611,15 @@ index e5a0a2e..988cb3a 100644
  	int i;
  	int len;
  
-@@ -325,7 +324,7 @@ jas_iccprof_t *jas_iccprof_load(jas_stream_t *in)
+@@ -300,6 +299,7 @@ jas_iccprof_t *jas_iccprof_load(jas_stream_t *in)
+ 				if (jas_iccprof_setattr(prof, tagtabent->tag, attrval))
+ 					goto error;
+ 				jas_iccattrval_destroy(attrval);
++				attrval = 0;
+ 			} else {
+ #if 0
+ 				jas_eprintf("warning: skipping unknown tag type\n");
+@@ -325,7 +325,7 @@ jas_iccprof_t *jas_iccprof_load(jas_stream_t *in)
  			goto error;
  		}
  		curoff += 8;
@@ -620,7 +628,7 @@ index e5a0a2e..988cb3a 100644
  #if 0
  			jas_eprintf("warning: skipping unknown tag type\n");
  #endif
-@@ -373,7 +372,7 @@ int jas_iccprof_save(jas_iccprof_t *prof, jas_stream_t *out)
+@@ -373,7 +373,7 @@ int jas_iccprof_save(jas_iccprof_t *prof, jas_stream_t *out)
  	jas_icctagtab_t *tagtab;
  
  	tagtab = &prof->tagtab;
@@ -629,7 +637,7 @@ index e5a0a2e..988cb3a 100644
  	  sizeof(jas_icctagtabent_t))))
  		goto error;
  	tagtab->numents = prof->attrtab->numattrs;
-@@ -522,7 +521,7 @@ static int jas_iccprof_gettagtab(jas_stream_t *in, jas_icctagtab_t *tagtab)
+@@ -522,7 +522,7 @@ static int jas_iccprof_gettagtab(jas_stream_t *in, jas_icctagtab_t *tagtab)
  	}
  	if (jas_iccgetuint32(in, &tagtab->numents))
  		goto error;
@@ -638,7 +646,7 @@ index e5a0a2e..988cb3a 100644
  	  sizeof(jas_icctagtabent_t))))
  		goto error;
  	tagtabent = tagtab->ents;
-@@ -743,8 +742,7 @@ static int jas_iccattrtab_resize(jas_iccattrtab_t *tab, int maxents)
+@@ -743,8 +743,7 @@ static int jas_iccattrtab_resize(jas_iccattrtab_t *tab, int maxents)
  {
  	jas_iccattr_t *newattrs;
  	assert(maxents >= tab->numattrs);
@@ -648,7 +656,7 @@ index e5a0a2e..988cb3a 100644
  	if (!newattrs)
  		return -1;
  	tab->attrs = newattrs;
-@@ -999,7 +997,7 @@ static int jas_icccurv_input(jas_iccattrval_t *attrval, jas_stream_t *in,
+@@ -999,7 +998,7 @@ static int jas_icccurv_input(jas_iccattrval_t *attrval, jas_stream_t *in,
  
  	if (jas_iccgetuint32(in, &curv->numents))
  		goto error;
@@ -657,7 +665,7 @@ index e5a0a2e..988cb3a 100644
  		goto error;
  	for (i = 0; i < curv->numents; ++i) {
  		if (jas_iccgetuint16(in, &curv->ents[i]))
-@@ -1011,7 +1009,6 @@ static int jas_icccurv_input(jas_iccattrval_t *attrval, jas_stream_t *in,
+@@ -1011,7 +1010,6 @@ static int jas_icccurv_input(jas_iccattrval_t *attrval, jas_stream_t *in,
  	return 0;
  
  error:
@@ -665,7 +673,7 @@ index e5a0a2e..988cb3a 100644
  	return -1;
  }
  
-@@ -1100,7 +1097,7 @@ static int jas_icctxtdesc_input(jas_iccattrval_t *attrval, jas_stream_t *in,
+@@ -1100,7 +1098,7 @@ static int jas_icctxtdesc_input(jas_iccattrval_t *attrval, jas_stream_t *in,
  	if (jas_iccgetuint32(in, &txtdesc->uclangcode) ||
  	  jas_iccgetuint32(in, &txtdesc->uclen))
  		goto error;
@@ -674,7 +682,7 @@ index e5a0a2e..988cb3a 100644
  		goto error;
  	if (jas_stream_read(in, txtdesc->ucdata, txtdesc->uclen * 2) !=
  	  JAS_CAST(int, txtdesc->uclen * 2))
-@@ -1129,7 +1126,6 @@ static int jas_icctxtdesc_input(jas_iccattrval_t *attrval, jas_stream_t *in,
+@@ -1129,7 +1127,6 @@ static int jas_icctxtdesc_input(jas_iccattrval_t *attrval, jas_stream_t *in,
  #endif
  	return 0;
  error:
@@ -682,7 +690,7 @@ index e5a0a2e..988cb3a 100644
  	return -1;
  }
  
-@@ -1208,8 +1204,6 @@ static int jas_icctxt_input(jas_iccattrval_t *attrval, jas_stream_t *in,
+@@ -1208,8 +1205,6 @@ static int jas_icctxt_input(jas_iccattrval_t *attrval, jas_stream_t *in,
  		goto error;
  	return 0;
  error:
@@ -691,7 +699,7 @@ index e5a0a2e..988cb3a 100644
  	return -1;
  }
  
-@@ -1292,17 +1286,17 @@ static int jas_icclut8_input(jas_iccattrval_t *attrval, jas_stream_t *in,
+@@ -1292,17 +1287,17 @@ static int jas_icclut8_input(jas_iccattrval_t *attrval, jas_stream_t *in,
  	  jas_iccgetuint16(in, &lut8->numouttabents))
  		goto error;
  	clutsize = jas_iccpowi(lut8->clutlen, lut8->numinchans) * lut8->numoutchans;
@@ -716,7 +724,7 @@ index e5a0a2e..988cb3a 100644
  	  sizeof(jas_iccuint8_t *))))
  		goto error;
  	for (i = 0; i < lut8->numoutchans; ++i)
-@@ -1330,7 +1324,6 @@ static int jas_icclut8_input(jas_iccattrval_t *attrval, jas_stream_t *in,
+@@ -1330,7 +1325,6 @@ static int jas_icclut8_input(jas_iccattrval_t *attrval, jas_stream_t *in,
  		goto error;
  	return 0;
  error:
@@ -724,7 +732,7 @@ index e5a0a2e..988cb3a 100644
  	return -1;
  }
  
-@@ -1461,17 +1454,17 @@ static int jas_icclut16_input(jas_iccattrval_t *attrval, jas_stream_t *in,
+@@ -1461,17 +1455,17 @@ static int jas_icclut16_input(jas_iccattrval_t *attrval, jas_stream_t *in,
  	  jas_iccgetuint16(in, &lut16->numouttabents))
  		goto error;
  	clutsize = jas_iccpowi(lut16->clutlen, lut16->numinchans) * lut16->numoutchans;
@@ -749,12 +757,21 @@ index e5a0a2e..988cb3a 100644
  	  sizeof(jas_iccuint16_t *))))
  		goto error;
  	for (i = 0; i < lut16->numoutchans; ++i)
-@@ -1499,7 +1492,6 @@ static int jas_icclut16_input(jas_iccattrval_t *attrval, jas_stream_t *in,
+@@ -1499,7 +1493,6 @@ static int jas_icclut16_input(jas_iccattrval_t *attrval, jas_stream_t *in,
  		goto error;
  	return 0;
  error:
 -	jas_icclut16_destroy(attrval);
  	return -1;
+ }
+ 
+@@ -1699,6 +1692,8 @@ jas_iccprof_t *jas_iccprof_createfrombuf(uchar *buf, int len)
+ 	jas_stream_close(in);
+ 	return prof;
+ error:
++	if (in)
++		jas_stream_close(in);
+ 	return 0;
  }
  
 diff --git a/src/libjasper/base/jas_image.c b/src/libjasper/base/jas_image.c
