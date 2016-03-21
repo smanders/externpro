@@ -11,7 +11,7 @@ index 0000000..669d0d6
 +add_subdirectory(src/libjasper)
 diff --git a/configure.cmake b/configure.cmake
 new file mode 100644
-index 0000000..e597b50
+index 0000000..170dbd9
 --- /dev/null
 +++ b/configure.cmake
 @@ -0,0 +1,289 @@
@@ -101,7 +101,7 @@ index 0000000..e597b50
 +if(NOT HAVE_SIZEOF_SIZE_T)
 +  set(size_t "unsigned") # Define to `unsigned' if <sys/types.h> does not define.
 +endif()
-+if(NOT HAVE_SIZEOF_SSIZE_T)
++if(NOT HAVE_SIZEOF_SSIZE_T AND NOT WIN32) # TRICKY: don't define on Windows, see jas_config2.h
 +  set(ssize_t "int") # Define to `int' if <sys/types.h> does not define.
 +endif()
 +if(NOT HAVE_SIZEOF_UCHAR)
