@@ -1,14 +1,15 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..669d0d6
+index 0000000..f1977a8
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,5 @@
+@@ -0,0 +1,6 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(jasper)
 +include(flags OPTIONAL)
 +include(configure.cmake)
 +add_subdirectory(src/libjasper)
++add_subdirectory(src/appl)
 diff --git a/configure.cmake b/configure.cmake
 new file mode 100644
 index 0000000..170dbd9
@@ -304,6 +305,18 @@ index 0000000..170dbd9
 +################################################################################
 +set(CMAKE_REQUIRED_LIBRARIES)
 +set(CMAKE_REQUIRED_DEFINITIONS)
+diff --git a/src/appl/CMakeLists.txt b/src/appl/CMakeLists.txt
+new file mode 100644
+index 0000000..0935909
+--- /dev/null
++++ b/src/appl/CMakeLists.txt
+@@ -0,0 +1,6 @@
++set(exes imgcmp jasper)
++foreach(exe ${exes})
++  add_executable(${exe} ${exe}.c)
++  target_link_libraries(${exe} libjasper ${JAS_SYSTEM_LIBS})
++  target_include_directories(${exe} PRIVATE ${CMAKE_SOURCE_DIR}/src/libjasper/include)
++endforeach()
 diff --git a/src/appl/imgcmp.c b/src/appl/imgcmp.c
 index 255b581..83fec87 100644
 --- a/src/appl/imgcmp.c
