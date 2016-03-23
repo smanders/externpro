@@ -1034,7 +1034,7 @@ index 16e1778..ed0c7cf 100644
  	}
  
 diff --git a/src/libjasper/base/jas_stream.c b/src/libjasper/base/jas_stream.c
-index 9a88556..453adcf 100644
+index 9a88556..62d2d96 100644
 --- a/src/libjasper/base/jas_stream.c
 +++ b/src/libjasper/base/jas_stream.c
 @@ -212,7 +212,7 @@ jas_stream_t *jas_stream_memopen(char *buf, int bufsize)
@@ -1046,27 +1046,26 @@ index 9a88556..453adcf 100644
  		obj->myalloc_ = 1;
  	}
  	if (!obj->buf_) {
-@@ -361,9 +361,12 @@ jas_stream_t *jas_stream_tmpfile()
- 	}
- 	obj->fd = -1;
- 	obj->flags = 0;
--	obj->pathname[0] = '\0';
+@@ -364,8 +364,11 @@ jas_stream_t *jas_stream_tmpfile()
+ 	obj->pathname[0] = '\0';
  	stream->obj_ = obj;
  
 +#ifdef _MSC_VER
-+	// http://www.christophlassner.de/collection-of-msvc-gcc-compatibility-tricks.html
-+	obj->pathname[0] = '\0';
-+
  	/* Choose a file name. */
- 	tmpnam(obj->pathname);
+-	tmpnam(obj->pathname);
++	char *temppathname = tempnam(NULL, "jas");
++	strcpy(obj->pathname, temppathname);
++	free(temppathname);
  
-@@ -373,16 +376,22 @@ jas_stream_t *jas_stream_tmpfile()
+ 	/* Open the underlying file. */
+ 	if ((obj->fd = open(obj->pathname, O_CREAT | O_EXCL | O_RDWR | O_TRUNC | O_BINARY,
+@@ -373,16 +376,30 @@ jas_stream_t *jas_stream_tmpfile()
  		jas_stream_destroy(stream);
  		return 0;
  	}
 +#else
 +	/* Choose a file name. */
-+	snprintf(obj->pathname, L_tmpnam, "%stmp.XXXXXXXXXX", P_tmpdir);
++	snprintf(obj->pathname, L_tmpnam, "%s/tmp.XXXXXXXXXX", P_tmpdir);
 +
 +	/* Open the underlying file. */
 +	if ((obj->fd = mkstemp(obj->pathname)) < 0) {
@@ -1083,13 +1082,20 @@ index 9a88556..453adcf 100644
 -	since the file is open. */
  	if (unlink(obj->pathname)) {
 -		/* We will try unlinking the file again after it is closed. */
--		obj->flags |= JAS_STREAM_FILEOBJ_DELONCLOSE;
++#ifdef _MSC_VER
++		/* Under UNIX, one can unlink an open file and continue to do I/O
++		on it.  Not all operating systems support this functionality, however.
++		For example, under Microsoft Windows the unlink operation will fail,
++		since the file is open. */
+ 		obj->flags |= JAS_STREAM_FILEOBJ_DELONCLOSE;
++#else
 +		jas_stream_destroy(stream);
 +		return 0;
++#endif
  	}
  
  	/* Use full buffering. */
-@@ -553,7 +562,7 @@ int jas_stream_printf(jas_stream_t *stream, const char *fmt, ...)
+@@ -553,7 +570,7 @@ int jas_stream_printf(jas_stream_t *stream, const char *fmt, ...)
  	int ret;
  
  	va_start(ap, fmt);
@@ -1098,7 +1104,7 @@ index 9a88556..453adcf 100644
  	jas_stream_puts(stream, buf);
  	va_end(ap);
  	return ret;
-@@ -992,7 +1001,7 @@ static int mem_resize(jas_stream_memobj_t *m, int bufsize)
+@@ -992,7 +1009,7 @@ static int mem_resize(jas_stream_memobj_t *m, int bufsize)
  	unsigned char *buf;
  
  	assert(m->buf_);
