@@ -1034,7 +1034,7 @@ index 16e1778..ed0c7cf 100644
  	}
  
 diff --git a/src/libjasper/base/jas_stream.c b/src/libjasper/base/jas_stream.c
-index 9a88556..62d2d96 100644
+index 9a88556..d7151c7 100644
 --- a/src/libjasper/base/jas_stream.c
 +++ b/src/libjasper/base/jas_stream.c
 @@ -212,7 +212,7 @@ jas_stream_t *jas_stream_memopen(char *buf, int bufsize)
@@ -1059,7 +1059,7 @@ index 9a88556..62d2d96 100644
  
  	/* Open the underlying file. */
  	if ((obj->fd = open(obj->pathname, O_CREAT | O_EXCL | O_RDWR | O_TRUNC | O_BINARY,
-@@ -373,16 +376,30 @@ jas_stream_t *jas_stream_tmpfile()
+@@ -373,6 +376,16 @@ jas_stream_t *jas_stream_tmpfile()
  		jas_stream_destroy(stream);
  		return 0;
  	}
@@ -1076,17 +1076,12 @@ index 9a88556..62d2d96 100644
  
  	/* Unlink the file so that it will disappear if the program
  	terminates abnormally. */
--	/* Under UNIX, one can unlink an open file and continue to do I/O
--	on it.  Not all operating systems support this functionality, however.
--	For example, under Microsoft Windows the unlink operation will fail,
--	since the file is open. */
+@@ -381,8 +394,13 @@ jas_stream_t *jas_stream_tmpfile()
+ 	For example, under Microsoft Windows the unlink operation will fail,
+ 	since the file is open. */
  	if (unlink(obj->pathname)) {
--		/* We will try unlinking the file again after it is closed. */
 +#ifdef _MSC_VER
-+		/* Under UNIX, one can unlink an open file and continue to do I/O
-+		on it.  Not all operating systems support this functionality, however.
-+		For example, under Microsoft Windows the unlink operation will fail,
-+		since the file is open. */
+ 		/* We will try unlinking the file again after it is closed. */
  		obj->flags |= JAS_STREAM_FILEOBJ_DELONCLOSE;
 +#else
 +		jas_stream_destroy(stream);
@@ -1095,7 +1090,7 @@ index 9a88556..62d2d96 100644
  	}
  
  	/* Use full buffering. */
-@@ -553,7 +570,7 @@ int jas_stream_printf(jas_stream_t *stream, const char *fmt, ...)
+@@ -553,7 +571,7 @@ int jas_stream_printf(jas_stream_t *stream, const char *fmt, ...)
  	int ret;
  
  	va_start(ap, fmt);
@@ -1104,7 +1099,7 @@ index 9a88556..62d2d96 100644
  	jas_stream_puts(stream, buf);
  	va_end(ap);
  	return ret;
-@@ -992,7 +1009,7 @@ static int mem_resize(jas_stream_memobj_t *m, int bufsize)
+@@ -992,7 +1010,7 @@ static int mem_resize(jas_stream_memobj_t *m, int bufsize)
  	unsigned char *buf;
  
  	assert(m->buf_);
