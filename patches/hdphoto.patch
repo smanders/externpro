@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..0ec9c30
+index 0000000..21e28ea
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,146 @@
+@@ -0,0 +1,153 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(hdphoto)
 +include(flags OPTIONAL)
@@ -135,6 +135,13 @@ index 0000000..0ec9c30
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++#######################################
++# executables
++set(exes WmpDecApp WmpEncApp)
++foreach(exe ${exes})
++  add_executable(${exe} systems/tools/samplecodenew/wmpencdecoder/${exe}.c)
++  target_link_libraries(${exe} ${lib_name})
++endforeach()
 +#######################################
 +# install
 +set(lib_hdrs
