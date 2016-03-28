@@ -360,6 +360,32 @@ index 6c6e558..09d1149 100644
  #else // _BIG__ENDIAN_
  #ifdef _M_IA64
      U32  v;
+diff --git a/systems/tools/samplecodenew/wmpencdecoder/WmpDecApp.c b/systems/tools/samplecodenew/wmpencdecoder/WmpDecApp.c
+index 23e1fc6..80f8ad7 100644
+--- a/systems/tools/samplecodenew/wmpencdecoder/WmpDecApp.c
++++ b/systems/tools/samplecodenew/wmpencdecoder/WmpDecApp.c
+@@ -396,7 +396,7 @@ ERR WmpDecAppCreateEncoderFromExt(
+     Call(GetImageEncodeIID(szExt, &pIID));
+ 
+     // Create encoder
+-    Call(PKCodecFactory_CreateCodec(pIID, ppIE));
++    Call(PKCodecFactory_CreateCodec(pIID, (void**)ppIE));
+ 
+ Cleanup:
+     return err;
+diff --git a/systems/tools/samplecodenew/wmpencdecoder/WmpEncApp.c b/systems/tools/samplecodenew/wmpencdecoder/WmpEncApp.c
+index 2fda30f..584beda 100644
+--- a/systems/tools/samplecodenew/wmpencdecoder/WmpEncApp.c
++++ b/systems/tools/samplecodenew/wmpencdecoder/WmpEncApp.c
+@@ -458,7 +458,7 @@ main(int argc, char* argv[])
+ 
+     //================================
+     Call(PKCreateCodecFactory(&pCodecFactory, WMP_SDK_VERSION));
+-    Call(pCodecFactory->CreateCodec(&IID_PKImageWmpEncode, &pEncoder));
++    Call(pCodecFactory->CreateCodec(&IID_PKImageWmpEncode, (void**)&pEncoder));
+ 
+     Call(pEncoder->Initialize(pEncoder, pEncodeStream, &args.wmiSCP, sizeof(args.wmiSCP)));
+ 
 diff --git a/systems/tools/wmpgluelib/WMPGlue.c b/systems/tools/wmpgluelib/WMPGlue.c
 index 94eb9ba..5f68284 100644
 --- a/systems/tools/wmpgluelib/WMPGlue.c
