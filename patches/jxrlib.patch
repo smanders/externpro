@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..7af9867
+index 0000000..ab04e8d
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,145 @@
+@@ -0,0 +1,139 @@
 +cmake_minimum_required(VERSION 3.3)
 +project(jxrlib)
 +include(flags OPTIONAL)
@@ -23,15 +23,9 @@ index 0000000..7af9867
 +#endif()
 +#######################################
 +# preprocessor
-+if(MSVC)
-+  add_definitions(
-+    -D_CRT_SECURE_NO_WARNINGS
-+    )
-+elseif(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-+  add_definitions(
-+    -D__ANSI__
-+    -DDISABLE_PERF_MEASUREMENT
-+    )
++add_definitions(-DDISABLE_PERF_MEASUREMENT)
++if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
++  add_definitions(-D__ANSI__)
 +endif()
 +#######################################
 +# library sources
@@ -238,15 +232,18 @@ index b2a9b64..5552606 100644
      pID = *ppID;
      pID->Initialize = PKTestDecode_Initialize;
 diff --git a/jxrtestlib/JXRTestHdr.c b/jxrtestlib/JXRTestHdr.c
-index a62914c..74697d3 100644
+index a62914c..6f108fb 100644
 --- a/jxrtestlib/JXRTestHdr.c
 +++ b/jxrtestlib/JXRTestHdr.c
-@@ -27,7 +27,7 @@
+@@ -25,9 +25,9 @@
+ // POSSIBILITY OF SUCH DAMAGE.
+ //
  //*@@@---@@@@******************************************************************
- #ifndef ANSI
+-#ifndef ANSI
++#ifndef __ANSI__
  #define _CRT_SECURE_NO_WARNINGS
 -#endif ANSI
-+#endif // ANSI
++#endif // __ANSI__
  
  #include <stdlib.h>
  #include <string.h>
