@@ -143,6 +143,96 @@ index 0000000..ab04e8d
 +  )
 +install(FILES ${lib_hdrs} DESTINATION include/jxrlib)
 +install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
+diff --git a/image/encode/strenc.c b/image/encode/strenc.c
+index d6e970e..9dc7e80 100644
+--- a/image/encode/strenc.c
++++ b/image/encode/strenc.c
+@@ -429,11 +429,11 @@ Int StrIOEncInit(CWMImageStrCodec* pSC)
+ 
+     if(pSC->cNumBitIO > 0){
+         size_t i;
+-#if defined(_WINDOWS_) || defined(UNDER_CE)  // tmpnam does not exist in VS2005 WinCE CRT
++#if defined(_WINDOWS_) || defined(UNDER_CE)  // mkstemp/CreateWS_FileTemp does not exist
+         TCHAR szPath[MAX_PATH];
+         DWORD cSize, j, k;
+-#endif
+         char * pFilename;
++#endif
+ 
+         pSC->ppWStream = (struct WMPStream **)malloc(pSC->cNumBitIO * sizeof(struct WMPStream *));
+         if(pSC->ppWStream == NULL) return ICERR_ERROR;
+@@ -453,7 +453,7 @@ Int StrIOEncInit(CWMImageStrCodec* pSC)
+ 
+         for(i = 0; i < pSC->cNumBitIO; i ++){
+             if (pSC->cmbHeight * pSC->cmbWidth * pSC->WMISCP.cChannel >= MAX_MEMORY_SIZE_IN_WORDS) {
+-#if defined(_WINDOWS_) || defined(UNDER_CE)  // tmpnam does not exist in VS2005 WinCE CRT              
++#if defined(_WINDOWS_) || defined(UNDER_CE)  // mkstemp/CreateWS_FileTemp does not exist
+                 Bool bUnicode = sizeof(TCHAR) == 2;
+                 pSC->ppTempFile[i] = (TCHAR *)malloc(MAX_PATH * sizeof(TCHAR));
+                 if(pSC->ppTempFile[i] == NULL) return ICERR_ERROR;
+@@ -477,17 +477,15 @@ Int StrIOEncInit(CWMImageStrCodec* pSC)
+                     }
+                     pFilename[cSize] = '\0';
+                 }
++                if(CreateWS_File(pSC->ppWStream + i, pFilename, "w+b") != ICERR_OK) return ICERR_ERROR;
+ 
+ #else //DPK needs to support ANSI 
+                 pSC->ppTempFile[i] = (char *)malloc(FILENAME_MAX * sizeof(char));
+                 if(pSC->ppTempFile[i] == NULL) return ICERR_ERROR;
+ 
+-                if ((pFilename = tmpnam(NULL)) == NULL)
+-                    return ICERR_ERROR;                
+-                strcpy(pSC->ppTempFile[i], pFilename);
++                snprintf(pSC->ppTempFile[i], L_tmpnam, "%s/tmp.XXXXXXXXXX", P_tmpdir);
++                if(CreateWS_FileTemp(pSC->ppWStream + i, pSC->ppTempFile[i], "w+b") != ICERR_OK) return ICERR_ERROR;
+ #endif
+-                if(CreateWS_File(pSC->ppWStream + i, pFilename, "w+b") != ICERR_OK) return ICERR_ERROR;                
+-
+             }
+             else {
+                 if(CreateWS_List(pSC->ppWStream + i) != ICERR_OK) return ICERR_ERROR;
+diff --git a/image/sys/strcodec.c b/image/sys/strcodec.c
+index c746d6f..ff0c3fc 100644
+--- a/image/sys/strcodec.c
++++ b/image/sys/strcodec.c
+@@ -292,6 +292,37 @@ Cleanup:
+     return err;
+ }
+ 
++ERR CreateWS_FileTemp(struct WMPStream** ppWS, char* szFilename, const char* szMode)
++{
++#ifdef WIN32
++    ERR err = WMP_errFileIO;
++#else
++    ERR err = WMP_errSuccess;
++    struct WMPStream* pWS = NULL;
++
++    Call(WMPAlloc((void** )ppWS, sizeof(**ppWS)));
++    pWS = *ppWS;
++
++    pWS->Close = CloseWS_File;
++    pWS->EOS = EOSWS_File;
++
++    pWS->Read = ReadWS_File;
++    pWS->Write = WriteWS_File;
++    //pWS->GetLine = GetLineWS_File;
++
++    pWS->SetPos = SetPosWS_File;
++    pWS->GetPos = GetPosWS_File;
++
++    int fd = mkstemp(szFilename);
++    FailIf(-1 == fd, WMP_errFileIO);
++    pWS->state.file.pFile = fdopen(fd, szMode);
++    FailIf(NULL == pWS->state.file.pFile, WMP_errFileIO);
++#endif
++
++Cleanup:
++    return err;
++}
++
+ ERR CloseWS_File(struct WMPStream** ppWS)
+ {
+     ERR err = WMP_errSuccess;
 diff --git a/image/sys/strcodec.h b/image/sys/strcodec.h
 index 695a454..90b94ba 100644
 --- a/image/sys/strcodec.h
