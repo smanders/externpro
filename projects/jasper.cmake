@@ -13,7 +13,7 @@ set(PRO_JASPER
   REPO "repo" ${REPO} "jasper repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/jasper.git
-  GIT_TAG xp${VER} # what to 'git checkout'
+  GIT_TAG xpp${VER} # what to 'git checkout'
   GIT_REF jv${VER} # create patch from this tag to 'git checkout'
   DLURL http://www.ece.uvic.ca/~frodo/jasper/software/jasper-${VER}.zip
   DLMD5 a342b2b4495b3e1394e161eb5d85d754
