@@ -47,7 +47,9 @@ if(UNIX)
     --version=${wxVersion} --version
     OUTPUT_VARIABLE wxver OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
     )
-  message(STATUS "wxWidgets version: ${wxver}")
+  if(wx_DEBUG)
+    message(STATUS "wxWidgets version: ${wxver}")
+  endif()
   ############################
   # GTK2
   if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)

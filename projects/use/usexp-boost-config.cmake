@@ -77,6 +77,7 @@ if(UNIX)
   checkLibraryConcat(pthread pthread_create syslibs)
   checkLibraryConcat(rt shm_open syslibs)
   # see FindBoost.cmake for details on the following variables
+  set(Boost_FIND_QUIETLY TRUE)
   set(Boost_NO_SYSTEM_PATHS TRUE)
   set(Boost_USE_STATIC_LIBS ON)
   set(Boost_USE_MULTITHREADED ON)
