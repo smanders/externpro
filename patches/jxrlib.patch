@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..ab04e8d
+index 0000000..f6f0ceb
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,139 @@
+@@ -0,0 +1,134 @@
 +cmake_minimum_required(VERSION 3.3)
 +project(jxrlib)
 +include(flags OPTIONAL)
@@ -16,11 +16,6 @@ index 0000000..ab04e8d
 +  ${CMAKE_CURRENT_SOURCE_DIR}/jxrgluelib
 +  ${CMAKE_CURRENT_SOURCE_DIR}/jxrtestlib
 +  )
-+#if(WIN32)
-+#  include_directories(
-+#    ${CMAKE_CURRENT_SOURCE_DIR}/image/x86
-+#    )
-+#endif()
 +#######################################
 +# preprocessor
 +add_definitions(-DDISABLE_PERF_MEASUREMENT)
@@ -143,6 +138,65 @@ index 0000000..ab04e8d
 +  )
 +install(FILES ${lib_hdrs} DESTINATION include/jxrlib)
 +install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
+diff --git a/common/include/guiddef.h b/common/include/guiddef.h
+index 17e0ed3..a317d74 100644
+--- a/common/include/guiddef.h
++++ b/common/include/guiddef.h
+@@ -53,6 +53,10 @@ typedef struct _GUID {
+ #endif
+ #endif
+ 
++#if defined(__GNUC__) && !defined(__ANSI__)
++#define __ANSI__
++#endif
++
+ #ifndef FAR
+ #if defined(_WIN32) || defined(__ANSI__)
+ #define FAR
+diff --git a/common/include/wmspecstring.h b/common/include/wmspecstring.h
+index 1b4767e..2b6d9ca 100644
+--- a/common/include/wmspecstring.h
++++ b/common/include/wmspecstring.h
+@@ -37,7 +37,7 @@
+ #if _MSC_VER
+ #pragma once
+ #endif
+-#include <wmsal.h>  
++#include "wmsal.h"
+ 
+ #ifndef __SAL_H_FULL_VER
+ #define __SAL_H_FULL_VER 140050727
+@@ -301,7 +301,7 @@ __inner_assume_bound_dec
+ #ifdef  __cplusplus
+ }
+ #endif
+-#include <wmspecstrings_adt.h>
++#include "wmspecstrings_adt.h"
+ #ifdef _PREFIX_
+ /**************************************************************************
+ * Defintion of __pfx_assume and __pfx_assert. Thse should be the only
+@@ -328,7 +328,7 @@ void __pfx_assume(int, const char *);
+ * Must avoid redfinitions of macros to workaround rc.exe issues. 
+ ***************************************************************************/
+ #if !(defined(RC_INVOKED) || defined(SORTPP_PASS))
+-#include <wmspecstrings_strict.h>
++#include "wmspecstrings_strict.h"
+ #endif /* if !(defined(RC_INVOKED) || defined(SORTPP_PASS)) */
+ #endif /* #ifndef SPECSTRINGS_H */
+ 
+diff --git a/common/include/wmspecstrings_strict.h b/common/include/wmspecstrings_strict.h
+index 46b44c2..fe41b81 100644
+--- a/common/include/wmspecstrings_strict.h
++++ b/common/include/wmspecstrings_strict.h
+@@ -210,7 +210,7 @@
+ ************************************************************************/
+ #if (_MSC_VER >= 1400) && !defined(__midl) && !defined(_PREFAST_) && (__SPECSTRINGS_STRICT_LEVEL > 0)
+ #pragma once
+-#include <wmspecstrings_undef.h>
++#include "wmspecstrings_undef.h"
+ #define __ecount(size)                                __allowed(on_return)
+ #define __bcount(size)                                __allowed(on_return)
+ #define __xcount(size)                                __allowed(on_return)
 diff --git a/image/encode/strenc.c b/image/encode/strenc.c
 index d6e970e..9dc7e80 100644
 --- a/image/encode/strenc.c
@@ -272,6 +326,41 @@ index aa9de53..d0ce39a 100644
  
      //----------------------------------------------------------------
      Call(PKCreateTestFactory(&pTestFactory, WMP_SDK_VERSION));
+diff --git a/jxrgluelib/JXRGlue.h b/jxrgluelib/JXRGlue.h
+index 382763f..b439700 100644
+--- a/jxrgluelib/JXRGlue.h
++++ b/jxrgluelib/JXRGlue.h
+@@ -31,8 +31,12 @@
+ extern "C" {
+ #endif
+ 
+-#include <JXRMeta.h>
+-#include <guiddef.h>
++#if defined(__GNUC__) && !defined(__ANSI__)
++#define __ANSI__
++#endif
++
++#include "JXRMeta.h"
++#include "guiddef.h"
+ 
+ //================================================================
+ #define WMP_SDK_VERSION 0x0101
+diff --git a/jxrgluelib/JXRMeta.h b/jxrgluelib/JXRMeta.h
+index b7b5880..e9e0401 100644
+--- a/jxrgluelib/JXRMeta.h
++++ b/jxrgluelib/JXRMeta.h
+@@ -27,9 +27,9 @@
+ //*@@@---@@@@******************************************************************
+ #pragma once
+ 
+-#include <windowsmediaphoto.h>
++#include "windowsmediaphoto.h"
+ #ifndef WIN32
+-#include <wmspecstring.h>
++#include "wmspecstring.h"
+ #endif
+ 
+ #ifndef UNREFERENCED_PARAMETER
 diff --git a/jxrtestlib/JXRTest.c b/jxrtestlib/JXRTest.c
 index b2a9b64..5552606 100644
 --- a/jxrtestlib/JXRTest.c
