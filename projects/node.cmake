@@ -1,47 +1,12 @@
 ########################################
 # node
-xpProOption(node)
-set(VER 0.12.7)
-set(REPO https://github.com/smanders/node)
-set(PRO_NODE
-  NAME node
-  WEB "Node.js" http://nodejs.org "Node.js website"
-  LICENSE "open" https://raw.githubusercontent.com/nodejs/node/v${VER}/LICENSE "MIT license"
-  DESC "platform to build scalable network applications"
-  REPO "repo" ${REPO} "forked node repo on github"
-  VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/node.git
-  GIT_UPSTREAM git://github.com/nodejs/node.git
-  GIT_TAG xp${VER} # what to 'git checkout'
-  GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL http://nodejs.org/dist/v${VER}/node-v${VER}.tar.gz
-  DLMD5 5523ec4347d7fe6b0f6dda1d1c7799d5
-  PATCH ${PATCH_DIR}/node.patch
-  DIFF ${REPO}/compare/nodejs:
-  )
-########################################
-function(mkpatch_node)
-  xpRepo(${PRO_NODE})
-endfunction()
-########################################
-function(download_node)
-  xpNewDownload(${PRO_NODE})
-endfunction()
-########################################
-function(patch_node)
-  xpPatch(${PRO_NODE})
-endfunction()
-########################################
-function(build_node)
-  if(NOT (XP_DEFAULT OR XP_PRO_NODE))
-    return()
-  endif()
-  configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
-  # TODO: support Debug by renaming files going into STAGE_DIR
+#  configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
+#    @ONLY NEWLINE_STYLE LF
+#    )
+function(build_node_ver ver)
+  # TODO: support Debug by renaming files going into STAGE_DIR?
   set(BUILD_CONFIGS Release)
-  set(node_DEPS node)
+  set(node${ver}_DEPS node${ver})
   if(${BUILD_PLATFORM} STREQUAL "64")
     set(destcpu x64)
   elseif(${BUILD_PLATFORM} STREQUAL "32")
@@ -54,13 +19,9 @@ function(build_node)
     set(XP_CONFIGURE_Release ${XP_CONFIGURE_BASE} release ${destcpu})
     set(XP_CONFIGURE_Debug ${XP_CONFIGURE_BASE} debug ${destcpu})
   elseif(UNIX)
-    # TODO: can we add flags? -fPIC, etc?
-    #list(APPEND removeFlags -std=c++0x -std=c++11 -std=c++14 -stdlib=libc++)
-    #xpGetConfigureFlags(CXX node_CONFIGURE_FLAGS "${removeFlags}")
     if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
       set(XP_CONFIGURE_BASE CC=gcc)
       set(destos solaris)
-      set(dbgopt --with-dtrace)
       # ifaddrs.h not found on Solaris 10
       # https://github.com/nodejs/node-v0.x-archive/issues/3465
       set(addopt --no-ifaddrs)
@@ -72,38 +33,38 @@ function(build_node)
       # https://github.com/nodejs/node-v0.x-archive/issues/5081
     elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
       set(destos linux)
-      set(dbgopt --without-dtrace)
     elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
       set(destos mac)
-      set(dbgopt --without-dtrace)
     else()
       message(FATAL_ERROR "node.cmake: os")
     endif()
-    list(APPEND XP_CONFIGURE_BASE <SOURCE_DIR>/configure #${node_CONFIGURE_FLAGS}
+    list(APPEND XP_CONFIGURE_BASE <SOURCE_DIR>/configure
       --prefix=<INSTALL_DIR>
-      --without-etw --without-perfctr
+      --without-etw --without-perfctr --without-dtrace
+      # TODO: explore --tag=TAG custom build tag
+      # TODO: explore --fully-static
       --dest-cpu=${destcpu} --dest-os=${destos} ${addopt}
       )
-    set(XP_CONFIGURE_Release ${XP_CONFIGURE_BASE} --without-dtrace)
-    set(XP_CONFIGURE_Debug ${XP_CONFIGURE_BASE} --debug --gdb ${dbgopt})
+    set(XP_CONFIGURE_Release ${XP_CONFIGURE_BASE})
+    set(XP_CONFIGURE_Debug ${XP_CONFIGURE_BASE} --debug --gdb)
   else()
     message(FATAL_ERROR "node.cmake: unsupported OS platform")
   endif()
   foreach(cfg ${BUILD_CONFIGS})
     set(XP_CONFIGURE_CMD ${XP_CONFIGURE_${cfg}})
-    addproject_node(node ${cfg})
+    addproject_node(node${ver} ${cfg})
   endforeach() # cfg
-  # copy headers to STAGE_DIR
-  ExternalProject_Get_Property(node SOURCE_DIR)
+  # copy headers and npm to STAGE_DIR
+  ExternalProject_Get_Property(node${ver} SOURCE_DIR)
   set(nodeHdrs ${SOURCE_DIR}/src/*.h)
   set(uvDir ${SOURCE_DIR}/deps/uv/include)
   set(v8Hdrs ${SOURCE_DIR}/deps/v8/include/*.h)
   set(npmDir ${SOURCE_DIR}/deps/npm)
-  set(XP_TARGET node_stage_hdrs)
+  set(XP_TARGET node${ver}_stage_hdrs)
   if(NOT TARGET ${XP_TARGET})
-    ExternalProject_Add(${XP_TARGET} DEPENDS ${node_DEPS}
+    ExternalProject_Add(${XP_TARGET} DEPENDS ${node${ver}_DEPS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
-      SOURCE_DIR ${NULL_DIR} INSTALL_DIR ${STAGE_DIR}/include/node
+      SOURCE_DIR ${NULL_DIR} INSTALL_DIR ${STAGE_DIR}/include/node${ver}/node
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy_directory ${uvDir} <INSTALL_DIR>
       BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${nodeHdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
@@ -114,8 +75,8 @@ function(build_node)
     if(XP_PRO_NODE_NPM)
       # copy npm to STAGE_DIR
       ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node_modules/npm
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmDir} ${STAGE_DIR}/node_modules/npm
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node_modules${ver}/npm
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmDir} ${STAGE_DIR}/node_modules${ver}/npm
         DEPENDEES install
         )
     endif()
@@ -135,7 +96,7 @@ macro(addproject_node basename cfg)
       message(STATUS "target ${XP_TARGET}")
     endif()
     if(MSVC)
-      ExternalProject_Add(${XP_TARGET}vcbuild DEPENDS ${node_DEPS}
+      ExternalProject_Add(${XP_TARGET}vcbuild DEPENDS ${node${ver}_DEPS}
         DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
         SOURCE_DIR ${nodeSrcDir} INSTALL_DIR ${NULL_DIR}
         CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
@@ -145,16 +106,19 @@ macro(addproject_node basename cfg)
       set(XP_CONFIGURE_CMD ${CMAKE_COMMAND} -E echo "Configure MSVC...")
       set(binNode <SOURCE_DIR>/${cfg}/node.exe)
       set(libNode <SOURCE_DIR>/${cfg}/node.lib)
-      list(APPEND node_DEPS ${XP_TARGET}vcbuild) # serialize the build
+      #set(binNodeDst node${ver}.exe)
+      #set(libNodeDst node${ver}.lib)
+      list(APPEND node${ver}_DEPS ${XP_TARGET}vcbuild) # serialize the build
       set(XP_BUILD_CMD ${CMAKE_COMMAND} -E echo "Build MSVC...")
       set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E echo "Install MSVC...")
     elseif(UNIX)
       set(binNode <SOURCE_DIR>/out/${cfg}/node)
-      set(libNode <SOURCE_DIR>/out/${cfg}/libv8*.a) # TODO: probably don't need any of these libs
+      #set(libNode <SOURCE_DIR>/out/${cfg}/libv8*.a) # TODO: probably don't need any of these libs
+      #set(libNodeDst node${ver})
       set(XP_BUILD_CMD) # use the default ...
       set(XP_INSTALL_CMD) # use the default ...
     endif()
-    ExternalProject_Add(${XP_TARGET} DEPENDS ${node_DEPS}
+    ExternalProject_Add(${XP_TARGET} DEPENDS ${node${ver}_DEPS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
       SOURCE_DIR ${nodeSrcDir} INSTALL_DIR ${NULL_DIR}
       CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
@@ -164,7 +128,6 @@ macro(addproject_node basename cfg)
       )
     ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
       COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/bin
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/lib
       COMMAND ${CMAKE_COMMAND} -E copy ${binNode} ${STAGE_DIR}/bin
       COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${libNode}
         -Ddst:STRING=${STAGE_DIR}/lib -P ${MODULES_DIR}/cmscopyfiles.cmake
@@ -172,5 +135,5 @@ macro(addproject_node basename cfg)
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
-  list(APPEND node_DEPS ${XP_TARGET}) # serialize the build
+  list(APPEND node${ver}_DEPS ${XP_TARGET}) # serialize the build
 endmacro()
