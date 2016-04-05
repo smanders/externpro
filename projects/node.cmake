@@ -81,15 +81,12 @@ function(build_node_ver ver this other)
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${v8Hdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
-    option(XP_PRO_NODE_NPM "copy npm to installer" ON)
-    if(XP_PRO_NODE_NPM)
-      # copy npm to STAGE_DIR
-      ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node${ver}/node_modules/npm
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmDir} ${STAGE_DIR}/node${ver}/node_modules/npm
-        DEPENDEES install
-        )
-    endif()
+    # copy npm to STAGE_DIR
+    ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node${ver}/node_modules/npm
+      COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmDir} ${STAGE_DIR}/node${ver}/node_modules/npm
+      DEPENDEES install
+      )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
 endfunction()
