@@ -1,9 +1,19 @@
 ########################################
 # node
-#  configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
-#    @ONLY NEWLINE_STYLE LF
-#    )
-function(build_node_ver ver)
+function(build_node_ver ver this other)
+  string(TOUPPER ${ver} VER)
+  xpGetArgValue(${PRO_NODE${VER}} ARG VER VALUE ${this}NUM)
+  set(${this}VER ${ver})
+  if(EXISTS ${STAGE_DIR}/share/cmake/usexp-node-config.cmake)
+    set(inputDir ${STAGE_DIR}/share/cmake)
+  else()
+    set(inputDir ${PRO_DIR}/use)
+    set(${other}NUM @${other}NUM@)
+    set(${other}VER @${other}VER@)
+  endif()
+  configure_file(${inputDir}/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
   # TODO: support Debug by renaming files going into STAGE_DIR?
   set(BUILD_CONFIGS Release)
   set(node${ver}_DEPS node${ver})
@@ -75,8 +85,8 @@ function(build_node_ver ver)
     if(XP_PRO_NODE_NPM)
       # copy npm to STAGE_DIR
       ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node_modules${ver}/npm
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmDir} ${STAGE_DIR}/node_modules${ver}/npm
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node${ver}/node_modules/npm
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmDir} ${STAGE_DIR}/node${ver}/node_modules/npm
         DEPENDEES install
         )
     endif()
@@ -106,15 +116,11 @@ macro(addproject_node basename cfg)
       set(XP_CONFIGURE_CMD ${CMAKE_COMMAND} -E echo "Configure MSVC...")
       set(binNode <SOURCE_DIR>/${cfg}/node.exe)
       set(libNode <SOURCE_DIR>/${cfg}/node.lib)
-      #set(binNodeDst node${ver}.exe)
-      #set(libNodeDst node${ver}.lib)
       list(APPEND node${ver}_DEPS ${XP_TARGET}vcbuild) # serialize the build
       set(XP_BUILD_CMD ${CMAKE_COMMAND} -E echo "Build MSVC...")
       set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E echo "Install MSVC...")
     elseif(UNIX)
       set(binNode <SOURCE_DIR>/out/${cfg}/node)
-      #set(libNode <SOURCE_DIR>/out/${cfg}/libv8*.a) # TODO: probably don't need any of these libs
-      #set(libNodeDst node${ver})
       set(XP_BUILD_CMD) # use the default ...
       set(XP_INSTALL_CMD) # use the default ...
     endif()
@@ -127,10 +133,10 @@ macro(addproject_node basename cfg)
       INSTALL_COMMAND ${XP_INSTALL_CMD}
       )
     ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/bin
-      COMMAND ${CMAKE_COMMAND} -E copy ${binNode} ${STAGE_DIR}/bin
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node${ver}/bin
+      COMMAND ${CMAKE_COMMAND} -E copy ${binNode} ${STAGE_DIR}/node${ver}/bin
       COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${libNode}
-        -Ddst:STRING=${STAGE_DIR}/lib -P ${MODULES_DIR}/cmscopyfiles.cmake
+        -Ddst:STRING=${STAGE_DIR}/node${ver}/lib -P ${MODULES_DIR}/cmscopyfiles.cmake
       DEPENDEES install
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
