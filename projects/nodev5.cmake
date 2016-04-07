@@ -1,7 +1,7 @@
 ########################################
 # nodev5
 xpProOption(nodev5)
-set(VER 5.9.1)
+set(VER 5.10.1)
 set(REPO https://github.com/smanders/node)
 set(PRO_NODEV5
   NAME nodev5
@@ -16,7 +16,7 @@ set(PRO_NODEV5
   GIT_TAG v${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://nodejs.org/dist/v${VER}/node-v${VER}.tar.gz
-  DLMD5 346c9325912271dc7614fe955c75c3a6
+  DLMD5 1378c65a30b5ebcd3a2fc7384477379e
   #PATCH ${PATCH_DIR}/nodev5.patch
   #DIFF ${REPO}/compare/nodejs:
   )
