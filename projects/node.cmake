@@ -84,13 +84,16 @@ function(build_node_ver ver this other)
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
     if(MSVC AND ${ver} STREQUAL v0)
+      set(rmdirs -Drmdirs:STRING=test)
       xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/glob/${nm})
     endif()
     # copy npm to STAGE_DIR
     ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
+      #COMMAND ${CMAKE_COMMAND} -E remove_directory ${npmDst} # for testing
       COMMAND ${CMAKE_COMMAND} -E make_directory ${npmDst}
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmSrc} ${npmDst}
-      COMMAND ${CMAKE_COMMAND} -Ddirs:STRING=${flatten} -P ${MODULES_DIR}/cmsflatnode.cmake
+      COMMAND ${CMAKE_COMMAND} -Drmroot:STRING=${npmDst} ${rmdirs}
+        -Ddirs:STRING=${flatten} -P ${MODULES_DIR}/cmsflatnode.cmake
       DEPENDEES install
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
