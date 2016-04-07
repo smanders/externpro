@@ -71,7 +71,8 @@ function(build_node_ver ver this other)
   set(v8Hdrs ${SOURCE_DIR}/deps/v8/include/*.h)
   set(nm node_modules)
   set(npmSrc ${SOURCE_DIR}/deps/npm)
-  set(npmDst ${STAGE_DIR}/node${ver}/${nm}/npm)
+  set(npmDst ${STAGE_DIR}/node${ver}/npm)
+  set(npmExe ${STAGE_DIR}/node${ver}/bin/node ${npmDst}/bin/npm-cli.js)
   set(XP_TARGET node${ver}_stage_hdrs)
   if(NOT TARGET ${XP_TARGET})
     ExternalProject_Add(${XP_TARGET} DEPENDS ${node${ver}_DEPS}
@@ -83,18 +84,24 @@ function(build_node_ver ver this other)
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${v8Hdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
+    xpStringAppend(rmdirs test)
+    xpStringAppend(rmdirs example)
     if(MSVC AND ${ver} STREQUAL v0)
-      set(rmdirs -Drmdirs:STRING=test)
       xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/glob/${nm})
     endif()
     # copy npm to STAGE_DIR
     ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
-      #COMMAND ${CMAKE_COMMAND} -E remove_directory ${npmDst} # for testing
+      COMMAND ${CMAKE_COMMAND} -E remove_directory ${npmDst} # for testing
       COMMAND ${CMAKE_COMMAND} -E make_directory ${npmDst}
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmSrc} ${npmDst}
-      COMMAND ${CMAKE_COMMAND} -Drmroot:STRING=${npmDst} ${rmdirs}
-        -Ddirs:STRING=${flatten} -P ${MODULES_DIR}/cmsflatnode.cmake
       DEPENDEES install
+      )
+    ExternalProject_Add_Step(${XP_TARGET} postpost_${XP_TARGET}
+      COMMAND ${npmExe} dedupe
+      COMMAND ${CMAKE_COMMAND} -Drmroot:STRING=${npmDst} -Drmdirs:STRING=${rmdirs}
+        -Ddirs:STRING=${flatten} -P ${MODULES_DIR}/cmsflatnode.cmake
+      WORKING_DIRECTORY ${npmDst}
+      DEPENDEES post_${XP_TARGET}
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
