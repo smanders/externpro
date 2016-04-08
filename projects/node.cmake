@@ -90,7 +90,7 @@ function(build_node_ver ver this other)
       )
     xpStringAppend(rmdirs test)
     xpStringAppend(rmdirs example)
-    if(MSVC)
+    if(MSVC) # we only need to flatten these directories on Windows (installer issue)
       if(${ver} STREQUAL v0)
         xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/glob/${nm})
         xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/path-array/${nm})
@@ -109,13 +109,16 @@ function(build_node_ver ver this other)
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmSrc} ${npmDst}
       DEPENDEES install
       )
-    ExternalProject_Add_Step(${XP_TARGET} postpost_${XP_TARGET}
-      COMMAND ${npmExe} dedupe
-      COMMAND ${CMAKE_COMMAND} -Drmroot:STRING=${npmDst} -Drmdirs:STRING=${rmdirs}
-        -Ddirs:STRING=${flatten} -P ${MODULES_DIR}/cmsflatnode.cmake
-      WORKING_DIRECTORY ${npmDst}
-      DEPENDEES post_${XP_TARGET}
-      )
+    # dedupe: nodev5 Illegal Instruction on Solaris
+    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "SunOS" OR NOT ${ver} STREQUAL v5)
+      ExternalProject_Add_Step(${XP_TARGET} postpost_${XP_TARGET}
+        COMMAND ${npmExe} dedupe
+        COMMAND ${CMAKE_COMMAND} -Drmroot:STRING=${npmDst} -Drmdirs:STRING=${rmdirs}
+          -Ddirs:STRING=${flatten} -P ${MODULES_DIR}/cmsflatnode.cmake
+        WORKING_DIRECTORY ${npmDst}
+        DEPENDEES post_${XP_TARGET}
+        )
+    endif()
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
 endfunction()
