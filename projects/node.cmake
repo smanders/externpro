@@ -35,10 +35,14 @@ function(build_node_ver ver this other)
       # ifaddrs.h not found on Solaris 10
       # https://github.com/nodejs/node-v0.x-archive/issues/3465
       set(addopt --no-ifaddrs)
-      # missing libproc.h on Solaris 10
-      # https://github.com/nodejs/node-v0.x-archive/issues/6439
-      # https://github.com/cgalibern/node/commit/37db35864b8baf88b75c6709d8e9ac750e8ef9b7
-      list(APPEND addopt --without-mdb)
+      if(${ver} STREQUAL v0)
+        # missing libproc.h on Solaris 10
+        # https://github.com/nodejs/node-v0.x-archive/issues/6439
+        # https://github.com/cgalibern/node/commit/37db35864b8baf88b75c6709d8e9ac750e8ef9b7
+        list(APPEND addopt --without-mdb)
+      elseif(${ver} STREQUAL v5)
+        list(APPEND addopt --without-snapshot)
+      endif()
       # NOTE: Solaris 10, non-GNU ld not supported
       # https://github.com/nodejs/node-v0.x-archive/issues/5081
     elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -92,8 +96,7 @@ function(build_node_ver ver this other)
         xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/path-array/${nm})
         xpStringAppend(flatten ${npmDst}/${nm}/request/${nm}/form-data/${nm})
         xpStringAppend(flatten ${npmDst}/${nm}/request/${nm}/har-validator/${nm})
-      endif()
-      if(${ver} STREQUAL v5)
+      elseif(${ver} STREQUAL v5)
         xpStringAppend(flatten ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm})
         xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/glob/${nm})
         xpStringAppend(flatten ${npmDst}/${nm}/read-package-json/${nm}/glob/${nm})
