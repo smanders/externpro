@@ -1,0 +1,185 @@
+diff --git a/deps/uv/src/unix/sunos.c b/deps/uv/src/unix/sunos.c
+index 0c46817..5493f2a 100644
+--- a/deps/uv/src/unix/sunos.c
++++ b/deps/uv/src/unix/sunos.c
+@@ -30,6 +30,9 @@
+ 
+ #ifndef SUNOS_NO_IFADDRS
+ # include <ifaddrs.h>
++#else
++# include <sys/ioctl.h>
++# include <sys/sockio.h>
+ #endif
+ #include <net/if.h>
+ #include <net/if_dl.h>
+@@ -665,11 +668,146 @@ void uv_free_cpu_info(uv_cpu_info_t* cpu_infos, int count) {
+   uv__free(cpu_infos);
+ }
+ 
++#ifdef SUNOS_NO_IFADDRS
++struct ifaddrs {
++  struct ifaddrs * ifa_next;
++  char * ifa_name;
++  unsigned int ifa_flags;
++  struct sockaddr *ifa_addr;
++  struct sockaddr *ifa_netmask;
++  /* The following fields are specified in the man page getifaddrs(3) but are
++   * not used by uv, so their implementation has been ommitted
++   * union {
++   *   struct sockaddr * ifu_broadaddr;
++   *   struct sockaddr * ifu_dstaddr;
++   * } ifa_ifu;
++   * #define ifa_broadaddr ifa_ifu.ifu_broadaddr
++   * #define ifa_dstaddr ifa_ifu.ifu_dstaddr
++   * void * ifa_data;*/
++};
++#define PF_PACKET AF_UNSPEC
++
++int get_all_interfaces(int sockets, sa_family_t family, struct lifreq **lifreq, int *numifs) {
++  struct lifnum lifnum;
++  struct lifconf lifconf;
++  size_t bufferSize;
++  
++  /* get the number of interfaces */
++  lifnum.lifn_family = family;
++  lifnum.lifn_flags = 0;
++  if(ioctl(sockets, SIOCGLIFNUM, &lifnum) < 0)
++    return -1;
++  bufferSize = lifnum.lifn_count * sizeof (struct lifreq);
++  *lifreq = uv__malloc(bufferSize);
++  if(*lifreq == NULL) {
++    return -1;
++  }
++
++  /* use ioctl to inspect the interfaces */
++  lifconf.lifc_family = family;
++  lifconf.lifc_flags = 0;
++  lifconf.lifc_len = bufferSize;
++  lifconf.lifc_req = *lifreq;
++  if(ioctl(sockets, SIOCGLIFCONF, &lifconf) != 0)
++    return -1;
++  *numifs = lifnum.lifn_count;
++  return 0;
++}
++
++void freeifaddrs(struct ifaddrs *interfaceAddrs) {
++  struct ifaddrs * currAddr;
++  while(interfaceAddrs != NULL) {
++    currAddr = interfaceAddrs;
++    interfaceAddrs = currAddr->ifa_next;
++    uv__free(currAddr->ifa_name);
++    uv__free(currAddr->ifa_addr);
++    uv__free(currAddr->ifa_netmask);
++    uv__free(currAddr);
++  }
++}
++
++int getifaddrsCleanup(int sockets4, int sockets6, struct lifreq *interfaceBuffer, struct ifaddrs **interfaceAddrs) {
++  uv__free(interfaceBuffer);
++  freeifaddrs(*interfaceAddrs);
++  close(sockets4);
++  close(sockets6);
++  interfaceAddrs = NULL;
++  return -1;
++}
++
++int getifaddrs(struct ifaddrs **interfaceAddrs) {
++  struct lifreq *interfaceBuffer;
++  struct lifreq *interfaceItr;
++  struct lifreq temp;
++  struct ifaddrs *currAddr, *prevAddr;
++  int count = 0;
++  int sockets, sockets4, sockets6;
++  int i;
++
++  if((sockets4 = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
++    return -1;
++  }
++  if((sockets6 = socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
++    close(sockets4);
++    return -1;
++  }
++  /* get the interfaces */
++  if(get_all_interfaces(sockets4, AF_UNSPEC, &interfaceBuffer, &count) < 0)
++    return getifaddrsCleanup(sockets4, sockets6, interfaceBuffer, interfaceAddrs);
++
++  /* set initial conditions for the loop */
++  prevAddr = NULL;
++  currAddr = NULL;
++  interfaceItr = interfaceBuffer;
++
++  /* Loop through the interfaces and create ifaddrs struct for them */
++  for (i = 0; i < count; i++, interfaceItr++, prevAddr = currAddr) {
++
++    /* Allocate memory for a new current ifaddrs struct */
++    currAddr = uv__malloc(sizeof(struct ifaddrs));
++    if(!currAddr)
++      return getifaddrsCleanup(sockets4, sockets6, interfaceBuffer, interfaceAddrs);
++    currAddr->ifa_next = NULL;
++
++    /* add the new ifaddrs struct to the linked list */
++    if(prevAddr != NULL)
++      prevAddr->ifa_next = currAddr;
++    else
++      *interfaceAddrs = currAddr;
++
++    /* set the interface name */
++    if((currAddr->ifa_name = uv__strdup(interfaceItr->lifr_name)) == NULL)
++      return getifaddrsCleanup(sockets4, sockets6, interfaceBuffer, interfaceAddrs);
++
++    /* set the physical address */
++    currAddr->ifa_addr = uv__malloc(sizeof(struct sockaddr_storage));
++    if(!currAddr->ifa_addr)
++      return getifaddrsCleanup(sockets4, sockets6, interfaceBuffer, interfaceAddrs);
++    memcpy(currAddr->ifa_addr, &interfaceItr->lifr_addr, sizeof(struct sockaddr_storage));
++
++    sockets = (interfaceItr->lifr_addr.ss_family == AF_INET) ? sockets4 : sockets6;
++    /* set the interface flags */
++    strncpy(temp.lifr_name, interfaceItr->lifr_name, sizeof (temp.lifr_name));
++    if(ioctl(sockets, SIOCGLIFFLAGS, (caddr_t)&temp) < 0)
++      return getifaddrsCleanup(sockets4, sockets6, interfaceBuffer, interfaceAddrs);
++    currAddr->ifa_flags = temp.lifr_flags;
++
++    /* set the netmask */
++    if(ioctl(sockets, SIOCGLIFNETMASK, (caddr_t)&temp) < 0)
++      return getifaddrsCleanup(sockets4, sockets6, interfaceBuffer, interfaceAddrs);
++    currAddr->ifa_netmask = uv__malloc(sizeof(struct sockaddr_storage));
++    if(currAddr->ifa_netmask == NULL)
++      return getifaddrsCleanup(sockets4, sockets6, interfaceBuffer, interfaceAddrs);
++    memcpy(currAddr->ifa_netmask, &temp.lifr_addr, sizeof(struct sockaddr_storage));
++  }
++  close(sockets4);
++  close(sockets6);
++  uv__free(interfaceBuffer);
++  return 0;
++}
++#endif
+ 
+ int uv_interface_addresses(uv_interface_address_t** addresses, int* count) {
+-#ifdef SUNOS_NO_IFADDRS
+-  return -ENOSYS;
+-#else
+   uv_interface_address_t* address;
+   struct sockaddr_dl* sa_addr;
+   struct ifaddrs* addrs;
+@@ -749,7 +887,6 @@ int uv_interface_addresses(uv_interface_address_t** addresses, int* count) {
+   freeifaddrs(addrs);
+ 
+   return 0;
+-#endif  /* SUNOS_NO_IFADDRS */
+ }
+ 
+ 
+diff --git a/deps/v8/src/allocation.cc b/deps/v8/src/allocation.cc
+index 851cd61..36f2d23 100644
+--- a/deps/v8/src/allocation.cc
++++ b/deps/v8/src/allocation.cc
+@@ -85,7 +85,7 @@ void* AlignedAlloc(size_t size, size_t alignment) {
+   void* ptr;
+ #if V8_OS_WIN
+   ptr = _aligned_malloc(size, alignment);
+-#elif V8_LIBC_BIONIC
++#elif V8_LIBC_BIONIC || V8_OS_SOLARIS
+   // posix_memalign is not exposed in some Android versions, so we fall back to
+   // memalign. See http://code.google.com/p/android/issues/detail?id=35391.
+   ptr = memalign(alignment, size);
