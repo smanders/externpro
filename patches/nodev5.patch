@@ -1,0 +1,13 @@
+diff --git a/deps/v8/src/allocation.cc b/deps/v8/src/allocation.cc
+index 851cd61..36f2d23 100644
+--- a/deps/v8/src/allocation.cc
++++ b/deps/v8/src/allocation.cc
+@@ -85,7 +85,7 @@ void* AlignedAlloc(size_t size, size_t alignment) {
+   void* ptr;
+ #if V8_OS_WIN
+   ptr = _aligned_malloc(size, alignment);
+-#elif V8_LIBC_BIONIC
++#elif V8_LIBC_BIONIC || V8_OS_SOLARIS
+   // posix_memalign is not exposed in some Android versions, so we fall back to
+   // memalign. See http://code.google.com/p/android/issues/detail?id=35391.
+   ptr = memalign(alignment, size);
