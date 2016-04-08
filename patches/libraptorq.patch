@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 262690e..325b804 100644
+index 262690e..49ee5a4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,31 +20,43 @@
@@ -480,7 +480,7 @@ index 262690e..325b804 100644
  TARGET_LINK_LIBRARIES(test_c ${CMAKE_THREAD_LIBS_INIT})
  # link the library we just built, too
 -TARGET_LINK_LIBRARIES(test_c ${LIBRARY_OUTPUT_PATH}/libRaptorQ.so)
-+TARGET_LINK_LIBRARIES(test_c ${theRaptorQLib})
++TARGET_LINK_LIBRARIES(test_c ${theRaptorQLib}) # TODO: m needed? do it in a multi-platform way...
  # CPP interface
  ADD_EXECUTABLE(test_cpp EXCLUDE_FROM_ALL test/test_cpp.cpp)
 -ADD_DEPENDENCIES(test_cpp RaptorQ)
@@ -523,6 +523,27 @@ index d466667..5fde0d0 100644
  				Makes the library smaller and better optimized.
  				Only for gcc/clang.
  STDLIB		libc++,libstdc++. Choose the standard library to use.
+diff --git a/src/De_Interleaver.hpp b/src/De_Interleaver.hpp
+index 66fd29b..fcc5880 100644
+--- a/src/De_Interleaver.hpp
++++ b/src/De_Interleaver.hpp
+@@ -64,11 +64,12 @@ uint64_t De_Interleaver<Fwd_It>::operator() (Fwd_It &start, const Fwd_It end,
+ 	// to (start-1) during the decoding of the previous block.
+ 	uint8_t offset_al = skip;
+ 	using T = typename std::iterator_traits<Fwd_It>::value_type;
+-	T element;
++	T element = static_cast<T> (0);
+ 	if (skip != 0) {
+-		element = static_cast<T> (0);
+-	} else {
+-		element = *start;
++		uint8_t *p = reinterpret_cast<uint8_t *> (&start);
++		for (size_t keep = 0; keep < skip; ++keep) {
++			element += static_cast<T> (*(p++)) << keep * 8;
++		}
+ 	}
+ 	while (start != end && sub_blk < (_sub_blocks.num(0) + _sub_blocks.num(1))){
+ 		element += static_cast<T> (static_cast<uint8_t>((*_symbols)(esi, byte)))
 diff --git a/src/Interleaver.hpp b/src/Interleaver.hpp
 index 094927c..2da3329 100644
 --- a/src/Interleaver.hpp
@@ -580,6 +601,116 @@ index cf2444c..93f5991 100644
  
  }	// namespace Impl
  }	// namespace RaptorQ
+diff --git a/src/cRaptorQ.cpp b/src/cRaptorQ.cpp
+index f0b889e..fbe2bba 100644
+--- a/src/cRaptorQ.cpp
++++ b/src/cRaptorQ.cpp
+@@ -560,37 +560,40 @@ uint64_t RaptorQ_decode (RaptorQ_ptr *dec, void **data, const size_t size)
+ 	uint16_t *p_16;
+ 	uint32_t *p_32;
+ 	uint64_t *p_64;
++	uint64_t ret = 0;
+ 	switch (dec->type) {
+ 	case RaptorQ_type::DEC_8:
+ 		p_8 = reinterpret_cast<uint8_t*> (*data);
+-		return (reinterpret_cast<RaptorQ::Decoder<uint8_t*, uint8_t*>*> (
++		ret = (reinterpret_cast<RaptorQ::Decoder<uint8_t*, uint8_t*>*> (
+ 										dec->ptr))->decode (p_8, p_8 + size);
++		*data = p_8;
++		break;
+ 	case RaptorQ_type::DEC_16:
+ 		p_16 = reinterpret_cast<uint16_t*> (*data);
+-		return (reinterpret_cast<RaptorQ::Decoder<uint16_t*, uint16_t*>*> (
++		ret = (reinterpret_cast<RaptorQ::Decoder<uint16_t*, uint16_t*>*> (
+ 										dec->ptr))->decode (p_16, p_16 + size);
++		*data = p_16;
++		break;
+ 	case RaptorQ_type::DEC_32:
+ 		p_32 = reinterpret_cast<uint32_t*> (*data);
+-		return (reinterpret_cast<RaptorQ::Decoder<uint32_t*, uint32_t*>*> (
++		ret = (reinterpret_cast<RaptorQ::Decoder<uint32_t*, uint32_t*>*> (
+ 										dec->ptr))->decode (p_32, p_32 + size);
++		*data = p_32;
++		break;
+ 	case RaptorQ_type::DEC_64:
+ 		p_64 = reinterpret_cast<uint64_t*> (*data);
+-		return (reinterpret_cast<RaptorQ::Decoder<uint64_t*, uint64_t*>*> (
++		ret = (reinterpret_cast<RaptorQ::Decoder<uint64_t*, uint64_t*>*> (
+ 										dec->ptr))->decode (p_64, p_64 + size);
++		*data = p_64;
++		break;
+ 	case RaptorQ_type::ENC_8:
+ 	case RaptorQ_type::ENC_16:
+ 	case RaptorQ_type::ENC_32:
+ 	case RaptorQ_type::ENC_64:
+ 	case RaptorQ_type::NONE:
+-		return false;
++		break;
+ 	}
+-#ifndef USING_CLANG
+-	// uncomment the return and:
+-	// clang: WARN: will never be executed (exaustive switch)
+-	// if commented, GCC: warn: control reaches end of non-void
+-	// ...make up your mind, guys?
+-	return false;
+-#endif
++	return ret;
+ }
+ 
+ uint64_t RaptorQ_decode_block (RaptorQ_ptr *dec, void **data, const size_t size,
+@@ -604,37 +607,40 @@ uint64_t RaptorQ_decode_block (RaptorQ_ptr *dec, void **data, const size_t size,
+ 	uint16_t *p_16;
+ 	uint32_t *p_32;
+ 	uint64_t *p_64;
++	uint64_t ret = 0;
+ 	switch (dec->type) {
+ 	case RaptorQ_type::DEC_8:
+ 		p_8 = reinterpret_cast<uint8_t*> (*data);
+-		return (reinterpret_cast<RaptorQ::Decoder<uint8_t*, uint8_t*>*> (
++		ret = (reinterpret_cast<RaptorQ::Decoder<uint8_t*, uint8_t*>*> (
+ 									dec->ptr))->decode (p_8, p_8 + size, sbn);
++		*data = p_8;
++		break;
+ 	case RaptorQ_type::DEC_16:
+ 		p_16 = reinterpret_cast<uint16_t*> (*data);
+-		return (reinterpret_cast<RaptorQ::Decoder<uint16_t*, uint16_t*>*> (
++		ret = (reinterpret_cast<RaptorQ::Decoder<uint16_t*, uint16_t*>*> (
+ 									dec->ptr))->decode (p_16, p_16 + size, sbn);
++		*data = p_16;
++		break;
+ 	case RaptorQ_type::DEC_32:
+ 		p_32 = reinterpret_cast<uint32_t*> (*data);
+-		return (reinterpret_cast<RaptorQ::Decoder<uint32_t*, uint32_t*>*> (
++		ret = (reinterpret_cast<RaptorQ::Decoder<uint32_t*, uint32_t*>*> (
+ 									dec->ptr))->decode (p_32, p_32 + size, sbn);
++		*data = p_32;
++		break;
+ 	case RaptorQ_type::DEC_64:
+ 		p_64 = reinterpret_cast<uint64_t*> (*data);
+-		return (reinterpret_cast<RaptorQ::Decoder<uint64_t*, uint64_t*>*> (
++		ret = (reinterpret_cast<RaptorQ::Decoder<uint64_t*, uint64_t*>*> (
+ 									dec->ptr))->decode (p_64, p_64 + size, sbn);
++		*data = p_64;
++		break;
+ 	case RaptorQ_type::ENC_8:
+ 	case RaptorQ_type::ENC_16:
+ 	case RaptorQ_type::ENC_32:
+ 	case RaptorQ_type::ENC_64:
+ 	case RaptorQ_type::NONE:
+-		return false;
++		break;
+ 	}
+-#ifndef USING_CLANG
+-	// uncomment the return and:
+-	// clang: WARN: will never be executed (exaustive switch)
+-	// if commented, GCC: warn: control reaches end of non-void
+-	// ...make up your mind, guys?
+-	return false;
+-#endif
++	return ret;
+ }
+ 
+ bool RaptorQ_add_symbol_id (RaptorQ_ptr *dec, void **data, const uint32_t size,
 diff --git a/src/degree.hpp b/src/degree.hpp
 index 711afe6..31564fe 100644
 --- a/src/degree.hpp
@@ -717,3 +848,64 @@ index 4df776a..d9608c2 100644
  	    }
  	};
  	// typedef std::chrono::microseconds microseconds;
+diff --git a/test/test_c.c b/test/test_c.c
+index db43739..a000d5d 100644
+--- a/test/test_c.c
++++ b/test/test_c.c
+@@ -24,6 +24,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <time.h>
++#include <math.h>
+ 
+ 
+ // Demonstration of how to use the C interface.
+@@ -40,7 +41,7 @@ bool decode (uint32_t mysize, float drop_prob, uint8_t overhead)
+ 
+ 
+ 	srand((uint32_t)time(NULL));
+-	//initialize vector with random data
++	// initialize vector with random data
+ 	myvec = (uint32_t *) malloc (mysize * sizeof(uint32_t));
+ 	for (uint32_t i = 0; i < mysize; ++i)
+ 		myvec[i] = (uint32_t)rand();
+@@ -74,7 +75,7 @@ bool decode (uint32_t mysize, float drop_prob, uint8_t overhead)
+ 	}
+ 
+ 	// start background precomputation while we get the source symbols.
+-	RaptorQ_precompute (enc, 1, true);
++	RaptorQ_precompute (enc, 2, true);
+ 
+ 	/* everything is encoded now.
+ 	 * well, it might be running in background, but don't worry:
+@@ -233,19 +234,25 @@ bool decode (uint32_t mysize, float drop_prob, uint8_t overhead)
+ 
+ 	// make sure that there's enough place in "received" to get the
+ 	// whole decoded data.
+-	uint32_t *received = (uint32_t *) malloc (RaptorQ_bytes (dec));
++	// note: the length of the decoded data is in bytes and might not fit
++	// a whole uint32_t.
++	uint64_t decoded_size = ceil (RaptorQ_bytes (dec) / sizeof(uint32_t));
++	uint32_t *received = (uint32_t *) malloc (decoded_size * sizeof(uint32_t));
++
++	for (uint32_t *shit = received; shit != received + decoded_size; ++shit)
++		//*shit = 0xFF + (0xFF >> 8) + (0xFF >> 16) + (0xFF >> 24);
++		;//*shit = 0xFFFFFFFF;
+ 
+ 	uint32_t *rec = received;
+ 	// you can actually call "RaptorQ_decode" as many times as you want
+ 	// until you get enough data. it will wait until it has enough data
+ 	// to start the decoding.
+-	uint64_t written = RaptorQ_decode (dec, (void **)&rec,
+-									RaptorQ_bytes (dec) / sizeof(uint32_t));
+-	// "rec" now points to "received + written
++	uint64_t written = RaptorQ_decode (dec, (void **)&rec, decoded_size);
++	// "rec" now points to "received + written"
+ 	// This might help you to call RaptorQ_decode_sbn multiple time
+ 	// on the same pointer.
+ 
+-	if (written != RaptorQ_bytes (dec) / sizeof(uint32_t)) {
++	if ((written != decoded_size) || (decoded_size != mysize)) {
+ 		fprintf(stderr, "Couldn't decode: %i - %lu\n", mysize, written);
+ 		free (myvec);
+ 		free(received);
