@@ -103,6 +103,36 @@ function(xpCpackWixUpgradeReplace appendTo guid ver4) # optional ARGV3
   set(${appendTo} "${${appendTo}}${xml}" PARENT_SCOPE)
 endfunction()
 
+function(xpCpackWixRunApp appendTo exe text) # optional ARGV3
+  if(${ARGC} EQUAL 4 AND ARGV3)
+    set(base ${ARGV3})
+  else()
+    set(base 2) # ca.wxs
+  endif()
+  set(xml "\n")
+  # http://wixtoolset.org/documentation/manual/v3/howtos/ui_and_localization/run_program_after_install.html
+  # Step 2: Add UI to your installer / Step 4: Trigger the custom action
+  xpStringIndentAppend(xml ${base}+0 "<UI>")
+  xpStringIndentAppend(xml ${base}+1 "<Publish")
+  xpStringIndentAppend(xml ${base}+2 "Dialog='ExitDialog'")
+  xpStringIndentAppend(xml ${base}+2 "Control='Finish'")
+  xpStringIndentAppend(xml ${base}+2 "Event='DoAction'")
+  xpStringIndentAppend(xml ${base}+2 "Value='LaunchApplication'")
+  xpStringIndentAppend(xml ${base}+1 ">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>")
+  xpStringIndentAppend(xml ${base}+0 "</UI>")
+  xpStringIndentAppend(xml ${base}+0 "<Property Id='WIXUI_EXITDIALOGOPTIONALCHECKBOX' Value='1' />")
+  xpStringIndentAppend(xml ${base}+0 "<Property Id='WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT' Value='${text}' />")
+  # Step 3: Include the custom action
+  xpStringIndentAppend(xml ${base}+0 "<Property Id='WixShellExecTarget' Value='&quot\;[#CM_FP_${exe}]&quot\;' />")
+  # http://stackoverflow.com/questions/2325459/executing-a-custom-action-that-requires-elevation-after-install
+  xpStringIndentAppend(xml ${base}+0 "<CustomAction Id='LaunchApplication'")
+  xpStringIndentAppend(xml ${base}+1 "BinaryKey='WixCA'")
+  xpStringIndentAppend(xml ${base}+1 "DllEntry='WixShellExec'")
+  xpStringIndentAppend(xml ${base}+1 "Impersonate='yes'")
+  xpStringIndentAppend(xml ${base}+0 "/>")
+  set(${appendTo} "${${appendTo}}${xml}" PARENT_SCOPE)
+endfunction()
+
 function(xpCpackWixCAFeature appendTo) # optional ARGV1
   if(${ARGC} EQUAL 2 AND ARGV1)
     set(base ${ARGV1})
