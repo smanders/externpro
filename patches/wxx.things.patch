@@ -233,6 +233,18 @@ index b86c4e2..dd66039 100644
 @@ -1 +1 @@
 -#include "wx/msw/wx.rc"
 +//#include "wx/msw/wx.rc"
+diff --git a/src/block.cpp b/src/block.cpp
+index 19f1638..e7ce995 100644
+--- a/src/block.cpp
++++ b/src/block.cpp
+@@ -23,6 +23,7 @@
+ #endif // WX_PRECOMP
+ 
+ #include "wx/things/block.h"
++#include "wx/wxcrtvararg.h"
+ 
+ // use this to check to see if there is any overlap after minimizing
+ //#define CHECK_BLOCK_OVERLAP 1
 diff --git a/src/bmpcombo.cpp b/src/bmpcombo.cpp
 index 5b3f031..7f947a4 100644
 --- a/src/bmpcombo.cpp
@@ -252,7 +264,7 @@ index 5b3f031..7f947a4 100644
 +
 +#endif // NOT __WXMAC__
 diff --git a/src/dropdown.cpp b/src/dropdown.cpp
-index 6450cb8..fc623f6 100644
+index 6450cb8..d4743af 100644
 --- a/src/dropdown.cpp
 +++ b/src/dropdown.cpp
 @@ -9,6 +9,7 @@
@@ -263,7 +275,15 @@ index 6450cb8..fc623f6 100644
  #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
      #pragma implementation "dropdown.h"
  #endif
-@@ -147,7 +148,7 @@ void DropDownPopup::OnTimer( wxTimerEvent &WXUNUSED(event) )
+@@ -29,6 +30,7 @@
+ #include "wx/things/dropdown.h"
+ #include "wx/things/toggle.h"
+ #include "wx/renderer.h"
++#include "wx/wxcrtvararg.h"
+ 
+ /* XPM */
+ static const char *down_arrow_xpm_data[] = {
+@@ -147,7 +149,7 @@ void DropDownPopup::OnTimer( wxTimerEvent &WXUNUSED(event) )
      //wxPrintf(wxT("**DropDownPopup::OnTimer mouse %d %d -- %d %d %d\n"), m_mouse.x, m_mouse.y, m_popped_handler, m_child, m_handlerPopup); fflush(stdout);
      // pop the event handler if inside the child window or
      // restore the event handler if not in the child window
@@ -272,7 +292,7 @@ index 6450cb8..fc623f6 100644
          PopPopupHandler(child);
      else
          PushPopupHandler(child);
-@@ -167,7 +168,7 @@ void DropDownPopup::OnIdle( wxIdleEvent& event )
+@@ -167,7 +169,7 @@ void DropDownPopup::OnIdle( wxIdleEvent& event )
          //wxPrintf(wxT("**DropDownPopup::OnIdle mouse %d %d -- %d %d %d\n"), m_mouse.x, m_mouse.y, m_popped_handler, m_child, m_handlerPopup); fflush(stdout);
          // pop the event handler if inside the child window or
          // restore the event handler if not in the child window
@@ -281,7 +301,7 @@ index 6450cb8..fc623f6 100644
              PopPopupHandler(child);
          else
              PushPopupHandler(child);
-@@ -183,7 +184,11 @@ void DropDownPopup::OnMouse( wxMouseEvent& event )
+@@ -183,7 +185,11 @@ void DropDownPopup::OnMouse( wxMouseEvent& event )
  
  void DropDownPopup::OnKeyDown( wxKeyEvent &event )
  {
@@ -293,7 +313,7 @@ index 6450cb8..fc623f6 100644
          event.Skip(false);
      else
          event.Skip(true);
-@@ -253,7 +258,7 @@ bool DropDownPopup::ProcessLeftDown( wxMouseEvent &event )
+@@ -253,7 +259,7 @@ bool DropDownPopup::ProcessLeftDown( wxMouseEvent &event )
          }
      }
  
@@ -302,7 +322,7 @@ index 6450cb8..fc623f6 100644
          return false;
  
      Dismiss();
-@@ -403,3 +408,4 @@ void DropDownBase::OnDropButton( wxCommandEvent &WXUNUSED(event))
+@@ -403,3 +409,4 @@ void DropDownBase::OnDropButton( wxCommandEvent &WXUNUSED(event))
      else
          ShowPopup();
  }
@@ -540,6 +560,18 @@ index b83b5cb..589780b 100644
      {
          wxMenuItem *mi = (wxMenuItem*)node->GetData();
          if (mi && (mi->GetKind() == wxITEM_RADIO))
+diff --git a/src/optvalue.cpp b/src/optvalue.cpp
+index 02ea640..0f1fdb4 100644
+--- a/src/optvalue.cpp
++++ b/src/optvalue.cpp
+@@ -25,6 +25,7 @@
+ 
+ #include "wx/tokenzr.h"
+ #include "wx/things/optvalue.h"
++#include "wx/wxcrtvararg.h"
+ 
+ #include "wx/arrimpl.cpp"
+ WX_DEFINE_OBJARRAY(wxArrayOptionValue);
 diff --git a/src/spinctld.cpp b/src/spinctld.cpp
 index 214d80c..e23999e 100644
 --- a/src/spinctld.cpp

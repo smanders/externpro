@@ -226,8 +226,13 @@ function(xpCmakeBuild XP_DEPENDS)
     # (see foreach in xpAddProject below)
     set(XP_BUILD_CMD ${CMAKE_COMMAND} -E echo "Build MSVC...")
     set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E echo "Install MSVC...")
-    xpAddProject(${XP_DEPENDS}_msvc)
-    list(APPEND ADDITIONAL_DEPENDS ${XP_DEPENDS}_msvc) # serialize the build
+    if(ARGV6)
+      set(XP_BUILD_TGT ${XP_DEPENDS}${ARGV6}_msvc)
+    else()
+      set(XP_BUILD_TGT ${XP_DEPENDS}_msvc)
+    endif()
+    xpAddProject(${XP_BUILD_TGT})
+    list(APPEND ADDITIONAL_DEPENDS ${XP_BUILD_TGT}) # serialize the build
   else()
     set(XP_CONFIGURE_GEN "")
     if(DEFINED XP_BUILD_TARGET)
@@ -248,8 +253,13 @@ function(xpCmakeBuild XP_DEPENDS)
         -DCMAKE_INSTALL_PREFIX:PATH=${STAGE_DIR}
         -DCMAKE_BUILD_TYPE:STRING=${cfg}
         )
-      xpAddProject(${XP_DEPENDS}_${cfg})
-      list(APPEND ADDITIONAL_DEPENDS ${XP_DEPENDS}_${cfg}) # serialize the build
+      if(ARGV6)
+        set(XP_BUILD_TGT ${XP_DEPENDS}${ARGV6}_${cfg})
+      else()
+        set(XP_BUILD_TGT ${XP_DEPENDS}_${cfg})
+      endif()
+      xpAddProject(${XP_BUILD_TGT})
+      list(APPEND ADDITIONAL_DEPENDS ${XP_BUILD_TGT}) # serialize the build
     endforeach()
   endif()
   if(ARGV3)

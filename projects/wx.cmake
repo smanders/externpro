@@ -1,59 +1,56 @@
 ########################################
 # wx
-# http://sourceforge.net/projects/wxwindows/files/
 # * packages required to build on linux:
 # *   sudo apt-get install libgtk2.0-dev libglu1-mesa-dev [ubuntu]
 # *   sudo yum install gtk2-devel.x86_64 libSM-devel.x86_64 [rhel6]
 # *   sudo yum install mesa-libGL-devel.x86_64 mesa-libGLU-devel.x86_64 [rhel6]
-xpProOption(wx)
-set(VER 3.0.2)
-string(REPLACE "." "_" VER_ ${VER})
-set(REPO https://github.com/smanders/wxWidgets)
-set(PRO_WX
-  NAME wx
-  WEB "wxWidgets" http://wxwidgets.org/ "wxWidgets website"
-  LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License -- essentially LGPL with an exception stating that derived works in binary form may be distributed on the user's own terms"
-  DESC "Cross-Platform GUI Library"
-  REPO "repo" ${REPO} "forked wxWidgets repo on github"
-  VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/wxWidgets.git
-  GIT_UPSTREAM git://github.com/wxWidgets/wxWidgets.git
-  GIT_TAG xp${VER} # what to 'git checkout'
-  GIT_REF WX_${VER_}_pkg # patch from REF to TAG
-  DLURL http://downloads.sourceforge.net/project/wxwindows/${VER}/wxWidgets-${VER}.tar.bz2
-  DLMD5 ba4cd1f3853d0cd49134c5ae028ad080
-  PATCH ${PATCH_DIR}/wx.patch
-  DIFF ${REPO}/compare/
-  )
+set(WX_VERSIONS 30 31)
 ########################################
 function(mkpatch_wx)
-  xpRepo(${PRO_WX})
+  foreach(ver ${WX_VERSIONS})
+    xpRepo(${PRO_WX${ver}})
+    xpRepo(${PRO_WXCMAKE${ver}})
+  endforeach()
 endfunction()
 ########################################
 function(download_wx)
-  xpNewDownload(${PRO_WX})
+  foreach(ver ${WX_VERSIONS})
+    xpNewDownload(${PRO_WX${ver}})
+  endforeach()
 endfunction()
 ########################################
 function(patch_wx)
-  xpPatch(${PRO_WX})
-  xpPatch(${PRO_WXCMAKE})
+  foreach(ver ${WX_VERSIONS})
+    xpPatch(${PRO_WX${ver}})
+    xpPatch(${PRO_WXCMAKE${ver}})
+  endforeach()
 endfunction()
 ########################################
 function(build_wx)
-  if(NOT (XP_DEFAULT OR XP_PRO_WX))
-    return()
-  endif()
-  set(WXVER 30)
-  set(oneValueArgs TARGETS INCDIR SRCDIR)
-  cmake_parse_arguments(wx "" "${oneValueArgs}" "" ${ARGN})
   configure_file(${PRO_DIR}/use/usexp-wxwidgets-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
+  foreach(ver ${WX_VERSIONS})
+    if(XP_DEFAULT OR XP_PRO_WX${ver})
+      list(APPEND BUILD_WX_VERS ${ver})
+    endif()
+  endforeach()
+  foreach(WXVER ${BUILD_WX_VERS})
+    build_wxv(VER ${WXVER})
+  endforeach()
+endfunction()
+########################################
+function(build_wxv)
+  set(oneValueArgs VER TARGETS INCDIR SRCDIR)
+  cmake_parse_arguments(wx "" "${oneValueArgs}" "" ${ARGN})
+  if(NOT (XP_DEFAULT OR XP_PRO_WX${wx_VER}))
+    return()
+  endif()
   if(MSVC)
-    set(XP_CONFIGURE -DWX_VERSION:STRING=${WXVER})
-    xpCmakeBuild(wx wxcmake "${XP_CONFIGURE}")
+    set(XP_CONFIGURE -DWX_VERSION:STRING=${wx_VER})
+    xpCmakeBuild(wx${wx_VER} wxcmake${wx_VER} "${XP_CONFIGURE}")
     set(config msvc)
-    list(APPEND wxtargets wx_${config})
+    list(APPEND wx${wx_VER}targets wx${wx_VER}_${config})
   else()
     xpGetConfigureFlags(CXX wx_CONFIGURE_FLAGS)
     if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
@@ -100,28 +97,31 @@ function(build_wx)
     set(BUILD_CONFIGS Release)
     foreach(cfg ${BUILD_CONFIGS})
       set(XP_CONFIGURE_CMD ${XP_CONFIGURE_${cfg}} ${XP_CONFIGURE_Install})
-      addproject_wx(wx ${cfg})
+      addproject_wx(wx${wx_VER} ${cfg})
     endforeach()
     list(GET BUILD_CONFIGS 0 config)
   endif()
-  # wx_stage_hdrs is a one-time thing, so copy headers from one of the wx build
+  # stage_hdrs is a one-time thing, so copy headers from one of the wx build
   # targets, but depend on all of them so this will always happen last
   # (and wxx can depend on this)
-  ExternalProject_Get_Property(wx SOURCE_DIR)
-  ExternalProject_Get_Property(wx_${config} BINARY_DIR)
-  ExternalProject_Get_Property(wx_${config} INSTALL_DIR)
+  ExternalProject_Get_Property(wx${wx_VER} SOURCE_DIR)
+  ExternalProject_Get_Property(wx${wx_VER}_${config} BINARY_DIR)
+  ExternalProject_Get_Property(wx${wx_VER}_${config} INSTALL_DIR)
   set(wxSOURCE_DIR ${SOURCE_DIR})
   set(wxBINARY_DIR ${BINARY_DIR})
   set(wxINSTALL_DIR ${INSTALL_DIR})
   set(wxWINUNDEF ${wxSOURCE_DIR}/include/wx/msw/winundef.h)
-  if(${WXVER} EQUAL 30)
+  if(${wx_VER} EQUAL 31)
+    set(wxSTAGE_DIR ${STAGE_DIR}/include/wx-3.1)
+    set(TIFF_HDRS "src/tiff/libtiff/*.h")
+  elseif(${wx_VER} EQUAL 30)
     set(wxSTAGE_DIR ${STAGE_DIR}/include/wx-3.0)
     set(TIFF_HDRS "src/tiff/libtiff/*.h")
   else()
-    message(FATAL_ERROR "wx.cmake: wx version ${WXVER} support lacking")
+    message(FATAL_ERROR "wx.cmake: wx version ${wx_VER} support lacking")
   endif()
-  if(NOT TARGET wx${WXVER}_stage_hdrs)
-    ExternalProject_Add(wx${WXVER}_stage_hdrs DEPENDS ${wxtargets}
+  if(NOT TARGET wx${wx_VER}_stage_hdrs)
+    ExternalProject_Add(wx${wx_VER}_stage_hdrs DEPENDS ${wx${wx_VER}targets}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
       SOURCE_DIR ${wxSOURCE_DIR}  INSTALL_DIR ${wxSTAGE_DIR}
       PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -136,11 +136,11 @@ function(build_wx)
         -Ddst:STRING=<INSTALL_DIR>/wx/tiff/
         -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
-    set_property(TARGET wx${WXVER}_stage_hdrs PROPERTY FOLDER ${bld_folder})
+    set_property(TARGET wx${wx_VER}_stage_hdrs PROPERTY FOLDER ${bld_folder})
   endif()
   if(DEFINED wx_TARGETS)
-    xpListAppendIfDne(${wx_TARGETS} ${wxtargets})
-    xpListAppendIfDne(${wx_TARGETS} wx${WXVER}_stage_hdrs)
+    xpListAppendIfDne(${wx_TARGETS} ${wx${wx_VER}targets})
+    xpListAppendIfDne(${wx_TARGETS} wx${wx_VER}_stage_hdrs)
     set(${wx_TARGETS} "${${wx_TARGETS}}" PARENT_SCOPE)
   endif()
   if(DEFINED wx_INCDIR)
