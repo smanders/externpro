@@ -2077,7 +2077,7 @@ index 0000000..5d1143a
 +set_wxtarget_properties(${lib_name})
 diff --git a/wx.cmake b/wx.cmake
 new file mode 100644
-index 0000000..4688140
+index 0000000..631a09d
 --- /dev/null
 +++ b/wx.cmake
 @@ -0,0 +1,189 @@
@@ -2203,7 +2203,7 @@ index 0000000..4688140
 +    # MSVC defaults to X86, but specifying it here avoids a link warning (LNK4068)
 +    set_target_properties(${target} PROPERTIES STATIC_LIBRARY_FLAGS "/MACHINE:X86")
 +  endif()
-+  install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++  install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}${WX_VERSION}-targets
 +    RUNTIME DESTINATION bin
 +    LIBRARY DESTINATION lib
 +    ARCHIVE DESTINATION lib
@@ -2269,7 +2269,7 @@ index 0000000..4688140
 +install(FILES ${wxhdrs} ${wxcpps} DESTINATION include/${wxver}/wx)
 +set(customsetuph ${wxroot}/build/cmake/setup.h)
 +install(FILES ${customsetuph} DESTINATION include/${wxver}/wx/msvc/wx)
-+install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
++install(EXPORT ${PROJECT_NAME}${WX_VERSION}-targets DESTINATION lib/cmake)
 diff --git a/wxexpat.cmake b/wxexpat.cmake
 new file mode 100644
 index 0000000..cb5d199
