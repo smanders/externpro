@@ -257,10 +257,10 @@ index 0000000..4cc396f
 +set_wxtarget_properties(${lib_name})
 diff --git a/base.cmake b/base.cmake
 new file mode 100644
-index 0000000..17e01e2
+index 0000000..053589e
 --- /dev/null
 +++ b/base.cmake
-@@ -0,0 +1,354 @@
+@@ -0,0 +1,360 @@
 +set(lib_name base)
 +#######################################
 +# library sources
@@ -434,6 +434,12 @@ index 0000000..17e01e2
 +  ${wxroot}/include/wx/xtitypes.h
 +  ${wxroot}/include/wx/zipstrm.h
 +  ${wxroot}/include/wx/zstream.h
++  )
++set_source_files_properties(
++  ${wxroot}/include/wx/arrimpl.cpp
++  ${wxroot}/include/wx/listimpl.cpp
++  ${wxroot}/include/wx/thrimpl.cpp
++  PROPERTIES HEADER_FILE_ONLY TRUE
 +  )
 +source_group("Common Headers" FILES ${Common_hdrs})
 +list(APPEND ${lib_name}_libsrcs ${Common_hdrs})
