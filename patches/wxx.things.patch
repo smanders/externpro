@@ -1,6 +1,6 @@
 diff --git a/build/CMakeLists.txt b/build/CMakeLists.txt
 new file mode 100644
-index 0000000..b85c879
+index 0000000..d6997f6
 --- /dev/null
 +++ b/build/CMakeLists.txt
 @@ -0,0 +1,53 @@
@@ -50,13 +50,13 @@ index 0000000..b85c879
 +set_wxxtarget_properties(${lib_name})
 +#######################################
 +# install
-+install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}${WX_VER}-targets
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
 +install(FILES ${things_hdrs} DESTINATION include/${wxinc}/wx/things)
-+install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
++install(EXPORT ${PROJECT_NAME}${WX_VER}-targets DESTINATION lib/cmake)
 diff --git a/include/wx/things/bmpcombo.h b/include/wx/things/bmpcombo.h
 index 8bcb9f1..bc316c7 100644
 --- a/include/wx/things/bmpcombo.h

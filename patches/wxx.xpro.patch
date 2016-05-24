@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..4a4ab77
+index 0000000..1be5f9b
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,124 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(wxx)
 +include(flags OPTIONAL)
@@ -116,11 +116,15 @@ index 0000000..4a4ab77
 +  endif()
 +endfunction()
 +#######################################
++# we want all platforms, at this point, to have
++# WX_VER of the form: 30, 31 (not 3.0, 3.1)
++# for the naming of the targets.cmake files
++string(REGEX REPLACE "([0-9])\\.([0-9])?" "\\1\\2" WX_VER ${wxver})
 +set(wxx_libs
 +  wxplotctrl/build
 +  wxthings/build
 +  wxTLC
-+)
++  )
 +foreach(lib ${wxx_libs})
 +  add_subdirectory(${lib})
 +endforeach()
