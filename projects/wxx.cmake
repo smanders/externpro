@@ -51,5 +51,5 @@ function(build_wxxv ver)
     -DWX_INCLUDE:PATH=${wxInc}
     -DWX_SOURCE:PATH=${wxSrc}
     )
-  xpCmakeBuild(wxx "${XP_DEPS}" "${XP_CONFIGURE}" "" "" "" ${ver})
+  xpCmakeBuild(wxx "${XP_DEPS}" "${XP_CONFIGURE}" "" "" "" TGT ${ver})
 endfunction()
