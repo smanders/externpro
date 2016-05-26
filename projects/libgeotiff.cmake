@@ -42,23 +42,19 @@ function(build_libgeotiff)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBGEOTIFF))
     return()
   endif()
-  if(NOT (XP_DEFAULT OR XP_PRO_WX))
-    message(STATUS "libgeotiff.cmake: requires wx")
-    set(XP_PRO_WX ON CACHE BOOL "include wx" FORCE)
+  set(wxver 31) # specify the wx version to build libgeotiff against
+  if(NOT (XP_DEFAULT OR XP_PRO_WX${wxver}))
+    message(STATUS "libgeotiff.cmake: requires wx${wxver}")
+    set(XP_PRO_WX${wxver} ON CACHE BOOL "include wx${wxver}" FORCE)
     patch_wx()
   endif()
-  set(wxver 30) # specify the wx version to build libgeotiff against
-  if(NOT TARGET wx${wxver}_stage_hdrs)
-    build_wx()
-  endif()
-  ExternalProject_Get_Property(wx${wxver}_stage_hdrs INSTALL_DIR)
-  ExternalProject_Get_Property(wx${wxver}_stage_hdrs SOURCE_DIR)
+  build_wxv(VER ${wxver} TARGETS wxTgts INCDIR wxInc SRCDIR wxSrc)
   set(XP_CONFIGURE
-    -DWX_INCLUDE:PATH=${INSTALL_DIR}
-    -DWX_SOURCE:PATH=${SOURCE_DIR}
+    -DWX_INCLUDE:PATH=${wxInc}
+    -DWX_SOURCE:PATH=${wxSrc}
     )
   configure_file(${PRO_DIR}/use/usexp-geotiff-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(libgeotiff wx${wxver}_stage_hdrs "${XP_CONFIGURE}")
+  xpCmakeBuild(libgeotiff "${wxTgts}" "${XP_CONFIGURE}")
 endfunction()

@@ -59,7 +59,7 @@ function(build_cmakexp)
     -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
     -Dusexp-OpenSSL_DIR=${STAGE_DIR}/share/cmake
     )
-  xpCmakeBuild(cmakexp "${osslTgts}" "${XP_CONFIGURE}" cmakexpTgts NOINSTALL)
+  xpCmakeBuild(cmakexp "${osslTgts}" "${XP_CONFIGURE}" cmakexpTgts NO_INSTALL)
   xpCmakePackage("${cmakexpTgts}" pkgTgts)
   if(ARGN)
     list(APPEND cmakexpTgts ${pkgTgts})

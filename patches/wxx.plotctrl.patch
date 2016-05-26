@@ -22,7 +22,7 @@ index f0c3c2c..42469fc 100644
  ".# c #000000",
 diff --git a/build/CMakeLists.txt b/build/CMakeLists.txt
 new file mode 100644
-index 0000000..70ea9a7
+index 0000000..637a5be
 --- /dev/null
 +++ b/build/CMakeLists.txt
 @@ -0,0 +1,54 @@
@@ -73,13 +73,13 @@ index 0000000..70ea9a7
 +set_wxxtarget_properties(${lib_name})
 +#######################################
 +# install
-+install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}${WX_VER}-targets
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
 +install(FILES ${plot_hdrs} DESTINATION include/${wxinc}/wx/plotctrl)
-+install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
++install(EXPORT ${PROJECT_NAME}${WX_VER}-targets DESTINATION lib/cmake)
 diff --git a/include/wx/plotctrl/plotctrl.h b/include/wx/plotctrl/plotctrl.h
 index 26f3afb..595c211 100644
 --- a/include/wx/plotctrl/plotctrl.h
@@ -119,6 +119,18 @@ index 6b8c9d5..73ca1a1 100644
      wxArrayString       m_optionValues;
  };
  
+diff --git a/include/wx/plotctrl/plotdefs.h b/include/wx/plotctrl/plotdefs.h
+index a794fec..c571a46 100644
+--- a/include/wx/plotctrl/plotdefs.h
++++ b/include/wx/plotctrl/plotdefs.h
+@@ -14,6 +14,7 @@
+ 
+ #include "wx/defs.h"
+ #include "wx/geometry.h"
++#include "wx/wxcrtvararg.h"
+ 
+ // ----------------------------------------------------------------------------
+ // DLLIMPEXP macros
 diff --git a/samples/plotctrl/wxplotctrl.rc b/samples/plotctrl/wxplotctrl.rc
 index 306a634..774fbfb 100644
 --- a/samples/plotctrl/wxplotctrl.rc
@@ -161,7 +173,7 @@ index 08142c9..7ca8f93 100644
  
  #include "wx/plotctrl/lm_lsqr.h"
 diff --git a/src/plotctrl.cpp b/src/plotctrl.cpp
-index a8beb1c..01f7e5a 100644
+index a8beb1c..520ab70 100644
 --- a/src/plotctrl.cpp
 +++ b/src/plotctrl.cpp
 @@ -32,6 +32,7 @@
@@ -207,6 +219,15 @@ index a8beb1c..01f7e5a 100644
      }
  
      m_xAxisDrawer->SetTickFont(axisFont);
+@@ -691,7 +702,7 @@ void wxPlotCtrl::SetPlotWinMouseCursor(int cursorid)
+ {
+     if (cursorid == m_mouse_cursorid) return;
+     m_mouse_cursorid = cursorid;
+-    SetCursor(wxCursor(cursorid));
++    SetCursor(wxCursor(static_cast<wxStockCursor>(cursorid)));
+ }
+ 
+ void wxPlotCtrl::OnMouse( wxMouseEvent &event )
 @@ -705,9 +716,9 @@ void wxPlotCtrl::OnMouse( wxMouseEvent &event )
      wxSize size(GetClientSize());
      wxPoint mousePt(event.GetPosition());
@@ -235,6 +256,15 @@ index a8beb1c..01f7e5a 100644
              ShowTextCtrl(wxPLOTCTRL_EDIT_YAXIS, true);
      }
  }
+@@ -2274,7 +2285,7 @@ void wxPlotCtrl::SetAreaMouseCursor(int cursorid)
+     else if (cursorid == CURSOR_GRAB)
+         m_area->SetCursor(s_grabCursor);
+     else
+-        m_area->SetCursor(wxCursor(cursorid));
++        m_area->SetCursor(wxCursor(static_cast<wxStockCursor>(cursorid)));
+ }
+ 
+ void wxPlotCtrl::OnSize( wxSizeEvent& )
 @@ -2566,7 +2577,11 @@ void wxPlotCtrl::DrawMouseMarker( wxDC *dc, int type, const wxRect &rect )
      if ((rect.width == 0) || (rect.height == 0))
          return;

@@ -1,18 +1,23 @@
 # WXWIDGETS_FOUND - wxwidgets was found
 # WXWIDGETS_INCLUDE_DIR - the wxwidgets include directory
 # WXWIDGETS_LIBRARIES - the wxwidgets libraries
+# WXWIDGETS_VER - the wxwidgets version
 set(prj wxwidgets)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
-set(XP_USE_LATEST_WX ON)
-#option(XP_USE_LATEST_WX "build with wxWidgets 3.0 instead of 2.8" ON)
+#set(XP_USE_LATEST_WX ON)
+option(XP_USE_LATEST_WX "build with wxWidgets 3.1 instead of 3.0" OFF)
 if(XP_USE_LATEST_WX)
-  set(wxVersion "3.0")
+  set(wxVersion "3.1")
 else()
-  set(wxVersion "2.8")
+  set(wxVersion "3.0")
 endif()
+# WXWIDGETS_VER should be of the form: 30, 31 (not 3.0, 3.1)
+# to account for how the targets.cmake files are named
+# this will be used by the wxx use script, too
+string(REGEX REPLACE "([0-9])\\.([0-9])?" "\\1\\2" ${PRJ}_VER ${wxVersion})
 # NOTE: geotiff needs to find tiff, and we use the tiff bundled with wx
 list(APPEND ${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include/wx-${wxVersion}/wx/tiff)
 if(NOT DEFINED wx_libs)
@@ -71,7 +76,7 @@ elseif(MSVC)
     ${XP_ROOTDIR}/include/wx-${wxVersion}/wx/msvc
     )
   # targets file (-targets) installed to lib/cmake
-  include(${XP_ROOTDIR}/lib/cmake/${prj}-targets.cmake)
+  include(${XP_ROOTDIR}/lib/cmake/${prj}${${PRJ}_VER}-targets.cmake)
   set(${PRJ}_LIBRARIES ${wx_libs}
     # on unix these libs come from wx-config --libs
     wxexpat wxjpeg wxpng wxregex wxscintilla wxtiff wxzlib
@@ -79,7 +84,7 @@ elseif(MSVC)
     gdiplus # wxUSE_GRAPHICS_CONTEXT set to 1 in setup.h
     )
 endif()
-set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
+set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_VER)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})

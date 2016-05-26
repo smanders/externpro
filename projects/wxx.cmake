@@ -15,6 +15,7 @@ set(PRO_WXX
   PATCH ${PATCH_DIR}/wxx.xpro.patch
   DIFF ${REPO}/compare/
   )
+set(WXX_TARGETS wxxplotctrl wxxthings wxxtlc)
 ########################################
 function(mkpatch_wxx)
   xpRepo(${PRO_WXX})
@@ -22,34 +23,33 @@ endfunction()
 ########################################
 function(patch_wxx)
   xpPatch(${PRO_WXX})
-  xpPatch(${PRO_WXXPLOTCTRL})
-  xpPatch(${PRO_WXXTHINGS})
-  xpPatch(${PRO_WXXTLC})
+  foreach(tgt ${WXX_TARGETS})
+    string(TOUPPER ${tgt} TGT)
+    xpPatch(${PRO_${TGT}})
+  endforeach()
 endfunction()
 ########################################
 function(build_wxx)
   if(NOT (XP_DEFAULT OR XP_PRO_WXX))
     return()
   endif()
-  if(NOT (XP_DEFAULT OR XP_PRO_WX))
-    message(STATUS "wxx.cmake: requires wx")
-    set(XP_PRO_WX ON CACHE BOOL "include wx" FORCE)
+  build_wxxv(30)
+  build_wxxv(31)
+endfunction()
+function(build_wxxv ver)
+  if(NOT (XP_DEFAULT OR XP_PRO_WX${ver}))
+    message(STATUS "wxx.cmake: requires wx${ver}")
+    set(XP_PRO_WX${ver} ON CACHE BOOL "include wx${ver}" FORCE)
     patch_wx()
   endif()
   configure_file(${PRO_DIR}/use/usexp-wxx-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  cmake_parse_arguments(wxx "" TARGETS "" ${ARGN})
-  build_wx(TARGETS wxTgts INCDIR wxInc SRCDIR wxSrc)
-  set(WXX_PROJECTS wxxplotctrl wxxthings wxxtlc)
-  set(XP_DEPS ${wxTgts} ${WXX_PROJECTS})
+  build_wxv(VER ${ver} TARGETS wxTgts INCDIR wxInc SRCDIR wxSrc)
+  set(XP_DEPS ${wxTgts} ${WXX_TARGETS})
   set(XP_CONFIGURE
     -DWX_INCLUDE:PATH=${wxInc}
     -DWX_SOURCE:PATH=${wxSrc}
     )
-  xpCmakeBuild(wxx "${XP_DEPS}" "${XP_CONFIGURE}" wxxTargets)
-  if(DEFINED wxx_TARGETS)
-    xpListAppendIfDne(${wxx_TARGETS} "${wxxTargets}")
-    set(${wxx_TARGETS} "${${wxx_TARGETS}}" PARENT_SCOPE)
-  endif()
+  xpCmakeBuild(wxx "${XP_DEPS}" "${XP_CONFIGURE}" "" TGT ${ver})
 endfunction()

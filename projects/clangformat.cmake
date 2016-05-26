@@ -34,7 +34,7 @@ function(build_clangformat)
   configure_file(${PRO_DIR}/use/usexp-clangformat-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(llvm "${XP_DEPS}" "${XP_CONFIGURE}" llvmTgt NOINSTALL clang-format)
+  xpCmakeBuild(llvm "${XP_DEPS}" "${XP_CONFIGURE}" llvmTgt NO_INSTALL BUILD_TARGET clang-format)
   ExternalProject_Get_Property(${llvmTgt} BINARY_DIR)
   ExternalProject_Add(clangformat_install DEPENDS ${llvmTgt}
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
