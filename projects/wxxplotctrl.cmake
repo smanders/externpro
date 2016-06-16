@@ -1,4 +1,3 @@
-########################################
 # wxxplotctrl
 # repo http://wxcode.svn.sourceforge.net/viewvc/wxcode/trunk/wxCode/components/plotctrl/
 # dwnl http://sourceforge.net/projects/wxcode/files/Components/wxPlotCtrl/
@@ -22,11 +21,3 @@ set(PRO_WXXPLOTCTRL
   PATCH ${PATCH_DIR}/wxx.plotctrl.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_wxxplotctrl)
-  xpRepo(${PRO_WXXPLOTCTRL})
-endfunction()
-########################################
-function(download_wxxplotctrl)
-  xpNewDownload(${PRO_WXXPLOTCTRL})
-endfunction()

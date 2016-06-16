@@ -1,4 +1,3 @@
-########################################
 # jpeglossy8
 set(VER 6b)
 set(REPO https://github.com/smanders/libjpeg)
@@ -20,11 +19,3 @@ set(PRO_JPEGLOSSY8
   PATCH ${PATCH_DIR}/jpegxp.lossy8.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_jpeglossy8)
-  xpRepo(${PRO_JPEGLOSSY8})
-endfunction()
-########################################
-function(download_jpeglossy8)
-  xpNewDownload(${PRO_JPEGLOSSY8})
-endfunction()

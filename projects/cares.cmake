@@ -1,4 +1,3 @@
-########################################
 # cares
 xpProOption(cares)
 set(VER 1.10.0)
@@ -20,18 +19,6 @@ set(PRO_CARES
   PATCH ${PATCH_DIR}/cares.patch
   DIFF ${REPO}/compare/bagder:
   )
-########################################
-function(mkpatch_cares)
-  xpRepo(${PRO_CARES})
-endfunction()
-########################################
-function(download_cares)
-  xpNewDownload(${PRO_CARES})
-endfunction()
-########################################
-function(patch_cares)
-  xpPatch(${PRO_CARES})
-endfunction()
 ########################################
 function(build_cares)
   if(NOT (XP_DEFAULT OR XP_PRO_CARES))

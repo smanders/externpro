@@ -1,4 +1,3 @@
-########################################
 # apr
 xpProOption(apr)
 set(VER 1.5.2)
@@ -24,18 +23,6 @@ set(PRO_APR
   PATCH ${PATCH_DIR}/apr.patch
   DIFF ${REPO}/compare/apache:
   )
-########################################
-function(mkpatch_apr)
-  xpRepo(${PRO_APR})
-endfunction()
-########################################
-function(download_apr)
-  xpNewDownload(${PRO_APR})
-endfunction()
-########################################
-function(patch_apr)
-  xpPatch(${PRO_APR})
-endfunction()
 ########################################
 function(build_apr)
   if(NOT (XP_DEFAULT OR XP_PRO_APR))

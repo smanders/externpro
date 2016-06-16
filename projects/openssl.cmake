@@ -1,4 +1,3 @@
-########################################
 # openssl
 xpProOption(openssl)
 set(BRANCH 1.0.2)
@@ -23,18 +22,6 @@ set(PRO_OPENSSL
   PATCH ${PATCH_DIR}/openssl.patch
   DIFF ${REPO}/compare/openssl:
   )
-########################################
-function(mkpatch_openssl)
-  xpRepo(${PRO_OPENSSL})
-endfunction()
-########################################
-function(download_openssl)
-  xpNewDownload(${PRO_OPENSSL})
-endfunction()
-########################################
-function(patch_openssl)
-  xpPatch(${PRO_OPENSSL})
-endfunction()
 ########################################
 function(build_openssl)
   if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL))

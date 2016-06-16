@@ -1,8 +1,7 @@
-########################################
 # boost
 # http://sourceforge.net/projects/boost/files/boost/
 # * to build boost.python on Linux: need to install python dev pkgs
-# *   sudo apt-get install python-dev [ubuntu]
+# *   sudo apt install python-dev [ubuntu]
 # *   sudo yum install python-devel.x86_64 [rhel6]
 xpProOption(boost)
 set(VER 1.57.0)
@@ -19,24 +18,8 @@ set(PRO_BOOST
   GIT_TAG boost-${VER} # what to 'git checkout'
   DLURL http://downloads.sourceforge.net/project/boost/boost/${VER}/boost_${VER_}.tar.bz2
   DLMD5 1be49befbdd9a5ce9def2983ba3e7b76
+  SUBPRO boostconfig boostgil boostlog boostmpl boostunits
   )
-########################################
-function(mkpatch_boost)
-  xpRepo(${PRO_BOOST})
-endfunction()
-########################################
-function(download_boost)
-  xpNewDownload(${PRO_BOOST})
-endfunction()
-########################################
-function(patch_boost)
-  xpPatch(${PRO_BOOST})
-  xpPatch(${PRO_BOOSTCONFIG})
-  xpPatch(${PRO_BOOSTGIL})
-  xpPatch(${PRO_BOOSTLOG})
-  xpPatch(${PRO_BOOSTMPL})
-  xpPatch(${PRO_BOOSTUNITS})
-endfunction()
 ########################################
 function(build_boost)
   if(NOT (XP_DEFAULT OR XP_PRO_BOOST))

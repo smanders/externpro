@@ -1,4 +1,3 @@
-########################################
 # llvm
 xpProOption(llvm)
 set(VER 3.6.0)
@@ -15,17 +14,5 @@ set(PRO_LLVM
   GIT_TAG ${LLVM_BRANCH}
   DLURL http://llvm.org/releases/${VER}/llvm-${VER}.src.tar.xz
   DLMD5 f1e14e949f8df3047c59816c55278cec
+  SUBPRO clang
   )
-########################################
-function(mkpatch_llvm)
-  xpRepo(${PRO_LLVM})
-endfunction()
-########################################
-function(download_llvm)
-  xpNewDownload(${PRO_LLVM})
-endfunction()
-########################################
-function(patch_llvm)
-  xpPatch(${PRO_LLVM})
-  xpPatch(${PRO_CLANG})
-endfunction()

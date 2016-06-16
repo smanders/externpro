@@ -1,3 +1,4 @@
+# wx31
 xpProOption(wx31)
 set(REPO https://github.com/smanders/wxWidgets)
 set(REPO_UPSTREAM https://github.com/wxWidgets/wxWidgets)
@@ -18,4 +19,5 @@ set(PRO_WX31
   DLMD5 e20c14bb9bf5d4ec0979a3cd7510dece
   PATCH ${PATCH_DIR}/wx31.patch
   DIFF ${REPO}/compare/
+  SUBPRO wxcmake31
   )

@@ -1,4 +1,3 @@
-########################################
 # fftw
 # http://packages.debian.org/sid/libfftw3-3
 # http://fftw3.sourcearchive.com/
@@ -12,16 +11,8 @@ set(PRO_FFTW
   VER ${VER}
   DLURL http://www.fftw.org/fftw-${VER}.tar.gz
   DLMD5 0a05ca9c7b3bfddc8278e7c40791a1c2
+  SUBPRO fftwcmake
   )
-########################################
-function(download_fftw)
-  xpNewDownload(${PRO_FFTW})
-endfunction()
-########################################
-function(patch_fftw)
-  xpPatch(${PRO_FFTW})
-  xpPatch(${PRO_FFTWCMAKE})
-endfunction()
 ########################################
 function(build_fftw)
   if(NOT (XP_DEFAULT OR XP_PRO_FFTW))

@@ -1,4 +1,3 @@
-########################################
 # libssh2
 xpProOption(libssh2)
 set(VER 1.5.0)
@@ -19,18 +18,6 @@ set(PRO_LIBSSH2
   PATCH ${PATCH_DIR}/libssh2.patch
   DIFF ${REPO}/compare/libssh2:
   )
-########################################
-function(mkpatch_libssh2)
-  xpRepo(${PRO_LIBSSH2})
-endfunction()
-########################################
-function(download_libssh2)
-  xpNewDownload(${PRO_LIBSSH2})
-endfunction()
-########################################
-function(patch_libssh2)
-  xpPatch(${PRO_LIBSSH2})
-endfunction()
 ########################################
 function(build_libssh2)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBSSH2))

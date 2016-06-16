@@ -1,7 +1,6 @@
-########################################
 # cmakexp
 # * to build ccmake: need to install Curses libraries
-# *   sudo apt-get install libncurses5-dev
+# *   sudo apt install libncurses5-dev
 # *   sudo yum install ncurses-devel
 xpProOption(cmakexp)
 set(VER 3.3.2)
@@ -23,18 +22,6 @@ set(PRO_CMAKEXP
   PATCH ${PATCH_DIR}/cmakexp.patch
   DIFF ${REPO}/compare/Kitware:
   )
-########################################
-function(mkpatch_cmakexp)
-  xpRepo(${PRO_CMAKEXP})
-endfunction()
-########################################
-function(download_cmakexp)
-  xpNewDownload(${PRO_CMAKEXP})
-endfunction()
-########################################
-function(patch_cmakexp)
-  xpPatch(${PRO_CMAKEXP})
-endfunction()
 ########################################
 function(build_cmakexp)
   if(NOT (XP_DEFAULT OR XP_PRO_CMAKEXP))

@@ -1,4 +1,3 @@
-########################################
 # lua
 xpProOption(lua)
 set(VER 5.2.3)
@@ -22,19 +21,8 @@ set(PRO_LUA
   DLNAME lua-${VER}.tar.gz
   PATCH ${PATCH_DIR}/lua.patch
   DIFF ${REPO}/compare/LuaDist:
+  SUBPRO luabridge
   )
-########################################
-function(mkpatch_lua)
-  xpRepo(${PRO_LUA})
-endfunction()
-########################################
-function(download_lua)
-  xpNewDownload(${PRO_LUA})
-endfunction()
-########################################
-function(patch_lua)
-  xpPatch(${PRO_LUA})
-endfunction()
 ########################################
 function(build_lua)
   if(NOT (XP_DEFAULT OR XP_PRO_LUA))

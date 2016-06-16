@@ -1,4 +1,3 @@
-########################################
 # jpeglossless
 set(VER 62.1)
 set(REPO https://github.com/smanders/libjpeg)
@@ -20,11 +19,3 @@ set(PRO_JPEGLOSSLESS
   PATCH ${PATCH_DIR}/jpegxp.lossless.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_jpeglossless)
-  xpRepo(${PRO_JPEGLOSSLESS})
-endfunction()
-########################################
-function(download_jpeglossless)
-  xpNewDownload(${PRO_JPEGLOSSLESS})
-endfunction()

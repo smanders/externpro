@@ -1,4 +1,3 @@
-########################################
 # nodev5
 xpProOption(nodev5)
 set(VER 5.10.1)
@@ -19,18 +18,6 @@ set(PRO_NODEV5
   PATCH ${PATCH_DIR}/nodev5.patch
   DIFF ${REPO}/compare/nodejs:
   )
-########################################
-function(mkpatch_nodev5)
-  xpRepo(${PRO_NODEV5})
-endfunction()
-########################################
-function(download_nodev5)
-  xpNewDownload(${PRO_NODEV5})
-endfunction()
-########################################
-function(patch_nodev5)
-  xpPatch(${PRO_NODEV5})
-endfunction()
 ########################################
 function(build_nodev5)
   if(NOT (XP_DEFAULT OR XP_PRO_NODEV5))

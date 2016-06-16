@@ -1,3 +1,4 @@
+# wx30
 xpProOption(wx30)
 set(REPO https://github.com/smanders/wxWidgets)
 set(VER30 3.0.2)
@@ -17,4 +18,5 @@ set(PRO_WX30
   DLMD5 ba4cd1f3853d0cd49134c5ae028ad080
   PATCH ${PATCH_DIR}/wx30.patch
   DIFF ${REPO}/compare/
+  SUBPRO wxcmake30
   )

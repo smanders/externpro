@@ -1,4 +1,3 @@
-########################################
 # activemqcpp
 xpProOption(activemqcpp)
 set(VER 3.9.0)
@@ -22,18 +21,6 @@ set(PRO_ACTIVEMQCPP
   PATCH_STRIP 2 # Strip NUM leading components from file names (defaults to 1)
   DIFF ${REPO}/compare/apache:
   )
-########################################
-function(mkpatch_activemqcpp)
-  xpRepo(${PRO_ACTIVEMQCPP})
-endfunction()
-########################################
-function(download_activemqcpp)
-  xpNewDownload(${PRO_ACTIVEMQCPP})
-endfunction()
-########################################
-function(patch_activemqcpp)
-  xpPatch(${PRO_ACTIVEMQCPP})
-endfunction()
 ########################################
 function(build_activemqcpp)
   if(NOT (XP_DEFAULT OR XP_PRO_ACTIVEMQCPP))

@@ -160,15 +160,26 @@ macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
   foreach(proj ${projects})
     include(${proj})
     get_filename_component(pro ${proj} NAME_WE)
+    string(TOUPPER ${pro} PRO)
+    # mkpatch
     if(COMMAND mkpatch_${pro})
       file(APPEND ${stepMkpatch} "mkpatch_${pro}()\n")
+    elseif(DEFINED PRO_${PRO})
+      file(APPEND ${stepMkpatch} "xpCloneProject(\${PRO_${PRO}})\n")
     endif()
+    # download
     if(COMMAND download_${pro})
       file(APPEND ${stepDownload} "download_${pro}()\n")
+    elseif(DEFINED PRO_${PRO})
+      file(APPEND ${stepDownload} "xpDownloadProject(\${PRO_${PRO}})\n")
     endif()
+    # patch
     if(COMMAND patch_${pro})
       file(APPEND ${stepPatch} "patch_${pro}()\n")
+    elseif(DEFINED PRO_${PRO})
+      file(APPEND ${stepPatch} "xpPatchProject(\${PRO_${PRO}})\n")
     endif()
+    # build
     if(COMMAND build_${pro})
       file(APPEND ${stepBuild} "build_${pro}()\n")
     endif()

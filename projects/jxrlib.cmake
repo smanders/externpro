@@ -1,4 +1,3 @@
-########################################
 # jxrlib
 xpProOption(jxrlib)
 set(VER 1.1-xp150831)
@@ -23,18 +22,6 @@ set(PRO_JXRLIB
   PATCH ${PATCH_DIR}/jxrlib.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_jxrlib)
-  xpRepo(${PRO_JXRLIB})
-endfunction()
-########################################
-function(download_jxrlib)
-  xpNewDownload(${PRO_JXRLIB})
-endfunction()
-########################################
-function(patch_jxrlib)
-  xpPatch(${PRO_JXRLIB})
-endfunction()
 ########################################
 function(build_jxrlib)
   if(NOT (XP_DEFAULT OR XP_PRO_JXRLIB))

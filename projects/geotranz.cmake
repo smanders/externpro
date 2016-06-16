@@ -1,4 +1,3 @@
-########################################
 # geotranz
 # http://packages.debian.org/sid/geotranz
 # http://geotranz.sourcearchive.com/
@@ -68,10 +67,6 @@ list(APPEND md5 4256444bb7c0bae4f7b94c01b24fddbd)
 list(LENGTH csv csvlen)
 math(EXPR md5len "${csvlen} - 1")
 ########################################
-function(mkpatch_geotranz)
-  xpRepo(${PRO_GEOTRANZ})
-endfunction()
-########################################
 function(download_geotranz)
   xpNewDownload(${PRO_GEOTRANZ})
   download_geotiff_tables(ftp://ftp.remotesensing.org/pub/geotiff/tables ${DWNLD_DIR}/data)
@@ -96,10 +91,6 @@ function(download_geotiff_tables src dst)
       endif()
     endif()
   endforeach()
-endfunction()
-########################################
-function(patch_geotranz)
-  xpPatch(${PRO_GEOTRANZ})
 endfunction()
 ########################################
 function(build_geotranz)

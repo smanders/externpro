@@ -1,4 +1,3 @@
-########################################
 # vld - visual leak detector
 xpProOption(vld)
 set(VER 2.4.1-xp)
@@ -20,18 +19,6 @@ set(PRO_VLD
   PATCH ${PATCH_DIR}/vld.patch
   DIFF ${REPO}/compare/ # KindDragon doesn't have v2.4.1-xp tag
   )
-########################################
-function(mkpatch_vld)
-  xpRepo(${PRO_VLD})
-endfunction()
-########################################
-function(download_vld)
-  xpNewDownload(${PRO_VLD})
-endfunction()
-########################################
-function(patch_vld)
-  xpPatch(${PRO_VLD})
-endfunction()
 ########################################
 function(build_vld)
   if(NOT (XP_DEFAULT OR XP_PRO_VLD))

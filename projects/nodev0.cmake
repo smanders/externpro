@@ -1,4 +1,3 @@
-########################################
 # nodev0
 xpProOption(nodev0)
 set(VER 0.12.7)
@@ -19,18 +18,6 @@ set(PRO_NODEV0
   PATCH ${PATCH_DIR}/nodev0.patch
   DIFF ${REPO}/compare/nodejs:
   )
-########################################
-function(mkpatch_nodev0)
-  xpRepo(${PRO_NODEV0})
-endfunction()
-########################################
-function(download_nodev0)
-  xpNewDownload(${PRO_NODEV0})
-endfunction()
-########################################
-function(patch_nodev0)
-  xpPatch(${PRO_NODEV0})
-endfunction()
 ########################################
 function(build_nodev0)
   if(NOT (XP_DEFAULT OR XP_PRO_NODEV0))

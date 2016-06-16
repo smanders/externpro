@@ -1,4 +1,3 @@
-########################################
 # fftwcmake
 set(REPO https://github.com/smanders/fftw-cmake)
 set(PRO_FFTWCMAKE
@@ -16,7 +15,3 @@ set(PRO_FFTWCMAKE
   PATCH ${PATCH_DIR}/fftw-cmake.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_fftwcmake)
-  xpRepo(${PRO_FFTWCMAKE})
-endfunction()

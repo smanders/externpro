@@ -1,4 +1,3 @@
-########################################
 # gsoap
 # http://gsoap2.sourceforge.net/
 # http://packages.debian.org/sid/gsoap
@@ -22,18 +21,6 @@ set(PRO_GSOAP
   PATCH ${PATCH_DIR}/gsoap.patch
   DIFF ${REPO}/compare/smanders:
   )
-########################################
-function(mkpatch_gsoap)
-  xpRepo(${PRO_GSOAP})
-endfunction()
-########################################
-function(download_gsoap)
-  xpNewDownload(${PRO_GSOAP})
-endfunction()
-########################################
-function(patch_gsoap)
-  xpPatch(${PRO_GSOAP})
-endfunction()
 ########################################
 function(build_gsoap)
   if(NOT (XP_DEFAULT OR XP_PRO_GSOAP))

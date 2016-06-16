@@ -1,4 +1,3 @@
-########################################
 # wxxtlc
 # repo http://wxcode.svn.sourceforge.net/viewvc/wxcode/trunk/wxCode/components/treelistctrl/
 # dwnl http://sourceforge.net/projects/wxcode/files/Components/treelistctrl/
@@ -21,11 +20,3 @@ set(PRO_WXXTLC
   PATCH ${PATCH_DIR}/wxx.tlc.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_wxxtlc)
-  xpRepo(${PRO_WXXTLC})
-endfunction()
-########################################
-function(download_wxxtlc)
-  xpNewDownload(${PRO_WXXTLC})
-endfunction()

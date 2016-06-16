@@ -1,4 +1,3 @@
-########################################
 # patch (aka patcz)
 # * renamed to patcz on MSW because of MSFT boneheadedness:
 #   any exe with "setup" "install" "update" "patch" is flagged to be run as administrator
@@ -29,10 +28,6 @@ else()
   set(PATCH_EXE ${patchbld_DIR}/bin/patch)
   set(PATCH_CMD ${PATCH_EXE})
 endif()
-########################################
-function(mkpatch_patch)
-  xpRepo(${PRO_PATCH})
-endfunction()
 ########################################
 function(download_patch)
   xpDownload(${PRO_URL_MSWPATCH} ${PRO_MD5_MSWPATCH} ${DWNLD_DIR})

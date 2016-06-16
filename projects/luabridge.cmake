@@ -1,4 +1,3 @@
-########################################
 # luabridge
 set(VER 2.0) # repo isn't tagged with version 2.0 - 1.0.2 was the last tag
 set(TAG 04b47d723d35b47ff8efce63d54ef264a59152b5)
@@ -22,18 +21,6 @@ set(PRO_LUABRIDGE
   PATCH ${PATCH_DIR}/luabridge.patch
   DIFF ${REPO}/compare/vinniefalco:
   )
-########################################
-function(mkpatch_luabridge)
-  xpRepo(${PRO_LUABRIDGE})
-endfunction()
-########################################
-function(download_luabridge)
-  xpNewDownload(${PRO_LUABRIDGE})
-endfunction()
-########################################
-function(patch_luabridge)
-  xpPatch(${PRO_LUABRIDGE})
-endfunction()
 ########################################
 function(build_luabridge)
   if(NOT (XP_DEFAULT OR XP_PRO_LUA))

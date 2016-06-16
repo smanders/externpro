@@ -1,4 +1,3 @@
-########################################
 # bzip2
 xpProOption(bzip2)
 set(VER 1.0.6)
@@ -19,18 +18,6 @@ set(PRO_BZIP2
   PATCH ${PATCH_DIR}/bzip2.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_bzip2)
-  xpRepo(${PRO_BZIP2})
-endfunction()
-########################################
-function(download_bzip2)
-  xpNewDownload(${PRO_BZIP2})
-endfunction()
-########################################
-function(patch_bzip2)
-  xpPatch(${PRO_BZIP2})
-endfunction()
 ########################################
 function(build_bzip2)
   if(NOT (XP_DEFAULT OR XP_PRO_BZIP2))

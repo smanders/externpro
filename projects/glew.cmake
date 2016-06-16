@@ -1,4 +1,3 @@
-########################################
 # glew
 # http://glew.sourceforge.net/
 xpProOption(glew)
@@ -22,10 +21,6 @@ set(PRO_URL_GLEW_WIN64 ${DL_URL}/glew-${VER}-win64.zip)
 set(PRO_MD5_GLEW_WIN64 7e2059b66a7867031a74f341aaf7a91f)
 set(PRO_URL_GLEW ${DL_URL}/glew-${VER}.tgz)
 set(PRO_MD5_GLEW fb7a8bb79187ac98a90b57f0f27a3e84)
-########################################
-#function(mkpatch_glew)
-#  xpRepo(${PRO_GLEW})
-#endfunction()
 ########################################
 function(download_glew)
   foreach(pltfrm ${GLEW_PLATFORMS})

@@ -1,4 +1,3 @@
-########################################
 # clangformat
 include(${CMAKE_CURRENT_LIST_DIR}/llvm.cmake)
 xpGetArgValue(${PRO_LLVM} ARG VER VALUE llvmVer)

@@ -1,7 +1,7 @@
-########################################
 # wxx
 xpProOption(wxx) # include wx extras
 set(REPO https://github.com/smanders/wxx)
+set(WXX_TARGETS wxxplotctrl wxxthings wxxtlc)
 set(PRO_WXX
   NAME wxx
   WEB "wxx" ${REPO} "wxx project on github"
@@ -14,20 +14,8 @@ set(PRO_WXX
   GIT_REF wxx.01 # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/wxx.xpro.patch
   DIFF ${REPO}/compare/
+  SUBPRO ${WXX_TARGETS}
   )
-set(WXX_TARGETS wxxplotctrl wxxthings wxxtlc)
-########################################
-function(mkpatch_wxx)
-  xpRepo(${PRO_WXX})
-endfunction()
-########################################
-function(patch_wxx)
-  xpPatch(${PRO_WXX})
-  foreach(tgt ${WXX_TARGETS})
-    string(TOUPPER ${tgt} TGT)
-    xpPatch(${PRO_${TGT}})
-  endforeach()
-endfunction()
 ########################################
 function(build_wxx)
   if(NOT (XP_DEFAULT OR XP_PRO_WXX))

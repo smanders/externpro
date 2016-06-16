@@ -1,4 +1,3 @@
-########################################
 # libgit2
 xpProOption(libgit2)
 set(REPO https://github.com/smanders/libgit2)
@@ -20,18 +19,6 @@ set(PRO_LIBGIT2
   PATCH ${PATCH_DIR}/libgit2.patch
   DIFF ${REPO}/compare/libgit2:
   )
-########################################
-function(mkpatch_libgit2)
-  xpRepo(${PRO_LIBGIT2})
-endfunction()
-########################################
-function(download_libgit2)
-  xpNewDownload(${PRO_LIBGIT2})
-endfunction()
-########################################
-function(patch_libgit2)
-  xpPatch(${PRO_LIBGIT2})
-endfunction()
 ########################################
 function(build_libgit2)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBGIT2))

@@ -1,4 +1,3 @@
-########################################
 # RapidJSON
 xpProOption(rapidjson)
 set(VER 20140907) # date downloaded, no official releases or tags yet
@@ -17,18 +16,6 @@ set(PRO_RAPIDJSON
   DLMD5 e2c2f352a2de67f67bf74e4a8112d369
   DLNAME rapidjson-${VER}.zip
   )
-########################################
-function(mkpatch_rapidjson)
-  xpRepo(${PRO_RAPIDJSON})
-endfunction()
-########################################
-function(download_rapidjson)
-  xpNewDownload(${PRO_RAPIDJSON})
-endfunction()
-########################################
-function(patch_rapidjson)
-  xpPatch(${PRO_RAPIDJSON})
-endfunction()
 ########################################
 function(build_rapidjson)
   if(NOT (XP_DEFAULT OR XP_PRO_RAPIDJSON))

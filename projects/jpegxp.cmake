@@ -1,4 +1,3 @@
-########################################
 # jpegxp
 # http://packages.debian.org/sid/libjpeg-dev
 # http://libjpeg6b.sourcearchive.com/
@@ -17,18 +16,8 @@ set(PRO_JPEGXP
   GIT_REF jxp.130220 # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/jpegxp.patch
   DIFF ${REPO}/compare/
+  SUBPRO jpeglossy8 jpeglossy12 jpeglossless
   )
-########################################
-function(mkpatch_jpegxp)
-  xpRepo(${PRO_JPEGXP})
-endfunction()
-########################################
-function(patch_jpegxp)
-  xpPatch(${PRO_JPEGXP})
-  xpPatch(${PRO_JPEGLOSSY8})
-  xpPatch(${PRO_JPEGLOSSY12})
-  xpPatch(${PRO_JPEGLOSSLESS})
-endfunction()
 ########################################
 function(build_jpegxp)
   if(NOT (XP_DEFAULT OR XP_PRO_JPEGXP))

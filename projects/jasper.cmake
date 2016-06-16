@@ -1,4 +1,3 @@
-########################################
 # jasper
 # http://packages.debian.org/sid/libjasper-dev
 # http://jasper.sourcearchive.com/
@@ -20,18 +19,6 @@ set(PRO_JASPER
   PATCH ${PATCH_DIR}/jasper.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_jasper)
-  xpRepo(${PRO_JASPER})
-endfunction()
-########################################
-function(download_jasper)
-  xpNewDownload(${PRO_JASPER})
-endfunction()
-########################################
-function(patch_jasper)
-  xpPatch(${PRO_JASPER})
-endfunction()
 ########################################
 function(build_jasper)
   if(NOT (XP_DEFAULT OR XP_PRO_JASPER))

@@ -1,4 +1,3 @@
-########################################
 # node
 function(build_node_ver ver this other)
   string(TOUPPER ${ver} VER)

@@ -1,4 +1,3 @@
-########################################
 # curl
 xpProOption(curl)
 set(VER 7.42.1)
@@ -20,18 +19,6 @@ set(PRO_CURL
   PATCH ${PATCH_DIR}/curl.patch
   DIFF ${REPO}/compare/bagder:
   )
-########################################
-function(mkpatch_curl)
-  xpRepo(${PRO_CURL})
-endfunction()
-########################################
-function(download_curl)
-  xpNewDownload(${PRO_CURL})
-endfunction()
-########################################
-function(patch_curl)
-  xpPatch(${PRO_CURL})
-endfunction()
 ########################################
 function(build_curl)
   if(NOT (XP_DEFAULT OR XP_PRO_CURL))

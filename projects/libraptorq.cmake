@@ -1,4 +1,3 @@
-########################################
 # libRaptorQ
 xpProOption(libraptorq)
 set(REPO https://github.com/smanders/libRaptorQ)
@@ -20,18 +19,6 @@ set(PRO_LIBRAPTORQ
   PATCH ${PATCH_DIR}/libraptorq.patch
   DIFF ${REPO}/compare/LucaFulchir:
   )
-########################################
-function(mkpatch_libraptorq)
-  xpRepo(${PRO_LIBRAPTORQ})
-endfunction()
-########################################
-function(download_libraptorq)
-  xpNewDownload(${PRO_LIBRAPTORQ})
-endfunction()
-########################################
-function(patch_libraptorq)
-  xpPatch(${PRO_LIBRAPTORQ})
-endfunction()
 ########################################
 function(build_libraptorq)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBRAPTORQ))

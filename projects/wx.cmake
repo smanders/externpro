@@ -1,30 +1,9 @@
-########################################
 # wx
 # * packages required to build on linux:
-# *   sudo apt-get install libgtk2.0-dev libglu1-mesa-dev [ubuntu]
+# *   sudo apt install libgtk2.0-dev libglu1-mesa-dev [ubuntu]
 # *   sudo yum install gtk2-devel.x86_64 libSM-devel.x86_64 [rhel6]
 # *   sudo yum install mesa-libGL-devel.x86_64 mesa-libGLU-devel.x86_64 [rhel6]
 set(WX_VERSIONS 30 31)
-########################################
-function(mkpatch_wx)
-  foreach(ver ${WX_VERSIONS})
-    xpRepo(${PRO_WX${ver}})
-    xpRepo(${PRO_WXCMAKE${ver}})
-  endforeach()
-endfunction()
-########################################
-function(download_wx)
-  foreach(ver ${WX_VERSIONS})
-    xpNewDownload(${PRO_WX${ver}})
-  endforeach()
-endfunction()
-########################################
-function(patch_wx)
-  foreach(ver ${WX_VERSIONS})
-    xpPatch(${PRO_WX${ver}})
-    xpPatch(${PRO_WXCMAKE${ver}})
-  endforeach()
-endfunction()
 ########################################
 function(build_wx)
   configure_file(${PRO_DIR}/use/usexp-wxwidgets-config.cmake ${STAGE_DIR}/share/cmake/

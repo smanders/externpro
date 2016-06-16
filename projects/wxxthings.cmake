@@ -1,4 +1,3 @@
-########################################
 # wxxthings
 # repo http://wxcode.svn.sourceforge.net/viewvc/wxcode/trunk/wxCode/components/wxthings/
 # dwnl http://sourceforge.net/projects/wxcode/files/Components/wxThings/
@@ -22,11 +21,3 @@ set(PRO_WXXTHINGS
   PATCH ${PATCH_DIR}/wxx.things.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_wxxthings)
-  xpRepo(${PRO_WXXTHINGS})
-endfunction()
-########################################
-function(download_wxxthings)
-  xpNewDownload(${PRO_WXXTHINGS})
-endfunction()

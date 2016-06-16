@@ -1,4 +1,3 @@
-########################################
 # boost units
 set(VER 1.57.0)
 set(REPO https://github.com/smanders/units)
@@ -20,7 +19,3 @@ set(PRO_BOOSTUNITS
   PATCH_STRIP 2 # Strip NUM leading components from file names (defaults to 1)
   DIFF ${REPO}/compare/boostorg:
   )
-########################################
-function(mkpatch_boostunits)
-  xpRepo(${PRO_BOOSTUNITS})
-endfunction()

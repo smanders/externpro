@@ -1,4 +1,3 @@
-########################################
 # RapidXml
 # http://sourceforge.net/projects/rapidxml/files/rapidxml/
 xpProOption(rapidxml)
@@ -19,18 +18,6 @@ set(PRO_RAPIDXML
   PATCH ${PATCH_DIR}/rapidxml.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_rapidxml)
-  xpRepo(${PRO_RAPIDXML})
-endfunction()
-########################################
-function(download_rapidxml)
-  xpNewDownload(${PRO_RAPIDXML})
-endfunction()
-########################################
-function(patch_rapidxml)
-  xpPatch(${PRO_RAPIDXML})
-endfunction()
 ########################################
 function(build_rapidxml)
   if(NOT (XP_DEFAULT OR XP_PRO_RAPIDXML))

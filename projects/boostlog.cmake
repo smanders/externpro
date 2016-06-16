@@ -1,4 +1,3 @@
-########################################
 # boost log
 set(VER 1.57.0)
 set(REPO https://github.com/smanders/log)
@@ -19,7 +18,3 @@ set(PRO_BOOSTLOG
   PATCH ${PATCH_DIR}/boost.log.patch
   DIFF ${REPO}/compare/boostorg:
   )
-########################################
-function(mkpatch_boostlog)
-  xpRepo(${PRO_BOOSTLOG})
-endfunction()

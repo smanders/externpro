@@ -1,4 +1,3 @@
-########################################
 # clang
 include(${CMAKE_CURRENT_LIST_DIR}/llvm.cmake)
 xpGetArgValue(${PRO_LLVM} ARG VER VALUE llvmVer)
@@ -21,11 +20,3 @@ set(PRO_CLANG
   PATCH ${PATCH_DIR}/clang.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_clang)
-  xpRepo(${PRO_CLANG})
-endfunction()
-########################################
-function(download_clang)
-  xpNewDownload(${PRO_CLANG})
-endfunction()

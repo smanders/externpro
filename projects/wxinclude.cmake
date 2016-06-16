@@ -1,4 +1,3 @@
-########################################
 # wxinclude
 # original source: http://users.skynet.be/towp/wxInclude.zip
 # referenced from: http://wiki.wxwidgets.org/Embedding_PNG_Images
@@ -24,18 +23,6 @@ set(PRO_WXINCLUDE
   PATCH ${PATCH_DIR}/wxInclude.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_wxinclude)
-  xpRepo(${PRO_WXINCLUDE})
-endfunction()
-########################################
-function(download_wxinclude)
-  xpNewDownload(${PRO_WXINCLUDE})
-endfunction()
-########################################
-function(patch_wxinclude)
-  xpPatch(${PRO_WXINCLUDE})
-endfunction()
 ########################################
 function(build_wxinclude)
   if(NOT (XP_DEFAULT OR XP_PRO_WXINCLUDE))

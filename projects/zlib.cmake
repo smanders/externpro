@@ -1,4 +1,3 @@
-########################################
 # zlib
 xpProOption(zlib)
 set(VER 1.2.8)
@@ -19,18 +18,6 @@ set(PRO_ZLIB
   PATCH ${PATCH_DIR}/zlib.patch
   DIFF ${REPO}/compare/madler:
   )
-########################################
-function(mkpatch_zlib)
-  xpRepo(${PRO_ZLIB})
-endfunction()
-########################################
-function(download_zlib)
-  xpNewDownload(${PRO_ZLIB})
-endfunction()
-########################################
-function(patch_zlib)
-  xpPatch(${PRO_ZLIB})
-endfunction()
 ########################################
 function(build_zlib)
   if(NOT (XP_DEFAULT OR XP_PRO_ZLIB))

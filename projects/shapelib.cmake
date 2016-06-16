@@ -1,4 +1,3 @@
-########################################
 # shapelib
 # http://freecode.com/projects/shapelib
 # http://packages.debian.org/sid/shapelib
@@ -22,18 +21,6 @@ set(PRO_SHAPELIB
   PATCH ${PATCH_DIR}/shapelib.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_shapelib)
-  xpRepo(${PRO_SHAPELIB})
-endfunction()
-########################################
-function(download_shapelib)
-  xpNewDownload(${PRO_SHAPELIB})
-endfunction()
-########################################
-function(patch_shapelib)
-  xpPatch(${PRO_SHAPELIB})
-endfunction()
 ########################################
 function(build_shapelib)
   if(NOT (XP_DEFAULT OR XP_PRO_SHAPELIB))

@@ -1,4 +1,3 @@
-########################################
 # fecpp
 xpProOption(fecpp)
 set(REPO https://github.com/smanders/fecpp)
@@ -19,18 +18,6 @@ set(PRO_FECPP
   PATCH ${PATCH_DIR}/fecpp.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_fecpp)
-  xpRepo(${PRO_FECPP})
-endfunction()
-########################################
-function(download_fecpp)
-  xpNewDownload(${PRO_FECPP})
-endfunction()
-########################################
-function(patch_fecpp)
-  xpPatch(${PRO_FECPP})
-endfunction()
 ########################################
 function(build_fecpp)
   if(NOT (XP_DEFAULT OR XP_PRO_FECPP))

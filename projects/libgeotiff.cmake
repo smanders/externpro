@@ -1,4 +1,3 @@
-########################################
 # libgeotiff
 xpProOption(libgeotiff)
 # http://packages.debian.org/sid/libgeotiff-dev
@@ -25,18 +24,6 @@ set(PRO_LIBGEOTIFF
   PATCH ${PATCH_DIR}/libgeotiff.patch
   DIFF ${REPO}/compare/
   )
-########################################
-function(mkpatch_libgeotiff)
-  xpRepo(${PRO_LIBGEOTIFF})
-endfunction()
-########################################
-function(download_libgeotiff)
-  xpNewDownload(${PRO_LIBGEOTIFF})
-endfunction()
-########################################
-function(patch_libgeotiff)
-  xpPatch(${PRO_LIBGEOTIFF})
-endfunction()
 ########################################
 function(build_libgeotiff)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBGEOTIFF))

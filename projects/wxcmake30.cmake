@@ -1,3 +1,4 @@
+# wxcmake30
 set(REPO https://github.com/smanders/wxcmake)
 set(PRO_WXCMAKE30
   NAME wxcmake30

@@ -1,4 +1,3 @@
-########################################
 # eigen
 xpProOption(eigen)
 set(VER 3.2.7)
@@ -13,14 +12,6 @@ set(PRO_EIGEN
   DLMD5 cc1bacbad97558b97da6b77c9644f184
   DLNAME eigen-${VER}.tar.bz2
   )
-########################################
-function(download_eigen)
-  xpNewDownload(${PRO_EIGEN})
-endfunction()
-########################################
-function(patch_eigen)
-  xpPatch(${PRO_EIGEN})
-endfunction()
 ########################################
 function(build_eigen)
   if(NOT (XP_DEFAULT OR XP_PRO_EIGEN))

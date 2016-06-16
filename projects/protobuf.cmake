@@ -1,3 +1,4 @@
+# protobuf
 xpProOption(protobuf)
 set(VER 3.0.0-beta-1)
 set(REPO https://github.com/smanders/protobuf)
@@ -19,18 +20,6 @@ set(PRO_PROTOBUF
   PATCH ${PATCH_DIR}/protobuf.patch
   DIFF ${REPO}/compare/google:
   )
-########################################
-function(mkpatch_protobuf)
-  xpRepo(${PRO_PROTOBUF})
-endfunction()
-########################################
-function(download_protobuf)
-  xpNewDownload(${PRO_PROTOBUF})
-endfunction()
-########################################
-function(patch_protobuf)
-  xpPatch(${PRO_PROTOBUF})
-endfunction()
 ########################################
 function(build_protobuf)
   if(NOT (XP_DEFAULT OR XP_PRO_PROTOBUF))
