@@ -2,7 +2,7 @@
 set(REPO https://github.com/smanders/wxcmake)
 set(PRO_WXCMAKE31
   NAME wxcmake31
-  SUPERPRO wx31
+  SUPERPRO wxWidgets31
   SUBDIR build/cmake
   WEB "wxcmake" ${REPO} "wxcmake project on github"
   LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License -- essentially LGPL with an exception stating that derived works in binary form may be distributed on the user's own terms"

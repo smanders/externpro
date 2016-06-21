@@ -41,12 +41,6 @@ function(build_boost)
   list(APPEND tgts
     ${zlibTgts}
     ${bzip2Tgts}
-    # patched submodules
-    boostconfig
-    boostgil
-    boostlog
-    boostmpl
-    boostunits
     )
   ExternalProject_Get_Property(boost SOURCE_DIR)
   build_boostb2(PRO boost BOOTSTRAP ${SOURCE_DIR}/tools/build
@@ -70,6 +64,11 @@ function(build_boostb2)
     message(FATAL_ERROR "boost.cmake: build_boostb2: required inputs not set")
   endif()
   if(DEFINED bb_TARGETS)
+    string(TOUPPER ${bb_PRO} PRO)
+    xpGetArgValue(${PRO_${PRO}} ARG SUBPRO VALUES subs)
+    foreach(sub ${subs})
+      xpListAppendIfDne(${bb_TARGETS} ${bb_PRO}_${sub})
+    endforeach()
     xpListAppendIfDne(${bb_TARGETS} ${bb_PRO}.build)
     set(${bb_TARGETS} "${${bb_TARGETS}}" PARENT_SCOPE)
   endif()

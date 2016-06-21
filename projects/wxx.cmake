@@ -34,7 +34,11 @@ function(build_wxxv ver)
     @ONLY NEWLINE_STYLE LF
     )
   build_wxv(VER ${ver} TARGETS wxTgts INCDIR wxInc SRCDIR wxSrc)
-  set(XP_DEPS ${wxTgts} ${WXX_TARGETS})
+  set(XP_DEPS ${wxTgts})
+  xpGetArgValue(${PRO_WXX} ARG SUBPRO VALUES subs)
+  foreach(sub ${subs})
+    list(APPEND XP_DEPS wxx_${sub})
+  endforeach()
   set(XP_CONFIGURE
     -DWX_INCLUDE:PATH=${wxInc}
     -DWX_SOURCE:PATH=${wxSrc}

@@ -21,24 +21,3 @@ set(PRO_LUABRIDGE
   PATCH ${PATCH_DIR}/luabridge.patch
   DIFF ${REPO}/compare/vinniefalco:
   )
-########################################
-function(build_luabridge)
-  if(NOT (XP_DEFAULT OR XP_PRO_LUA))
-    return()
-  endif()
-  if(NOT TARGET lua)
-    patch_lua()
-  endif()
-  if(NOT TARGET luabridge_bld)
-    ExternalProject_Get_Property(lua SOURCE_DIR)
-    ExternalProject_Add(luabridge_bld DEPENDS luabridge
-      DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} CONFIGURE_COMMAND ""
-      SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
-      BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory
-        <SOURCE_DIR>/luabridge/Source ${STAGE_DIR}/include
-      INSTALL_COMMAND ""
-      )
-    set_property(TARGET luabridge_bld PROPERTY FOLDER ${bld_folder})
-    message(STATUS "target luabridge_bld")
-  endif()
-endfunction()

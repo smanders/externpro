@@ -22,7 +22,7 @@ function(build_fftw)
     @ONLY NEWLINE_STYLE LF
     )
   if(MSVC)
-    xpCmakeBuild(fftw fftwcmake)
+    xpCmakeBuild(fftw fftw_fftwcmake)
   else()
     list(APPEND removeFlags -std=c++0x -std=c++11 -std=c++14 -stdlib=libc++)
     xpGetConfigureFlags(CPP fftw_CONFIGURE_FLAGS "${removeFlags}")

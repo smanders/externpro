@@ -26,6 +26,9 @@ function(build_jpegxp)
   configure_file(${PRO_DIR}/use/usexp-jpegxp-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  set(XP_DEPS jpeglossy8 jpeglossy12 jpeglossless)
+  xpGetArgValue(${PRO_JPEGXP} ARG SUBPRO VALUES subs)
+  foreach(sub ${subs})
+    list(APPEND XP_DEPS jpegxp_${sub})
+  endforeach()
   xpCmakeBuild(jpegxp "${XP_DEPS}")
 endfunction()

@@ -24,7 +24,7 @@ function(build_clangformat)
     message(AUTHOR_WARNING "Unable to build clang-format, required python not found")
     return()
   endif()
-  set(XP_DEPS llvm clang)
+  set(XP_DEPS llvm llvm_clang)
   set(XP_CONFIGURE
     -DLLVM_TARGETS_TO_BUILD:STRING=X86
     )

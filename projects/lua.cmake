@@ -37,4 +37,16 @@ function(build_lua)
     -DLUA_USE_CURSES=OFF
     )
   xpCmakeBuild(lua "" "${XP_CONFIGURE}")
+  if(NOT TARGET luabridge_bld)
+    ExternalProject_Get_Property(lua SOURCE_DIR)
+    ExternalProject_Add(lua_luabridge_bld DEPENDS lua_luabridge
+      DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} CONFIGURE_COMMAND ""
+      SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
+      BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory
+        <SOURCE_DIR>/luabridge/Source ${STAGE_DIR}/include
+      INSTALL_COMMAND ""
+      )
+    set_property(TARGET lua_luabridge_bld PROPERTY FOLDER ${bld_folder})
+    message(STATUS "target lua_luabridge_bld")
+  endif()
 endfunction()
