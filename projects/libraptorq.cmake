@@ -27,7 +27,7 @@ function(build_libraptorq)
   if(NOT (XP_DEFAULT OR XP_PRO_EIGEN))
     message(STATUS "libraptorq.cmake: requires eigen")
     set(XP_PRO_EIGEN ON CACHE BOOL "include eigen" FORCE)
-    patch_eigen()
+    xpPatchProject(${PRO_EIGEN})
   endif()
   build_eigen(eigenTgts)
   set(XP_CONFIGURE

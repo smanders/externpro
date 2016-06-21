@@ -28,7 +28,7 @@ function(build_wxxv ver)
   if(NOT (XP_DEFAULT OR XP_PRO_WX${ver}))
     message(STATUS "wxx.cmake: requires wx${ver}")
     set(XP_PRO_WX${ver} ON CACHE BOOL "include wx${ver}" FORCE)
-    patch_wx()
+    xpPatchProject(${PRO_WX${ver}})
   endif()
   configure_file(${PRO_DIR}/use/usexp-wxx-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF

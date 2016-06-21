@@ -35,7 +35,7 @@ function(build_cmakexp)
   if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL))
     message(STATUS "cmakexp.cmake: requires openssl")
     set(XP_PRO_OPENSSL ON CACHE BOOL "include openssl" FORCE)
-    patch_openssl()
+    xpPatchProject(${PRO_OPENSSL})
   endif()
   build_openssl(osslTgts)
   # we only need a release version

@@ -33,7 +33,7 @@ function(build_libgeotiff)
   if(NOT (XP_DEFAULT OR XP_PRO_WX${wxver}))
     message(STATUS "libgeotiff.cmake: requires wx${wxver}")
     set(XP_PRO_WX${wxver} ON CACHE BOOL "include wx${wxver}" FORCE)
-    patch_wx()
+    xpPatchProject(${PRO_WX${wxver}})
   endif()
   build_wxv(VER ${wxver} TARGETS wxTgts INCDIR wxInc SRCDIR wxSrc)
   set(XP_CONFIGURE

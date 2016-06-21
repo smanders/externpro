@@ -28,7 +28,7 @@ function(build_protobuf)
   if(NOT (XP_DEFAULT OR XP_PRO_ZLIB))
     message(STATUS "protobuf.cmake: requires zlib")
     set(XP_PRO_ZLIB ON CACHE BOOL "include zlib" FORCE)
-    patch_zlib()
+    xpPatchProject(${PRO_ZLIB})
   endif()
   build_zlib(zlibTgts)
   configure_file(${PRO_DIR}/use/usexp-protobuf-config.cmake ${STAGE_DIR}/share/cmake/

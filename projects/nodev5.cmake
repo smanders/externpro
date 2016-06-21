@@ -27,7 +27,7 @@ function(build_nodev5)
     # use script requires both versions to be built
     message(STATUS "nodev5.cmake: requires nodev0")
     set(XP_PRO_NODEV0 ON CACHE BOOL "include nodev0" FORCE)
-    patch_nodev0()
+    xpPatchProject(${PRO_NODEV0})
     build_nodev0()
   endif()
   build_node_ver(v5 NEW CUR)

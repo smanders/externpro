@@ -26,7 +26,7 @@ function(build_fecpp)
   if(NOT (XP_DEFAULT OR XP_PRO_BOOST))
     message(STATUS "fecpp.cmake: requires boost")
     set(XP_PRO_BOOST ON CACHE BOOL "include boost" FORCE)
-    patch_boost()
+    xpPatchProject(${PRO_BOOST})
   endif()
   build_boost(TARGETS boostTgts)
   configure_file(${PRO_DIR}/use/usexp-fecpp-config.cmake ${STAGE_DIR}/share/cmake/

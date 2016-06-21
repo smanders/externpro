@@ -37,7 +37,7 @@ function(build_libgit2)
     if(NOT (XP_DEFAULT OR XP_PRO_LIBSSH2))
       message(STATUS "libgit2.cmake: requires libssh2")
       set(XP_PRO_LIBSSH2 ON CACHE BOOL "include libssh2" FORCE)
-      patch_libssh2()
+      xpPatchProject(${PRO_LIBSSH2})
     endif()
     build_libssh2(libssh2Tgts)
     list(APPEND XP_CONFIGURE
