@@ -45,3 +45,37 @@ the `package` target of externpro will build an installer suitable for the OS on
 * build configuration choice - support debug builds for stepping into code (and gaining understanding) and release configurations that utilize different runtimes (DLL or static)
 * compiler flags - consistency across all third-party libraries and your project(s) is often required (c++11, fpic, libumem on Solaris)
 
+## usage
+
+to build and use externpro from another project you can either create a *build version* of externpro or an *installed version*, where a build version is created by simply building externpro and an installed version involves building, making the package (aka installer), and installing
+
+one difference between a build version and an installed version is where the find script looks to find externpro - you can see the PATHS searched, in order, in the [find script](https://github.com/smanders/externpro/blob/16.06.1/modules/Findscript.cmake.in#L82-L93)
+
+if you always plan to use an installed version the path to the source and build directories doesn't matter -- only the path where it is installed matters, unless you use an environment variable (examine the find script for suitable install locations)
+
+because the find script looks for a build version of externpro in `C:/src` on Windows and `~/src/` on Unix, if you have any intention of using a build version directly from another project perform the following commands in the appropriate `src` directory
+
+```bash
+git clone git://github.com/smanders/externpro.git
+cd externpro
+git checkout <tag>               # where tag is, for example, 16.06.1
+git checkout -b dev origin/dev   # --or-- if you want the latest dev branch instead of a tagged version
+mkdir _bld
+cd _bld
+```
+##### Windows
+choose the cmake generator you want all of the externpro projects to be built with (Visual Studio 2015, 64-bit in example below)
+```bash
+cmake -G "Visual Studio 14 2015 Win64" ..
+cmake -DXP_STEP=build .
+explorer externpro.sln
+```
+build the solution for a build version of externpro or build the PACKAGE project for an installed version
+##### Unix
+you can also choose the cmake generator, usually the default is what you'll want (Unix Makefiles)
+```bash
+cmake -DXP_STEP=build ..
+make -j8
+make package
+```
+the first `make` gives you a build version of externpro, and the additional `make package` for an installed version
