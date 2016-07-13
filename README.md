@@ -47,13 +47,17 @@ the `package` target of externpro will build an installer suitable for the OS on
 
 ## usage
 
-to build and use externpro from another project you can either create a *build version* of externpro or an *installed version*, where a build version is created by simply building externpro and an installed version involves building, making the package (aka installer), and installing
+to build and use externpro from another project you can either create a *build version* of externpro or an *installed version*
+
+a build version is created by simply building externpro and an installed version involves building, making the package (aka installer), and installing
 
 one difference between a build version and an installed version is where the find script looks to find externpro - you can see the PATHS searched, in order, in the [find script](https://github.com/smanders/externpro/blob/16.06.1/modules/Findscript.cmake.in#L82-L93)
 
 if you always plan to use an installed version the path to the source and build directories doesn't matter -- only the path where it is installed matters, unless you use an environment variable (examine the find script for suitable install locations)
 
-because the find script looks for a build version of externpro in `C:/src` on Windows and `~/src/` on Unix, if you have any intention of using a build version directly from another project perform the following commands in the appropriate `src` directory
+NOTE: if your build directory (`_bld` below) is a subdirectory of the repo, you'll need to have git ignore the build directory or the staging directory will be marked with `dirtyrepo` from [this cmake](https://github.com/smanders/externpro/blob/16.06.1/modules/macpro.cmake#L254-L263) -- and since I'm not a fan of a .gitignore file committed to the repo, I recommend adding `_bld*/` to the `.git/info/exclude` file
+
+because the find script looks for a build version of externpro in `C:/src` on Windows and `~/src/` on Unix, if you have any intention of using a build version directly from another project: perform the following commands in the appropriate `src` directory
 
 ```bash
 git clone git://github.com/smanders/externpro.git
