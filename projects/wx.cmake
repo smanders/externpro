@@ -10,12 +10,7 @@ function(build_wx)
     @ONLY NEWLINE_STYLE LF
     )
   foreach(ver ${WX_VERSIONS})
-    if(XP_DEFAULT OR XP_PRO_WX${ver})
-      list(APPEND BUILD_WX_VERS ${ver})
-    endif()
-  endforeach()
-  foreach(WXVER ${BUILD_WX_VERS})
-    build_wxv(VER ${WXVER})
+    build_wxv(VER ${ver})
   endforeach()
 endfunction()
 ########################################
