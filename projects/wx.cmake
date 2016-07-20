@@ -3,7 +3,7 @@
 # *   sudo apt install libgtk2.0-dev libglu1-mesa-dev [ubuntu]
 # *   sudo yum install gtk2-devel.x86_64 libSM-devel.x86_64 [rhel6]
 # *   sudo yum install mesa-libGL-devel.x86_64 mesa-libGLU-devel.x86_64 [rhel6]
-set(WX_VERSIONS 30 31)
+set(WX_VERSIONS 31)
 ########################################
 function(build_wx)
   configure_file(${PRO_DIR}/use/usexp-wxwidgets-config.cmake ${STAGE_DIR}/share/cmake/

@@ -7,7 +7,7 @@ set(prj wxwidgets)
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
-#set(XP_USE_LATEST_WX ON)
+set(XP_USE_LATEST_WX ON)
 if(NOT DEFINED XP_USE_LATEST_WX)
   option(XP_USE_LATEST_WX "build with wxWidgets 3.1 instead of 3.0" OFF)
 endif()
