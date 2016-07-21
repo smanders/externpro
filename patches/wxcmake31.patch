@@ -2077,7 +2077,7 @@ index 0000000..5d1143a
 +set_wxtarget_properties(${lib_name})
 diff --git a/wx.cmake b/wx.cmake
 new file mode 100644
-index 0000000..631a09d
+index 0000000..a6ad2cb
 --- /dev/null
 +++ b/wx.cmake
 @@ -0,0 +1,189 @@
@@ -2196,7 +2196,7 @@ index 0000000..631a09d
 +      )
 +  endif()
 +  # NOTE: It appears /MACHINE needs to be specified if target has an .rc
-+  if(${CMAKE_GENERATOR} MATCHES "Win64$")
++  if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
 +    # http://public.kitware.com/Bug/view.php?id=11240
 +    set_target_properties(${target} PROPERTIES STATIC_LIBRARY_FLAGS "/MACHINE:X64")
 +  elseif(MSVC)
