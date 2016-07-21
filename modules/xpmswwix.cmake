@@ -20,7 +20,7 @@ function(xpCpackWixMsm mergeModuleIds appendTo) # optional ARGV2
   file(TO_CMAKE_PATH "$ENV{${PFX86}}/Common Files/Merge Modules" msmDir)
   xpGetCompilerPrefix(compiler)
   string(TOUPPER ${compiler} COMPILER)
-  if(MSVC AND ${CMAKE_GENERATOR} MATCHES "Win64$")
+  if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(ARCH x64)
   elseif(MSVC)
     set(ARCH x86)

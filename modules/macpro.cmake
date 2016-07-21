@@ -73,7 +73,7 @@ macro(proSetOpts) # NOTE: called by proInit
   set(XP_BUILD_RELEASE ON) # release is *always* built, debug is optional
   option(XP_BUILD_DEBUG "build debug (note: release is *always* built)" ON)
   if(MSVC)
-    if((${CMAKE_GENERATOR} MATCHES "Win64$") AND (CMAKE_SIZEOF_VOID_P EQUAL 8))
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
       set(XP_BUILD_64BIT ON)
       set(XP_BUILD_32BIT OFF)
     elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)

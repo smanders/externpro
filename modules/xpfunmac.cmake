@@ -1252,7 +1252,7 @@ macro(xpCommonFlags)
   xpSetPostfix()
   xpDebugInfoOption()
   if(MSVC)
-    if(${CMAKE_GENERATOR} MATCHES "Win64$")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
       add_definitions(-DWIN64)
     endif()
     # Turn on Multi-processor Compilation
