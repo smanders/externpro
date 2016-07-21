@@ -1,18 +1,22 @@
 # node
-function(build_node_ver ver this other)
-  string(TOUPPER ${ver} VER)
-  xpGetArgValue(${PRO_NODE${VER}} ARG VER VALUE ${this}NUM)
-  set(${this}VER ${ver})
-  if(EXISTS ${STAGE_DIR}/share/cmake/usexp-node-config.cmake)
-    set(inputDir ${STAGE_DIR}/share/cmake)
-  else()
-    set(inputDir ${PRO_DIR}/use)
-    set(${other}NUM @${other}NUM@)
-    set(${other}VER @${other}VER@)
-  endif()
-  configure_file(${inputDir}/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
+set(NODE_VERSIONS v0 v5)
+set(NODE_OLDVER v0)
+set(NODE_NEWVER v5)
+####################
+function(build_node)
+  configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
+  foreach(ver ${NODE_VERSIONS})
+    build_node_ver(${ver})
+  endforeach()
+endfunction()
+####################
+function(build_node_ver ver)
+  string(TOUPPER ${ver} VER)
+  if(NOT (XP_DEFAULT OR XP_PRO_NODE${VER}))
+    return()
+  endif()
   # TODO: support Debug by renaming files going into STAGE_DIR?
   set(BUILD_CONFIGS Release)
   set(node${ver}_DEPS node${ver})

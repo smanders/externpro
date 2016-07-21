@@ -18,17 +18,3 @@ set(PRO_NODEV0
   PATCH ${PATCH_DIR}/nodev0.patch
   DIFF ${REPO}/compare/nodejs:
   )
-########################################
-function(build_nodev0)
-  if(NOT (XP_DEFAULT OR XP_PRO_NODEV0))
-    return()
-  endif()
-  if(NOT (XP_DEFAULT OR XP_PRO_NODEV5))
-    # use script requires both versions to be built
-    message(STATUS "nodev0.cmake: requires nodev5")
-    set(XP_PRO_NODEV5 ON CACHE BOOL "include nodev5" FORCE)
-    xpPatchProject(${PRO_NODEV5})
-    build_nodev5()
-  endif()
-  build_node_ver(v0 CUR NEW)
-endfunction()
