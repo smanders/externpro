@@ -1,9 +1,12 @@
 # node
-set(NODE_VERSIONS v0 v5)
+set(NODE_VERSIONS v5)
 set(NODE_OLDVER v0)
 set(NODE_NEWVER v5)
 ####################
 function(build_node)
+  if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
+    return() # Solaris 10 requires too many patches and maintenance
+  endif()
   configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -32,23 +35,7 @@ function(build_node_ver ver)
     set(XP_CONFIGURE_Release ${XP_CONFIGURE_BASE} release ${destcpu})
     set(XP_CONFIGURE_Debug ${XP_CONFIGURE_BASE} debug ${destcpu})
   elseif(UNIX)
-    if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
-      set(XP_CONFIGURE_BASE CC=gcc)
-      set(destos solaris)
-      # ifaddrs.h not found on Solaris 10
-      # https://github.com/nodejs/node-v0.x-archive/issues/3465
-      set(addopt --no-ifaddrs)
-      if(${ver} STREQUAL v0)
-        # missing libproc.h on Solaris 10
-        # https://github.com/nodejs/node-v0.x-archive/issues/6439
-        # https://github.com/cgalibern/node/commit/37db35864b8baf88b75c6709d8e9ac750e8ef9b7
-        list(APPEND addopt --without-mdb)
-      elseif(${ver} STREQUAL v5)
-        list(APPEND addopt --without-snapshot)
-      endif()
-      # NOTE: Solaris 10, non-GNU ld not supported
-      # https://github.com/nodejs/node-v0.x-archive/issues/5081
-    elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
       set(destos linux)
     elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
       set(destos mac)
@@ -112,16 +99,14 @@ function(build_node_ver ver)
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmSrc} ${npmDst}
       DEPENDEES install
       )
-    # dedupe: nodev5 Illegal Instruction on Solaris
-    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "SunOS" OR NOT ${ver} STREQUAL v5)
-      ExternalProject_Add_Step(${XP_TARGET} postpost_${XP_TARGET}
-        COMMAND ${npmExe} dedupe
-        COMMAND ${CMAKE_COMMAND} -Drmroot:STRING=${npmDst} -Drmdirs:STRING=${rmdirs}
-          -Ddirs:STRING=${flatten} -P ${MODULES_DIR}/cmsflatnode.cmake
-        WORKING_DIRECTORY ${npmDst}
-        DEPENDEES post_${XP_TARGET}
-        )
-    endif()
+    # dedupe
+    ExternalProject_Add_Step(${XP_TARGET} postpost_${XP_TARGET}
+      COMMAND ${npmExe} dedupe
+      COMMAND ${CMAKE_COMMAND} -Drmroot:STRING=${npmDst} -Drmdirs:STRING=${rmdirs}
+        -Ddirs:STRING=${flatten} -P ${MODULES_DIR}/cmsflatnode.cmake
+      WORKING_DIRECTORY ${npmDst}
+      DEPENDEES post_${XP_TARGET}
+      )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
 endfunction()
