@@ -14,7 +14,7 @@ set(PRO_GEOTRANZ
   GIT_ORIGIN git://github.com/smanders/geotranz.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL http://ftp.gnome.org/ubuntu/ubuntu/pool/universe/g/geotranz/geotranz_${VER}.orig.tar.gz
+  DLURL http://ftp.gnome.org/mirror/temp/ubuntu-test/ubuntu/pool/universe/g/geotranz/geotranz_${VER}.orig.tar.gz
   DLMD5 1d370d5b0daed2a541a9aa14bd3172a8
   PATCH ${PATCH_DIR}/geotranz.patch
   DIFF ${REPO}/compare/

@@ -15,7 +15,7 @@ set(PRO_APR
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
   # Download APR following links at http://apr.apache.org/download.cgi (mirrors)
-  DLURL http://www.webhostingjams.com/mirror/apache/apr/apr-${VER}.tar.gz
+  DLURL http://ftp.wayne.edu/apache//apr/apr-${VER}.tar.gz
   DLMD5 98492e965963f852ab29f9e61b2ad700
   #DLURL ${REPO}/archive/${VER}.tar.gz
   #DLMD5 5b0bb763245c7d10b7c03214cc8756ec
