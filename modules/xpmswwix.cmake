@@ -121,9 +121,13 @@ function(xpCpackWixRunApp appendTo exe text) # optional ARGV3
   xpStringIndentAppend(xml ${base}+1 ">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>")
   xpStringIndentAppend(xml ${base}+0 "</UI>")
   xpStringIndentAppend(xml ${base}+0 "<Property Id='WIXUI_EXITDIALOGOPTIONALCHECKBOX' Value='1' />")
-  xpStringIndentAppend(xml ${base}+0 "<Property Id='WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT' Value='${text}' />")
+  # How to disable "WIXUI_EXITDIALOGOPTIONALCHECKBOX" in exit dialog according to the condition?
+  # http://wix-users.narkive.com/mX8KS6dB/how-to-disable-wixui-exitdialogoptionalcheckbox-in-exit-dialog-according-to-the-condition
+  xpStringIndentAppend(xml ${base}+0 "<SetProperty Id='WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT' Value='${text}'")
+  xpStringIndentAppend(xml ${base}+1 "After='ExecuteAction' Sequence='ui'")
+  xpStringIndentAppend(xml ${base}+0 "><![CDATA[$CM_CP_${exe} = 3]]></SetProperty>")
   # Step 3: Include the custom action
-  xpStringIndentAppend(xml ${base}+0 "<Property Id='WixShellExecTarget' Value='&quot\;[#CM_FP_${exe}]&quot\;' />")
+  xpStringIndentAppend(xml ${base}+0 "<Property Id='WixShellExecTarget' Value='[#CM_FP_${exe}]' />")
   # http://stackoverflow.com/questions/2325459/executing-a-custom-action-that-requires-elevation-after-install
   xpStringIndentAppend(xml ${base}+0 "<CustomAction Id='LaunchApplication'")
   xpStringIndentAppend(xml ${base}+1 "BinaryKey='WixCA'")
@@ -185,6 +189,8 @@ endfunction()
 function(xpCpackWixCASeq id exe when _seq) # optional ARGV4
   set(base 2) # ca.wxs
   xpStringIndentAppend(seq ${base}+1 "<Custom Action='${id}'")
+  # Conditional Statement Syntax (Access Prefixes, Feature and Component State Values)
+  # https://msdn.microsoft.com/en-us/library/aa368012(VS.85).aspx
   if(${when} STREQUAL INS)
     set(before RegisterUser)
     set(condition "$CM_CP_${exe}&gt\;2")
