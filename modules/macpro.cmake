@@ -304,7 +304,7 @@ macro(proSetCpackOpts) # NOTE: called by proExecuteStep
   else()
     set(CPACK_PACKAGE_VERSION "unknown-version")
   endif()
-  set(CPACK_PACKAGE_VENDOR "Space Dynamics Lab")
+  set(CPACK_PACKAGE_VENDOR "smanders")
   if(UNIX AND NOT DEFINED CPACK_GENERATOR)
     set(CPACK_GENERATOR STGZ) # STGZ = Self extracting Tar GZip compression
   endif()
