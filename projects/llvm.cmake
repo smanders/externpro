@@ -1,6 +1,6 @@
 # llvm
 xpProOption(llvm)
-set(VER 3.6.0)
+set(VER 3.8.1)
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "release_\\1\\2" LLVM_BRANCH ${VER})
 set(REPO https://github.com/llvm-mirror/llvm)
 set(PRO_LLVM
@@ -13,6 +13,6 @@ set(PRO_LLVM
   GIT_ORIGIN git://github.com/llvm-mirror/llvm.git
   GIT_TAG ${LLVM_BRANCH}
   DLURL http://llvm.org/releases/${VER}/llvm-${VER}.src.tar.xz
-  DLMD5 f1e14e949f8df3047c59816c55278cec
+  DLMD5 538467e6028bbc9259b1e6e015d25845
   SUBPRO clang
   )

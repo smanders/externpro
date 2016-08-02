@@ -16,7 +16,7 @@ set(PRO_CLANG
   GIT_TAG xp${llvmVer} # what to 'git checkout'
   GIT_REF v${llvmVer} # create patch from this tag to 'git checkout'
   DLURL http://llvm.org/releases/${llvmVer}/cfe-${llvmVer}.src.tar.xz
-  DLMD5 e3012065543dc6ab8a9842b09616b78d
+  DLMD5 4ff2f8844a786edb0220f490f7896080
   PATCH ${PATCH_DIR}/clang.patch
   DIFF ${REPO}/compare/
   )
