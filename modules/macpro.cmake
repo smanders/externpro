@@ -140,23 +140,15 @@ macro(proInitFunFiles) # NOTE: called by proInit
   file(APPEND ${stepBuild} "message(STATUS \"[build] -- configurations: \${BUILD_CONFIGS}\")\n")
   file(APPEND ${stepBuild} "message(STATUS \"XP_STEP: build\")\n")
   file(APPEND ${stepBuild} "proSetStageDir()\n")
-  ####
-  include(${MODULES_DIR}/xpfunmac.cmake)
-  file(GLOB srcList ${CMAKE_BINARY_DIR}/pro_*.cmake ${MODULES_DIR}/*.cmake ${MODULES_DIR}/*.in)
-  xpSourceListAppend("${srcList}")
 endmacro()
 
 macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
+  include(${MODULES_DIR}/xpfunmac.cmake)
+  xpMarkdownReadmeInit()
   get_filename_component(PRO_DIR ${proDir} ABSOLUTE)
   get_filename_component(PATCH_DIR ${PRO_DIR}/../patches ABSOLUTE)
-  xpMarkdownReadmeInit()
-  # include the project.cmake and usexp-project-config.cmake files
   file(GLOB projects ${PRO_DIR}/*.cmake)
-  file(GLOB useScripts ${PRO_DIR}/use/usexp-*-config.cmake)
   list(SORT projects) # sort list in-place alphabetically
-  list(SORT useScripts)
-  xpSourceListAppend("${projects}")
-  xpSourceListAppend("${useScripts}")
   foreach(proj ${projects})
     include(${proj})
     get_filename_component(pro ${proj} NAME_WE)
@@ -185,8 +177,15 @@ macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
     endif()
     xpMarkdownReadmeAppend(${pro})
   endforeach()
-  file(GLOB files ${PRO_DIR}/README* ${PROJECT_SOURCE_DIR}/README*)
-  xpSourceListAppend("${files}")
+  file(GLOB xpfiles
+    ${PROJECT_SOURCE_DIR}/README* ${PROJECT_SOURCE_DIR}/LICENSE*
+    ${PRO_DIR}/README*
+    ${CMAKE_BINARY_DIR}/pro_*.cmake
+    ${MODULES_DIR}/*.cmake ${MODULES_DIR}/*.in
+    ${PRO_DIR}/use/usexp-*-config.cmake
+    )
+  list(APPEND xpfiles ${projects})
+  xpSourceListAppend("${xpfiles}")
 endmacro()
 
 macro(proExecuteStep) # NOTE: called by top-level CMakeLists.txt
