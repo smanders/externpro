@@ -582,6 +582,26 @@ function(xpGetCompilerPrefix _ret)
   set(${_ret} ${prefix} PARENT_SCOPE)
 endfunction()
 
+function(xpListPrependToAll var prefix)
+  set(listVar)
+  foreach(f ${ARGN})
+    list(APPEND listVar "${prefix}/${f}")
+  endforeach()
+  set(${var} "${listVar}" PARENT_SCOPE)
+endfunction()
+
+function(xpListAppendTrailingSlash var)
+  set(listVar)
+  foreach(f ${ARGN})
+    if(IS_DIRECTORY ${f})
+      list(APPEND listVar "${f}/")
+    else()
+      list(APPEND listVar "${f}")
+    endif()
+  endforeach()
+  set(${var} "${listVar}" PARENT_SCOPE)
+endfunction()
+
 function(xpListAppendIfDne appendTo items)
   foreach(item ${items})
     list(FIND ${appendTo} ${item} index)
@@ -683,17 +703,73 @@ macro(xpParentListAppend parentList items)
   set(${parentList} ${${parentList}} PARENT_SCOPE)
 endmacro()
 
+function(xpGitIgnoredDirs var dir)
+  if(NOT GIT_FOUND)
+    include(FindGit)
+    find_package(Git)
+  endif()
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} ls-files --exclude-standard --ignored --others --directory
+    WORKING_DIRECTORY ${dir}
+    ERROR_QUIET
+    OUTPUT_VARIABLE ignoredDirs
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  separate_arguments(ignoredDirs UNIX_COMMAND "${ignoredDirs}")
+  list(APPEND ignoredDirs ${ARGN})
+  xpListPrependToAll(ignoredDirs ${dir} ${ignoredDirs})
+  set(${var} "${ignoredDirs}" PARENT_SCOPE)
+endfunction()
+
+function(xpGitUntrackedFiles var dir)
+  if(NOT GIT_FOUND)
+    include(FindGit)
+    find_package(Git)
+  endif()
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} ls-files --exclude-standard --others
+    WORKING_DIRECTORY ${dir}
+    ERROR_QUIET
+    OUTPUT_VARIABLE untrackedFiles
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  separate_arguments(untrackedFiles UNIX_COMMAND "${untrackedFiles}")
+  xpListPrependToAll(untrackedFiles ${dir} ${untrackedFiles})
+  set(${var} "${untrackedFiles}" PARENT_SCOPE)
+endfunction()
+
+function(xpGlobFiles var item)
+  if(IS_DIRECTORY ${item})
+    string(REGEX REPLACE "/$" "" item ${item}) # remove trailing slash
+    xpListPrependToAll(globexpr ${item} ${ARGN})
+    # NOTE: By default GLOB_RECURSE omits directories from result list
+    file(GLOB_RECURSE dirFiles ${globexpr})
+    xpGitUntrackedFiles(untrackedFiles ${item})
+    if(dirFiles AND untrackedFiles)
+      list(REMOVE_ITEM dirFiles ${untrackedFiles})
+    endif()
+    list(APPEND listVar ${dirFiles})
+  else()
+    get_filename_component(dir ${item} DIRECTORY)
+    xpListPrependToAll(globexpr ${dir} ${ARGN})
+    file(GLOB match ${globexpr})
+    list(FIND match ${item} idx)
+    if(NOT ${idx} EQUAL -1)
+      list(APPEND listVar ${item})
+    endif()
+  endif()
+  set(${var} ${${var}} ${listVar} PARENT_SCOPE)
+endfunction()
+
 macro(xpSourceListAppend)
   set(_dir ${CMAKE_CURRENT_SOURCE_DIR})
   if(EXISTS ${_dir}/CMakeLists.txt)
-    list(APPEND masterSrcList ${_dir}/CMakeLists.txt\n)
+    list(APPEND masterSrcList ${_dir}/CMakeLists.txt)
   endif()
   file(GLOB msvcFiles "${_dir}/*.sln" "${_dir}/*.vcxproj" "${_dir}/*.vcxproj.filters")
-  foreach(v ${msvcFiles})
-    list(APPEND masterSrcList ${v}\n)
-  endforeach()
+  list(APPEND masterSrcList ${msvcFiles})
   if(${ARGC} GREATER 0)
-    foreach(f ${ARGV0})
+    foreach(f ${ARGN})
       # remove any relative parts with get_filename_component call
       # as this will help REMOVE_DUPLICATES
       if(IS_ABSOLUTE ${f})
@@ -701,19 +777,23 @@ macro(xpSourceListAppend)
       else()
         get_filename_component(f ${_dir}/${f} ABSOLUTE)
       endif()
-      list(APPEND masterSrcList ${f}\n)
+      list(APPEND masterSrcList ${f})
     endforeach()
   else()
+    file(GLOB miscFiles LIST_DIRECTORIES false
+      ${_dir}/.git ${_dir}/.gitattributes ${_dir}/.gitmodules
+      ${_dir}/*clang-format
+      ${_dir}/README.md
+      )
+    list(APPEND masterSrcList ${miscFiles})
     file(RELATIVE_PATH relPath ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
     string(REPLACE "/" "" custTgt .CMake${relPath})
-    add_custom_target(${custTgt}) # creates utility project in MSVC
+    add_custom_target(${custTgt} SOURCES ${miscFiles}) # creates utility project in MSVC
     set_property(TARGET ${custTgt} PROPERTY FOLDER ${folder})
   endif()
   if(EXISTS ${_dir}/.codereview)
     file(GLOB crFiles "${_dir}/.codereview/*")
-    foreach(v ${crFiles})
-      list(APPEND masterSrcList ${v}\n)
-    endforeach()
+    list(APPEND masterSrcList ${crFiles})
     file(RELATIVE_PATH relPath ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
     string(REPLACE "/" "" custTgt .codereview${relPath})
     add_custom_target(${custTgt} SOURCES ${crFiles}) # creates utility project in MSVC
@@ -721,23 +801,56 @@ macro(xpSourceListAppend)
   endif()
   if(NOT ${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
     set(masterSrcList "${masterSrcList}" PARENT_SCOPE)
+  else()
+    list(REMOVE_DUPLICATES masterSrcList)
+    ####
+    xpGitIgnoredDirs(ignoredDirs ${CMAKE_SOURCE_DIR} .git/)
+    xpGitUntrackedFiles(untrackedFiles ${CMAKE_SOURCE_DIR})
+    file(GLOB topdir ${_dir}/*)
+    xpListAppendTrailingSlash(topdir ${topdir})
+    list(REMOVE_ITEM topdir ${ignoredDirs} ${untrackedFiles})
+    list(SORT topdir) # sort list in-place alphabetically
+    foreach(item ${topdir})
+      xpGlobFiles(repoFiles ${item} *)
+      xpGlobFiles(fmtFiles ${item} *.c *.h *.cpp *.hpp *.cu *.cuh)
+    endforeach()
+    list(REMOVE_ITEM repoFiles ${masterSrcList})
+    if(repoFiles)
+      string(REPLACE ";" "\n" repoFiles "${repoFiles}")
+      file(WRITE ${CMAKE_BINARY_DIR}/notincmake.txt ${repoFiles}\n)
+      list(APPEND masterSrcList ${CMAKE_BINARY_DIR}/notincmake.txt)
+    endif()
+    ####
+    if(fmtFiles AND NOT ${CMAKE_PROJECT_NAME} STREQUAL externpro)
+      xpGetPkgVar(clangformat EXE)
+      add_custom_command(OUTPUT format_cmake
+        COMMAND $<TARGET_FILE:clang-format> -style=file -i ${fmtFiles}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running clang-format..."
+        )
+      string(REPLACE ";" "\n" fmtFiles "${fmtFiles}")
+      file(WRITE ${CMAKE_BINARY_DIR}/formatfiles.txt ${fmtFiles}\n)
+      add_custom_target(format SOURCES ${CMAKE_BINARY_DIR}/formatfiles.txt DEPENDS format_cmake)
+      list(APPEND masterSrcList ${CMAKE_BINARY_DIR}/formatfiles.txt)
+      set_property(TARGET format PROPERTY FOLDER CMakeTargets)
+    endif()
+    ####
+    option(XP_CSCOPE "always update cscope database" OFF)
+    if(XP_CSCOPE)
+      file(GLOB cscope_files ${CMAKE_BINARY_DIR}/cscope.*)
+      list(LENGTH cscope_files len)
+      if(NOT ${len} EQUAL 0)
+        file(REMOVE ${cscope_files})
+      endif()
+      string(REPLACE ";" "\n" cscopeFileList "${masterSrcList}")
+      file(WRITE ${CMAKE_BINARY_DIR}/cscope.files ${cscopeFileList}\n)
+      message(STATUS "Generating cscope database")
+      execute_process(COMMAND cscope -b -q -k -i cscope.files)
+    endif()
   endif()
 endmacro()
 
-function(xpGenerateCscopeDb)
-  option(XP_CSCOPE "always update cscope database" OFF)
-  if(NOT XP_CSCOPE)
-    return()
-  endif()
-  file(GLOB cscope_files ${CMAKE_CURRENT_BINARY_DIR}/cscope.*)
-  list(LENGTH cscope_files len)
-  if(NOT ${len} EQUAL 0)
-    file(REMOVE ${cscope_files})
-  endif()
-  list(REMOVE_DUPLICATES masterSrcList)
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cscope.files ${masterSrcList})
-  message(STATUS "Generating cscope database")
-  execute_process(COMMAND cscope -b -q -k -i cscope.files)
+function(xpGenerateCscopeDb) # TODO: remove
 endfunction()
 
 function(xpTouchFiles fileList)
