@@ -602,6 +602,15 @@ function(xpListAppendTrailingSlash var)
   set(${var} "${listVar}" PARENT_SCOPE)
 endfunction()
 
+function(xpListRemoveFromAll var match replace)
+  set(listVar)
+  foreach(f ${ARGN})
+    string(REPLACE "${match}" "${replace}" f ${f})
+    list(APPEND listVar ${f})
+  endforeach()
+  set(${var} "${listVar}" PARENT_SCOPE)
+endfunction()
+
 function(xpListAppendIfDne appendTo items)
   foreach(item ${items})
     list(FIND ${appendTo} ${item} index)
@@ -822,11 +831,14 @@ macro(xpSourceListAppend)
     endif()
     ####
     if(fmtFiles AND NOT ${CMAKE_PROJECT_NAME} STREQUAL externpro)
+      # make paths relative to CMAKE_SOURCE_DIR
+      xpListRemoveFromAll(fmtFiles ${CMAKE_SOURCE_DIR} . ${fmtFiles})
+      list(LENGTH fmtFiles lenFmtFiles)
       xpGetPkgVar(clangformat EXE)
       add_custom_command(OUTPUT format_cmake
         COMMAND $<TARGET_FILE:clang-format> -style=file -i ${fmtFiles}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Running clang-format..."
+        COMMENT "Running clang-format on ${lenFmtFiles} files..."
         )
       string(REPLACE ";" "\n" fmtFiles "${fmtFiles}")
       file(WRITE ${CMAKE_BINARY_DIR}/formatfiles.txt ${fmtFiles}\n)
