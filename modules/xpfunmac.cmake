@@ -830,7 +830,8 @@ macro(xpSourceListAppend)
       list(APPEND masterSrcList ${CMAKE_BINARY_DIR}/notincmake.txt)
     endif()
     ####
-    if(fmtFiles AND NOT ${CMAKE_PROJECT_NAME} STREQUAL externpro)
+    # Windows can't handle passing very many files to clang-format
+    if(NOT MSVC AND fmtFiles AND NOT ${CMAKE_PROJECT_NAME} STREQUAL externpro)
       # make paths relative to CMAKE_SOURCE_DIR
       xpListRemoveFromAll(fmtFiles ${CMAKE_SOURCE_DIR} . ${fmtFiles})
       list(LENGTH fmtFiles lenFmtFiles)
