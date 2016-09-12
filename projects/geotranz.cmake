@@ -14,7 +14,7 @@ set(PRO_GEOTRANZ
   GIT_ORIGIN git://github.com/smanders/geotranz.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL http://ftp.gnome.org/mirror/temp/ubuntu-test/ubuntu/pool/universe/g/geotranz/geotranz_${VER}.orig.tar.gz
+  DLURL http://geotranz.sourcearchive.com/downloads/${VER}/geotranz_${VER}.orig.tar.gz
   DLMD5 1d370d5b0daed2a541a9aa14bd3172a8
   PATCH ${PATCH_DIR}/geotranz.patch
   DIFF ${REPO}/compare/
@@ -69,7 +69,7 @@ math(EXPR md5len "${csvlen} - 1")
 ########################################
 function(download_geotranz)
   xpNewDownload(${PRO_GEOTRANZ})
-  download_geotiff_tables(ftp://ftp.remotesensing.org/pub/geotiff/tables ${DWNLD_DIR}/data)
+  download_geotiff_tables(ftp://downloads.osgeo.org/pub/geotiff/tables ${DWNLD_DIR}/data)
 endfunction()
 ####################
 function(download_geotiff_tables src dst)
@@ -102,5 +102,5 @@ function(build_geotranz)
     )
   xpCmakeBuild(geotranz)
   download_geotiff_tables(${DWNLD_DIR}/data ${STAGE_DIR}/include/geotrans/data
-                          ftp://ftp.remotesensing.org/pub/geotiff/tables)
+                          ftp://downloads.osgeo.org/pub/geotiff/tables)
 endfunction()
