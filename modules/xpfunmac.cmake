@@ -868,7 +868,9 @@ macro(xpSourceListAppend)
     endif()
     ####
     # Windows can't handle passing very many files to clang-format
-    if(NOT MSVC AND fmtFiles AND NOT ${CMAKE_PROJECT_NAME} STREQUAL externpro)
+    # and Solaris/SunOS can't build clang-format
+    if(NOT MSVC AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL SunOS
+       AND fmtFiles AND NOT ${CMAKE_PROJECT_NAME} STREQUAL externpro)
       # make paths relative to CMAKE_SOURCE_DIR
       xpListRemoveFromAll(fmtFiles ${CMAKE_SOURCE_DIR} . ${fmtFiles})
       list(LENGTH fmtFiles lenFmtFiles)
