@@ -1,9 +1,6 @@
 # cmakexp
-# * to build ccmake: need to install Curses libraries
-# *   sudo apt install libncurses5-dev
-# *   sudo yum install ncurses-devel
 xpProOption(cmakexp)
-set(VER 3.3.2)
+set(VER 3.6.2)
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1.\\2" VER2 ${VER})
 set(REPO https://github.com/smanders/CMake)
 set(PRO_CMAKEXP
@@ -18,7 +15,7 @@ set(PRO_CMAKEXP
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://www.cmake.org/files/v${VER2}/cmake-${VER}.tar.gz
-  DLMD5 5febbd11bcaac854a27eebaf4a124be2
+  DLMD5 139d7affdd4e8ab1edfc9f4322d69e43
   PATCH ${PATCH_DIR}/cmakexp.patch
   DIFF ${REPO}/compare/Kitware:
   )
@@ -38,6 +35,18 @@ function(build_cmakexp)
     xpPatchProject(${PRO_OPENSSL})
   endif()
   build_openssl(osslTgts)
+  # check if Curses is installed so we can build ccmake
+  find_package(Curses QUIET)
+  if(NOT CURSES_FOUND)
+    message(AUTHOR_WARNING "\n"
+      "curses not found -- ccmake can't be built. install on linux:\n"
+      "  apt install libncurses5-dev\n"
+      "  yum install ncurses-devel\n"
+      )
+  else()
+    # TRICKY: this should be marked as advanced by FindCurses.cmake, but isn't as of v3.6.2
+    mark_as_advanced(CURSES_FORM_LIBRARY)
+  endif()
   # we only need a release version
   xpBuildOnlyRelease()
   set(XP_CONFIGURE
