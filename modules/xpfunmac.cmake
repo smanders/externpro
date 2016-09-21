@@ -67,26 +67,28 @@ function(xpCloneRepo)
       endif()
       ExternalProject_Add(${prj}_repo
         GIT_REPOSITORY ${P_GIT_ORIGIN} GIT_TAG ${P_GIT_TAG}
-        PATCH_COMMAND ${patchCmd}
-        UPDATE_COMMAND ${GIT_EXECUTABLE} remote add upstream ${P_GIT_UPSTREAM}
-        CONFIGURE_COMMAND ${GIT_EXECUTABLE} fetch upstream
-        BUILD_COMMAND ${GIT_EXECUTABLE} branch ${upstreamCmd}
+        #DOWNLOAD_COMMAND # tricky: must not be defined for git clone to happen
+        PATCH_COMMAND ${GIT_EXECUTABLE} remote add upstream ${P_GIT_UPSTREAM}
+        UPDATE_COMMAND ${GIT_EXECUTABLE} fetch --all
+        CONFIGURE_COMMAND ${GIT_EXECUTABLE} branch ${upstreamCmd}
+        BUILD_COMMAND ${patchCmd}
+        INSTALL_COMMAND ""
         BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
-        INSTALL_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
+        DOWNLOAD_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
         )
     else()
       ExternalProject_Add(${prj}_repo
         GIT_REPOSITORY ${P_GIT_ORIGIN} GIT_TAG ${P_GIT_TAG}
-        PATCH_COMMAND ${patchCmd}
-        UPDATE_COMMAND "" CONFIGURE_COMMAND "" BUILD_COMMAND "" INSTALL_COMMAND ""
-        DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
+        #DOWNLOAD_COMMAND # tricky: must not be defined for git clone to happen
+        PATCH_COMMAND ""
+        UPDATE_COMMAND ${GIT_EXECUTABLE} fetch --all
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ${patchCmd}
+        INSTALL_COMMAND ""
+        BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
+        DOWNLOAD_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
         )
     endif()
-    ExternalProject_Add_Step(${prj}_repo patch_always
-      COMMAND ${CMAKE_COMMAND} -E echo "Custom external project step forces patch"
-        "and later steps to run"
-      DEPENDEES download DEPENDERS patch ALWAYS 1
-      )
   endif()
 endfunction()
 
