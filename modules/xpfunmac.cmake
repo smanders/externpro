@@ -860,7 +860,7 @@ macro(xpSourceListAppend)
     list(SORT topdir) # sort list in-place alphabetically
     foreach(item ${topdir})
       xpGlobFiles(repoFiles ${item} *)
-      xpGlobFiles(fmtFiles ${item} *.c *.h *.cpp *.hpp *.cu *.cuh)
+      xpGlobFiles(fmtFiles ${item} *.c *.h *.cpp *.hpp *.cu *.cuh *.proto)
     endforeach()
     list(REMOVE_ITEM repoFiles ${masterSrcList})
     if(repoFiles)
