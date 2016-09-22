@@ -878,7 +878,7 @@ macro(xpSourceListAppend)
       list(LENGTH fmtFiles lenFmtFiles)
       xpGetPkgVar(clangformat EXE)
       add_custom_command(OUTPUT format_cmake
-        COMMAND $<TARGET_FILE:clang-format> -style=file -i ${fmtFiles}
+        COMMAND ${CLANGFORMAT_EXE} -style=file -i ${fmtFiles}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Running clang-format on ${lenFmtFiles} files..."
         )
