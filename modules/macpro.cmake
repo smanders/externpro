@@ -250,18 +250,24 @@ macro(proSetStageDir) # NOTE: called by cmake-generated pro_build.cmake file
       OUTPUT_STRIP_TRAILING_WHITESPACE
       )
     if(GIT_DESCRIBE)
-      # add prefix if git repo is dirty
-      execute_process(COMMAND ${GIT_EXECUTABLE} status --porcelain
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE dirty
-        )
-      if(dirty AND UNIX)
-        set(PREFIX "$ENV{USER}-dirtyrepo-")
-      elseif(dirty AND WIN32)
-        set(PREFIX "$ENV{USERNAME}-dirtyrepo-")
+      option(XP_DIRTYREPO "mark stage directory with dirtyrepo" ON)
+      mark_as_advanced(XP_DIRTYREPO)
+      if(XP_DIRTYREPO)
+        # add prefix if git repo is dirty
+        execute_process(COMMAND ${GIT_EXECUTABLE} status --porcelain
+          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+          OUTPUT_VARIABLE dirty
+          )
+        if(dirty AND UNIX)
+          set(PREFIX "$ENV{USER}-dirtyrepo-")
+        elseif(dirty AND WIN32)
+          set(PREFIX "$ENV{USERNAME}-dirtyrepo-")
+        endif()
       endif()
       xpGetCompilerPrefix(COMPILER)
-      if(NOT XP_DEFAULT)
+      option(XP_MARKPARTIAL "mark stage directory with partial indicator" ON)
+      mark_as_advanced(XP_MARKPARTIAL)
+      if(XP_MARKPARTIAL AND NOT XP_DEFAULT)
         set(PARTIAL "-p")
       endif()
       set(GIT_REV ${PREFIX}${GIT_DESCRIBE}${PARTIAL}-${COMPILER}-${BUILD_PLATFORM})
