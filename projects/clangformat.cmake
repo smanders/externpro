@@ -27,13 +27,19 @@ function(build_clangformat)
   set(XP_DEPS llvm llvm_clang)
   set(XP_CONFIGURE
     -DLLVM_TARGETS_TO_BUILD:STRING=X86
+    -DBUILD_CLANG_FORMAT_VS_PLUGIN=ON
     )
   # since we only need a release executable...
   set(BUILD_CONFIGS Release)
   configure_file(${PRO_DIR}/use/usexp-clangformat-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(llvm "${XP_DEPS}" "${XP_CONFIGURE}" llvmTgt NO_INSTALL BUILD_TARGET clang-format)
+  if(MSVC)
+    set(buildTgt clang_format_vsix)
+  else()
+    set(buildTgt clang-format)
+  endif()
+  xpCmakeBuild(llvm "${XP_DEPS}" "${XP_CONFIGURE}" llvmTgt NO_INSTALL BUILD_TARGET ${buildTgt})
   ExternalProject_Get_Property(${llvmTgt} BINARY_DIR)
   ExternalProject_Add(clangformat_install DEPENDS ${llvmTgt}
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
