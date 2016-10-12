@@ -146,74 +146,112 @@ index babc42f..579993b 100644
      wxMenu           *m_listMenu;   // popup menu in listctrl
      wxMenu           *m_treeMenu;   // popup menu in treectrl
 diff --git a/include/wx/things/genergdi.h b/include/wx/things/genergdi.h
-index 4b9f74b..cc15512 100644
+index 4b9f74b..e97a8ad 100644
 --- a/include/wx/things/genergdi.h
 +++ b/include/wx/things/genergdi.h
-@@ -151,10 +151,18 @@ public:
+@@ -150,11 +150,11 @@ public:
+     wxGenericPen() : wxObject() {}
      wxGenericPen( const wxGenericPen &pen ) : wxObject() { Create(pen); }
      wxGenericPen( const wxPen &pen ) : wxObject() { Create(pen); }
-     wxGenericPen( const wxGenericColour &colour, int width = 1, int style = wxSOLID,
-+#if wxCHECK_VERSION(2,9,0)
+-    wxGenericPen( const wxGenericColour &colour, int width = 1, int style = wxSOLID,
+-                  int cap = wxCAP_ROUND, int join = wxJOIN_ROUND ) : wxObject()
++    wxGenericPen( const wxGenericColour &colour, int width = 1, wxPenStyle style = wxPENSTYLE_SOLID,
 +                  wxPenCap cap = wxCAP_ROUND, wxPenJoin join = wxJOIN_ROUND ) : wxObject()
-+#else
-                   int cap = wxCAP_ROUND, int join = wxJOIN_ROUND ) : wxObject()
-+#endif
          { Create(colour, width, style, cap, join); }
-     wxGenericPen( const wxColour &colour, int width = 1, int style = wxSOLID,
-+#if wxCHECK_VERSION(2,9,0)
+-    wxGenericPen( const wxColour &colour, int width = 1, int style = wxSOLID,
+-                  int cap = wxCAP_ROUND, int join = wxJOIN_ROUND ) : wxObject()
++    wxGenericPen( const wxColour &colour, int width = 1, wxPenStyle style = wxPENSTYLE_SOLID,
 +                  wxPenCap cap = wxCAP_ROUND, wxPenJoin join = wxJOIN_ROUND ) : wxObject()
-+#else
-                   int cap = wxCAP_ROUND, int join = wxJOIN_ROUND ) : wxObject()
-+#endif
          { Create(colour, width, style, cap, join); }
  
      virtual ~wxGenericPen() {}
-@@ -168,10 +176,17 @@ public:
+@@ -168,10 +168,10 @@ public:
      //    Use these to detach this pen from it's refed copies.
      void Create( const wxGenericPen &pen );
      void Create( const wxPen &pen );
-+#if wxCHECK_VERSION(2,9,0)
-+    void Create( const wxGenericColour &colour, int width = 1, int style = wxSOLID,
+-    void Create( const wxGenericColour &colour, int width = 1, int style = wxSOLID,
+-                int cap = wxCAP_ROUND, int join = wxJOIN_ROUND );
+-    void Create( const wxColour &colour, int width = 1, int style = wxSOLID,
+-                int cap = wxCAP_ROUND, int join = wxJOIN_ROUND );
++    void Create( const wxGenericColour &colour, int width = 1, wxPenStyle style = wxPENSTYLE_SOLID,
 +                wxPenCap cap = wxCAP_ROUND, wxPenJoin join = wxJOIN_ROUND );
-+    void Create( const wxColour &colour, int width = 1, int style = wxSOLID,
++    void Create( const wxColour &colour, int width = 1, wxPenStyle style = wxPENSTYLE_SOLID,
 +                wxPenCap cap = wxCAP_ROUND, wxPenJoin join = wxJOIN_ROUND );
-+#else
-     void Create( const wxGenericColour &colour, int width = 1, int style = wxSOLID,
-                 int cap = wxCAP_ROUND, int join = wxJOIN_ROUND );
-     void Create( const wxColour &colour, int width = 1, int style = wxSOLID,
-                 int cap = wxCAP_ROUND, int join = wxJOIN_ROUND );
-+#endif
  
      // -----------------------------------------------------------------------
      // Set the values of the refed data.
-@@ -181,8 +196,13 @@ public:
+@@ -181,9 +181,9 @@ public:
      void SetColour( const wxGenericColour &colour );
      void SetColour( const wxColour &colour );
      void SetColour( int red, int green, int blue, int alpha=255 );
-+#if wxCHECK_VERSION(2,9,0)
+-    void SetCap( int capStyle );
+-    void SetJoin( int joinStyle );
+-    void SetStyle( int style );
 +    void SetCap( wxPenCap capStyle );
 +    void SetJoin( wxPenJoin joinStyle );
-+#else
-     void SetCap( int capStyle );
-     void SetJoin( int joinStyle );
-+#endif
-     void SetStyle( int style );
++    void SetStyle( wxPenStyle style );
      void SetWidth( int width );
      void SetDashes( int number_of_dashes, const wxDash *dash );
-@@ -195,8 +215,13 @@ public:
+ 
+@@ -194,9 +194,9 @@ public:
+     wxGenericColour GetGenericColour() const;
      wxColour GetColour() const;
      int GetWidth() const;
-     int GetStyle() const;
-+#if wxCHECK_VERSION(2,9,0)
+-    int GetStyle() const;
+-    int GetCap() const;
+-    int GetJoin() const;
++    wxPenStyle GetStyle() const;
 +    wxPenCap GetCap() const;
 +    wxPenJoin GetJoin() const;
-+#else
-     int GetCap() const;
-     int GetJoin() const;
-+#endif
      int GetDashes(wxDash **ptr) const;
      int GetDashCount() const;
      wxDash* GetDash() const;
+@@ -243,9 +243,9 @@ public:
+     wxGenericBrush() : wxObject() {}
+     wxGenericBrush( const wxGenericBrush &brush ) : wxObject() { Create(brush); }
+     wxGenericBrush( const wxBrush &brush ) : wxObject() { Create(brush); }
+-    wxGenericBrush( const wxGenericColour &colour, int style = wxSOLID)
++    wxGenericBrush( const wxGenericColour &colour, wxBrushStyle style = wxBRUSHSTYLE_SOLID)
+         : wxObject() { Create(colour, style); }
+-    wxGenericBrush( const wxColour &colour, int style = wxSOLID)
++    wxGenericBrush( const wxColour &colour, wxBrushStyle style = wxBRUSHSTYLE_SOLID)
+         : wxObject() { Create(colour, style); }
+     wxGenericBrush( const wxBitmap& stipple ) : wxObject() { Create(stipple); }
+ 
+@@ -260,8 +260,8 @@ public:
+     //    Use these to detach this pen from it's refed copies.
+     void Create( const wxGenericBrush &brush );
+     void Create( const wxBrush &brush );
+-    void Create( const wxGenericColour &colour, int style = wxSOLID );
+-    void Create( const wxColour &colour, int style = wxSOLID );
++    void Create( const wxGenericColour &colour, wxBrushStyle style = wxBRUSHSTYLE_SOLID );
++    void Create( const wxColour &colour, wxBrushStyle style = wxBRUSHSTYLE_SOLID );
+     void Create( const wxBitmap &stipple );
+ 
+     // -----------------------------------------------------------------------
+@@ -272,7 +272,7 @@ public:
+     void SetColour( const wxGenericColour &colour );
+     void SetColour( const wxColour &colour );
+     void SetColour( int red, int green, int blue, int alpha=255 );
+-    void SetStyle( int style );
++    void SetStyle( wxBrushStyle style );
+     void SetStipple( const wxBitmap& stipple );
+ 
+     // -----------------------------------------------------------------------
+@@ -281,11 +281,11 @@ public:
+ 
+     wxGenericColour GetGenericColour() const;
+     wxColour GetColour() const;
+-    int GetStyle() const;
++    wxBrushStyle GetStyle() const;
+     wxBitmap* GetStipple() const;
+ 
+     bool IsHatch() const
+-        { return (GetStyle()>=wxFIRST_HATCH) && (GetStyle()<=wxLAST_HATCH); }
++        { return (GetStyle()>=wxBRUSHSTYLE_FIRST_HATCH) && (GetStyle()<=wxBRUSHSTYLE_LAST_HATCH); }
+ 
+     // -----------------------------------------------------------------------
+     // Equivalency tests
 diff --git a/include/wx/things/toggle.h b/include/wx/things/toggle.h
 index 3dcfc1e..a0cad60 100644
 --- a/include/wx/things/toggle.h
@@ -246,7 +284,7 @@ index 19f1638..e7ce995 100644
  // use this to check to see if there is any overlap after minimizing
  //#define CHECK_BLOCK_OVERLAP 1
 diff --git a/src/bmpcombo.cpp b/src/bmpcombo.cpp
-index 5b3f031..7f947a4 100644
+index 5b3f031..635aa49 100644
 --- a/src/bmpcombo.cpp
 +++ b/src/bmpcombo.cpp
 @@ -9,6 +9,7 @@
@@ -257,6 +295,15 @@ index 5b3f031..7f947a4 100644
  #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
      #pragma implementation "bmpcombo.h"
  #endif
+@@ -202,7 +203,7 @@ void wxBitmapComboLabel::OnPaint( wxPaintEvent &WXUNUSED(event) )
+     dc.SetFont(m_bmpCombo->GetFont());
+     //dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxSOLID));
+     //dc.Clear();
+-    dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxSOLID));
++    dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxBRUSHSTYLE_SOLID));
+     dc.SetPen(*wxTRANSPARENT_PEN);
+     dc.DrawRectangle(wxRect(wxPoint(0,0), GetClientSize()));
+ 
 @@ -577,3 +578,5 @@ bool wxBitmapComboBox::SetBackgroundColour(const wxColour &colour)
      }
      return DropDownBase::SetBackgroundColour(colour);
@@ -379,7 +426,7 @@ index f984875..0b45689 100644
                  // not necessary in MSW
                  int ext = 0; //dialog.GetSize().GetWidth() - dialog.GetClientSize().GetWidth();
 diff --git a/src/genergdi.cpp b/src/genergdi.cpp
-index 3f74e05..17c14d8 100644
+index 3f74e05..f72ceaf 100644
 --- a/src/genergdi.cpp
 +++ b/src/genergdi.cpp
 @@ -22,6 +22,9 @@
@@ -392,112 +439,166 @@ index 3f74e05..17c14d8 100644
  const wxGenericColour wxNullGenericColour;
  const wxGenericPen    wxNullGenericPen;
  const wxGenericBrush  wxNullGenericBrush;
-@@ -261,8 +264,13 @@ IMPLEMENT_DYNAMIC_CLASS(wxGenericPen, wxObject)
+@@ -261,8 +264,8 @@ IMPLEMENT_DYNAMIC_CLASS(wxGenericPen, wxObject)
  class wxGenericPenRefData : public wxObjectRefData
  {
  public:
-+#if wxCHECK_VERSION(2,9,0)
-+    wxGenericPenRefData(int width = 1, int style = wxSOLID,
+-    wxGenericPenRefData(int width = 1, int style = wxSOLID,
+-                        int cap = wxCAP_ROUND, int join = wxJOIN_ROUND)
++    wxGenericPenRefData(int width = 1, wxPenStyle style = wxPENSTYLE_SOLID,
 +                        wxPenCap cap = wxCAP_ROUND, wxPenJoin join = wxJOIN_ROUND)
-+#else
-     wxGenericPenRefData(int width = 1, int style = wxSOLID,
-                         int cap = wxCAP_ROUND, int join = wxJOIN_ROUND)
-+#endif
            : wxObjectRefData(), m_width(width), m_style(style),
                                 m_cap(cap), m_join(join),
                                 m_dash_count(0), m_dash(NULL) {}
-@@ -284,8 +292,13 @@ public:
+@@ -283,9 +286,9 @@ public:
+ 
      wxGenericColour m_colour;
      int m_width;
-     int m_style;
-+#if wxCHECK_VERSION(2,9,0)
+-    int m_style;
+-    int m_cap;
+-    int m_join;
++    wxPenStyle m_style;
 +    wxPenCap m_cap;
 +    wxPenJoin m_join;
-+#else
-     int m_cap;
-     int m_join;
-+#endif
  
      int m_dash_count; // don't arbitrarily adjust these!
      wxDash *m_dash;
-@@ -314,14 +327,22 @@ void wxGenericPen::Create( const wxPen &pen )
+@@ -313,15 +316,15 @@ void wxGenericPen::Create( const wxPen &pen )
+     m_refData = new wxGenericPenRefData;
      Set(pen);
  }
- void wxGenericPen::Create(const wxGenericColour &colour, int width, int style,
-+#if wxCHECK_VERSION(2,9,0)
+-void wxGenericPen::Create(const wxGenericColour &colour, int width, int style,
+-                          int cap, int join )
++void wxGenericPen::Create(const wxGenericColour &colour, int width, wxPenStyle style,
 +                          wxPenCap cap, wxPenJoin join )
-+#else
-                           int cap, int join )
-+#endif
  {
      UnRef();
      m_refData = new wxGenericPenRefData(width, style, cap, join);
      M_GPENDATA->m_colour = colour;
  }
- void wxGenericPen::Create(const wxColour &colour, int width, int style,
-+#if wxCHECK_VERSION(2,9,0)
+-void wxGenericPen::Create(const wxColour &colour, int width, int style,
+-                          int cap, int join )
++void wxGenericPen::Create(const wxColour &colour, int width, wxPenStyle style,
 +                          wxPenCap cap, wxPenJoin join)
-+#else
-                           int cap, int join )
-+#endif
  {
      Create(wxGenericColour(colour), width, style, cap, join);
  }
-@@ -367,6 +388,18 @@ void wxGenericPen::SetColour( int red, int green, int blue, int alpha )
+@@ -367,17 +370,17 @@ void wxGenericPen::SetColour( int red, int green, int blue, int alpha )
  {
      SetColour(wxGenericColour(red, green, blue, alpha));
  }
-+#if wxCHECK_VERSION(2,9,0)
+-void wxGenericPen::SetCap( int capStyle )
 +void wxGenericPen::SetCap( wxPenCap capStyle )
-+{
-+    wxCHECK_RET(Ok(), wxT("Invalid generic pen"));
-+    M_GPENDATA->m_cap = capStyle;
-+}
-+void wxGenericPen::SetJoin( wxPenJoin joinStyle )
-+{
-+    wxCHECK_RET(Ok(), wxT("Invalid generic pen"));
-+    M_GPENDATA->m_join = joinStyle;
-+}
-+#else
- void wxGenericPen::SetCap( int capStyle )
  {
      wxCHECK_RET(Ok(), wxT("Invalid generic pen"));
-@@ -377,6 +410,7 @@ void wxGenericPen::SetJoin( int joinStyle )
+     M_GPENDATA->m_cap = capStyle;
+ }
+-void wxGenericPen::SetJoin( int joinStyle )
++void wxGenericPen::SetJoin( wxPenJoin joinStyle )
+ {
      wxCHECK_RET(Ok(), wxT("Invalid generic pen"));
      M_GPENDATA->m_join = joinStyle;
  }
-+#endif
- void wxGenericPen::SetStyle( int style )
+-void wxGenericPen::SetStyle( int style )
++void wxGenericPen::SetStyle( wxPenStyle style )
  {
      wxCHECK_RET(Ok(), wxT("Invalid generic pen"));
-@@ -444,6 +478,18 @@ int wxGenericPen::GetStyle() const
-     wxCHECK_MSG(Ok(), wxSOLID, wxT("Invalid generic pen"));
+     M_GPENDATA->m_style = style;
+@@ -439,17 +442,17 @@ int wxGenericPen::GetWidth() const
+     wxCHECK_MSG(Ok(), 1, wxT("Invalid generic pen"));
+     return M_GPENDATA->m_width;
+ }
+-int wxGenericPen::GetStyle() const
++wxPenStyle wxGenericPen::GetStyle() const
+ {
+-    wxCHECK_MSG(Ok(), wxSOLID, wxT("Invalid generic pen"));
++    wxCHECK_MSG(Ok(), wxPENSTYLE_SOLID, wxT("Invalid generic pen"));
      return M_GPENDATA->m_style;
  }
-+#if wxCHECK_VERSION(2,9,0)
+-int wxGenericPen::GetCap() const
 +wxPenCap wxGenericPen::GetCap() const
-+{
-+    wxCHECK_MSG(Ok(), wxCAP_ROUND, wxT("Invalid generic pen"));
-+    return M_GPENDATA->m_cap;
-+}
-+wxPenJoin wxGenericPen::GetJoin() const
-+{
-+    wxCHECK_MSG(Ok(), wxJOIN_ROUND, wxT("Invalid generic pen"));
-+    return M_GPENDATA->m_join;
-+}
-+#else
- int wxGenericPen::GetCap() const
  {
      wxCHECK_MSG(Ok(), wxCAP_ROUND, wxT("Invalid generic pen"));
-@@ -454,6 +500,7 @@ int wxGenericPen::GetJoin() const
+     return M_GPENDATA->m_cap;
+ }
+-int wxGenericPen::GetJoin() const
++wxPenJoin wxGenericPen::GetJoin() const
+ {
      wxCHECK_MSG(Ok(), wxJOIN_ROUND, wxT("Invalid generic pen"));
      return M_GPENDATA->m_join;
- }
-+#endif
- int wxGenericPen::GetDashes(wxDash **ptr) const
+@@ -567,7 +570,7 @@ class wxGenericBrushRefData : public wxObjectRefData
  {
-     wxCHECK_MSG(Ok(), 0, wxT("Invalid generic pen"));
-@@ -701,7 +748,7 @@ bool wxGenericBrush::IsSameAs(const wxGenericBrush& brush) const
+ public:
+     wxGenericBrushRefData(const wxGenericColour& c = wxNullGenericColour,
+-                          int style = wxSOLID) : wxObjectRefData(),
++                          wxBrushStyle style = wxBRUSHSTYLE_SOLID) : wxObjectRefData(),
+                           m_colour(c), m_style(style) {}
+ 
+     wxGenericBrushRefData(const wxGenericBrushRefData& data) : wxObjectRefData(),
+@@ -576,7 +579,7 @@ public:
+     ~wxGenericBrushRefData() { }
+ 
+     wxGenericColour m_colour;
+-    int             m_style;
++    wxBrushStyle    m_style;
+     wxBitmap        m_stipple;
+ };
+ 
+@@ -602,12 +605,12 @@ void wxGenericBrush::Create( const wxBrush &brush )
+     m_refData = new wxGenericBrushRefData;
+     Set(brush);
+ }
+-void wxGenericBrush::Create(const wxGenericColour &colour, int style)
++void wxGenericBrush::Create(const wxGenericColour &colour, wxBrushStyle style)
+ {
+     UnRef();
+     m_refData = new wxGenericBrushRefData(colour, style);
+ }
+-void wxGenericBrush::Create(const wxColour &colour, int style)
++void wxGenericBrush::Create(const wxColour &colour, wxBrushStyle style)
+ {
+     Create(wxGenericColour(colour), style);
+ }
+@@ -616,7 +619,7 @@ void wxGenericBrush::Create( const wxBitmap &stipple )
+     UnRef();
+     wxCHECK_RET(stipple.Ok(), wxT("Invalid bitmap in wxGenericBrush::Create"));
+ 
+-    int style = stipple.GetMask() ? wxSTIPPLE_MASK_OPAQUE : wxSTIPPLE;
++    wxBrushStyle style = stipple.GetMask() ? wxBRUSHSTYLE_STIPPLE_MASK_OPAQUE : wxBRUSHSTYLE_STIPPLE;
+     m_refData = new wxGenericBrushRefData(wxNullGenericColour, style);
+     M_GBRUSHDATA->m_stipple = stipple;
+ }
+@@ -652,7 +655,7 @@ void wxGenericBrush::SetColour( int red, int green, int blue, int alpha )
+ {
+     SetColour(wxGenericColour(red, green, blue, alpha));
+ }
+-void wxGenericBrush::SetStyle( int style )
++void wxGenericBrush::SetStyle( wxBrushStyle style )
+ {
+     wxCHECK_RET(Ok(), wxT("Invalid generic brush"));
+     M_GBRUSHDATA->m_style = style;
+@@ -661,7 +664,7 @@ void wxGenericBrush::SetStipple(const wxBitmap& stipple)
+ {
+     wxCHECK_RET(Ok(), wxT("Invalid generic brush"));
+     M_GBRUSHDATA->m_stipple = stipple;
+-    M_GBRUSHDATA->m_style = stipple.GetMask() ? wxSTIPPLE_MASK_OPAQUE : wxSTIPPLE;
++    M_GBRUSHDATA->m_style = stipple.GetMask() ? wxBRUSHSTYLE_STIPPLE_MASK_OPAQUE : wxBRUSHSTYLE_STIPPLE;
+ 
+ }
+ 
+@@ -684,9 +687,9 @@ wxColour wxGenericBrush::GetColour() const
+     wxCHECK_MSG(Ok(), wxNullColour, wxT("Invalid generic brush"));
+     return M_GBRUSHDATA->m_colour.GetColour();
+ }
+-int wxGenericBrush::GetStyle() const
++wxBrushStyle wxGenericBrush::GetStyle() const
+ {
+-    wxCHECK_MSG(Ok(), wxSOLID, wxT("Invalid generic brush"));
++    wxCHECK_MSG(Ok(), wxBRUSHSTYLE_SOLID, wxT("Invalid generic brush"));
+     return M_GBRUSHDATA->m_style;
+ }
+ wxBitmap* wxGenericBrush::GetStipple() const
+@@ -701,7 +704,7 @@ bool wxGenericBrush::IsSameAs(const wxGenericBrush& brush) const
      wxGenericBrushRefData *bData = (wxGenericBrushRefData*)brush.GetRefData();
      return (M_GBRUSHDATA->m_colour  == bData->m_colour) &&
             (M_GBRUSHDATA->m_style   == bData->m_style) &&
@@ -615,7 +716,7 @@ index 214d80c..e23999e 100644
              if (m_textCtrl && m_textCtrl->IsModified()) SyncSpinToText(false);
              SetValue( m_value - m_increment * 10.0 * modifier );
 diff --git a/src/toggle.cpp b/src/toggle.cpp
-index 9765308..49f15fb 100644
+index 9765308..41dd56b 100644
 --- a/src/toggle.cpp
 +++ b/src/toggle.cpp
 @@ -60,6 +60,7 @@ void wxCustomButton::Init()
@@ -686,6 +787,15 @@ index 9765308..49f15fb 100644
      int w, h;
      GetSize(&w,&h);
  
+@@ -412,7 +421,7 @@ void wxCustomButton::Paint( wxDC &dc )
+         foreColour = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
+     }
+ 
+-    wxBrush brush(backColour, wxSOLID);
++    wxBrush brush(backColour, wxBRUSHSTYLE_SOLID);
+     dc.SetBackground(brush);
+     dc.SetBrush(brush);
+     dc.SetPen(*wxTRANSPARENT_PEN);
 @@ -452,7 +461,6 @@ void wxCustomButton::Paint( wxDC &dc )
      dc.SetBackground(wxNullBrush);
      dc.SetBrush(wxNullBrush);

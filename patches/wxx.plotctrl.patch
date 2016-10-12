@@ -173,7 +173,7 @@ index 08142c9..7ca8f93 100644
  
  #include "wx/plotctrl/lm_lsqr.h"
 diff --git a/src/plotctrl.cpp b/src/plotctrl.cpp
-index a8beb1c..520ab70 100644
+index a8beb1c..dbb5003 100644
 --- a/src/plotctrl.cpp
 +++ b/src/plotctrl.cpp
 @@ -32,6 +32,7 @@
@@ -219,6 +219,15 @@ index a8beb1c..520ab70 100644
      }
  
      m_xAxisDrawer->SetTickFont(axisFont);
+@@ -643,7 +654,7 @@ void wxPlotCtrl::DrawActiveBitmap( wxDC* dc )
+         int top  = m_yAxisScrollbar->GetRect().GetBottom();
+         wxRect rect(left, top, size.x - left, size.y - top);
+         // clear background
+-        dc->SetBrush(wxBrush(GetBackgroundColour(), wxSOLID));
++        dc->SetBrush(wxBrush(GetBackgroundColour(), wxBRUSHSTYLE_SOLID));
+         dc->SetPen(*wxTRANSPARENT_PEN);
+         dc->DrawRectangle(rect);
+         // center the bitmap
 @@ -691,7 +702,7 @@ void wxPlotCtrl::SetPlotWinMouseCursor(int cursorid)
  {
      if (cursorid == m_mouse_cursorid) return;
@@ -265,7 +274,27 @@ index a8beb1c..520ab70 100644
  }
  
  void wxPlotCtrl::OnSize( wxSizeEvent& )
-@@ -2566,7 +2577,11 @@ void wxPlotCtrl::DrawMouseMarker( wxDC *dc, int type, const wxRect &rect )
+@@ -2514,8 +2525,8 @@ void wxPlotCtrl::DrawAreaWindow( wxDC *dc, const wxRect &rect )
+ 
+     dc->SetClippingRegion(refreshRect);
+ 
+-    dc->SetBrush( wxBrush(GetBackgroundColour(), wxSOLID) );
+-    dc->SetPen( wxPen(GetBorderColour(), m_area_border_width, wxSOLID) );
++    dc->SetBrush( wxBrush(GetBackgroundColour(), wxBRUSHSTYLE_SOLID) );
++    dc->SetPen( wxPen(GetBorderColour(), m_area_border_width, wxPENSTYLE_SOLID) );
+     dc->DrawRectangle(clientRect);
+ 
+     DrawTickMarks( dc, refreshRect );
+@@ -2552,7 +2563,7 @@ void wxPlotCtrl::DrawAreaWindow( wxDC *dc, const wxRect &rect )
+ 
+     // refresh border
+     dc->SetBrush( *wxTRANSPARENT_BRUSH );
+-    dc->SetPen( wxPen(GetBorderColour(), m_area_border_width, wxSOLID) );
++    dc->SetPen( wxPen(GetBorderColour(), m_area_border_width, wxPENSTYLE_SOLID) );
+     dc->DrawRectangle(clientRect);
+ 
+     dc->SetPen( wxNullPen );
+@@ -2566,10 +2577,14 @@ void wxPlotCtrl::DrawMouseMarker( wxDC *dc, int type, const wxRect &rect )
      if ((rect.width == 0) || (rect.height == 0))
          return;
  
@@ -276,7 +305,11 @@ index a8beb1c..520ab70 100644
 +#endif
      dc->SetLogicalFunction( wxINVERT );
      dc->SetBrush( *wxTRANSPARENT_BRUSH );
-     dc->SetPen(*wxThePenList->FindOrCreatePen(*wxBLACK, 1, wxDOT));
+-    dc->SetPen(*wxThePenList->FindOrCreatePen(*wxBLACK, 1, wxDOT));
++    dc->SetPen(*wxThePenList->FindOrCreatePen(*wxBLACK, 1, wxPENSTYLE_DOT));
+ 
+     switch (type)
+     {
 @@ -2614,7 +2629,11 @@ void wxPlotCtrl::DrawCrosshairCursor( wxDC *dc, const wxPoint &pos )
      wxCHECK_RET(dc, wxT("invalid window"));
  
@@ -289,6 +322,15 @@ index a8beb1c..520ab70 100644
      dc->SetLogicalFunction( wxINVERT );
  
      dc->CrossHair(pos.x, pos.y);
+@@ -2746,7 +2765,7 @@ void wxPlotCtrl::DrawCurveCursor( wxDC *dc )
+ void wxPlotCtrl::DrawTickMarks( wxDC *dc, const wxRect& rect )
+ {
+     wxRect clientRect(GetPlotAreaRect());
+-    dc->SetPen( wxPen(GetGridColour(), 1, wxSOLID) );
++    dc->SetPen( wxPen(GetGridColour(), 1, wxPENSTYLE_SOLID) );
+ 
+     int xtick_length = GetDrawGrid() ? clientRect.height : 10;
+     int ytick_length = GetDrawGrid() ? clientRect.width  : 10;
 @@ -3330,7 +3349,7 @@ void wxPlotCtrl::ProcessAreaEVT_MOUSE_EVENTS( wxMouseEvent &event )
          // Move the origin
          if (m_area_mouse_func == wxPLOTCTRL_MOUSE_PAN)
@@ -318,9 +360,22 @@ index a8beb1c..520ab70 100644
          // Center the plot on the cursor point, or 0,0
          case WXK_HOME :
 diff --git a/src/plotcurv.cpp b/src/plotcurv.cpp
-index 9f72820..5c31384 100644
+index 9f72820..790e6df 100644
 --- a/src/plotcurv.cpp
 +++ b/src/plotcurv.cpp
+@@ -107,9 +107,9 @@ void InitPlotCurveDefaultPens()
+     if (!s_init_default_pens)
+     {
+         s_init_default_pens = true;
+-        wxPlotCurveRefData::sm_defaultPens.Add(wxGenericPen( wxGenericColour(  0, 0,   0), 1, wxSOLID ));
+-        wxPlotCurveRefData::sm_defaultPens.Add(wxGenericPen( wxGenericColour(  0, 0, 255), 1, wxSOLID ));
+-        wxPlotCurveRefData::sm_defaultPens.Add(wxGenericPen( wxGenericColour(255, 0,   0), 1, wxSOLID ));
++        wxPlotCurveRefData::sm_defaultPens.Add(wxGenericPen( wxGenericColour(  0, 0,   0), 1, wxPENSTYLE_SOLID ));
++        wxPlotCurveRefData::sm_defaultPens.Add(wxGenericPen( wxGenericColour(  0, 0, 255), 1, wxPENSTYLE_SOLID ));
++        wxPlotCurveRefData::sm_defaultPens.Add(wxGenericPen( wxGenericColour(255, 0,   0), 1, wxPENSTYLE_SOLID ));
+     }
+ }
+ 
 @@ -236,7 +236,17 @@ int wxPlotCurve::SetOption(const wxString& name, const wxString& value, bool upd
      int n = M_PLOTCURVEDATA->m_optionNames.Index(name);
      if (n == wxNOT_FOUND)
@@ -414,7 +469,7 @@ index f452eed..a595f89 100644
      wxBitmap b(width, height);
  
 diff --git a/src/plotdraw.cpp b/src/plotdraw.cpp
-index 1cf748c..54b17eb 100644
+index 1cf748c..4d1d32c 100644
 --- a/src/plotdraw.cpp
 +++ b/src/plotdraw.cpp
 @@ -23,6 +23,7 @@
@@ -468,6 +523,17 @@ index 1cf748c..54b17eb 100644
  
      // inline void wxPLOTCTRL_DRAW_LINE(wxDC *dc, GdkWindow *win, GdkGC *pen, int x0, int y0, int x1, int y1)
      #define wxPLOTCTRL_DRAW_LINE(dc, win, pen, x0, y0, x1, y1) \
+@@ -486,8 +509,8 @@ wxPlotDrawerAxisBase::wxPlotDrawerAxisBase(wxPlotCtrl* owner)
+     m_tickColour  = wxGenericColour(0,0,0);
+     m_labelColour = wxGenericColour(0,0,0);
+ 
+-    m_tickPen         = wxGenericPen(m_tickColour, wxSOLID);
+-    m_backgroundBrush = wxGenericBrush(wxGenericColour(255,255,255), wxSOLID);
++    m_tickPen         = wxGenericPen(m_tickColour, wxPENSTYLE_SOLID);
++    m_backgroundBrush = wxGenericBrush(wxGenericColour(255,255,255), wxBRUSHSTYLE_SOLID);
+ }
+ 
+ //-----------------------------------------------------------------------------
 @@ -495,7 +518,7 @@ wxPlotDrawerAxisBase::wxPlotDrawerAxisBase(wxPlotCtrl* owner)
  //-----------------------------------------------------------------------------
  IMPLEMENT_ABSTRACT_CLASS(wxPlotDrawerArea, wxPlotDrawerBase)
