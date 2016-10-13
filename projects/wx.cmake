@@ -6,14 +6,14 @@ function(build_wx)
     # TODO: detect package required to build on rhel6:
     #   yum install libSM-devel.x86_64
     find_package(PkgConfig)
-    pkg_check_modules(GTK gtk+-2.0)
+    pkg_check_modules(GTK gtk+-3.0)
     if(GTK_FOUND)
       file(APPEND ${XP_INFOFILE} "gtk version: ${GTK_VERSION}\n")
     else()
       message(AUTHOR_WARNING "\n"
         "gtk development not found -- wxWidgets can't be built. install on linux:\n"
-        "  apt install libgtk2.0-dev\n"
-        "  yum install gtk2-devel.x86_64\n"
+        "  apt install libgtk-3-dev\n"
+        "  yum install gtk3-devel.x86_64\n"
         )
     endif()
     find_package(OpenGL)
@@ -61,7 +61,7 @@ function(build_wxv)
         list(APPEND XP_CONFIGURE_BASE --with-macosx-sdk=${sdkPath})
       endif()
     else()
-      set(XP_CONFIGURE_BASE <SOURCE_DIR>/configure --with-gtk=2)
+      set(XP_CONFIGURE_BASE <SOURCE_DIR>/configure --with-gtk=3)
     endif()
     if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
       list(APPEND XP_CONFIGURE_BASE CXX=clang++)

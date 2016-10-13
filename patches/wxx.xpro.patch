@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..bff5f9b
+index 0000000..d89db45
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,117 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(wxx)
 +include(flags OPTIONAL)
@@ -56,13 +56,10 @@ index 0000000..bff5f9b
 +  # GTK
 +  if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 +    find_package(PkgConfig)
-+    pkg_check_modules(GTK REQUIRED gtk+-2.0) # gtk+-3.0
++    pkg_check_modules(GTK REQUIRED gtk+-3.0)
 +    if(GTK_FOUND)
 +      include_directories(${GTK_INCLUDE_DIRS})
 +    endif()
-+    # wxplotctrl plotdraw.cpp needs to include wx/gtk/dcclient.h
-+    # NOTE: it may only be gtk+-2.0 that needs this include path
-+    include_directories(${WX_SOURCE}/include)
 +  endif() # NOT Darwin
 +elseif(MSVC)
 +  set(wxbasename wxxmsw)

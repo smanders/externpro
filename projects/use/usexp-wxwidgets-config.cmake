@@ -58,19 +58,14 @@ if(UNIX)
     message(STATUS "wxWidgets version: ${wxver}")
   endif()
   ############################
-  # GTK2
+  # GTK
   if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
-    if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
-      set(GTK2_ADDITIONAL_SUFFIXES x86_64-linux-gnu/glib-2.0)
-    endif()
     find_package(PkgConfig)
-    pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
-    if(GTK2_FOUND)
-      list(APPEND ${PRJ}_INCLUDE_DIR ${GTK2_INCLUDE_DIRS})
-    else()
-      message(SEND_ERROR "GTK2 not found")
+    pkg_check_modules(GTK REQUIRED gtk+-3.0)
+    if(GTK_FOUND)
+      list(APPEND ${PRJ}_INCLUDE_DIR ${GTK_INCLUDE_DIRS})
     endif()
-  endif()
+  endif() # NOT Darwin
 elseif(MSVC)
   add_definitions(-DwxUSE_NO_MANIFEST)
   list(APPEND ${PRJ}_INCLUDE_DIR
