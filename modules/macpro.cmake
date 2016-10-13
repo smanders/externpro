@@ -272,14 +272,15 @@ macro(proSetStageDir) # NOTE: called by cmake-generated pro_build.cmake file
       endif()
       set(GIT_REV ${PREFIX}${GIT_DESCRIBE}${PARTIAL}-${COMPILER}-${BUILD_PLATFORM})
       set(STAGE_DIR ${STAGE_DIR}_${GIT_REV})
-      file(WRITE ${STAGE_DIR}/${INSTALL_NAME}_${GIT_REV}.txt "${GIT_REV}\n")
+      set(XP_INFOFILE ${STAGE_DIR}/${INSTALL_NAME}_${GIT_REV}.txt)
+      file(WRITE ${XP_INFOFILE} "${GIT_REV}\n")
       execute_process(COMMAND uname -a
         OUTPUT_VARIABLE sysinfo
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_VARIABLE unameErr
         )
       if(NOT unameErr)
-        file(APPEND ${STAGE_DIR}/${INSTALL_NAME}_${GIT_REV}.txt "${sysinfo}\n")
+        file(APPEND ${XP_INFOFILE} "${sysinfo}\n")
       endif()
     endif()
   endif()
