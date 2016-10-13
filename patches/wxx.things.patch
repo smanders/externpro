@@ -375,7 +375,7 @@ index 6450cb8..d4743af 100644
  }
 +#endif // NOT __WXMAC__
 diff --git a/src/filebrws.cpp b/src/filebrws.cpp
-index f984875..0b45689 100644
+index f984875..d37000d 100644
 --- a/src/filebrws.cpp
 +++ b/src/filebrws.cpp
 @@ -353,7 +353,12 @@ int CopyDir(const wxString& fromDir, const wxString& toDir)
@@ -416,7 +416,19 @@ index f984875..0b45689 100644
      m_fileCtrl->Show(true);
      m_fileCtrl->GoToDir(m_path);
  
-@@ -2165,7 +2176,7 @@ void wxFileBrowser::OnListMenu(wxCommandEvent &event)
+@@ -1040,7 +1051,11 @@ void wxFileBrowser::OnSize( wxSizeEvent &event )
+         GtkWidget  *widget = GTK_WIDGET(win->m_widget);
+         //gtk_widget_set_usize(widget, size.x, size.y); this is deprecated use below
+         gtk_widget_set_size_request(widget, size.x, size.y);
++#ifdef __WXGTK3__
++        if (gtk_widget_get_visible(widget))
++#else
+         if (GTK_WIDGET_VISIBLE(widget))
++#endif
+             gtk_widget_queue_resize(widget);
+     }
+ #endif //__WXGTK__
+@@ -2165,7 +2180,7 @@ void wxFileBrowser::OnListMenu(wxCommandEvent &event)
                                  wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
  
                  wxScrolledWindow *scrWin = new wxScrolledWindow(&dialog, -1);

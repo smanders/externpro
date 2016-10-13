@@ -81,19 +81,17 @@ index 0000000..637a5be
 +install(FILES ${plot_hdrs} DESTINATION include/${wxinc}/wx/plotctrl)
 +install(EXPORT ${PROJECT_NAME}${WX_VER}-targets DESTINATION lib/cmake)
 diff --git a/include/wx/plotctrl/plotctrl.h b/include/wx/plotctrl/plotctrl.h
-index 26f3afb..595c211 100644
+index 26f3afb..30a701d 100644
 --- a/include/wx/plotctrl/plotctrl.h
 +++ b/include/wx/plotctrl/plotctrl.h
-@@ -23,6 +23,9 @@
+@@ -22,6 +22,7 @@
+ #include "wx/plotctrl/plotmark.h"
  #include "wx/plotctrl/plotfunc.h"
  #include "wx/things/range.h"
++#include "wx/window.h"
  
-+//This line added by SC@SDL on 10/8/07 for Solaris build:
-+#include <wx/window.h>
-+
  class WXDLLEXPORT wxDC;
  class WXDLLEXPORT wxNotifyEvent;
- class WXDLLEXPORT wxPaintEvent;
 diff --git a/include/wx/plotctrl/plotcurv.h b/include/wx/plotctrl/plotcurv.h
 index 6b8c9d5..73ca1a1 100644
 --- a/include/wx/plotctrl/plotcurv.h
@@ -156,24 +154,8 @@ index 8b72bb4..63a8fa0 100644
  }
  
  unsigned ReverseBits ( unsigned index, unsigned NumBits )
-diff --git a/src/lm_lsqr.cpp b/src/lm_lsqr.cpp
-index 08142c9..7ca8f93 100644
---- a/src/lm_lsqr.cpp
-+++ b/src/lm_lsqr.cpp
-@@ -24,6 +24,11 @@
-     #include "wx/log.h"
- #endif // WX_PRECOMP
- 
-+//These 3 lines added by SC@SDL on 10/8/07 for wxplotctrl Solaris build:
-+#if defined(__sun__)
-+#include <ieeefp.h>
-+#endif
-+
- #include "wx/math.h"
- 
- #include "wx/plotctrl/lm_lsqr.h"
 diff --git a/src/plotctrl.cpp b/src/plotctrl.cpp
-index a8beb1c..dbb5003 100644
+index a8beb1c..7586fce 100644
 --- a/src/plotctrl.cpp
 +++ b/src/plotctrl.cpp
 @@ -32,6 +32,7 @@
@@ -184,19 +166,7 @@ index a8beb1c..dbb5003 100644
  #include "wx/splitter.h"
  #include "wx/math.h"
  #include "wx/image.h"
-@@ -39,6 +40,11 @@
- #include "wx/plotctrl/plotctrl.h"
- #include "wx/plotctrl/plotdraw.h"
- 
-+//These 3 lines added by SC@SDL on 10/8/07 for wxplotctrl Solaris build:
-+#if defined(__sun__)
-+#include <ieeefp.h>
-+#endif
-+
- #include <math.h>
- #include <float.h>
- #include <limits.h>
-@@ -298,7 +304,7 @@ void wxPlotCtrlArea::OnPaint( wxPaintEvent &WXUNUSED(event) )
+@@ -298,7 +299,7 @@ void wxPlotCtrlArea::OnPaint( wxPaintEvent &WXUNUSED(event) )
      if (m_bitmap.Ok())
          dc.DrawBitmap(m_bitmap, 0, 0, false);
  
@@ -205,7 +175,7 @@ index a8beb1c..dbb5003 100644
          m_owner->DrawCrosshairCursor( &dc, m_mousePt );
  
      m_owner->DrawMouseMarker(&dc, m_owner->GetAreaMouseMarker(), m_mouseRect);
-@@ -576,8 +582,13 @@ bool wxPlotCtrl::Create( wxWindow *parent, wxWindowID win_id,
+@@ -576,8 +577,13 @@ bool wxPlotCtrl::Create( wxWindow *parent, wxWindowID win_id,
      {
          m_axisFontSize.x = 6;
          m_axisFontSize.y = 12;
@@ -219,7 +189,7 @@ index a8beb1c..dbb5003 100644
      }
  
      m_xAxisDrawer->SetTickFont(axisFont);
-@@ -643,7 +654,7 @@ void wxPlotCtrl::DrawActiveBitmap( wxDC* dc )
+@@ -643,7 +649,7 @@ void wxPlotCtrl::DrawActiveBitmap( wxDC* dc )
          int top  = m_yAxisScrollbar->GetRect().GetBottom();
          wxRect rect(left, top, size.x - left, size.y - top);
          // clear background
@@ -228,7 +198,7 @@ index a8beb1c..dbb5003 100644
          dc->SetPen(*wxTRANSPARENT_PEN);
          dc->DrawRectangle(rect);
          // center the bitmap
-@@ -691,7 +702,7 @@ void wxPlotCtrl::SetPlotWinMouseCursor(int cursorid)
+@@ -691,7 +697,7 @@ void wxPlotCtrl::SetPlotWinMouseCursor(int cursorid)
  {
      if (cursorid == m_mouse_cursorid) return;
      m_mouse_cursorid = cursorid;
@@ -237,7 +207,7 @@ index a8beb1c..dbb5003 100644
  }
  
  void wxPlotCtrl::OnMouse( wxMouseEvent &event )
-@@ -705,9 +716,9 @@ void wxPlotCtrl::OnMouse( wxMouseEvent &event )
+@@ -705,9 +711,9 @@ void wxPlotCtrl::OnMouse( wxMouseEvent &event )
      wxSize size(GetClientSize());
      wxPoint mousePt(event.GetPosition());
  
@@ -250,7 +220,7 @@ index a8beb1c..dbb5003 100644
      {
          SetPlotWinMouseCursor(wxCURSOR_IBEAM);
      }
-@@ -716,11 +727,11 @@ void wxPlotCtrl::OnMouse( wxMouseEvent &event )
+@@ -716,11 +722,11 @@ void wxPlotCtrl::OnMouse( wxMouseEvent &event )
  
      if (event.ButtonDClick(1) && !IsTextCtrlShown())
      {
@@ -265,7 +235,7 @@ index a8beb1c..dbb5003 100644
              ShowTextCtrl(wxPLOTCTRL_EDIT_YAXIS, true);
      }
  }
-@@ -2274,7 +2285,7 @@ void wxPlotCtrl::SetAreaMouseCursor(int cursorid)
+@@ -2274,7 +2280,7 @@ void wxPlotCtrl::SetAreaMouseCursor(int cursorid)
      else if (cursorid == CURSOR_GRAB)
          m_area->SetCursor(s_grabCursor);
      else
@@ -274,7 +244,7 @@ index a8beb1c..dbb5003 100644
  }
  
  void wxPlotCtrl::OnSize( wxSizeEvent& )
-@@ -2514,8 +2525,8 @@ void wxPlotCtrl::DrawAreaWindow( wxDC *dc, const wxRect &rect )
+@@ -2514,8 +2520,8 @@ void wxPlotCtrl::DrawAreaWindow( wxDC *dc, const wxRect &rect )
  
      dc->SetClippingRegion(refreshRect);
  
@@ -285,7 +255,7 @@ index a8beb1c..dbb5003 100644
      dc->DrawRectangle(clientRect);
  
      DrawTickMarks( dc, refreshRect );
-@@ -2552,7 +2563,7 @@ void wxPlotCtrl::DrawAreaWindow( wxDC *dc, const wxRect &rect )
+@@ -2552,7 +2558,7 @@ void wxPlotCtrl::DrawAreaWindow( wxDC *dc, const wxRect &rect )
  
      // refresh border
      dc->SetBrush( *wxTRANSPARENT_BRUSH );
@@ -294,7 +264,7 @@ index a8beb1c..dbb5003 100644
      dc->DrawRectangle(clientRect);
  
      dc->SetPen( wxNullPen );
-@@ -2566,10 +2577,14 @@ void wxPlotCtrl::DrawMouseMarker( wxDC *dc, int type, const wxRect &rect )
+@@ -2566,10 +2572,14 @@ void wxPlotCtrl::DrawMouseMarker( wxDC *dc, int type, const wxRect &rect )
      if ((rect.width == 0) || (rect.height == 0))
          return;
  
@@ -310,7 +280,7 @@ index a8beb1c..dbb5003 100644
  
      switch (type)
      {
-@@ -2614,7 +2629,11 @@ void wxPlotCtrl::DrawCrosshairCursor( wxDC *dc, const wxPoint &pos )
+@@ -2614,7 +2624,11 @@ void wxPlotCtrl::DrawCrosshairCursor( wxDC *dc, const wxPoint &pos )
      wxCHECK_RET(dc, wxT("invalid window"));
  
      dc->SetPen(*wxBLACK_PEN);
@@ -322,7 +292,7 @@ index a8beb1c..dbb5003 100644
      dc->SetLogicalFunction( wxINVERT );
  
      dc->CrossHair(pos.x, pos.y);
-@@ -2746,7 +2765,7 @@ void wxPlotCtrl::DrawCurveCursor( wxDC *dc )
+@@ -2746,7 +2760,7 @@ void wxPlotCtrl::DrawCurveCursor( wxDC *dc )
  void wxPlotCtrl::DrawTickMarks( wxDC *dc, const wxRect& rect )
  {
      wxRect clientRect(GetPlotAreaRect());
@@ -331,7 +301,7 @@ index a8beb1c..dbb5003 100644
  
      int xtick_length = GetDrawGrid() ? clientRect.height : 10;
      int ytick_length = GetDrawGrid() ? clientRect.width  : 10;
-@@ -3330,7 +3349,7 @@ void wxPlotCtrl::ProcessAreaEVT_MOUSE_EVENTS( wxMouseEvent &event )
+@@ -3330,7 +3344,7 @@ void wxPlotCtrl::ProcessAreaEVT_MOUSE_EVENTS( wxMouseEvent &event )
          // Move the origin
          if (m_area_mouse_func == wxPLOTCTRL_MOUSE_PAN)
          {
@@ -340,7 +310,7 @@ index a8beb1c..dbb5003 100644
              {
                  StartMouseTimer(ID_AREA_TIMER);
              }
-@@ -3514,12 +3533,12 @@ void wxPlotCtrl::OnChar(wxKeyEvent &event)
+@@ -3514,12 +3528,12 @@ void wxPlotCtrl::OnChar(wxKeyEvent &event)
      switch (event.GetKeyCode())
      {
          // cursor keys moves the plot origin around
@@ -395,22 +365,10 @@ index 9f72820..790e6df 100644
      }
      else if (update)
 diff --git a/src/plotdata.cpp b/src/plotdata.cpp
-index f452eed..a595f89 100644
+index f452eed..37a4e86 100644
 --- a/src/plotdata.cpp
 +++ b/src/plotdata.cpp
-@@ -37,6 +37,11 @@
- #include "wx/things/range.h"
- #include <math.h>
- 
-+//These 3 lines added by SC@SDL on 10/8/07 for wxplotctrl Solaris build:
-+#if defined(__sun__)
-+#include <ieeefp.h>
-+#endif
-+
- #define wxPLOTDATA_MAX_DATA_COLUMNS 64
- 
- #define CHECK_INDEX_COUNT_MSG(index, count, max_count, ret) \
-@@ -774,9 +779,15 @@ bool wxPlotData::LoadFile( const wxString &filename, int x_col, int y_col, int o
+@@ -774,9 +774,15 @@ bool wxPlotData::LoadFile( const wxString &filename, int x_col, int y_col, int o
                  while (select_cols && !stop_load )
                  {
                      wxString colStr = wxGetTextFromUser(
@@ -426,7 +384,7 @@ index f452eed..a595f89 100644
                                               wxT("Enter two columns of data file to use"));
  
                      if (colStr.IsEmpty())
-@@ -805,8 +816,9 @@ bool wxPlotData::LoadFile( const wxString &filename, int x_col, int y_col, int o
+@@ -805,8 +811,9 @@ bool wxPlotData::LoadFile( const wxString &filename, int x_col, int y_col, int o
                              }
                              else
                              {
@@ -437,7 +395,7 @@ index f452eed..a595f89 100644
                                      wxT("Invalid data columns"), wxOK|wxCANCEL|wxICON_ERROR);
                                  if (ret == wxCANCEL)
                                      stop_load = true;
-@@ -836,11 +848,19 @@ bool wxPlotData::LoadFile( const wxString &filename, int x_col, int y_col, int o
+@@ -836,11 +843,19 @@ bool wxPlotData::LoadFile( const wxString &filename, int x_col, int y_col, int o
                  }
  
                  wxMessageBox(
@@ -457,7 +415,7 @@ index f452eed..a595f89 100644
                                           x_col, y_col, points, line_number, wxstr.Left(100).c_str()),
                                           wxT("Error loading ")+filename, wxOK|wxICON_ERROR);
                  stop_load = true;
-@@ -2906,8 +2926,8 @@ void wxPlotData::SetSymbol( wxPlotSymbol_Type type, wxPlotPen_Type colour_type,
+@@ -2906,8 +2921,8 @@ void wxPlotData::SetSymbol( wxPlotSymbol_Type type, wxPlotPen_Type colour_type,
      }
  }
  
@@ -469,7 +427,7 @@ index f452eed..a595f89 100644
      wxBitmap b(width, height);
  
 diff --git a/src/plotdraw.cpp b/src/plotdraw.cpp
-index 1cf748c..4d1d32c 100644
+index 1cf748c..7f320aa 100644
 --- a/src/plotdraw.cpp
 +++ b/src/plotdraw.cpp
 @@ -23,6 +23,7 @@
@@ -480,19 +438,17 @@ index 1cf748c..4d1d32c 100644
  #include "wx/math.h"
  
  #include "wx/plotctrl/plotdraw.h"
-@@ -36,6 +37,11 @@
- #include <float.h>
- #include <limits.h>
+@@ -54,11 +55,32 @@
+ // Consts
+ //-----------------------------------------------------------------------------
  
-+//These 3 lines added by SC@SDL on 10/8/07 for wxplotctrl Solaris build:
-+#if defined(__sun__)
-+#include <ieeefp.h>
++#ifdef __WXGTK3__
++#undef wxPLOTCTRL_FAST_GRAPHICS
++#define wxPLOTCTRL_FAST_GRAPHICS 0
 +#endif
 +
- // MSVC hogs global namespace with these min/max macros - remove them
- #ifdef max
-     #undef max
-@@ -59,6 +65,22 @@
+ #if defined(__WXGTK__) && wxPLOTCTRL_FAST_GRAPHICS
+ 
  extern "C" {
      #include <gdk/gdk.h>
  }
@@ -543,16 +499,3 @@ index 1cf748c..4d1d32c 100644
  {
  }
  
-diff --git a/src/plotfunc.cpp b/src/plotfunc.cpp
-index c7be906..ccc30de 100644
---- a/src/plotfunc.cpp
-+++ b/src/plotfunc.cpp
-@@ -21,6 +21,8 @@
- 
- #ifndef WX_PRECOMP
-     #include "wx/bitmap.h"
-+    //Next line added by SC@SDL on 10/8/07 for Solaris build:
-+    #include "wx/dataobj.h"
-     #include "wx/textdlg.h"
-     #include "wx/msgdlg.h"
-     #include "wx/dcmemory.h"
