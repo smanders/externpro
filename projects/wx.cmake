@@ -1,11 +1,30 @@
 # wx
-# * packages required to build on linux:
-# *   sudo apt install libgtk2.0-dev libglu1-mesa-dev [ubuntu]
-# *   sudo yum install gtk2-devel.x86_64 libSM-devel.x86_64 [rhel6]
-# *   sudo yum install mesa-libGL-devel.x86_64 mesa-libGLU-devel.x86_64 [rhel6]
 set(WX_VERSIONS 31)
 ########################################
 function(build_wx)
+  if(UNIX AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+    # TODO: detect package required to build on rhel6:
+    #   yum install libSM-devel.x86_64
+    find_package(PkgConfig)
+    pkg_check_modules(GTK gtk+-2.0)
+    if(GTK_FOUND)
+      file(APPEND ${XP_INFOFILE} "gtk version: ${GTK_VERSION}\n")
+    else()
+      message(AUTHOR_WARNING "\n"
+        "gtk development not found -- wxWidgets can't be built. install on linux:\n"
+        "  apt install libgtk2.0-dev\n"
+        "  yum install gtk2-devel.x86_64\n"
+        )
+    endif()
+    find_package(OpenGL)
+    if(NOT OPENGL_FOUND OR NOT OPENGL_GLU_FOUND)
+      message(AUTHOR_WARNING "\n"
+        "OpenGL or GLU not found -- wxWidgets can't be built. install on linux:\n"
+        "  apt install libglu1-mesa-dev\n"
+        "  yum install mesa-libGL-devel.x86_64 mesa-libGLU-devel.x86_64\n"
+        )
+    endif()
+  endif()
   configure_file(${PRO_DIR}/use/usexp-wxwidgets-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
