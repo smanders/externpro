@@ -1,30 +1,56 @@
 # wx
 set(WX_VERSIONS 31)
+if(UNIX AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+  set(GTK_VER_RECORDED FALSE CACHE BOOL "gtk version not recorded" FORCE)
+  set_property(CACHE GTK_VER_RECORDED PROPERTY TYPE INTERNAL)
+endif()
 ########################################
 function(build_wx)
   if(UNIX AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     # TODO: detect package required to build on rhel6:
     #   yum install libSM-devel.x86_64
     find_package(PkgConfig)
-    pkg_check_modules(GTK gtk+-3.0)
-    if(GTK_FOUND)
-      file(APPEND ${XP_INFOFILE} "gtk version: ${GTK_VERSION}\n")
-    else()
-      message(AUTHOR_WARNING "\n"
-        "gtk development not found -- wxWidgets can't be built. install on linux:\n"
-        "  apt install libgtk-3-dev\n"
-        "  yum install gtk3-devel.x86_64\n"
-        )
+    #####
+    # gtk
+    if(NOT GTK2_FOUND)
+      pkg_check_modules(GTK3 gtk+-3.0)
     endif()
+    if(GTK3_FOUND)
+      set(GTK_VER 3)
+      if(NOT GTK_VER_RECORDED)
+        file(APPEND ${XP_INFOFILE} "gtk3 version: ${GTK3_VERSION}\n")
+        set(GTK_VER_RECORDED TRUE CACHE BOOL "gtk version recorded" FORCE)
+      endif()
+    else()
+      pkg_check_modules(GTK2 gtk+-2.0)
+      if(GTK2_FOUND)
+        set(GTK_VER 2)
+        if(NOT GTK_VER_RECORDED)
+          file(APPEND ${XP_INFOFILE} "gtk2 version: ${GTK2_VERSION}\n")
+          set(GTK_VER_RECORDED TRUE CACHE BOOL "gtk version recorded" FORCE)
+        endif()
+      else()
+        message(FATAL_ERROR "\n"
+          "gtk development not found -- wxWidgets can't be built. install on linux:\n"
+          "  apt install libgtk2.0-dev or libgtk-3-dev\n"
+          "  yum install gtk2-devel.x86_64 or gtk3-devel.x86_64\n"
+          )
+      endif()
+    endif()
+    ########
+    # OpenGL
     find_package(OpenGL)
     if(NOT OPENGL_FOUND OR NOT OPENGL_GLU_FOUND)
-      message(AUTHOR_WARNING "\n"
+      message(FATAL_ERROR "\n"
         "OpenGL or GLU not found -- wxWidgets can't be built. install on linux:\n"
         "  apt install libglu1-mesa-dev\n"
         "  yum install mesa-libGL-devel.x86_64 mesa-libGLU-devel.x86_64\n"
         )
     endif()
+  else()
+    set(GTK_VER UNDEFINED)
   endif()
+  set(GTK_VER ${GTK_VER} PARENT_SCOPE)
   configure_file(${PRO_DIR}/use/usexp-wxwidgets-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -61,7 +87,7 @@ function(build_wxv)
         list(APPEND XP_CONFIGURE_BASE --with-macosx-sdk=${sdkPath})
       endif()
     else()
-      set(XP_CONFIGURE_BASE <SOURCE_DIR>/configure --with-gtk=3)
+      set(XP_CONFIGURE_BASE <SOURCE_DIR>/configure --with-gtk=${GTK_VER})
     endif()
     if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
       list(APPEND XP_CONFIGURE_BASE CXX=clang++)

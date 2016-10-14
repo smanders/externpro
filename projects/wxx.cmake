@@ -21,6 +21,7 @@ function(build_wxx)
   if(NOT (XP_DEFAULT OR XP_PRO_WXX))
     return()
   endif()
+  build_wx()
   foreach(ver ${WX_VERSIONS})
     build_wxxv(${ver})
   endforeach()
@@ -43,6 +44,7 @@ function(build_wxxv ver)
   set(XP_CONFIGURE
     -DWX_INCLUDE:PATH=${wxInc}
     -DWX_SOURCE:PATH=${wxSrc}
+    -DGTK_VER:STRING=${GTK_VER}
     )
   xpCmakeBuild(wxx "${XP_DEPS}" "${XP_CONFIGURE}" "" TGT ${ver})
 endfunction()

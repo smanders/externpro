@@ -98,6 +98,22 @@ index a8b4b5c..e46ad19 100644
  
      wxRect rect = GetClientRect();
      if ( !IsEnabled() )
+diff --git a/src/gtk/dataview.cpp b/src/gtk/dataview.cpp
+index 7b73d1a..2e11194 100644
+--- a/src/gtk/dataview.cpp
++++ b/src/gtk/dataview.cpp
+@@ -1471,7 +1471,11 @@ static GtkCellEditable *gtk_wx_cell_renderer_start_editing(
+     if (!cell->StartEditing(item, renderrect))
+         return NULL;
+ 
++#ifdef __WXGTK3__
+     wxrenderer->editor_bin = gtk_wx_cell_editor_bin_new(cell->GetEditorCtrl());
++#else
++    wxrenderer->editor_bin = cell->GetEditorCtrl()->m_widget;
++#endif
+     gtk_widget_show(wxrenderer->editor_bin);
+ 
+     return GTK_CELL_EDITABLE(wxrenderer->editor_bin);
 diff --git a/src/msw/statbmp.cpp b/src/msw/statbmp.cpp
 index bea1ddd..1ba0bb7 100644
 --- a/src/msw/statbmp.cpp

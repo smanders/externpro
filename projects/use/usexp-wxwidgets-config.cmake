@@ -61,7 +61,7 @@ if(UNIX)
   # GTK
   if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     find_package(PkgConfig)
-    pkg_check_modules(GTK REQUIRED gtk+-3.0)
+    pkg_check_modules(GTK REQUIRED gtk+-@GTK_VER@.0)
     if(GTK_FOUND)
       list(APPEND ${PRJ}_INCLUDE_DIR ${GTK_INCLUDE_DIRS})
     endif()
