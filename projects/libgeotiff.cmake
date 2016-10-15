@@ -29,6 +29,7 @@ function(build_libgeotiff)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBGEOTIFF))
     return()
   endif()
+  build_wx() # determine gtk version
   set(wxver 31) # specify the wx version to build libgeotiff against
   if(NOT (XP_DEFAULT OR XP_PRO_WX${wxver}))
     message(STATUS "libgeotiff.cmake: requires wx${wxver}")

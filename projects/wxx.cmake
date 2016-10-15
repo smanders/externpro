@@ -21,7 +21,7 @@ function(build_wxx)
   if(NOT (XP_DEFAULT OR XP_PRO_WXX))
     return()
   endif()
-  build_wx()
+  build_wx() # determine gtk version
   foreach(ver ${WX_VERSIONS})
     build_wxxv(${ver})
   endforeach()
