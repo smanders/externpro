@@ -851,44 +851,42 @@ macro(xpSourceListAppend)
     set(masterSrcList "${masterSrcList}" PARENT_SCOPE)
   else()
     list(REMOVE_DUPLICATES masterSrcList)
-    ####
-    xpGitIgnoredDirs(ignoredDirs ${CMAKE_SOURCE_DIR} .git/)
-    xpGitUntrackedFiles(untrackedFiles ${CMAKE_SOURCE_DIR})
-    file(GLOB topdir ${_dir}/*)
-    xpListAppendTrailingSlash(topdir ${topdir})
-    list(REMOVE_ITEM topdir ${ignoredDirs} ${untrackedFiles})
-    list(SORT topdir) # sort list in-place alphabetically
-    foreach(item ${topdir})
-      xpGlobFiles(repoFiles ${item} *)
-      xpGlobFiles(fmtFiles ${item} *.c *.h *.cpp *.hpp *.cu *.cuh *.proto)
-    endforeach()
-    list(REMOVE_ITEM repoFiles ${masterSrcList})
-    if(repoFiles)
-      string(REPLACE ";" "\n" repoFiles "${repoFiles}")
-      file(WRITE ${CMAKE_BINARY_DIR}/notincmake.txt ${repoFiles}\n)
-      list(APPEND masterSrcList ${CMAKE_BINARY_DIR}/notincmake.txt)
-    endif()
-    ####
-    # Windows can't handle passing very many files to clang-format
-    # and Solaris/SunOS can't build clang-format
-    if(NOT MSVC AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL SunOS
-       AND fmtFiles AND NOT ${CMAKE_PROJECT_NAME} STREQUAL externpro)
-      # make paths relative to CMAKE_SOURCE_DIR
-      xpListRemoveFromAll(fmtFiles ${CMAKE_SOURCE_DIR} . ${fmtFiles})
-      list(LENGTH fmtFiles lenFmtFiles)
-      xpGetPkgVar(clangformat EXE)
-      add_custom_command(OUTPUT format_cmake
-        COMMAND ${CLANGFORMAT_EXE} -style=file -i ${fmtFiles}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Running clang-format on ${lenFmtFiles} files..."
-        )
-      string(REPLACE ";" "\n" fmtFiles "${fmtFiles}")
-      file(WRITE ${CMAKE_BINARY_DIR}/formatfiles.txt ${fmtFiles}\n)
-      add_custom_target(format SOURCES ${CMAKE_BINARY_DIR}/formatfiles.txt DEPENDS format_cmake)
-      list(APPEND masterSrcList ${CMAKE_BINARY_DIR}/formatfiles.txt)
-      set_property(TARGET format PROPERTY FOLDER CMakeTargets)
-    endif()
-    ####
+    if(EXISTS ${CMAKE_SOURCE_DIR}/.git)
+      xpGitIgnoredDirs(ignoredDirs ${CMAKE_SOURCE_DIR} .git/)
+      xpGitUntrackedFiles(untrackedFiles ${CMAKE_SOURCE_DIR})
+      file(GLOB topdir ${_dir}/*)
+      xpListAppendTrailingSlash(topdir ${topdir})
+      list(REMOVE_ITEM topdir ${ignoredDirs} ${untrackedFiles})
+      list(SORT topdir) # sort list in-place alphabetically
+      foreach(item ${topdir})
+        xpGlobFiles(repoFiles ${item} *)
+        xpGlobFiles(fmtFiles ${item} *.c *.h *.cpp *.hpp *.cu *.cuh *.proto)
+      endforeach()
+      list(REMOVE_ITEM repoFiles ${masterSrcList})
+      if(repoFiles)
+        string(REPLACE ";" "\n" repoFiles "${repoFiles}")
+        file(WRITE ${CMAKE_BINARY_DIR}/notincmake.txt ${repoFiles}\n)
+        list(APPEND masterSrcList ${CMAKE_BINARY_DIR}/notincmake.txt)
+      endif()
+      ####
+      # Windows can't handle passing very many files to clang-format
+      if(NOT MSVC AND fmtFiles AND NOT ${CMAKE_PROJECT_NAME} STREQUAL externpro)
+        # make paths relative to CMAKE_SOURCE_DIR
+        xpListRemoveFromAll(fmtFiles ${CMAKE_SOURCE_DIR} . ${fmtFiles})
+        list(LENGTH fmtFiles lenFmtFiles)
+        xpGetPkgVar(clangformat EXE)
+        add_custom_command(OUTPUT format_cmake
+          COMMAND ${CLANGFORMAT_EXE} -style=file -i ${fmtFiles}
+          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+          COMMENT "Running clang-format on ${lenFmtFiles} files..."
+          )
+        string(REPLACE ";" "\n" fmtFiles "${fmtFiles}")
+        file(WRITE ${CMAKE_BINARY_DIR}/formatfiles.txt ${fmtFiles}\n)
+        add_custom_target(format SOURCES ${CMAKE_BINARY_DIR}/formatfiles.txt DEPENDS format_cmake)
+        list(APPEND masterSrcList ${CMAKE_BINARY_DIR}/formatfiles.txt)
+        set_property(TARGET format PROPERTY FOLDER CMakeTargets)
+      endif()
+    endif() # is a .git repo
     option(XP_CSCOPE "always update cscope database" OFF)
     if(XP_CSCOPE)
       file(GLOB cscope_files ${CMAKE_BINARY_DIR}/cscope.*)
