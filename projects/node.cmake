@@ -1,12 +1,9 @@
 # node
-set(NODE_VERSIONS v5)
-set(NODE_OLDVER v0)
-set(NODE_NEWVER v5)
+set(NODE_VERSIONS v5 v6)
+set(NODE_OLDVER v5)
+set(NODE_NEWVER v6)
 ####################
 function(build_node)
-  if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
-    return() # Solaris 10 requires too many patches and maintenance
-  endif()
   configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -81,12 +78,7 @@ function(build_node_ver ver)
     xpStringAppend(rmdirs test)
     xpStringAppend(rmdirs example)
     if(MSVC) # we only need to flatten these directories on Windows (installer issue)
-      if(${ver} STREQUAL v0)
-        xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/glob/${nm})
-        xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/path-array/${nm})
-        xpStringAppend(flatten ${npmDst}/${nm}/request/${nm}/form-data/${nm})
-        xpStringAppend(flatten ${npmDst}/${nm}/request/${nm}/har-validator/${nm})
-      elseif(${ver} STREQUAL v5)
+      if(${ver} STREQUAL v5)
         xpStringAppend(flatten ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm})
         xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/glob/${nm})
         xpStringAppend(flatten ${npmDst}/${nm}/read-package-json/${nm}/glob/${nm})
@@ -94,7 +86,7 @@ function(build_node_ver ver)
     endif()
     # copy npm to STAGE_DIR
     ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
-      COMMAND ${CMAKE_COMMAND} -E remove_directory ${npmDst} # for testing
+      COMMAND ${CMAKE_COMMAND} -E remove_directory ${npmDst} # for testing (start clean)
       COMMAND ${CMAKE_COMMAND} -E make_directory ${npmDst}
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmSrc} ${npmDst}
       DEPENDEES install
