@@ -1,7 +1,6 @@
 # RapidJSON
 xpProOption(rapidjson)
-set(VER 20140907) # date downloaded, no official releases or tags yet
-set(TAG d0f98d2da1e2e6345831dc1ab2c30950417e6490)
+set(VER 1.1.0)
 set(REPO https://github.com/miloyip/rapidjson)
 set(PRO_RAPIDJSON
   NAME rapidjson
@@ -11,10 +10,10 @@ set(PRO_RAPIDJSON
   REPO "repo" ${REPO} "rapidjson repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/miloyip/rapidjson.git
-  GIT_TAG ${TAG}
-  DLURL ${REPO}/archive/${TAG}.zip
-  DLMD5 e2c2f352a2de67f67bf74e4a8112d369
-  DLNAME rapidjson-${VER}.zip
+  GIT_TAG v${VER}
+  DLURL ${REPO}/archive/v${VER}.tar.gz
+  DLMD5 badd12c511e081fec6c89c43a7027bce
+  DLNAME rapidjson-${VER}.tar.gz
   )
 ########################################
 function(build_rapidjson)
