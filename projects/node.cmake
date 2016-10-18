@@ -64,7 +64,7 @@ function(build_node_ver ver)
   set(npmSrc ${SOURCE_DIR}/deps/npm)
   set(npmDst ${STAGE_DIR}/node${ver}/npm)
   set(npmExe ${STAGE_DIR}/node${ver}/bin/node ${npmDst}/bin/npm-cli.js)
-  set(XP_TARGET node${ver}_stage_hdrs)
+  set(XP_TARGET node${ver}_stage)
   if(NOT TARGET ${XP_TARGET})
     ExternalProject_Add(${XP_TARGET} DEPENDS ${node${ver}_DEPS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
@@ -75,30 +75,36 @@ function(build_node_ver ver)
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${v8Hdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
-    xpStringAppend(rmdirs test)
-    xpStringAppend(rmdirs example)
-    if(MSVC) # we only need to flatten these directories on Windows (installer issue)
-      if(${ver} STREQUAL v5)
-        xpStringAppend(flatten ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm})
-        xpStringAppend(flatten ${npmDst}/${nm}/node-gyp/${nm}/glob/${nm})
-        xpStringAppend(flatten ${npmDst}/${nm}/read-package-json/${nm}/glob/${nm})
-      endif()
-    endif()
-    # copy npm to STAGE_DIR
-    ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
+    ExternalProject_Add_Step(${XP_TARGET} copy_npm
       COMMAND ${CMAKE_COMMAND} -E remove_directory ${npmDst} # for testing (start clean)
       COMMAND ${CMAKE_COMMAND} -E make_directory ${npmDst}
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmSrc} ${npmDst}
       DEPENDEES install
       )
-    # dedupe
-    ExternalProject_Add_Step(${XP_TARGET} postpost_${XP_TARGET}
-      COMMAND ${npmExe} dedupe
-      COMMAND ${CMAKE_COMMAND} -Drmroot:STRING=${npmDst} -Drmdirs:STRING=${rmdirs}
-        -Ddirs:STRING=${flatten} -P ${MODULES_DIR}/cmsflatnode.cmake
-      WORKING_DIRECTORY ${npmDst}
-      DEPENDEES post_${XP_TARGET}
-      )
+    if(${ver} STREQUAL v5)
+      set(dedupeDirs
+        ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm}
+        ${npmDst}/${nm}/node-gyp/${nm}/glob/${nm}
+        ${npmDst}/${nm}/read-package-json/${nm}/glob/${nm}
+        )
+    elseif(${ver} STREQUAL v6)
+      set(dedupeDirs
+        ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm}
+        ${npmDst}/${nm}/read-package-json/${nm}/glob/${nm}
+        )
+    endif()
+    list(APPEND dedupeDirs ${npmDst})
+    list(LENGTH dedupeDirs numDirs)
+    set(dedupeDep copy_npm)
+    foreach(dir ${dedupeDirs})
+      ExternalProject_Add_Step(${XP_TARGET} dedupe_npm${numDirs}
+        COMMAND ${npmExe} dedupe
+        WORKING_DIRECTORY ${dir}
+        DEPENDEES ${dedupeDep}
+        )
+      set(dedupeDep dedupe_npm${numDirs})
+      math(EXPR numDirs "${numDirs}-1")
+    endforeach()
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
 endfunction()
@@ -115,6 +121,10 @@ macro(addproject_node basename cfg)
       message(STATUS "target ${XP_TARGET}")
     endif()
     if(MSVC)
+      # TRICKY: vcbuild doesn't seem to return a good exit status or something...
+      #   MSVC thinks it always needs to build this (after what appears to be a
+      #   successful build) -- and there can't be any external project steps
+      #   after the step with vcbuild or they won't execute
       ExternalProject_Add(${XP_TARGET}vcbuild DEPENDS ${node${ver}_DEPS}
         DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
         SOURCE_DIR ${nodeSrcDir} INSTALL_DIR ${NULL_DIR}
@@ -122,12 +132,12 @@ macro(addproject_node basename cfg)
         BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
         )
       set_property(TARGET ${XP_TARGET}vcbuild PROPERTY FOLDER ${bld_folder})
-      set(XP_CONFIGURE_CMD ${CMAKE_COMMAND} -E echo "Configure MSVC...")
+      list(APPEND node${ver}_DEPS ${XP_TARGET}vcbuild) # serialize the build
       set(binNode <SOURCE_DIR>/${cfg}/node.exe)
       set(libNode <SOURCE_DIR>/${cfg}/node.lib)
-      list(APPEND node${ver}_DEPS ${XP_TARGET}vcbuild) # serialize the build
-      set(XP_BUILD_CMD ${CMAKE_COMMAND} -E echo "Build MSVC...")
-      set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E echo "Install MSVC...")
+      set(XP_CONFIGURE_CMD ${CMAKE_COMMAND} -E echo "Configure MSVC...")
+      set(XP_BUILD_CMD ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node${ver}/lib)
+      set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E copy ${libNode} ${STAGE_DIR}/node${ver}/lib)
     elseif(UNIX)
       set(binNode <SOURCE_DIR>/out/${cfg}/node)
       set(XP_BUILD_CMD) # use the default ...
@@ -141,11 +151,9 @@ macro(addproject_node basename cfg)
       BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
       INSTALL_COMMAND ${XP_INSTALL_CMD}
       )
-    ExternalProject_Add_Step(${XP_TARGET} post_${XP_TARGET}
+    ExternalProject_Add_Step(${XP_TARGET} copy_bin
       COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node${ver}/bin
       COMMAND ${CMAKE_COMMAND} -E copy ${binNode} ${STAGE_DIR}/node${ver}/bin
-      COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${libNode}
-        -Ddst:STRING=${STAGE_DIR}/node${ver}/lib -P ${MODULES_DIR}/cmscopyfiles.cmake
       DEPENDEES install
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
