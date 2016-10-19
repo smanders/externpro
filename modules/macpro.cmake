@@ -210,7 +210,6 @@ macro(proExecuteStep) # NOTE: called by top-level CMakeLists.txt
   else()
     message(AUTHOR_WARNING "Invalid XP_STEP specified.")
   endif()
-  xpGenerateCscopeDb()
 endmacro()
 
 macro(proGetBuildLists) # NOTE: called by cmake-generated pro_[patch|build].cmake files

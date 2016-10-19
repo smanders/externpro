@@ -902,9 +902,6 @@ macro(xpSourceListAppend)
   endif()
 endmacro()
 
-function(xpGenerateCscopeDb) # TODO: remove
-endfunction()
-
 function(xpTouchFiles fileList)
   option(XP_TOUCH_FILES "touch files with known warnings" OFF)
   if(NOT XP_TOUCH_FILES)
