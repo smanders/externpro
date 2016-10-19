@@ -90,6 +90,7 @@ function(build_node_ver ver)
     elseif(${ver} STREQUAL v6)
       set(dedupeDirs
         ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm}
+        ${npmDst}/${nm}/node-gyp/${nm}/npmlog/${nm}
         ${npmDst}/${nm}/read-package-json/${nm}/glob/${nm}
         )
     endif()
