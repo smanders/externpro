@@ -151,29 +151,34 @@ macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
   list(SORT projects) # sort list in-place alphabetically
   foreach(proj ${projects})
     include(${proj})
-    get_filename_component(pro ${proj} NAME_WE)
+    # TRICKY: get_filename_component NAME_WE doesn't work as desired
+    # (ex: foo.js.cmake returns foo, not foo.js)
+    get_filename_component(pro ${proj} NAME)
+    string(REPLACE ".cmake" "" pro ${pro}) # name w/o .cmake extension
+    string(REPLACE "-" "_" cmd ${pro})
+    string(REPLACE "." "_" cmd ${cmd})
     string(TOUPPER ${pro} PRO)
     # mkpatch
-    if(COMMAND mkpatch_${pro})
-      file(APPEND ${stepMkpatch} "mkpatch_${pro}()\n")
+    if(COMMAND mkpatch_${cmd})
+      file(APPEND ${stepMkpatch} "mkpatch_${cmd}()\n")
     elseif(DEFINED PRO_${PRO})
       file(APPEND ${stepMkpatch} "xpCloneProject(\${PRO_${PRO}})\n")
     endif()
     # download
-    if(COMMAND download_${pro})
-      file(APPEND ${stepDownload} "download_${pro}()\n")
+    if(COMMAND download_${cmd})
+      file(APPEND ${stepDownload} "download_${cmd}()\n")
     elseif(DEFINED PRO_${PRO})
       file(APPEND ${stepDownload} "xpDownloadProject(\${PRO_${PRO}})\n")
     endif()
     # patch
-    if(COMMAND patch_${pro})
-      file(APPEND ${stepPatch} "patch_${pro}()\n")
+    if(COMMAND patch_${cmd})
+      file(APPEND ${stepPatch} "patch_${cmd}()\n")
     elseif(DEFINED PRO_${PRO})
       file(APPEND ${stepPatch} "xpPatchProject(\${PRO_${PRO}})\n")
     endif()
     # build
-    if(COMMAND build_${pro})
-      file(APPEND ${stepBuild} "build_${pro}()\n")
+    if(COMMAND build_${cmd})
+      file(APPEND ${stepBuild} "build_${cmd}()\n")
     endif()
     xpMarkdownReadmeAppend(${pro})
   endforeach()
