@@ -94,8 +94,8 @@ macro(addproject_fftw XP_TARGET)
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
     SOURCE_DIR ${SOURCE_DIR}
     CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
-    BUILD_COMMAND   # use default
-    INSTALL_COMMAND # use default
+    BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+    INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install
     )
   set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
 endmacro()

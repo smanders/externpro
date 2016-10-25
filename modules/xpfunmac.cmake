@@ -279,14 +279,14 @@ function(xpCmakeBuild XP_DEPENDS)
     if(DEFINED P_BUILD_TARGET)
       set(XP_BUILD_CMD ${CMAKE_COMMAND} --build <BINARY_DIR> --target ${P_BUILD_TARGET})
     else()
-      set(XP_BUILD_CMD) # use the default...
+      set(XP_BUILD_CMD ${CMAKE_MAKE_PROGRAM})
     endif()
     if(P_NO_INSTALL)
       set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E echo "No install")
     elseif(DEFINED P_BUILD_TARGET)
       set(XP_INSTALL_CMD ${XP_BUILD_CMD} --target install)
     else()
-      set(XP_INSTALL_CMD) # use the default...
+      set(XP_INSTALL_CMD ${CMAKE_MAKE_PROGRAM} install)
     endif()
     foreach(cfg ${BUILD_CONFIGS})
       set(XP_CONFIGURE_CMD

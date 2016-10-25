@@ -186,8 +186,8 @@ macro(addproject_wx basename cfg)
     ExternalProject_Add(${XP_TARGET} DEPENDS ${basename}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} SOURCE_DIR ${wxSOURCE_DIR}
       CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
-      BUILD_COMMAND   # use default (was ${CMAKE_BUILD_TOOL})
-      INSTALL_COMMAND # use default (was ${CMAKE_BUILD_TOOL} install)
+      BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+      INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install
       )
     ExternalProject_Add_Step(${XP_TARGET} postinstall_${XP_TARGET}
       COMMAND ${CMAKE_COMMAND} -E copy_directory
