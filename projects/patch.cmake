@@ -49,10 +49,9 @@ function(patch_patch)
       ExternalProject_Add(patch
         DOWNLOAD_DIR ${DWNLD_DIR}
         URL ${PRO_URL_GNUPATCH}  URL_MD5 ${PRO_MD5_GNUPATCH}
-        CONFIGURE_COMMAND ./configure --prefix=${patchbld_DIR}
-        BUILD_COMMAND ${CMAKE_BUILD_TOOL}
-        BUILD_IN_SOURCE 1  INSTALL_DIR ${patchbld_DIR}
-        #default INSTALL_COMMAND works...
+        CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix=${patchbld_DIR}
+        BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
+        INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install
         )
     endif()
     set_property(TARGET patch PROPERTY FOLDER ${src_folder})
@@ -73,5 +72,4 @@ function(build_patch)
     )
   set_property(TARGET patch_bld PROPERTY FOLDER ${bld_folder})
   message(STATUS "target patch_bld")
-  #endforeach()
 endfunction()
