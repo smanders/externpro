@@ -50,8 +50,8 @@ function(patch_patch)
         DOWNLOAD_DIR ${DWNLD_DIR}
         URL ${PRO_URL_GNUPATCH}  URL_MD5 ${PRO_MD5_GNUPATCH}
         CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix=${patchbld_DIR}
-        BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
-        INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install
+        BUILD_COMMAND   # use default
+        INSTALL_COMMAND # use default
         )
     endif()
     set_property(TARGET patch PROPERTY FOLDER ${src_folder})

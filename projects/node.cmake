@@ -141,8 +141,8 @@ macro(addproject_node basename cfg)
       set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E copy ${libNode} ${STAGE_DIR}/node${ver}/lib)
     elseif(UNIX)
       set(binNode <SOURCE_DIR>/out/${cfg}/node)
-      set(XP_BUILD_CMD ${CMAKE_MAKE_PROGRAM})
-      set(XP_INSTALL_CMD ${CMAKE_MAKE_PROGRAM} install)
+      set(XP_BUILD_CMD)   # use default
+      set(XP_INSTALL_CMD) # use default
     endif()
     ExternalProject_Add(${XP_TARGET} DEPENDS ${node${ver}_DEPS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
