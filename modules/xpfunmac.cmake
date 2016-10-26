@@ -7,7 +7,6 @@
 # functions create a local scope for variables, macros use the global scope
 
 set(xpThisDir ${CMAKE_CURRENT_LIST_DIR})
-include(CMakeParseArguments)
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
 
