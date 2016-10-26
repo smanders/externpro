@@ -156,8 +156,10 @@ function(xpDownloadProject)
 endfunction()
 
 function(xpPatch)
+  set(options NPM_INSTALL)
   set(oneValueArgs NAME PARENT SUBDIR PATCH PATCH_STRIP DLURL DLMD5 DLNAME)
-  cmake_parse_arguments(P "" "${oneValueArgs}" "" ${ARGN})
+  set(multiValueArgs NPM_FLAGS)
+  cmake_parse_arguments(P "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   string(TOLOWER ${P_NAME} prj)
   if(DEFINED P_PARENT)
     set(tgt ${P_PARENT}_${prj})
@@ -172,7 +174,16 @@ function(xpPatch)
   if(NOT DEFINED P_DLURL AND NOT DEFINED P_PATCH)
     return()
   endif()
-  if(DEFINED P_PATCH)
+  if(P_NPM_INSTALL)
+    # npm installs into the download directory (DWNLD_DIR)
+    # use for libraries that can be pulled directly through npm without
+    # the need for a patch
+    if(NOT DEFINED NODE_EXE OR NOT DEFINED NODE_NPM)
+      message(FATAL_ERROR "${P_NAME} with NPM_INSTALL doesn't have NODE_EXE or NODE_NPM defined")
+    endif()
+    list(APPEND P_NPM_FLAGS --no-bin-links --only=prod --legacy-bundling)
+    set(patchCmd ${NODE_EXE} ${NODE_NPM} install ${P_NPM_FLAGS})
+  elseif(DEFINED P_PATCH)
     if(COMMAND patch_patch)
       if(NOT TARGET patch)
         patch_patch()
@@ -219,6 +230,14 @@ function(xpPatch)
     UPDATE_COMMAND "" CONFIGURE_COMMAND "" BUILD_COMMAND "" INSTALL_COMMAND ""
     BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
     )
+  if(UNIX AND P_NPM_INSTALL) # ensure permissions are proper on unix
+    ExternalProject_Get_Property(${tgt} SOURCE_DIR)
+    ExternalProject_Add_Step(${tgt} ${tgt}_permissions
+      COMMAND chmod -R u+rwX,go+rX,go-w ${SOURCE_DIR} # 755 for directories 644 for files
+      DEPENDEES download # change permissions after files are downloaded
+      DEPENDERS patch # change permissions before npm install
+      )
+  endif()
   set_property(TARGET ${tgt} PROPERTY FOLDER ${src_folder})
 endfunction()
 
@@ -442,6 +461,34 @@ function(xpCmakePackage XP_TGTS)
   endforeach() # tgt
   if(ARGV1)
     set(${ARGV1} "${pkgTgts}" PARENT_SCOPE)
+  endif()
+endfunction()
+
+# npm installs downloaded repo to the download directory
+# use for libraries that are manually downloaded from the git repo and possibly
+# patched that still require an npm install (usually needed if there are
+# node_module dependencies)
+function(xpBuildNpmModule)
+  set(oneValueArgs NAME)
+  set(multiValueArgs NPM_FLAGS)
+  cmake_parse_arguments(P "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  string(TOLOWER ${P_NAME} prj)
+  string(TOUPPER ${P_NAME} PRJ)
+  if(TARGET ${prj}_bld)
+    return()
+  endif()
+  if(XP_DEFAULT OR XP_PRO_${PRJ})
+    list(APPEND P_NPM_FLAGS --no-bin-links --only=prod --legacy-bundling)
+    ExternalProject_Get_Property(${prj} SOURCE_DIR)
+    ExternalProject_Add(${prj}_bld DEPENDS ${prj}
+      DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
+      SOURCE_DIR ${SOURCE_DIR}
+      PATCH_COMMAND ${NODE_EXE} ${NODE_NPM} install ${P_NPM_FLAGS}
+      UPDATE_COMMAND "" CONFIGURE_COMMAND "" BUILD_COMMAND "" INSTALL_COMMAND ""
+      BINARY_DIR ${NULL_DIR}
+      INSTALL_DIR ${NULL_DIR}
+      )
+    set_property(TARGET ${prj}_bld PROPERTY FOLDER ${bld_folder})
   endif()
 endfunction()
 
