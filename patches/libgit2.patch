@@ -105,6 +105,19 @@ index 77a591f..4be2a69 100644
  
  # Tests
  IF (BUILD_CLAR)
+diff --git a/include/git2/common.h b/include/git2/common.h
+index d84a765..a8177dd 100644
+--- a/include/git2/common.h
++++ b/include/git2/common.h
+@@ -10,7 +10,7 @@
+ #include <time.h>
+ #include <stdlib.h>
+ 
+-#ifdef _MSC_VER
++#if defined(_MSC_VER) && _MSC_VER < 1800
+ #	include "inttypes.h"
+ #else
+ #	include <inttypes.h>
 diff --git a/src/win32/posix.h b/src/win32/posix.h
 index 104966e..9ac7843 100644
 --- a/src/win32/posix.h
