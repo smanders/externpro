@@ -1121,6 +1121,30 @@ function(xpGenerateResources iconPath generatedFiles)
     )
 endfunction()
 
+function(xpCreateHeaderResource _output) # .hrc
+  xpGetPkgVar(wxInclude EXE) # sets WXINCLUDE_EXE
+  foreach(in ${ARGN})
+    if(NOT IS_ABSOLUTE ${in})
+      get_filename_component(in ${CMAKE_CURRENT_SOURCE_DIR}/${in} ABSOLUTE)
+    endif()
+    if(EXISTS ${in})
+      get_filename_component(of ${in} NAME_WE)
+      get_filename_component(nm ${in} NAME)
+      get_filename_component(dr ${in} DIRECTORY)
+      set(op ${CMAKE_CURRENT_BINARY_DIR}/Resources/${of}.hrc)
+      add_custom_command(OUTPUT ${op}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/Resources
+        COMMAND $<TARGET_FILE:${WXINCLUDE_EXE}> --const --appendtype --wxnone --output-file=${op} ${nm}
+        WORKING_DIRECTORY ${dr} DEPENDS ${in}
+        )
+      list(APPEND outList ${op})
+    else()
+      message(FATAL_ERROR "resource not found: ${in}")
+    endif()
+  endforeach()
+  set(${_output} ${outList} PARENT_SCOPE)
+endfunction()
+
 function(xpGitCheckout url hash dir)
   if(NOT GIT_FOUND)
     include(FindGit)
