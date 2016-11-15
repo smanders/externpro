@@ -1134,7 +1134,7 @@ function(xpCreateHeaderResource _output) # .hrc
       set(op ${CMAKE_CURRENT_BINARY_DIR}/Resources/${of}.hrc)
       add_custom_command(OUTPUT ${op}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/Resources
-        COMMAND $<TARGET_FILE:${WXINCLUDE_EXE}> --const --appendtype --wxnone --output-file=${op} ${nm}
+        COMMAND $<TARGET_FILE:${WXINCLUDE_EXE}> --const --appendtype --wxnone --respectcase --output-file=${op} ${nm}
         WORKING_DIRECTORY ${dr} DEPENDS ${in}
         )
       list(APPEND outList ${op})
