@@ -4,6 +4,7 @@
 # http://gsoap.sourcearchive.com/
 xpProOption(gsoap)
 set(VER 2.7.17)
+string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1.\\2" VER2 ${VER})
 set(REPO https://github.com/smanders/gSOAP)
 set(PRO_GSOAP
   NAME gsoap
@@ -16,7 +17,7 @@ set(PRO_GSOAP
   GIT_UPSTREAM git://github.com/stoneyrh/gSOAP.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL http://downloads.sourceforge.net/project/gsoap2/gSOAP/gsoap_${VER}.zip
+  DLURL https://downloads.sourceforge.net/project/gsoap2/gsoap-${VER2}/gSOAP%20${VER}/gsoap_${VER}.zip
   DLMD5 6f58cabfc67b4d5eafd1a30057fc4343
   PATCH ${PATCH_DIR}/gsoap.patch
   DIFF ${REPO}/compare/smanders:
