@@ -1,5 +1,5 @@
 # node
-set(NODE_VERSIONS v5 v6)
+set(NODE_VERSIONS v6)
 set(NODE_OLDVER v5)
 set(NODE_NEWVER v6)
 ####################
@@ -81,13 +81,7 @@ function(build_node_ver ver)
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmSrc} ${npmDst}
       DEPENDEES install
       )
-    if(${ver} STREQUAL v5)
-      set(dedupeDirs
-        ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm}
-        ${npmDst}/${nm}/node-gyp/${nm}/glob/${nm}
-        ${npmDst}/${nm}/read-package-json/${nm}/glob/${nm}
-        )
-    elseif(${ver} STREQUAL v6)
+    if(${ver} STREQUAL v6)
       set(dedupeDirs
         ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm}
         ${npmDst}/${nm}/node-gyp/${nm}/npmlog/${nm}
