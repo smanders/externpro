@@ -29,6 +29,7 @@ if(NOT DEFINED wx_libs)
 endif()
 if(UNIX)
   set(wxWidgets_CONFIG_OPTIONS --prefix=${XP_ROOTDIR} --version=${wxVersion})
+  unset(_filename CACHE) # temp variable in FindwxWidgets.cmake script?
   unset(wxWidgets_CONFIG_EXECUTABLE CACHE)
   set(wxWidgets_CONFIG_EXECUTABLE ${XP_ROOTDIR}/bin/wx-config)
   find_package(wxWidgets REQUIRED ${wx_libs})
@@ -44,6 +45,7 @@ if(UNIX)
   endif()
   mark_as_advanced(wxWidgets_USE_DEBUG)
   mark_as_advanced(wxWidgets_wxrc_EXECUTABLE)
+  mark_as_advanced(_filename) # temp variable in FindwxWidgets.cmake script?
   list(APPEND ${PRJ}_INCLUDE_DIR ${wxWidgets_INCLUDE_DIRS})
   set(${PRJ}_LIBRARIES ${wxWidgets_LIBRARIES})
   execute_process(COMMAND sh "${wxWidgets_CONFIG_EXECUTABLE}" --prefix=${XP_ROOTDIR}
