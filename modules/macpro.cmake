@@ -314,7 +314,9 @@ macro(proSetCpackOpts) # NOTE: called by proExecuteStep
   else()
     set(CPACK_PACKAGE_VERSION "unknown-version")
   endif()
-  set(CPACK_PACKAGE_VENDOR "smanders")
+  if(NOT DEFINED CPACK_PACKAGE_VENDOR)
+    set(CPACK_PACKAGE_VENDOR "smanders")
+  endif()
   if(UNIX AND NOT DEFINED CPACK_GENERATOR)
     set(CPACK_GENERATOR STGZ) # STGZ = Self extracting Tar GZip compression
   endif()
