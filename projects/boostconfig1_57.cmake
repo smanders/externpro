@@ -1,8 +1,9 @@
 # boost config
 set(VER 1.57.0)
+string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" VER2_ ${VER}) # 1_57
 set(REPO https://github.com/smanders/config)
-set(PRO_BOOSTCONFIG
-  NAME boostconfig
+set(PRO_BOOSTCONFIG${VER2_}
+  NAME boostconfig${VER2_}
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/config
   WEB "config" http://boost.org/libs/config "boost config website"
@@ -15,7 +16,7 @@ set(PRO_BOOSTCONFIG
   GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}
-  PATCH ${PATCH_DIR}/boost.config.patch
+  PATCH ${PATCH_DIR}/boost.config.${VER2_}.patch
   PATCH_STRIP 2 # Strip NUM leading components from file names (defaults to 1)
   DIFF ${REPO}/compare/boostorg:
   )
