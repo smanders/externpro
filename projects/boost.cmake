@@ -3,9 +3,36 @@
 # * to build boost.python on Linux: need to install python dev pkgs
 # *   sudo apt install python-dev [ubuntu]
 # *   sudo yum install python-devel.x86_64 [rhel6]
+xpProOption(boost)
 set(BOOST_OLDVER 1.57.0)
 set(BOOST_NEWVER 1.63.0)
-set(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER})
+####################
+function(patch_boost)
+  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
+  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" nv ${BOOST_NEWVER})
+  if(NOT (XP_DEFAULT OR XP_PRO_BOOST OR XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
+    return()
+  endif()
+  if(XP_DEFAULT)
+    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER}) # edit this to set default version(s) to build
+  else()
+    if(XP_PRO_BOOST AND NOT (XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
+      set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
+      set(XP_PRO_BOOST${nv} ON CACHE BOOL "include boost${nv}" FORCE)
+    endif()
+    if(XP_PRO_BOOST${ov})
+      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER})
+    endif()
+    if(XP_PRO_BOOST${nv})
+      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_NEWVER})
+    endif()
+  endif()
+  foreach(ver ${BOOST_VERSIONS})
+    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ver2_ ${ver})
+    xpPatchProject(${PRO_BOOST${ver2_}})
+  endforeach()
+  set(BOOST_VERSIONS ${BOOST_VERSIONS} PARENT_SCOPE) # make BOOST_VERSIONS available to build_boost
+endfunction()
 ####################
 function(build_boost)
   string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
