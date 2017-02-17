@@ -36,14 +36,12 @@ function(build_wxinclude)
   set(oneValueArgs TARGETS EXE)
   cmake_parse_arguments(wxinc "" "${oneValueArgs}" "" ${ARGN})
   build_boost(TARGETS boostTgts)
-  xpGetArgValue(${PRO_BOOST} ARG VER VALUE boostVer)
-  set(XP_CONFIGURE -DBOOST_VER=${boostVer})
   # since we only need a release executable...
   xpBuildOnlyRelease()
   configure_file(${PRO_DIR}/use/usexp-wxinclude-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(wxinclude "${boostTgts}" "${XP_CONFIGURE}" wxincludeTargets)
+  xpCmakeBuild(wxinclude "${boostTgts}" "" wxincludeTargets)
   if(DEFINED wxinc_TARGETS)
     xpListAppendIfDne(${wxinc_TARGETS} "${wxincludeTargets}")
     set(${wxinc_TARGETS} "${${wxinc_TARGETS}}" PARENT_SCOPE)
