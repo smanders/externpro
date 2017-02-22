@@ -35,17 +35,21 @@ function(build_cmakexp)
     xpPatchProject(${PRO_OPENSSL})
   endif()
   build_openssl(osslTgts)
-  # check if Curses is installed so we can build ccmake
-  find_package(Curses QUIET)
-  if(NOT CURSES_FOUND)
-    message(AUTHOR_WARNING "\n"
-      "curses not found -- ccmake can't be built. install on linux:\n"
-      "  apt install libncurses5-dev\n"
-      "  yum install ncurses-devel\n"
-      )
-  else()
-    # TRICKY: this should be marked as advanced by FindCurses.cmake, but isn't as of v3.6.2
+  option(XP_BUILD_CCMAKE "build ccmake as part of cmakexp project" ON)
+  mark_as_advanced(XP_BUILD_CCMAKE)
+  if(XP_BUILD_CCMAKE)
+    # check if Curses is installed so we can build ccmake
+    find_package(Curses QUIET)
+    # TRICKY: this should be marked as advanced by FindCurses.cmake, but isn't as of v3.6.2 and 3.7.2
     mark_as_advanced(CURSES_FORM_LIBRARY)
+    if(NOT CURSES_FOUND)
+      message(FATAL_ERROR "\n"
+        "curses not found -- ccmake can't be built. install on linux:\n"
+        "  apt install libncurses5-dev\n"
+        "  yum install ncurses-devel\n"
+        "or set advanced cmake option XP_BUILD_CCMAKE=OFF\n"
+        )
+    endif()
   endif()
   # we only need a release version
   xpBuildOnlyRelease()
