@@ -32,5 +32,5 @@ function(build_fecpp)
   configure_file(${PRO_DIR}/use/usexp-fecpp-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(fecpp "${boostTgts}")
+  xpCmakeBuild(fecpp "${boostTgts}" "-DXP_USE_LATEST_BOOST=ON")
 endfunction()

@@ -41,7 +41,7 @@ function(build_wxinclude)
   configure_file(${PRO_DIR}/use/usexp-wxinclude-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(wxinclude "${boostTgts}" "" wxincludeTargets)
+  xpCmakeBuild(wxinclude "${boostTgts}" "-DXP_USE_LATEST_BOOST=ON" wxincludeTargets)
   if(DEFINED wxinc_TARGETS)
     xpListAppendIfDne(${wxinc_TARGETS} "${wxincludeTargets}")
     set(${wxinc_TARGETS} "${${wxinc_TARGETS}}" PARENT_SCOPE)
