@@ -3,12 +3,15 @@ set(prj boost)
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
-#option(XP_USE_LATEST_BOOST "build with boost 1.58.0 instead of 1.57.0" OFF)
-#if(XP_USE_LATEST_BOOST)
-#  set(BOOST_VER 1.58.0)
-#else()
-  set(BOOST_VER 1.57.0)
-#endif()
+#set(XP_USE_LATEST_BOOST OFF)
+if(NOT DEFINED XP_USE_LATEST_BOOST)
+  option(XP_USE_LATEST_BOOST "build with boost @BOOST_NEWVER@ instead of @BOOST_OLDVER@" OFF)
+endif()
+if(XP_USE_LATEST_BOOST)
+  set(BOOST_VER @BOOST_NEWVER@)
+else()
+  set(BOOST_VER @BOOST_OLDVER@)
+endif()
 if(NOT DEFINED Boost_LIBS)
   set(Boost_LIBS # dependency order
     log_setup # depends on log, regex, filesystem, thread, system (m, pthread)
@@ -16,8 +19,11 @@ if(NOT DEFINED Boost_LIBS)
     coroutine # depends on thread, context (m)
     log # depends on filesystem, thread, system (rt, pthread, m)
     timer # depends on chrono (m)
+    #type_erasure # depends on thread, system (pthread, m) NEW with @BOOST_NEWVER@
+    #wave # depends on thread, system (pthread, m) # NOTE: not a default
     ######
     chrono # depends on system (rt, pthread, m)
+    #fiber # depends on context (pthread, m) NEW with @BOOST_NEWVER@
     filesystem # depends on system (pthread, m)
     graph # depends on regex (m)
     random # depends on system (pthread, m)
@@ -25,24 +31,27 @@ if(NOT DEFINED Boost_LIBS)
     wserialization # depends on serialization (m)
     ######
     atomic
-    container # depends on (pthread)
-    context
-    date_time # depends on (m)
+    container # depends on (pthread, m)
+    context # depends on (pthread, m)
+    date_time # depends on (pthread, m)
     exception
     iostreams # depends on (z, bz2, pthread, m)
-    program_options # depends on (m)
+    #math_c99 # depends on (pthread, m) # NOTE: not a default
+    #math_c99f # depends on (pthread, m) # NOTE: not a default
+    #math_c99l # depends on (pthread, m) # NOTE: not a default
+    #math_tr1 # depends on (pthread, m) # NOTE: not a default
+    #math_tr1f # depends on (pthread, m) # NOTE: not a default
+    #math_tr1l # depends on (pthread, m) # NOTE: not a default
+    #prg_exec_monitor # depends on (pthread, m) # NOTE: not a default
+    program_options # depends on (pthread, m)
+    python # depends on (pthread, m)
     regex # depends on (pthread, m)
-    serialization # depends on (m)
-    signals # depends on (m)
-    system # depends on (m)
+    serialization # depends on (pthread, m)
+    signals # depends on (pthread, m)
+    system # depends on (pthread, m)
     test_exec_monitor
     unit_test_framework # depends on (pthread, m)
     )
-  if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
-    list(APPEND Boost_LIBS
-      python # depends on (m)
-    )
-  endif()
   # NOTE: determined boost library dependency order by building boost on linux
   # with link=shared and runtime-link=shared and using ldd
 endif()

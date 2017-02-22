@@ -4,25 +4,40 @@
 # *   sudo apt install python-dev [ubuntu]
 # *   sudo yum install python-devel.x86_64 [rhel6]
 xpProOption(boost)
-set(VER 1.57.0)
-string(REPLACE "." "_" VER_ ${VER})
-set(REPO https://github.com/boostorg/boost)
-set(PRO_BOOST
-  NAME boost
-  WEB "boost" http://www.boost.org/ "Boost website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
-  DESC "libraries that give C++ a boost"
-  REPO "repo" ${REPO} "boost repo on github"
-  VER ${VER}
-  GIT_ORIGIN git://github.com/boostorg/boost.git
-  GIT_TAG boost-${VER} # what to 'git checkout'
-  DLURL http://downloads.sourceforge.net/project/boost/boost/${VER}/boost_${VER_}.tar.bz2
-  DLMD5 1be49befbdd9a5ce9def2983ba3e7b76
-  SUBPRO boostconfig boostgil boostlog boostmpl boostunits
-  )
-########################################
+set(BOOST_OLDVER 1.57.0)
+set(BOOST_NEWVER 1.63.0)
+####################
+function(patch_boost)
+  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
+  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" nv ${BOOST_NEWVER})
+  if(NOT (XP_DEFAULT OR XP_PRO_BOOST OR XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
+    return()
+  endif()
+  if(XP_DEFAULT)
+    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER}) # edit this to set default version(s) to build
+  else()
+    if(XP_PRO_BOOST AND NOT (XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
+      set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
+      set(XP_PRO_BOOST${nv} ON CACHE BOOL "include boost${nv}" FORCE)
+    endif()
+    if(XP_PRO_BOOST${ov})
+      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER})
+    endif()
+    if(XP_PRO_BOOST${nv})
+      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_NEWVER})
+    endif()
+  endif()
+  foreach(ver ${BOOST_VERSIONS})
+    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ver2_ ${ver})
+    xpPatchProject(${PRO_BOOST${ver2_}})
+  endforeach()
+  set(BOOST_VERSIONS ${BOOST_VERSIONS} PARENT_SCOPE) # make BOOST_VERSIONS available to build_boost
+endfunction()
+####################
 function(build_boost)
-  if(NOT (XP_DEFAULT OR XP_PRO_BOOST))
+  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
+  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" nv ${BOOST_NEWVER})
+  if(NOT (XP_DEFAULT OR XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
     return()
   endif()
   cmake_parse_arguments(boost "" TARGETS "" ${ARGN})
@@ -42,13 +57,21 @@ function(build_boost)
     ${zlibTgts}
     ${bzip2Tgts}
     )
-  ExternalProject_Get_Property(boost SOURCE_DIR)
-  build_boostb2(PRO boost BOOTSTRAP ${SOURCE_DIR}/tools/build
-    B2PATH b2path TARGETS tgts
+  configure_file(${PRO_DIR}/use/usexp-boost-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
     )
-  build_boostlibs(PRO boost B2PATH ${b2path} TARGETS tgts)
+  foreach(ver ${BOOST_VERSIONS})
+    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ver2_ ${ver})
+    ExternalProject_Get_Property(boost${ver2_} SOURCE_DIR)
+    build_boostb2(PRO boost${ver2_} BOOTSTRAP ${SOURCE_DIR}/tools/build
+      B2PATH b2path TARGETS tgts
+      )
+    build_boostlibs(PRO boost${ver2_} B2PATH ${b2path} TARGETS tgts)
+    if(DEFINED boost_TARGETS)
+      xpListAppendIfDne(${boost_TARGETS} "${tgts}")
+    endif()
+  endforeach()
   if(DEFINED boost_TARGETS)
-    xpListAppendIfDne(${boost_TARGETS} "${tgts}")
     set(${boost_TARGETS} "${${boost_TARGETS}}" PARENT_SCOPE)
   endif()
 endfunction()
@@ -66,6 +89,7 @@ function(build_boostb2)
   if(DEFINED bb_TARGETS)
     string(TOUPPER ${bb_PRO} PRO)
     xpGetArgValue(${PRO_${PRO}} ARG SUBPRO VALUES subs)
+    list(REMOVE_ITEM subs unknown)
     foreach(sub ${subs})
       xpListAppendIfDne(${bb_TARGETS} ${bb_PRO}_${sub})
     endforeach()
@@ -152,9 +176,6 @@ function(build_boostlibs)
   if(DEFINED bl_TARGETS)
     set(${bl_PRO}_DEPENDS ${${bl_TARGETS}})
   endif()
-  configure_file(${PRO_DIR}/use/usexp-boost-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
   if(MSVC)
     # Boost.Python build
     # The python-config.jam installed by the boost.build target above, as of 1_49_0,
@@ -184,9 +205,6 @@ function(build_boostlibs)
     else()
       set(boost_FLAGS "--without-python")
     endif()
-  elseif(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
-    # python on Solaris is fragile, so we will build boost without python
-    set(boost_FLAGS "--without-python")
   else()
     set(boost_FLAGS)
   endif()
@@ -258,12 +276,6 @@ function(build_boostlibs)
     # TRICKY: BINARY (zlibstatic, bz2) needs to match ${PRJ}_LIBRARIES in zlib, bzip2 use scripts
     list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic${CMAKE_RELEASE_POSTFIX})
     list(APPEND boost_BUILD -s BZIP2_BINARY=bz2${CMAKE_RELEASE_POSTFIX})
-  endif()
-  if(${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
-    # Memory exhausted errors (/opt/csw/i386-pc-solaris2.10/bin/ranlib)
-    # wave/build/gcc-4.8.0/debug/address-model-64/link-static/runtime-link-static/threading-multi/
-    # libboost_wave-gcc48-mt-sd-1_55.a
-    list(APPEND boost_BUILD --without-wave)
   endif()
   if(${CMAKE_SYSTEM_NAME} STREQUAL Linux AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     list(APPEND boost_BUILD --without-math)
