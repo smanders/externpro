@@ -665,7 +665,7 @@ function(xpListRemoveFromAll var match replace)
 endfunction()
 
 function(xpListAppendIfDne appendTo items)
-  foreach(item ${items})
+  foreach(item ${items} ${ARGN})
     list(FIND ${appendTo} ${item} index)
     if(index EQUAL -1)
       list(APPEND ${appendTo} ${item})
