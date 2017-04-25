@@ -6,7 +6,7 @@ set(VER31 3.1.0)
 set(PRO_WX31
   NAME wx31
   WEB "wxWidgets" http://wxwidgets.org/ "wxWidgets website"
-  LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License -- essentially LGPL with an exception stating that derived works in binary form may be distributed on the user's own terms"
+  LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License: essentially LGPL with an exception"
   DESC "Cross-Platform GUI Library"
   REPO "repo" ${REPO} "forked wxWidgets repo on github"
   VER ${VER31}
