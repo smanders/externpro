@@ -1,4 +1,6 @@
 # externpro
+[![GitHub license](https://img.shields.io/github/license/smanders/externpro.svg)](https://github.com/smanders/externrpo) [![GitHub release](https://img.shields.io/github/release/smanders/externpro.svg)](https://github.com/smanders/externpro)
+
 an extensible project to build (or copy pre-built) external (3rd-party) [projects](projects/README.md)
 
 ## description
