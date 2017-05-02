@@ -53,6 +53,17 @@ function(xpCloneRepo)
     else()
       set(patchCmd ${CMAKE_COMMAND} -E echo "no patch for ${prj}")
     endif()
+    ExternalProject_Add(${prj}_repo
+      GIT_REPOSITORY ${P_GIT_ORIGIN} GIT_TAG ${P_GIT_TAG}
+      #DOWNLOAD_COMMAND # tricky: must not be defined for git clone to happen
+      PATCH_COMMAND ""
+      UPDATE_COMMAND ${GIT_EXECUTABLE} fetch --all
+      CONFIGURE_COMMAND ""
+      BUILD_COMMAND ${patchCmd}
+      INSTALL_COMMAND ""
+      BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
+      DOWNLOAD_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
+      )
     if(DEFINED P_GIT_UPSTREAM)
       if(DEFINED P_GIT_TRACKING_BRANCH)
         set(trackingBranch ${P_GIT_TRACKING_BRANCH})
@@ -64,28 +75,15 @@ function(xpCloneRepo)
       else()
         set(upstreamCmd --set-upstream-to=upstream/${trackingBranch} ${trackingBranch})
       endif()
-      ExternalProject_Add(${prj}_repo
-        GIT_REPOSITORY ${P_GIT_ORIGIN} GIT_TAG ${P_GIT_TAG}
-        #DOWNLOAD_COMMAND # tricky: must not be defined for git clone to happen
-        PATCH_COMMAND ${GIT_EXECUTABLE} remote add upstream ${P_GIT_UPSTREAM}
-        UPDATE_COMMAND ${GIT_EXECUTABLE} fetch --all
-        CONFIGURE_COMMAND ${GIT_EXECUTABLE} branch ${upstreamCmd}
-        BUILD_COMMAND ${patchCmd}
-        INSTALL_COMMAND ""
-        BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
-        DOWNLOAD_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
+      ExternalProject_Add_Step(${prj}_repo remote_add_upstream
+        COMMAND ${GIT_EXECUTABLE} remote add upstream ${P_GIT_UPSTREAM}
+        WORKING_DIRECTORY <SOURCE_DIR>
+        DEPENDEES download DEPENDERS update
         )
-    else()
-      ExternalProject_Add(${prj}_repo
-        GIT_REPOSITORY ${P_GIT_ORIGIN} GIT_TAG ${P_GIT_TAG}
-        #DOWNLOAD_COMMAND # tricky: must not be defined for git clone to happen
-        PATCH_COMMAND ""
-        UPDATE_COMMAND ${GIT_EXECUTABLE} fetch --all
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ${patchCmd}
-        INSTALL_COMMAND ""
-        BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
-        DOWNLOAD_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
+      ExternalProject_Add_Step(${prj}_repo set_upstream
+        COMMAND ${GIT_EXECUTABLE} branch ${upstreamCmd}
+        WORKING_DIRECTORY <SOURCE_DIR>
+        DEPENDEES update DEPENDERS build
         )
     endif()
   endif()
