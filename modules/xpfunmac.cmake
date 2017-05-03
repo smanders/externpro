@@ -781,6 +781,23 @@ function(xpGitIgnoredDirs var dir)
   set(${var} "${ignoredDirs}" PARENT_SCOPE)
 endfunction()
 
+function(xpGitIgnoredFiles var dir)
+  if(NOT GIT_FOUND)
+    include(FindGit)
+    find_package(Git)
+  endif()
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} ls-files --exclude-standard --ignored --others
+    WORKING_DIRECTORY ${dir}
+    ERROR_QUIET
+    OUTPUT_VARIABLE ignoredFiles
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  separate_arguments(ignoredFiles UNIX_COMMAND "${ignoredFiles}")
+  xpListPrependToAll(ignoredFiles ${dir} ${ignoredFiles})
+  set(${var} "${ignoredFiles}" PARENT_SCOPE)
+endfunction()
+
 function(xpGitUntrackedFiles var dir)
   if(NOT GIT_FOUND)
     include(FindGit)
@@ -805,6 +822,8 @@ function(xpGlobFiles var item)
     # NOTE: By default GLOB_RECURSE omits directories from result list
     file(GLOB_RECURSE dirFiles ${globexpr})
     xpGitUntrackedFiles(untrackedFiles ${item})
+    xpGitIgnoredFiles(ignoredFiles ${item})
+    list(APPEND untrackedFiles ${ignoredFiles})
     if(dirFiles AND untrackedFiles)
       list(REMOVE_ITEM dirFiles ${untrackedFiles})
     endif()
@@ -912,7 +931,9 @@ macro(xpSourceListAppend)
         xpGlobFiles(fmtFiles ${item} *.c *.h *.cpp *.hpp *.cu *.cuh *.proto)
       endforeach()
       list(REMOVE_ITEM repoFiles ${masterSrcList})
-      if(NOT DEFINED XP_CMAKE_REPO_INSYNC)
+      if(DEFINED XP_CMAKE_REPO_INSYNC)
+        option(XP_CMAKE_REPO_INSYNC "cmake error if repo and cmake are not in sync" ${XP_CMAKE_REPO_INSYNC})
+      else()
         option(XP_CMAKE_REPO_INSYNC "cmake error if repo and cmake are not in sync" OFF)
       endif()
       if(repoFiles)
