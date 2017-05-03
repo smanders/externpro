@@ -4,7 +4,7 @@
 # *   sudo apt install python-dev [ubuntu]
 # *   sudo yum install python-devel.x86_64 [rhel6]
 xpProOption(boost)
-set(BOOST_OLDVER 1.57.0)
+set(BOOST_OLDVER 1.63.0)
 set(BOOST_NEWVER 1.63.0)
 ####################
 function(patch_boost)
@@ -14,7 +14,7 @@ function(patch_boost)
     return()
   endif()
   if(XP_DEFAULT)
-    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER}) # edit this to set default version(s) to build
+    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_NEWVER}) # edit this to set default version(s) to build
   else()
     if(XP_PRO_BOOST AND NOT (XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
       set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
