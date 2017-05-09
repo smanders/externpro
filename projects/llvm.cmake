@@ -14,5 +14,5 @@ set(PRO_LLVM
   GIT_TAG ${LLVM_BRANCH}
   DLURL http://llvm.org/releases/${VER}/llvm-${VER}.src.tar.xz
   DLMD5 f2093e98060532449eb7d2fcfd0bc6c6
-  SUBPRO clang
+  SUBPRO clang clangtoolsextra
   )
