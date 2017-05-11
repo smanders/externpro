@@ -14,27 +14,13 @@ function(build_clangtidy)
   if(NOT (XP_DEFAULT OR XP_PRO_LLVM))
     return()
   endif()
-  find_package(PythonInterp 2.7)
-  if(NOT PYTHONINTERP_FOUND)
-    message(AUTHOR_WARNING "Unable to build clang-tidy, required python not found")
+  build_llvm(llvmTgt)
+  if(NOT XP_BUILD_CLANGTIDY)
     return()
   endif()
-  set(XP_DEPS llvm llvm_clang llvm_clangtoolsextra)
-  set(XP_CONFIGURE
-    -DLLVM_TARGETS_TO_BUILD:STRING=X86
-    #-DBUILD_CLANG_TIDY_VS_PLUGIN=ON
-    )
-  # since we only need a release executable...
-  set(BUILD_CONFIGS Release)
   configure_file(${PRO_DIR}/use/usexp-clangtidy-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  #if(MSVC)
-  #  set(buildTgt clang_tidy_vsix)
-  #else()
-    set(buildTgt clang-tidy)
-  #endif()
-  xpCmakeBuild(llvm "${XP_DEPS}" "${XP_CONFIGURE}" llvmTgt NO_INSTALL BUILD_TARGET ${buildTgt} TGT tidy)
   ExternalProject_Get_Property(${llvmTgt} BINARY_DIR)
   ExternalProject_Add(clangtidy_install DEPENDS ${llvmTgt}
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
@@ -43,12 +29,5 @@ function(build_clangtidy)
     INSTALL_COMMAND ${CMAKE_COMMAND} -P cmake_install.cmake
     INSTALL_DIR ${STAGE_DIR}
     )
-  #if(MSVC)
-  #  ExternalProject_Add_Step(clangtidy_install clangtidy_install_vsix
-  #    COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/pkg
-  #    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BINARY_DIR}/Release/bin/ClangTidy.vsix ${STAGE_DIR}/pkg
-  #    DEPENDEES install
-  #    )
-  #endif()
   set_property(TARGET clangtidy_install PROPERTY FOLDER ${bld_folder})
 endfunction()
