@@ -17,7 +17,7 @@ set(PRO_GSOAP
   GIT_UPSTREAM git://github.com/stoneyrh/gSOAP.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL https://downloads.sourceforge.net/project/gsoap2/gsoap-${VER2}/gSOAP%20${VER}/gsoap_${VER}.zip
+  DLURL https://github.com/smanders/externpro/releases/download/17.05.1/gsoap_${VER}.zip
   DLMD5 6f58cabfc67b4d5eafd1a30057fc4343
   PATCH ${PATCH_DIR}/gsoap.patch
   DIFF ${REPO}/compare/smanders:
