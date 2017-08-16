@@ -2,7 +2,7 @@
 # http://packages.debian.org/sid/geotranz
 # http://geotranz.sourcearchive.com/
 xpProOption(geotranz)
-set(VER 2.4.2)
+set(GEOTVER 2.4.2)
 set(REPO https://github.com/smanders/geotranz)
 set(PRO_GEOTRANZ
   NAME geotranz
@@ -10,11 +10,11 @@ set(PRO_GEOTRANZ
   LICENSE "open" http://earth-info.nga.mil/GandG/geotrans/docs/MSP_GeoTrans_Terms_of_Use.pdf "GEOTRANS Terms of Use (no specific license mentioned)"
   DESC "geographic translator (convert coordinates)"
   REPO "repo" ${REPO} "geotranz repo on github"
-  VER ${VER}
+  VER ${GEOTVER}
   GIT_ORIGIN git://github.com/smanders/geotranz.git
-  GIT_TAG xp${VER} # what to 'git checkout'
-  GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL http://geotranz.sourcearchive.com/downloads/${VER}/geotranz_${VER}.orig.tar.gz
+  GIT_TAG xp${GEOTVER} # what to 'git checkout'
+  GIT_REF v${GEOTVER} # create patch from this tag to 'git checkout'
+  DLURL http://geotranz.sourcearchive.com/downloads/${GEOTVER}/geotranz_${GEOTVER}.orig.tar.gz
   DLMD5 1d370d5b0daed2a541a9aa14bd3172a8
   PATCH ${PATCH_DIR}/geotranz.patch
   DIFF ${REPO}/compare/
@@ -97,10 +97,11 @@ function(build_geotranz)
   if(NOT (XP_DEFAULT OR XP_PRO_GEOTRANZ))
     return()
   endif()
+  set(geoVerDir /geotrans_${GEOTVER})
   configure_file(${PRO_DIR}/use/usexp-geotrans-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(geotranz)
-  download_geotiff_tables(${DWNLD_DIR}/data ${STAGE_DIR}/include/geotrans/data
+  xpCmakeBuild(geotranz "" "-DGEOTRANS_VER=${GEOTVER}")
+  download_geotiff_tables(${DWNLD_DIR}/data ${STAGE_DIR}/include${geoVerDir}/geotrans/data
                           ftp://downloads.osgeo.org/pub/geotiff/tables)
 endfunction()
