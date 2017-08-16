@@ -2,7 +2,7 @@
 # http://packages.debian.org/sid/libjasper-dev
 # http://jasper.sourcearchive.com/
 xpProOption(jasper)
-set(VER 1.900.1)
+set(JASVER 1.900.1)
 set(REPO https://github.com/smanders/jasper)
 set(PRO_JASPER
   NAME jasper
@@ -10,11 +10,11 @@ set(PRO_JASPER
   LICENSE "open" "http://www.ece.uvic.ca/~frodo/jasper/#license" "JasPer License (based on MIT license)"
   DESC "JPEG 2000 Part-1 codec implementation"
   REPO "repo" ${REPO} "jasper repo on github"
-  VER ${VER}
+  VER ${JASVER}
   GIT_ORIGIN git://github.com/smanders/jasper.git
-  GIT_TAG xpp${VER} # what to 'git checkout'
-  GIT_REF jv${VER} # create patch from this tag to 'git checkout'
-  DLURL http://www.ece.uvic.ca/~frodo/jasper/software/jasper-${VER}.zip
+  GIT_TAG xpp${JASVER} # what to 'git checkout'
+  GIT_REF jv${JASVER} # create patch from this tag to 'git checkout'
+  DLURL http://www.ece.uvic.ca/~frodo/jasper/software/jasper-${JASVER}.zip
   DLMD5 a342b2b4495b3e1394e161eb5d85d754
   PATCH ${PATCH_DIR}/jasper.patch
   DIFF ${REPO}/compare/

@@ -339,10 +339,10 @@ index 255b581..83fec87 100644
  	}
 diff --git a/src/libjasper/CMakeLists.txt b/src/libjasper/CMakeLists.txt
 new file mode 100644
-index 0000000..0357ca3
+index 0000000..71b889e
 --- /dev/null
 +++ b/src/libjasper/CMakeLists.txt
-@@ -0,0 +1,194 @@
+@@ -0,0 +1,199 @@
 +set(lib_name libjasper)
 +#######################################
 +# preprocessor
@@ -525,18 +525,23 @@ index 0000000..0357ca3
 +list(APPEND ${lib_name}_libsrcs ${ras_srcs})
 +#######################################
 +# library
++set(jasVer _${JAS_VERSION})
++set(jasVerDir /jasper${jasVer})
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+# strip off the "lib" prefix, since it's already libjasper
-+set_target_properties(${lib_name} PROPERTIES PREFIX "")
++set_target_properties(${lib_name} PROPERTIES
++  OUTPUT_NAME ${lib_name}${jasVer}
++  PREFIX "" # strip off the "lib" prefix, since it's already libjasper
++  )
 +#######################################
 +# install
-+install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++set(targetsFile ${PROJECT_NAME}${jasVer}-targets)
++install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${include_srcs} DESTINATION include/jasper)
-+install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
++install(FILES ${include_srcs} DESTINATION include${jasVerDir}/jasper)
++install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/src/libjasper/base/jas_cm.c b/src/libjasper/base/jas_cm.c
 index 77514dd..c30f339 100644
 --- a/src/libjasper/base/jas_cm.c
