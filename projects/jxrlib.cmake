@@ -1,6 +1,6 @@
 # jxrlib
 xpProOption(jxrlib)
-set(VER 1.1-xp150831)
+set(VER 15.08)
 set(REPO https://github.com/smanders/jxrlib)
 set(PRO_JXRLIB
   NAME jxrlib
@@ -9,8 +9,8 @@ set(PRO_JXRLIB
   DESC "open source implementation of the jpegxr image format standard"
   REPO "repo" ${REPO} "forked jxrlib repo on github"
   VER ${VER}
-  GIT_UPSTREAM https://git01.codeplex.com/jxrlib
-  GIT_FORK git://github.com/c0nk/jxrlib.git
+  GIT_ORIGINAL_UPSTREAM https://git01.codeplex.com/jxrlib # CodePlex is shutting down!
+  GIT_UPSTREAM git://github.com/c0nk/jxrlib.git
   GIT_ORIGIN git://github.com/smanders/jxrlib.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
