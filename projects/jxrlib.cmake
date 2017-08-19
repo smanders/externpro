@@ -17,7 +17,7 @@ set(PRO_JXRLIB
   # NOTE: the download from codeplex is CR/LF, the repo is LF
   #DLURL https://jxrlib.codeplex.com/downloads/get/685250
   DLURL ${REPO}/archive/v${VER}.tar.gz
-  DLMD5 a3545afc72f27b7954c82f262ac05994
+  DLMD5 93822c8ba22b44ee7d1a4810e2a9468b
   DLNAME jxrlib-v${VER}.tar.gz
   PATCH ${PATCH_DIR}/jxrlib.patch
   DIFF ${REPO}/compare/
