@@ -1,13 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..f6f0ceb
+index 0000000..7096cff
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,146 @@
 +cmake_minimum_required(VERSION 3.3)
 +project(jxrlib)
 +include(flags OPTIONAL)
-+set(lib_name jxrlib)
++set(lib_name ${PROJECT_NAME})
 +#######################################
 +# additional include directories
 +include_directories(
@@ -110,7 +110,18 @@ index 0000000..f6f0ceb
 +list(APPEND ${lib_name}_libsrcs ${JXRTest_srcs})
 +#######################################
 +# library
++set(versionString "^JXR_VERSION=+([0-9]+)\\.([0-9]+)?")
++file(STRINGS Makefile VERS REGEX "${versionString}")
++string(REGEX REPLACE "${versionString}" "\\1.\\2" VERS ${VERS})
++if(NOT DEFINED JXR_VER)
++  set(JXR_VER ${VERS})
++elseif(NOT ${JXR_VER} STREQUAL ${VERS})
++  message(AUTHOR_WARNING "version passed in (${JXR_VER}) doesn't match version from Makefile (${VERS})")
++endif()
++set(jxrVer _${JXR_VER})
++set(jxrVerDir /${PROJECT_NAME}${jxrVer})
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${jxrVer})
 +include(CheckLibraryExists)
 +check_library_exists(m pow "${CMAKE_LIBRARY_PATH}" HAVE_LIBM)
 +if(HAVE_LIBM)
@@ -131,13 +142,27 @@ index 0000000..f6f0ceb
 +  jxrgluelib/JXRGlue.h
 +  jxrgluelib/JXRMeta.h
 +  )
-+install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++set(targetsFile ${PROJECT_NAME}${jxrVer}-targets)
++install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${lib_hdrs} DESTINATION include/jxrlib)
-+install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
++install(FILES ${lib_hdrs} DESTINATION include${jxrVerDir}/${PROJECT_NAME})
++install(EXPORT ${targetsFile} DESTINATION lib/cmake)
+diff --git a/Makefile b/Makefile
+index d4d9192..5ce8be8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -31,7 +31,7 @@ build: all
+ 
+ CC=cc
+ 
+-JXR_VERSION=1.1
++JXR_VERSION=15.08
+ 
+ DIR_SRC=$(CURDIR)
+ DIR_SYS=image/sys
 diff --git a/common/include/guiddef.h b/common/include/guiddef.h
 index 17e0ed3..a317d74 100644
 --- a/common/include/guiddef.h
