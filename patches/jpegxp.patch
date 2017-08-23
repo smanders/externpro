@@ -1,13 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..318865f
+index 0000000..ecc8113
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,174 @@
+@@ -0,0 +1,180 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(jpegxp)
 +include(flags OPTIONAL)
-+set(lib_name jpegxp)
++set(lib_name ${PROJECT_NAME})
 +#######################################
 +# preprocessor
 +if(MSVC)
@@ -168,13 +168,19 @@ index 0000000..318865f
 +list(APPEND ${lib_name}_libsrcs ${lossy8_srcs})
 +#######################################
 +# library
++if(DEFINED JPEGXP_VER)
++  set(jxpVer _${JPEGXP_VER})
++  set(jxpVerDir /${PROJECT_NAME}${jxpVer})
++endif()
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${jxpVer})
 +#######################################
 +# install
-+install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++set(targetsFile ${PROJECT_NAME}${jxpVer}-targets)
++install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${include_srcs} DESTINATION include/jpegxp)
-+install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
++install(FILES ${include_srcs} DESTINATION include${jxpVerDir}/${PROJECT_NAME})
++install(EXPORT ${targetsFile} DESTINATION lib/cmake)

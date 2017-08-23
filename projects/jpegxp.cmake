@@ -3,6 +3,7 @@
 # http://libjpeg6b.sourcearchive.com/
 # http://libjpeg8.sourcearchive.com/
 xpProOption(jpegxp)
+set(JXPVER 17.08) # latest jxp branch commit date (yr.mo)
 set(REPO https://github.com/smanders/jpegxp)
 set(PRO_JPEGXP
   NAME jpegxp
@@ -10,7 +11,7 @@ set(PRO_JPEGXP
   LICENSE "open" https://github.com/smanders/libjpeg/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
   DESC "JPEG codec with mods for Lossless, 12-bit lossy (XP)"
   REPO "repo" ${REPO} "jpegxp repo on github"
-  VER 15.06.03 # latest jxp branch commit date
+  VER ${JXPVER}
   GIT_ORIGIN git://github.com/smanders/jpegxp.git
   GIT_TAG jxp # what to 'git checkout'
   GIT_REF jxp.130220 # create patch from this tag to 'git checkout'
@@ -30,5 +31,5 @@ function(build_jpegxp)
   foreach(sub ${subs})
     list(APPEND XP_DEPS jpegxp_${sub})
   endforeach()
-  xpCmakeBuild(jpegxp "${XP_DEPS}")
+  xpCmakeBuild(jpegxp "${XP_DEPS}" "-DJPEGXP_VER=${JXPVER}")
 endfunction()
