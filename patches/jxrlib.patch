@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..7096cff
+index 0000000..a6bfcfc
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,146 @@
+@@ -0,0 +1,149 @@
 +cmake_minimum_required(VERSION 3.3)
 +project(jxrlib)
 +include(flags OPTIONAL)
@@ -109,19 +109,22 @@ index 0000000..7096cff
 +source_group(JXRTest FILES ${JXRTest_srcs})
 +list(APPEND ${lib_name}_libsrcs ${JXRTest_srcs})
 +#######################################
-+# library
-+set(versionString "^JXR_VERSION=+([0-9]+)\\.([0-9]+)?")
-+file(STRINGS Makefile VERS REGEX "${versionString}")
-+string(REGEX REPLACE "${versionString}" "\\1.\\2" VERS ${VERS})
++# version
++set(verString "^JXR_VERSION=+([0-9]+)\\.([0-9]+)?")
++set(verFile Makefile)
++file(STRINGS ${verFile} VER REGEX "${verString}")
++string(REGEX REPLACE "${verString}" "\\1.\\2" VER ${VER})
 +if(NOT DEFINED JXR_VER)
-+  set(JXR_VER ${VERS})
-+elseif(NOT ${JXR_VER} STREQUAL ${VERS})
-+  message(AUTHOR_WARNING "version passed in (${JXR_VER}) doesn't match version from Makefile (${VERS})")
++  set(JXR_VER ${VER})
++elseif(NOT ${JXR_VER} STREQUAL ${VER})
++  message(AUTHOR_WARNING "version passed in (${JXR_VER}) doesn't match version from ${verFile} (${VER})")
 +endif()
-+set(jxrVer _${JXR_VER})
-+set(jxrVerDir /${PROJECT_NAME}${jxrVer})
++set(ver _${JXR_VER})
++set(verDir /${PROJECT_NAME}${ver})
++#######################################
++# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${jxrVer})
++set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +include(CheckLibraryExists)
 +check_library_exists(m pow "${CMAKE_LIBRARY_PATH}" HAVE_LIBM)
 +if(HAVE_LIBM)
@@ -142,13 +145,13 @@ index 0000000..7096cff
 +  jxrgluelib/JXRGlue.h
 +  jxrgluelib/JXRMeta.h
 +  )
-+set(targetsFile ${PROJECT_NAME}${jxrVer}-targets)
++set(targetsFile ${PROJECT_NAME}${ver}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${lib_hdrs} DESTINATION include${jxrVerDir}/${PROJECT_NAME})
++install(FILES ${lib_hdrs} DESTINATION include${verDir}/${PROJECT_NAME})
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/Makefile b/Makefile
 index d4d9192..5ce8be8 100644

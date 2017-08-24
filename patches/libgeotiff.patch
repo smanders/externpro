@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..f62d95f
+index 0000000..a629444
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,81 @@
+@@ -0,0 +1,84 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(geotiff)
 +include(flags OPTIONAL)
@@ -56,25 +56,28 @@ index 0000000..f62d95f
 +  libxtiff/xtiffio.h
 +  )
 +#######################################
-+# library
++# version
 +foreach(TYPE MAJOR MINOR POINT)
 +  set(verString "^VERSION_${TYPE}=+([0-9]+)?")
-+  file(STRINGS configure.in verNum REGEX "${verString}")
++  set(verFile configure.in)
++  file(STRINGS ${verFile} verNum REGEX "${verString}")
 +  string(REGEX REPLACE "${verString}" "\\1" ver${TYPE} ${verNum})
 +endforeach()
 +set(GTIF_VER ${verMAJOR}.${verMINOR}.${verPOINT})
 +if(NOT DEFINED GEOTIFF_VER)
 +  set(GEOTIFF_VER ${GTIF_VER})
 +elseif(NOT ${GEOTIFF_VER} STREQUAL ${GTIF_VER})
-+  message(AUTHOR_WARNING "version passed in (${GEOTIFF_VER}) doesn't match version from configure.in (${GTIF_VER})")
++  message(AUTHOR_WARNING "version passed in (${GEOTIFF_VER}) doesn't match version from ${verFile} (${GTIF_VER})")
 +endif()
-+set(gtifVer _${GEOTIFF_VER})
-+set(gtifVerDir /${PROJECT_NAME}${gtifVer})
++set(ver _${GEOTIFF_VER})
++set(verDir /${PROJECT_NAME}${ver})
++#######################################
++# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${gtifVer})
++set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +#######################################
 +# install
-+set(targetsFile ${PROJECT_NAME}${gtifVer}-targets)
++set(targetsFile ${PROJECT_NAME}${ver}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
@@ -83,7 +86,7 @@ index 0000000..f62d95f
 +file(GLOB hdrs ${CMAKE_SOURCE_DIR}/*.h)
 +file(GLOB incs ${CMAKE_SOURCE_DIR}/*.inc)
 +install(FILES ${hdrs} ${incs} ${CMAKE_SOURCE_DIR}/libxtiff/xtiffio.h
-+  DESTINATION include${gtifVerDir}/${PROJECT_NAME})
++  DESTINATION include${verDir}/${PROJECT_NAME})
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/geo_config.h b/geo_config.h
 new file mode 100644

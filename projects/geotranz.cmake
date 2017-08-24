@@ -97,11 +97,11 @@ function(build_geotranz)
   if(NOT (XP_DEFAULT OR XP_PRO_GEOTRANZ))
     return()
   endif()
-  set(geoVerDir /geotrans_${GEOTVER})
+  set(verDir /geotrans_${GEOTVER})
   configure_file(${PRO_DIR}/use/usexp-geotrans-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(geotranz "" "-DGEOTRANS_VER=${GEOTVER}")
-  download_geotiff_tables(${DWNLD_DIR}/data ${STAGE_DIR}/include${geoVerDir}/geotrans/data
+  download_geotiff_tables(${DWNLD_DIR}/data ${STAGE_DIR}/include${verDir}/geotrans/data
                           ftp://downloads.osgeo.org/pub/geotiff/tables)
 endfunction()

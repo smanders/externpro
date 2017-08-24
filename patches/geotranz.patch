@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..85e097e
+index 0000000..cb8df56
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,174 @@
+@@ -0,0 +1,176 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(geotrans)
 +include(flags OPTIONAL)
@@ -160,23 +160,25 @@ index 0000000..85e097e
 +  geotrans2/data/ellips.dat
 +  )
 +#######################################
-+# library
++# version
 +if(DEFINED GEOTRANS_VER)
-+  set(geoVer _${GEOTRANS_VER})
-+  set(geoVerDir /geotrans${geoVer})
++  set(ver _${GEOTRANS_VER})
++  set(verDir /${PROJECT_NAME}${ver})
 +endif()
++#######################################
++# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${geoVer})
++set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +#######################################
 +# install
-+set(targetsFile ${PROJECT_NAME}${geoVer}-targets)
++set(targetsFile ${PROJECT_NAME}${ver}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${${lib_name}_libhdrs} DESTINATION include${geoVerDir}/geotrans)
-+install(FILES ${${lib_name}_data} DESTINATION include${geoVerDir}/geotrans/data)
++install(FILES ${${lib_name}_libhdrs} DESTINATION include${verDir}/${PROJECT_NAME})
++install(FILES ${${lib_name}_data} DESTINATION include${verDir}/${PROJECT_NAME}/data)
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/geotrans2/src/strtoval.c b/geotrans2/src/strtoval.c
 index 79cecf1..e88418f 100755

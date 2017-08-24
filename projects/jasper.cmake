@@ -27,5 +27,5 @@ function(build_jasper)
   configure_file(${PRO_DIR}/use/usexp-jasper-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(jasper)
+  xpCmakeBuild(jasper "" "-DJASPER_VER=${JASVER}")
 endfunction()

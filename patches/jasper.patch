@@ -339,10 +339,10 @@ index 255b581..83fec87 100644
  	}
 diff --git a/src/libjasper/CMakeLists.txt b/src/libjasper/CMakeLists.txt
 new file mode 100644
-index 0000000..71b889e
+index 0000000..4f6c7ba
 --- /dev/null
 +++ b/src/libjasper/CMakeLists.txt
-@@ -0,0 +1,199 @@
+@@ -0,0 +1,206 @@
 +set(lib_name libjasper)
 +#######################################
 +# preprocessor
@@ -524,23 +524,30 @@ index 0000000..71b889e
 +source_group(ras FILES ${ras_srcs})
 +list(APPEND ${lib_name}_libsrcs ${ras_srcs})
 +#######################################
++# version
++if(NOT DEFINED JASPER_VER)
++  set(JASPER_VER ${JAS_VERSION})
++elseif(NOT ${JASPER_VER} STREQUAL ${JAS_VERSION})
++  message(AUTHOR_WARNING "version passed in (${JASPER_VER}) doesn't match version from configure.cmake (${JAS_VERSION})")
++endif()
++set(ver _${JASPER_VER})
++set(verDir /${PROJECT_NAME}${ver})
++#######################################
 +# library
-+set(jasVer _${JAS_VERSION})
-+set(jasVerDir /jasper${jasVer})
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
 +set_target_properties(${lib_name} PROPERTIES
-+  OUTPUT_NAME ${lib_name}${jasVer}
++  OUTPUT_NAME ${lib_name}${ver}
 +  PREFIX "" # strip off the "lib" prefix, since it's already libjasper
 +  )
 +#######################################
 +# install
-+set(targetsFile ${PROJECT_NAME}${jasVer}-targets)
++set(targetsFile ${PROJECT_NAME}${ver}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${include_srcs} DESTINATION include${jasVerDir}/jasper)
++install(FILES ${include_srcs} DESTINATION include${verDir}/${PROJECT_NAME})
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/src/libjasper/base/jas_cm.c b/src/libjasper/base/jas_cm.c
 index 77514dd..c30f339 100644
