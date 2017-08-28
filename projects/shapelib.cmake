@@ -16,7 +16,7 @@ set(PRO_SHAPELIB
   GIT_UPSTREAM git://github.com/asapnet/shapelib.git
   GIT_TAG xp${SHPVER} # what to 'git checkout'
   GIT_REF v${SHPVER} # create patch from this tag to 'git checkout'
-  DLURL http://shapelib.maptools.org/dl/shapelib-${SHPVER}.tar.gz
+  DLURL http://download.osgeo.org/shapelib/shapelib-${SHPVER}.tar.gz
   DLMD5 4d96bd926167193d27bf14d56e2d484e
   PATCH ${PATCH_DIR}/shapelib.patch
   DIFF ${REPO}/compare/
