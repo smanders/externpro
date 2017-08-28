@@ -1,6 +1,6 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..609b028
+index 0000000..2cfef3b
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,38 @@
@@ -17,7 +17,7 @@ index 0000000..609b028
 +source_group("" FILES ${${lib_name}_libsrcs})
 +#######################################
 +# version
-+set(verString "^#define VERSION \"+([0-9]+)\\.([0-9]+)\\.([0-9]+).*$")
++set(verString "^.*define VERSION \"+([0-9]+)\\.([0-9]+)\\.([0-9]+).*$")
 +set(verFile gsoap/src/soapcpp2.h)
 +file(STRINGS ${verFile} VER REGEX "${verString}")
 +string(REGEX REPLACE "${verString}" "\\1.\\2.\\3" VER ${VER})
