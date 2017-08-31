@@ -6,7 +6,7 @@ set(prj fecpp)
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
-set(ver _@FECVER@)
+set(ver _@VER@)
 set(verDir /${prj}${ver})
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR fecpp/fecpp.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)

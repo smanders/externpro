@@ -1,19 +1,19 @@
 # fecpp
 xpProOption(fecpp)
 set(REPO https://github.com/smanders/fecpp)
-set(FECVER 0.9)
+set(VER 0.9)
 set(PRO_FECPP
   NAME fecpp
   WEB "fecpp" http://www.randombit.net/code/fecpp/ "C++ forward error correction with SIMD optimizations"
   LICENSE "open" http://www.randombit.net/code/fecpp/ "BSD License"
   DESC "fecpp is a Forward Error Correction Library"
   REPO "repo" ${REPO} "forked fecpp repo on github"
-  VER ${FECVER}
+  VER ${VER}
   GIT_ORIGIN git://github.com/smanders/fecpp.git
   GIT_UPSTREAM git://github.com/randombit/fecpp.git
-  GIT_TAG xp${FECVER} # what to 'git checkout'
-  GIT_REF v${FECVER} # create patch from this tag to 'git checkout'
-  DLURL http://files.randombit.net/fecpp/fecpp-${FECVER}.tgz
+  GIT_TAG xp${VER} # what to 'git checkout'
+  GIT_REF v${VER} # create patch from this tag to 'git checkout'
+  DLURL http://files.randombit.net/fecpp/fecpp-${VER}.tgz
   DLMD5 990e5b529e1b86fb5ee141c6307fb7dd
   PATCH ${PATCH_DIR}/fecpp.patch
   DIFF ${REPO}/compare/
@@ -29,8 +29,9 @@ function(build_fecpp)
     patch_boost()
   endif()
   build_boost(TARGETS boostTgts)
+  xpGetArgValue(${PRO_FECPP} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-fecpp-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(fecpp "${boostTgts}" "-DFECPP_VER=${FECVER}")
+  xpCmakeBuild(fecpp "${boostTgts}" "-DFECPP_VER=${VER}")
 endfunction()

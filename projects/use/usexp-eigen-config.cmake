@@ -5,7 +5,7 @@ set(prj eigen)
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
-set(verDir /${prj}_@EIGVER@)
+set(verDir /${prj}_@VER@)
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR eigen3/Eigen/Eigen PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
 set(reqVars ${PRJ}_INCLUDE_DIR)

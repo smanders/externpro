@@ -1,7 +1,7 @@
 # RapidXml
 # http://sourceforge.net/projects/rapidxml/files/rapidxml/
 xpProOption(rapidxml)
-set(RXMLVER 1.13)
+set(VER 1.13)
 set(REPO https://github.com/smanders/rapidxml)
 set(PRO_RAPIDXML
   NAME rapidxml
@@ -9,11 +9,11 @@ set(PRO_RAPIDXML
   LICENSE "open" http://rapidxml.sourceforge.net/license.txt "Boost Software License -or- The MIT License"
   DESC "fast XML parser"
   REPO "repo" ${REPO} "rapidxml repo on github"
-  VER ${RXMLVER}
+  VER ${VER}
   GIT_ORIGIN git://github.com/smanders/rapidxml.git
-  GIT_TAG xp${RXMLVER} # what to 'git checkout'
-  GIT_REF v${RXMLVER} # create patch from this tag to 'git checkout'
-  DLURL http://downloads.sourceforge.net/project/rapidxml/rapidxml/rapidxml%20${RXMLVER}/rapidxml-${RXMLVER}.zip
+  GIT_TAG xp${VER} # what to 'git checkout'
+  GIT_REF v${VER} # create patch from this tag to 'git checkout'
+  DLURL http://downloads.sourceforge.net/project/rapidxml/rapidxml/rapidxml%20${VER}/rapidxml-${VER}.zip
   DLMD5 7b4b42c9331c90aded23bb55dc725d6a
   PATCH ${PATCH_DIR}/rapidxml.patch
   DIFF ${REPO}/compare/
@@ -23,7 +23,8 @@ function(build_rapidxml)
   if(NOT (XP_DEFAULT OR XP_PRO_RAPIDXML))
     return()
   endif()
-  set(verDir /rapidxml_${RXMLVER})
+  xpGetArgValue(${PRO_RAPIDXML} ARG VER VALUE VER)
+  set(verDir /rapidxml_${VER})
   configure_file(${PRO_DIR}/use/usexp-rapidxml-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
