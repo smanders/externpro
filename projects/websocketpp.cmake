@@ -1,19 +1,23 @@
 # WebSocket++
 xpProOption(websocketpp)
 set(VER 0.7.0)
-set(REPO https://github.com/zaphoyd/websocketpp)
+set(REPO https://github.com/smanders/websocketpp)
 set(PRO_WEBSOCKETPP
   NAME websocketpp
   WEB "WebSocket++" https://www.zaphoyd.com/websocketpp/ "WebSocket++ website"
   LICENSE "open" ${REPO}/blob/${VER}/COPYING "BSD"
   DESC "header only C++ library that implements RFC6455 The WebSocket Protocol"
-  REPO "repo" ${REPO} "WebSocket++ repo on github"
+  REPO "repo" ${REPO} "forked WebSocket++ repo on github"
   VER ${VER}
-  GIT_ORIGIN git://github.com/zaphoyd/websocketpp.git
-  GIT_TAG ${VER} # what to 'git checkout'
+  GIT_ORIGIN git://github.com/smanders/websocketpp.git
+  GIT_UPSTREAM git://github.com/zaphoyd/websocketpp.git
+  GIT_TAG xp${VER} # what to 'git checkout'
+  GIT_REF ${VER} # create patch from this tag to 'git checkout'
   DLURL ${REPO}/archive/${VER}.tar.gz
   DLMD5 5027c20cde76fdaef83a74acfcf98e23
   DLNAME websocketpp-${VER}.tar.gz
+  PATCH ${PATCH_DIR}/websocketpp.patch
+  DIFF ${REPO}/compare/zaphoyd:
   )
 ########################################
 function(build_websocketpp)
