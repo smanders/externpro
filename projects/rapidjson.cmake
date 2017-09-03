@@ -20,6 +20,8 @@ function(build_rapidjson)
   if(NOT (XP_DEFAULT OR XP_PRO_RAPIDJSON))
     return()
   endif()
+  xpGetArgValue(${PRO_RAPIDJSON} ARG VER VALUE VER)
+  set(verDir /rapidjson_${VER})
   configure_file(${PRO_DIR}/use/usexp-rapidjson-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -28,7 +30,7 @@ function(build_rapidjson)
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${DWNLD_DIR} CONFIGURE_COMMAND ""
     SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
     BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory
-      <SOURCE_DIR>/include ${STAGE_DIR}/include
+      <SOURCE_DIR>/include ${STAGE_DIR}/include${verDir}
     INSTALL_COMMAND ""
     )
   set_property(TARGET rapidjson_bld PROPERTY FOLDER ${bld_folder})
