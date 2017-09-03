@@ -24,8 +24,11 @@ function(build_websocketpp)
   if(NOT (XP_DEFAULT OR XP_PRO_WEBSOCKETPP))
     return()
   endif()
+  xpGetArgValue(${PRO_WEBSOCKETPP} ARG VER VALUE VER)
+  set(verDir /websocketpp_${VER})
   set(XP_CONFIGURE
     -DINSTALL_CMAKE_DIR=${NULL_DIR} # don't want their config.cmake files
+    -DverDir=${verDir}
     )
   configure_file(${PRO_DIR}/use/usexp-websocketpp-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
