@@ -11,13 +11,13 @@ set(PRO_CURL
   REPO "repo" ${REPO} "forked curl repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/curl.git
-  GIT_UPSTREAM git://github.com/bagder/curl.git
+  GIT_UPSTREAM git://github.com/curl/curl.git
   GIT_TAG xp-${VER_} # what to 'git checkout'
   GIT_REF curl-${VER_} # create patch from this tag to 'git checkout'
   DLURL http://curl.haxx.se/download/curl-${VER}.tar.bz2
   DLMD5 296945012ce647b94083ed427c1877a8
   PATCH ${PATCH_DIR}/curl.patch
-  DIFF ${REPO}/compare/bagder:
+  DIFF ${REPO}/compare/curl:
   )
 ########################################
 function(build_curl)

@@ -11,13 +11,13 @@ set(PRO_CARES
   REPO "repo" ${REPO} "forked c-ares repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/c-ares.git
-  GIT_UPSTREAM git://github.com/bagder/c-ares.git
+  GIT_UPSTREAM git://github.com/c-ares/c-ares.git
   GIT_TAG xp-${VER_} # what to 'git checkout'
   GIT_REF cares-${VER_} # create patch from this tag to 'git checkout'
   DLURL http://c-ares.haxx.se/download/c-ares-${VER}.tar.gz
   DLMD5 1196067641411a75d3cbebe074fd36d8
   PATCH ${PATCH_DIR}/cares.patch
-  DIFF ${REPO}/compare/bagder:
+  DIFF ${REPO}/compare/c-ares:
   )
 ########################################
 function(build_cares)
