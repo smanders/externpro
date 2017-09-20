@@ -36,6 +36,7 @@ function(build_libssh2)
   build_openssl(osslTgts)
   build_zlib(zlibTgts)
   set(depTgts ${osslTgts} ${zlibTgts})
+  xpGetArgValue(${PRO_LIBSSH2} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-libssh2-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -43,6 +44,7 @@ function(build_libssh2)
     -DCRYPTO_BACKEND:STRING=OpenSSL
     -DFIND_OPENSSL_MODULE_PATH=ON
     -DCMAKE_USE_ZLIB_MODULE_PATH=ON
+    -DLIBSSH2_VER=${VER}
     )
   xpCmakeBuild(libssh2 "${depTgts}" "${XP_CONFIGURE}" libssh2Targets)
   if(ARGN)
