@@ -24,10 +24,11 @@ function(build_cares)
   if(NOT (XP_DEFAULT OR XP_PRO_CARES))
     return()
   endif()
+  xpGetArgValue(${PRO_CARES} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-cares-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(cares "" "" caresTargets)
+  xpCmakeBuild(cares "" "-DCARES_VER=${VER}" caresTargets)
   if(ARGN)
     set(${ARGN} "${caresTargets}" PARENT_SCOPE)
   endif()
