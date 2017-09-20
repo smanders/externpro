@@ -27,10 +27,11 @@ function(build_openssl)
   if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL))
     return()
   endif()
+  xpGetArgValue(${PRO_OPENSSL} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-openssl-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(openssl "" "" opensslTargets)
+  xpCmakeBuild(openssl "" "-DOPENSSL_VER=${VER}" opensslTargets)
   if(ARGN)
     set(${ARGN} "${opensslTargets}" PARENT_SCOPE)
   endif()

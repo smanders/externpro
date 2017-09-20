@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..0b679e0
+index 0000000..12ecac2
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,63 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(openssl)
 +include(flags OPTIONAL)
@@ -48,9 +48,15 @@ index 0000000..0b679e0
 +  endif()
 +endfunction()
 +########################################
++if(DEFINED OPENSSL_VER)
++  set(ver _${OPENSSL_VER})
++  set(verDir /${PROJECT_NAME}${ver})
++endif()
++set(targetsFile ${PROJECT_NAME}${ver}-targets)
++########################################
 +add_subdirectory(crypto)
 +add_subdirectory(ssl)
-+install(FILES e_os2.h DESTINATION include/openssl)
++install(FILES e_os2.h DESTINATION include${verDir}/${PROJECT_NAME})
 +set(misc
 +  FAQ
 +  LICENSE
@@ -59,8 +65,8 @@ index 0000000..0b679e0
 +  README.ASN1
 +  README.ENGINE
 +  )
-+install(FILES ${misc} DESTINATION share/openssl)
-+install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
++install(FILES ${misc} DESTINATION share${verDir}/openssl)
++install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/Makefile.org b/Makefile.org
 index b7a3f96..8becb80 100644
 --- a/Makefile.org
@@ -195,10 +201,10 @@ index 0000000..ba69eaa
 +endforeach()
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..77f30de
+index 0000000..f3c53fd
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,2081 @@
+@@ -0,0 +1,2082 @@
 +set(lib_name crypto)
 +########################################
 +# cmake-generate buildinf, opensslconf
@@ -2271,15 +2277,16 @@ index 0000000..77f30de
 +########################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +add_dependencies(${lib_name} ${lib_name}_hdrs ssl_hdrs)
 +########################################
 +# install
-+install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${${lib_name}_exhdrs} DESTINATION include/openssl)
++install(FILES ${${lib_name}_exhdrs} DESTINATION include${verDir}/${PROJECT_NAME})
 diff --git a/crypto/Makefile b/crypto/Makefile
 index 9a39e93..15828ce 100644
 --- a/crypto/Makefile
@@ -2389,10 +2396,10 @@ index da6c875..d675f5c 100644
  	ctags $(SRC)
 diff --git a/ssl/CMakeLists.txt b/ssl/CMakeLists.txt
 new file mode 100644
-index 0000000..c6cfd89
+index 0000000..8916231
 --- /dev/null
 +++ b/ssl/CMakeLists.txt
-@@ -0,0 +1,119 @@
+@@ -0,0 +1,120 @@
 +set(lib_name ssl)
 +set(lib_deps crypto)
 +########################################
@@ -2502,13 +2509,14 @@ index 0000000..c6cfd89
 +########################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +add_dependencies(${lib_name} ${lib_deps} ${lib_name}_hdrs)
 +target_link_libraries(${lib_name} ${lib_deps})
 +########################################
 +# install
-+install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${${lib_name}_exhdrs} DESTINATION include/openssl)
++install(FILES ${${lib_name}_exhdrs} DESTINATION include${verDir}/${PROJECT_NAME})
