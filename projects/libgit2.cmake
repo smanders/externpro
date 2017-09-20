@@ -24,9 +24,12 @@ function(build_libgit2)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBGIT2))
     return()
   endif()
+  xpGetArgValue(${PRO_LIBGIT2} ARG VER VALUE VER)
   set(XP_CONFIGURE
     -DBUILD_SHARED_LIBS=OFF
     -DTHREADSAFE=ON
+    -DINSTALL_LIBGIT2_CONFIG=OFF
+    -DLIBGIT2_VER=${VER}
     )
   if(WIN32)
     set(libssh2Tgts)

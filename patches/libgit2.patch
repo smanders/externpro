@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 77a591f..4be2a69 100644
+index 77a591f..9e92472 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,6 +20,7 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mo
@@ -10,20 +10,22 @@ index 77a591f..4be2a69 100644
  
  # Build options
  #
-@@ -39,6 +40,12 @@ OPTION( USE_ICONV			"Link with and use iconv library" 		OFF )
+@@ -39,6 +40,14 @@ OPTION( USE_ICONV			"Link with and use iconv library" 		OFF )
  OPTION( USE_SSH				"Link with libssh to enable SSH support" ON )
  OPTION( USE_GSSAPI			"Link with libgssapi for SPNEGO auth"   OFF )
  OPTION( VALGRIND			"Configure build for valgrind"			OFF )
 +OPTION( OPENSSL_MODULE_PATH		"Find OpenSSL in CMAKE_MODULE_PATH"			OFF )
 +OPTION( ZLIB_MODULE_PATH		"Find zlib in CMAKE_MODULE_PATH"			OFF )
 +OPTION( LIBSSH2_MODULE_PATH		"Find libssh2 in CMAKE_MODULE_PATH"			OFF )
++OPTION( INSTALL_LIBGIT2_CONFIG		"Install libgit2 config (pkg-config libgit2.pc)"	ON )
 +MARK_AS_ADVANCED( OPENSSL_MODULE_PATH )
 +MARK_AS_ADVANCED( ZLIB_MODULE_PATH )
 +MARK_AS_ADVANCED( LIBSSH2_MODULE_PATH )
++MARK_AS_ADVANCED( INSTALL_LIBGIT2_CONFIG )
  
  IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
  	SET( USE_ICONV ON )
-@@ -56,6 +63,8 @@ IF(MSVC)
+@@ -56,6 +65,8 @@ IF(MSVC)
  	# This option must match the settings used in your program, in particular if you
  	# are linking statically
  	OPTION( STATIC_CRT		"Link the static CRT libraries"	ON  )
@@ -32,7 +34,20 @@ index 77a591f..4be2a69 100644
  
  	# By default, libgit2 is built with WinHTTP.  To use the built-in
  	# HTTP transport, invoke CMake with the "-DWINHTTP=OFF" argument.
-@@ -152,7 +161,11 @@ IF (WIN32 AND WINHTTP AND NOT MINGW)
+@@ -79,12 +90,6 @@ SET(LIBGIT2_PC_REQUIRES "")
+ # pc file.
+ SET(LIBGIT2_PC_LIBS "")
+ 
+-# Installation paths
+-#
+-SET(BIN_INSTALL_DIR bin CACHE PATH "Where to install binaries to.")
+-SET(LIB_INSTALL_DIR lib CACHE PATH "Where to install libraries to.")
+-SET(INCLUDE_INSTALL_DIR include CACHE PATH "Where to install headers to.")
+-
+ FUNCTION(TARGET_OS_LIBRARIES target)
+ 	IF(WIN32)
+ 		TARGET_LINK_LIBRARIES(${target} ws2_32)
+@@ -152,7 +157,11 @@ IF (WIN32 AND WINHTTP AND NOT MINGW)
  	FILE(GLOB SRC_HTTP deps/http-parser/*.c deps/http-parser/*.h)
  ELSE ()
  	IF (NOT AMIGA)
@@ -45,7 +60,7 @@ index 77a591f..4be2a69 100644
  	ENDIF ()
  
  	FIND_PACKAGE(HTTP_Parser)
-@@ -196,7 +209,11 @@ IF(WIN32 OR AMIGA OR ANDROID OR CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)")
+@@ -196,7 +205,11 @@ IF(WIN32 OR AMIGA OR ANDROID OR CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)")
  ENDIF()
  
  # Optional external dependency: zlib
@@ -58,7 +73,7 @@ index 77a591f..4be2a69 100644
  IF (ZLIB_FOUND)
  	INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
  	LINK_LIBRARIES(${ZLIB_LIBRARIES})
-@@ -214,7 +231,11 @@ ENDIF()
+@@ -214,7 +227,11 @@ ENDIF()
  
  # Optional external dependency: libssh2
  IF (USE_SSH)
@@ -71,7 +86,7 @@ index 77a591f..4be2a69 100644
  ENDIF()
  IF (LIBSSH2_FOUND)
  	ADD_DEFINITIONS(-DGIT_SSH)
-@@ -244,6 +265,7 @@ ENDIF()
+@@ -244,6 +261,7 @@ ENDIF()
  
  # Platform specific compilation flags
  IF (MSVC)
@@ -79,7 +94,7 @@ index 77a591f..4be2a69 100644
  
  	STRING(REPLACE "/Zm1000" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
  
-@@ -310,6 +332,8 @@ IF (MSVC)
+@@ -310,6 +328,8 @@ IF (MSVC)
  	SET(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
  	SET(CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL}")
  
@@ -88,20 +103,42 @@ index 77a591f..4be2a69 100644
  	SET(WIN_RC "src/win32/git2.rc")
  
     # Precompiled headers
-@@ -440,7 +464,7 @@ IF (MSVC_IDE)
+@@ -407,6 +427,18 @@ ELSE()
+ 	MESSAGE(FATAL_ERROR "Unsupported architecture")
+ ENDIF()
+ 
++IF(DEFINED LIBGIT2_VER)
++  SET(ver _${LIBGIT2_VER})
++  SET(verDir /${PROJECT_NAME}${ver})
++  SET(LIBGIT2_FILENAME git2${ver})
++ENDIF()
++
++# Installation paths
++#
++SET(BIN_INSTALL_DIR bin CACHE PATH "Where to install binaries to.")
++SET(LIB_INSTALL_DIR lib CACHE PATH "Where to install libraries to.")
++SET(INCLUDE_INSTALL_DIR include${verDir} CACHE PATH "Where to install headers to.")
++
+ # Compile and link libgit2
+ ADD_LIBRARY(git2 ${SRC_H} ${SRC_GIT2} ${SRC_OS} ${SRC_ZLIB} ${SRC_HTTP} ${SRC_REGEX} ${SRC_SSH} ${SRC_SHA1} ${WIN_RC})
+ TARGET_LINK_LIBRARIES(git2 ${SSL_LIBRARIES})
+@@ -440,14 +472,18 @@ IF (MSVC_IDE)
  ENDIF ()
  
  # Install
 -INSTALL(TARGETS git2
-+INSTALL(TARGETS git2 EXPORT ${PROJECT_NAME}-targets
++SET(targetsFile ${PROJECT_NAME}${ver}-targets)
++INSTALL(TARGETS git2 EXPORT ${targetsFile}
  	RUNTIME DESTINATION ${BIN_INSTALL_DIR}
  	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
  	ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-@@ -448,6 +472,7 @@ INSTALL(TARGETS git2
+ )
++IF(INSTALL_LIBGIT2_CONFIG)
  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libgit2.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig )
++ENDIF()
  INSTALL(DIRECTORY include/git2 DESTINATION ${INCLUDE_INSTALL_DIR} )
  INSTALL(FILES include/git2.h DESTINATION ${INCLUDE_INSTALL_DIR} )
-+INSTALL(EXPORT ${PROJECT_NAME}-targets DESTINATION ${LIB_INSTALL_DIR}/cmake )
++INSTALL(EXPORT ${targetsFile} DESTINATION ${LIB_INSTALL_DIR}/cmake )
  
  # Tests
  IF (BUILD_CLAR)
