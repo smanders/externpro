@@ -43,9 +43,12 @@ function(build_curl)
     build_cmakexp(cmTgts)
     list(APPEND depTgts ${cmTgts})
   endif()
+  xpGetArgValue(${PRO_CURL} ARG VER VALUE VER)
   set(XP_CONFIGURE
+    -DCURL_VER=${VER}
     -DBUILD_CURL_EXE=ON
     -DBUILD_CURL_TESTS=OFF
+    -DINSTALL_CURL_CONFIG=OFF
     -DCURL_STATICLIB=ON
     -DENABLE_ARES=ON
     -DFIND_ARES_MODULE_PATH=ON
