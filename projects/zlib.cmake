@@ -24,11 +24,14 @@ function(build_zlib)
   if(NOT (XP_DEFAULT OR XP_PRO_ZLIB))
     return()
   endif()
+  xpGetArgValue(${PRO_ZLIB} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-zlib-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   set(XP_CONFIGURE
-    -DSKIP_INSTALL_SHARED_LIBRARIES=ON
+    -DSKIP_INSTALL_SHARED_LIBRARIES=ON # only need static library
+    -DSKIP_INSTALL_FILES=ON # no need for share/man and share/pkgconfig
+    -DZLIB_VER=${VER}
     )
   xpCmakeBuild(zlib "" "${XP_CONFIGURE}" zlibTargets)
   if(ARGN)
