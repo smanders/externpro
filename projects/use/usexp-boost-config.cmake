@@ -57,8 +57,8 @@ if(NOT DEFINED Boost_LIBS)
 endif()
 list(FIND Boost_LIBS iostreams idx)
 if(NOT ${idx} EQUAL -1)
-  xpGetExtern(dontcare zlibBinary PRIVATE zlib)
-  xpGetExtern(dontcare bzip2Binary PRIVATE bzip2)
+  xpGetPkgVar(zlib LIBRARIES) # sets ZLIB_LIBRARIES
+  xpGetPkgVar(bzip2 LIBRARIES) # sets BZIP2_LIBRARIES
 endif()
 unset(Boost_INCLUDE_DIR CACHE)
 unset(Boost_LIBRARY_DIR CACHE)
@@ -70,8 +70,8 @@ endforeach()
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1.\\2" BOOST_VER2 ${BOOST_VER})
 set(Boost_ADDITIONAL_VERSIONS ${BOOST_VER} ${BOOST_VER2})
 if(UNIX)
-  if(DEFINED zlibBinary AND DEFINED bzip2Binary)
-    set(syslibs $<TARGET_FILE:${zlibBinary}> $<TARGET_FILE:${bzip2Binary}>)
+  if(DEFINED ZLIB_LIBRARIES AND DEFINED BZIP2_LIBRARIES)
+    set(syslibs $<TARGET_FILE:${ZLIB_LIBRARIES}> $<TARGET_FILE:${BZIP2_LIBRARIES}>)
   endif()
   include(CheckLibraryExists)
   function(checkLibraryConcat lib symbol liblist)
@@ -115,10 +115,10 @@ else()
   endif()
   link_directories(${XP_ROOTDIR}/lib)
   set(reqVars ${PRJ}_INCLUDE_DIR)
-  if(DEFINED zlibBinary AND DEFINED bzip2Binary)
+  if(DEFINED ZLIB_LIBRARIES AND DEFINED BZIP2_LIBRARIES)
     add_definitions(
-      -DBOOST_ZLIB_BINARY=$<TARGET_FILE:${zlibBinary}>
-      -DBOOST_BZIP2_BINARY=$<TARGET_FILE:${bzip2Binary}>
+      -DBOOST_ZLIB_BINARY=$<TARGET_FILE:${ZLIB_LIBRARIES}>
+      -DBOOST_BZIP2_BINARY=$<TARGET_FILE:${BZIP2_LIBRARIES}>
       )
   endif()
 endif()
