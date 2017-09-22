@@ -28,9 +28,11 @@ function(build_apr)
   if(NOT (XP_DEFAULT OR XP_PRO_APR))
     return()
   endif()
+  xpGetArgValue(${PRO_APR} ARG VER VALUE VER)
   set(XP_CONFIGURE
     -DAPR_BUILD_TESTAPR=ON
     -DTEST_STATIC_LIBS=ON
+    -DAPR_VER=${VER}
     )
   configure_file(${PRO_DIR}/use/usexp-apr-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
