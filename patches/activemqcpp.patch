@@ -761,10 +761,10 @@ index 0000000..7a229f2
 +endforeach()
 diff --git a/activemq-cpp/src/main/CMakeLists.txt b/activemq-cpp/src/main/CMakeLists.txt
 new file mode 100644
-index 0000000..15d71ee
+index 0000000..990cfa4
 --- /dev/null
 +++ b/activemq-cpp/src/main/CMakeLists.txt
-@@ -0,0 +1,1700 @@
+@@ -0,0 +1,1708 @@
 +set(lib_name activemqcpp)
 +#######################################
 +# library sources
@@ -2447,21 +2447,29 @@ index 0000000..15d71ee
 +source_group(decaf\\util\\zip FILES ${decaf_util_zip_srcs})
 +list(APPEND ${lib_name}_libsrcs ${decaf_util_zip_srcs})
 +#######################################
++# version
++if(DEFINED ACTIVEMQCPP_VER)
++  set(ver _${ACTIVEMQCPP_VER})
++  set(verDir /${lib_name}${ver})
++endif()
++#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
 +target_link_libraries(${lib_name} ${APR_LIBRARIES} ${OPENSSL_LIBRARIES})
 +target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 +target_include_directories(${lib_name} SYSTEM PUBLIC
-+  $<BUILD_INTERFACE:${APR_INCLUDE_DIR}>
++  $<BUILD_INTERFACE:${APR_INCLUDE_DIRS}>
 +  $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>
 +  )
++set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-+  DESTINATION include/${lib_name}
++  DESTINATION include${verDir}/${lib_name}
 +  FILES_MATCHING PATTERN "*.h"
 +  )
-+install(TARGETS ${lib_name} EXPORT ${lib_name}-targets
++set(targetsFile ${lib_name}${ver}-targets)
++install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  ARCHIVE DESTINATION lib
 +  LIBRARY DESTINATION lib
 +  RUNTIME DESTINATION bin
 +  )
-+install(EXPORT ${lib_name}-targets DESTINATION lib/cmake)
++install(EXPORT ${targetsFile} DESTINATION lib/cmake)
