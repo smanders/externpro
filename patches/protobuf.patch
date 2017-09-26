@@ -8,7 +8,7 @@ index 0000000..3eb6f89
 +include(flags OPTIONAL)
 +add_subdirectory(cmake)
 diff --git a/cmake/CMakeLists.txt b/cmake/CMakeLists.txt
-index 33e069f..255443c 100644
+index 33e069f..6a32734 100644
 --- a/cmake/CMakeLists.txt
 +++ b/cmake/CMakeLists.txt
 @@ -44,7 +44,21 @@ if (CMAKE_USE_PTHREADS_INIT)
@@ -52,11 +52,47 @@ index 33e069f..255443c 100644
  
  if (HAVE_ZLIB)
    add_definitions(-DHAVE_ZLIB)
+@@ -111,6 +125,15 @@ else (MSVC)
+   set(LIB_PREFIX)
+ endif (MSVC)
+ 
++if(NOT DEFINED PROTOBUF_VER)
++  set(PROTOBUF_VER ${protobuf_VERSION})
++elseif(NOT ${PROTOBUF_VER} STREQUAL ${protobuf_VERSION})
++  message(AUTHOR_WARNING "version passed in (${PROTOBUF_VER}) doesn't match internal version (${protobuf_VERSION})")
++endif()
++set(ver _${PROTOBUF_VER})
++set(verDir /${PROJECT_NAME}${ver})
++set(CMAKE_INSTALL_INCLUDEDIR include${verDir})
++
+ include(libprotobuf-lite.cmake)
+ include(libprotobuf.cmake)
+ include(libprotoc.cmake)
+diff --git a/cmake/install.cmake b/cmake/install.cmake
+index dbb4265..e1826c5 100644
+--- a/cmake/install.cmake
++++ b/cmake/install.cmake
+@@ -85,7 +85,7 @@ endforeach()
+ # Export configuration
+ 
+ install(EXPORT protobuf-targets
+-  DESTINATION "lib/cmake/protobuf"
++  DESTINATION "lib/cmake/protobuf${ver}"
+   COMPONENT protobuf-export)
+ 
+ configure_file(protobuf-config.cmake.in
+@@ -99,5 +99,5 @@ install(FILES
+   "${protobuf_BINARY_DIR}/protobuf-config.cmake"
+   "${protobuf_BINARY_DIR}/protobuf-config-version.cmake"
+   "${protobuf_BINARY_DIR}/protobuf-module.cmake"
+-  DESTINATION "lib/cmake/protobuf"
++  DESTINATION "lib/cmake/protobuf${ver}"
+   COMPONENT protobuf-export)
 diff --git a/cmake/libprotobuf-lite.cmake b/cmake/libprotobuf-lite.cmake
-index 9fafc31..c9aec56 100644
+index 9fafc31..49944df 100644
 --- a/cmake/libprotobuf-lite.cmake
 +++ b/cmake/libprotobuf-lite.cmake
-@@ -25,7 +25,7 @@ set(libprotobuf_lite_files
+@@ -25,8 +25,8 @@ set(libprotobuf_lite_files
  )
  
  add_library(libprotobuf-lite ${libprotobuf_lite_files})
@@ -65,11 +101,13 @@ index 9fafc31..c9aec56 100644
  target_include_directories(libprotobuf-lite PUBLIC ${protobuf_source_dir}/src)
  set_target_properties(libprotobuf-lite PROPERTIES
      COMPILE_DEFINITIONS LIBPROTOBUF_EXPORTS
+-    OUTPUT_NAME ${LIB_PREFIX}protobuf-lite)
++    OUTPUT_NAME ${LIB_PREFIX}protobuf-lite${ver})
 diff --git a/cmake/libprotobuf.cmake b/cmake/libprotobuf.cmake
-index 64a9cae..9d35a1b 100644
+index 64a9cae..23919c2 100644
 --- a/cmake/libprotobuf.cmake
 +++ b/cmake/libprotobuf.cmake
-@@ -54,7 +54,7 @@ set(libprotobuf_files
+@@ -54,8 +54,8 @@ set(libprotobuf_files
  )
  
  add_library(libprotobuf ${libprotobuf_lite_files} ${libprotobuf_files})
@@ -78,6 +116,18 @@ index 64a9cae..9d35a1b 100644
  target_include_directories(libprotobuf PUBLIC ${protobuf_source_dir}/src)
  set_target_properties(libprotobuf PROPERTIES
      COMPILE_DEFINITIONS LIBPROTOBUF_EXPORTS
+-    OUTPUT_NAME ${LIB_PREFIX}protobuf)
++    OUTPUT_NAME ${LIB_PREFIX}protobuf${ver})
+diff --git a/cmake/libprotoc.cmake b/cmake/libprotoc.cmake
+index 7aa92ee..675faf5 100644
+--- a/cmake/libprotoc.cmake
++++ b/cmake/libprotoc.cmake
+@@ -93,4 +93,4 @@ add_library(libprotoc ${libprotoc_files})
+ target_link_libraries(libprotoc libprotobuf)
+ set_target_properties(libprotoc PROPERTIES
+     COMPILE_DEFINITIONS LIBPROTOC_EXPORTS
+-    OUTPUT_NAME ${LIB_PREFIX}protoc)
++    OUTPUT_NAME ${LIB_PREFIX}protoc${ver})
 diff --git a/cmake/protobuf-module.cmake.in b/cmake/protobuf-module.cmake.in
 index d81dc45..5627d1f 100644
 --- a/cmake/protobuf-module.cmake.in
@@ -92,15 +142,16 @@ index d81dc45..5627d1f 100644
    if(DEFINED PROTOBUF_IMPORT_DIRS)
      foreach(DIR ${PROTOBUF_IMPORT_DIRS})
 diff --git a/cmake/protoc.cmake b/cmake/protoc.cmake
-index 4f07c38..2be9c39 100644
+index 4f07c38..b3617ed 100644
 --- a/cmake/protoc.cmake
 +++ b/cmake/protoc.cmake
-@@ -4,3 +4,6 @@ set(protoc_files
+@@ -4,3 +4,7 @@ set(protoc_files
  
  add_executable(protoc ${protoc_files})
  target_link_libraries(protoc libprotobuf libprotoc)
 +set_target_properties(protoc PROPERTIES
 +  DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}"
++  OUTPUT_NAME protoc${ver}
 +)
 diff --git a/src/google/protobuf/compiler/command_line_interface.cc b/src/google/protobuf/compiler/command_line_interface.cc
 index 26a4f0b..175a398 100644

@@ -31,6 +31,7 @@ function(build_protobuf)
     xpPatchProject(${PRO_ZLIB})
   endif()
   build_zlib(zlibTgts)
+  xpGetArgValue(${PRO_PROTOBUF} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-protobuf-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -38,6 +39,7 @@ function(build_protobuf)
     -DBUILD_TESTING=OFF # we don't have gmock, unless we switch to a release tar ball
     -DZLIB_MODULE_PATH=ON # with this option ON, we don't need -DZLIB=ON
     -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
+    -DPROTOBUF_VER=${VER}
     )
   xpCmakeBuild(protobuf "${zlibTgts}" "${XP_CONFIGURE}")
 endfunction()
