@@ -1,7 +1,7 @@
 # node
-set(NODE_VERSIONS v6)
-set(NODE_OLDVER v5)
-set(NODE_NEWVER v6)
+set(NODE_OLDVER v6.9.0)
+set(NODE_NEWVER v6.11.3)
+set(NODE_VERSIONS ${NODE_OLDVER} ${NODE_NEWVER})
 ####################
 function(build_node)
   configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
@@ -81,7 +81,7 @@ function(build_node_ver ver)
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmSrc} ${npmDst}
       DEPENDEES install
       )
-    if(${ver} STREQUAL v6)
+    if(${ver} MATCHES v6)
       set(dedupeDirs
         ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm}
         ${npmDst}/${nm}/node-gyp/${nm}/npmlog/${nm}
