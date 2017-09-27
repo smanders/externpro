@@ -18,11 +18,12 @@ function(build_fftw)
   if(NOT (XP_DEFAULT OR XP_PRO_FFTW))
     return()
   endif()
+  xpGetArgValue(${PRO_FFTW} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-fftw-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   if(MSVC)
-    xpCmakeBuild(fftw fftw_fftwcmake)
+    xpCmakeBuild(fftw fftw_fftwcmake "-DFFTW_VER=${VER}")
   else()
     list(APPEND removeFlags -std=c++0x -std=c++11 -std=c++14 -stdlib=libc++)
     xpGetConfigureFlags(CPP fftw_CONFIGURE_FLAGS "${removeFlags}")
@@ -58,22 +59,23 @@ function(build_fftw)
         # add suffix to Debug libraries
         if(${cfg} STREQUAL "Debug")
           set(appendSuffix ${CMAKE_COMMAND} -Dsrc:STRING=<BINARY_DIR>/lib/libfftw*.*a
-            -Dsuffix:STRING=-d -P ${MODULES_DIR}/cmsappendsuffix.cmake)
-        else() # else do nothing (if not Debug)
-          set(appendSuffix ${CMAKE_COMMAND} -E echo_append "")
+            -Dsuffix:STRING=_${VER}-d -P ${MODULES_DIR}/cmsappendsuffix.cmake)
+        else() # not Debug
+          set(appendSuffix ${CMAKE_COMMAND} -Dsrc:STRING=<BINARY_DIR>/lib/libfftw*.*a
+            -Dsuffix:STRING=_${VER} -P ${MODULES_DIR}/cmsappendsuffix.cmake)
         endif()
         ExternalProject_Get_Property(fftw SOURCE_DIR)
         ExternalProject_Get_Property(${FFTW_TARGET} INSTALL_DIR)
         # copy libs and headers to stage directory
+        set(verDir /fftw_${VER})
         ExternalProject_Add(${FFTW_TARGET}_stage DEPENDS ${FFTW_TARGET}
-          DOWNLOAD_DIR ${NULL_DIR} SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${INSTALL_DIR}
-          DOWNLOAD_COMMAND ${CMAKE_COMMAND} -Dsrc:FILEPATH=<SOURCE_DIR>/cmake/usexp-fftw-config.cmake
-            -Ddst:PATH=${STAGE_DIR}/share/cmake -P ${MODULES_DIR}/cmscopyfiles.cmake
+          DOWNLOAD_DIR ${NULL_DIR} DOWNLOAD_COMMAND ""
+          SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${INSTALL_DIR}
           CONFIGURE_COMMAND ${appendSuffix}
           BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=<BINARY_DIR>/lib/libfftw*.a
             -Ddst:STRING=${STAGE_DIR}/lib -P ${MODULES_DIR}/cmscopyfiles.cmake
           INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=<BINARY_DIR>/include/*.h
-            -Ddst:STRING=${STAGE_DIR}/include/fftw3 -P ${MODULES_DIR}/cmscopyfiles.cmake
+            -Ddst:STRING=${STAGE_DIR}/include${verDir}/fftw3 -P ${MODULES_DIR}/cmscopyfiles.cmake
           INSTALL_DIR ${NULL_DIR}
           )
         set_property(TARGET ${FFTW_TARGET}_stage PROPERTY FOLDER ${bld_folder})

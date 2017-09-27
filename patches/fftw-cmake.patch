@@ -9,19 +9,26 @@ index 0000000..b599b4f
 +add_subdirectory(cmake)
 diff --git a/cmake/CMakeLists.txt b/cmake/CMakeLists.txt
 new file mode 100644
-index 0000000..fd84ea1
+index 0000000..ef52a8b
 --- /dev/null
 +++ b/cmake/CMakeLists.txt
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,55 @@
 +include(flags OPTIONAL)
 +set(VER_MAJ 3)
 +set(VER_MIN 3)
 +set(VER_PT 3)
++set(VER_DOT ${VER_MAJ}.${VER_MIN}.${VER_PT})
++if(NOT DEFINED FFTW_VER)
++  set(FFTW_VER ${VER_DOT})
++elseif(NOT ${FFTW_VER} STREQUAL ${VER_DOT})
++  message(AUTHOR_WARNING "version passed in (${FFTW_VER}) doesn't match internal version (${VER_DOT})")
++endif()
++set(ver _${FFTW_VER})
++set(verDir /${PROJECT_NAME}${ver})
++set(targetsFile ${PROJECT_NAME}${ver}-targets)
 +set(fftwroot ${fftw_SOURCE_DIR})
 +get_filename_component(fftwroot ${fftwroot} ABSOLUTE)
 +include(macros.cmake)
-+option(LINK_WITH_EXTERN_LIB "link with extern fftw lib" OFF)
-+set(externpro ${CMAKE_INSTALL_PREFIX})
 +if(MSVC)
 +  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 +  add_definitions(/Oi) # enable intrinsic functions
@@ -46,55 +53,33 @@ index 0000000..fd84ea1
 +  elseif(${prec} MATCHES "double")
 +    set(pr "")
 +  endif()
-+  set(lib_name fftw${VER_MAJ}${pr})
++  set(lib_name libfftw${VER_MAJ}${pr}-${VER_MIN})
 +  set(cfg_dir ${CMAKE_BINARY_DIR}/${lib_name})
 +  set(exe_name bench${pr})
 +  if(NOT EXISTS ${cfg_dir})
 +    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${cfg_dir})
 +  endif()
 +  include(config.h.cmake)
-+  if(MSVC)
-+    set(lib_name libfftw${VER_MAJ}${pr}-${VER_MIN})
-+  endif()
-+  if(LINK_WITH_EXTERN_LIB)
-+    if(MSVC)
-+      set(libname_search ${lib_name}.lib ${lib_name}-d.lib ${lib_name}-s.lib)
-+      set(lib_name optimized ${lib_name}-s debug ${lib_name}-d)
-+    else()
-+      set(libname_search lib${lib_name}.a lib${lib_name}-d.a)
-+      set(lib_name optimized ${lib_name} debug ${lib_name}-d)
-+    endif()
-+    find_path(fftw${pr}_LIBDIR
-+      NAMES ${libname_search}
-+      PATHS
-+        ~/src/sdlExtern/SunOS/lib
-+        ${externpro}/lib
-+      DOC "fftw${pr} library directory"
-+      )
-+    if(NOT fftw${pr}_LIBDIR)
-+      message(FATAL_ERROR "fftw${pr} lib not found")
-+    endif()
-+    link_directories(${fftw${pr}_LIBDIR})
-+  else()
-+    include(libfftw.cmake)
-+  endif()
++  include(libfftw.cmake)
 +  include(bench.cmake)
 +endforeach()
 +if(GENERATE_CSCOPE)
 +  generate_cscope_db()
 +endif()
-+install(FILES ${fftwroot}/api/fftw3.h DESTINATION include/fftw${VER_MAJ})
-+install(EXPORT ${PROJECT_NAME}-targets DESTINATION lib/cmake)
++install(FILES ${fftwroot}/api/fftw3.h DESTINATION include${verDir}/fftw${VER_MAJ})
++install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/cmake/bench.cmake b/cmake/bench.cmake
 new file mode 100644
-index 0000000..1f229a3
+index 0000000..947db69
 --- /dev/null
 +++ b/cmake/bench.cmake
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,37 @@
 +#######################################
 +# executable dependencies and libraries
 +list(APPEND ${exe_name}_deps ${lib_name})
-+if(UNIX)
++include(CheckLibraryExists)
++check_library_exists(m sin "${CMAKE_LIBRARY_PATH}" HAVE_LIBM)
++if(HAVE_LIBM)
 +  list(APPEND ${exe_name}_deps m) # math library
 +endif()
 +#######################################
@@ -122,16 +107,8 @@ index 0000000..1f229a3
 +#######################################
 +# executable
 +add_executable(${exe_name} ${${exe_name}_srcs})
-+add_dependencies(${exe_name} ${${exe_name}_deps})
 +target_link_libraries(${exe_name} ${${exe_name}_deps})
-+set_property(TARGET ${exe_name} PROPERTY INCLUDE_DIRECTORIES
-+  ${cfg_dir}
-+  ${fftwroot}/api
-+  ${fftwroot}/dft
-+  ${fftwroot}/kernel
-+  ${fftwroot}/rdft
-+  ${fftwroot}/libbench2
-+  )
++target_include_directories(${exe_name} PRIVATE ${fftwroot}/libbench2)
 +set_property(TARGET ${exe_name} PROPERTY FOLDER "bench")
 +master_src_list_append(${CMAKE_CURRENT_SOURCE_DIR} "${${exe_name}_srcs}")
 diff --git a/cmake/config.h.cmake b/cmake/config.h.cmake
@@ -765,10 +742,10 @@ index 0000000..9a0bb3a
 +#cmakedefine size_t
 diff --git a/cmake/libfftw.cmake b/cmake/libfftw.cmake
 new file mode 100644
-index 0000000..61fa137
+index 0000000..c9ccf09
 --- /dev/null
 +++ b/cmake/libfftw.cmake
-@@ -0,0 +1,136 @@
+@@ -0,0 +1,140 @@
 +#######################################
 +# library sources
 +source_group("Header Files" FILES ${cfg_dir}/config.h)
@@ -881,14 +858,14 @@ index 0000000..61fa137
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+set_property(TARGET ${lib_name} PROPERTY INCLUDE_DIRECTORIES
-+  ${cfg_dir}
-+  ${fftwroot}/api
-+  ${fftwroot}/dft
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${cfg_dir}>
++  $<BUILD_INTERFACE:${fftwroot}/api>
++  $<BUILD_INTERFACE:${fftwroot}/dft>
++  $<BUILD_INTERFACE:${fftwroot}/kernel>
++  $<BUILD_INTERFACE:${fftwroot}/rdft>
++  PRIVATE
 +  ${fftwroot}/dft/scalar
 +  ${fftwroot}/dft/simd
-+  ${fftwroot}/kernel
-+  ${fftwroot}/rdft
 +  ${fftwroot}/rdft/scalar
 +  ${fftwroot}/rdft/simd
 +  ${fftwroot}/reodft
@@ -898,8 +875,12 @@ index 0000000..61fa137
 +set_property(TARGET ${lib_name} PROPERTY COMPILE_DEFINITIONS
 +  LIBFFTWF33_EXPORTS
 +  )
++set_target_properties(${lib_name} PROPERTIES
++  OUTPUT_NAME ${lib_name}${ver}
++  PREFIX "" # strip off the "lib" prefix, since it's already libfftw
++  )
 +set_property(TARGET ${lib_name} PROPERTY FOLDER "libfftw")
-+install(TARGETS ${lib_name} EXPORT ${PROJECT_NAME}-targets
++install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
