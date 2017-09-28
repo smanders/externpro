@@ -14,5 +14,5 @@ set(PRO_LUABRIDGE
   GIT_TAG ${TAG}
   DLURL ${REPO}/archive/${TAG}.tar.gz
   DLMD5 0ac0ac198ec37ad5782dd5269ebbbe23
-  DLNAME LuaBridge-${VER}.tar.gz
+  DLNAME LuaBridge-${VER}p.tar.gz
   )
