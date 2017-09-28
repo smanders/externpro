@@ -28,6 +28,7 @@ function(build_lua)
   if(NOT (XP_DEFAULT OR XP_PRO_LUA))
     return()
   endif()
+  xpGetArgValue(${PRO_LUA} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-lua-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -35,6 +36,7 @@ function(build_lua)
     -DBUILD_SHARED_LIBS=OFF
     -DLUA_USE_READLINE=OFF
     -DLUA_USE_CURSES=OFF
+    -DLUA_VER=${VER}
     )
   xpCmakeBuild(lua "" "${XP_CONFIGURE}")
   if(NOT TARGET luabridge_bld)

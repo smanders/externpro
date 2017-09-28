@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cc303f5..c2c8db3 100644
+index cc303f5..d184749 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -6,6 +6,7 @@
@@ -19,38 +19,75 @@ index cc303f5..c2c8db3 100644
  	endif ( )
  endif ( )
  
-@@ -151,7 +152,7 @@ install_executable ( lua luac )
+@@ -125,11 +126,21 @@ else ( )
+   list ( APPEND SRC_LIB src/loadlib.c )
+ endif ( )
+ 
++## VERSION
++if(NOT DEFINED LUA_VER)
++  set(LUA_VER ${DIST_VERSION})
++elseif(NOT ${LUA_VER} STREQUAL ${DIST_VERSION})
++  message(AUTHOR_WARNING "version passed in (${LUA_VER}) doesn't match internal version (${DIST_VERSION})")
++endif()
++set(ver _${LUA_VER})
++set(verDir /${PROJECT_NAME}${ver}/)
++set(targetsFile ${PROJECT_NAME}${ver}-targets)
++
+ ## BUILD
+ # Create lua library
+ add_library ( liblua ${SRC_CORE} ${SRC_LIB} ${LUA_DLL_RC} ${LUA_DEF} )
+ target_link_libraries ( liblua ${LIBS} )
+-set_target_properties ( liblua PROPERTIES OUTPUT_NAME lua CLEAN_DIRECT_OUTPUT 1 )
++set_target_properties ( liblua PROPERTIES OUTPUT_NAME lua${ver} CLEAN_DIRECT_OUTPUT 1 )
+ if ( LUA_BUILD_AS_DLL )
+   set_target_properties ( liblua PROPERTIES COMPILE_DEFINITIONS LUA_BUILD_AS_DLL )
+ endif ()
+@@ -151,7 +162,7 @@ install_executable ( lua luac )
  install_library ( liblua )
  install_data ( README.md )
  #install_lua_module ( strict etc/strict.lua )
 -install_header ( src/lua.h src/lualib.h src/lauxlib.h src/lua.hpp ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h )
-+install_header ( src/lua.h src/lualib.h src/lauxlib.h src/lua.hpp ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h INTO lua )
++install_header ( src/lua.h src/lualib.h src/lauxlib.h src/lua.hpp ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h INTO ${verDir}lua )
  install_doc ( doc/ )
  install_foo ( etc/ )
  #install_test ( test/ )
 diff --git a/cmake/dist.cmake b/cmake/dist.cmake
-index 310ef94..2e1e9c3 100644
+index 310ef94..1ee7f6a 100644
 --- a/cmake/dist.cmake
 +++ b/cmake/dist.cmake
-@@ -141,6 +141,7 @@ macro ( install_executable )
+@@ -59,7 +59,7 @@ set ( INSTALL_SHARE share CACHE PATH "Directory for shared data." )
+ # Secondary paths
+ option ( INSTALL_VERSION
+       "Install runtime libraries and executables with version information." OFF)
+-set ( INSTALL_DATA ${INSTALL_SHARE}/${DIST_NAME} CACHE PATH
++set ( INSTALL_DATA ${INSTALL_SHARE}/${DIST_NAME}_${DIST_VERSION} CACHE PATH
+       "Directory the package can store documentation, tests or other data in.")  
+ set ( INSTALL_DOC  ${INSTALL_DATA}/doc CACHE PATH
+       "Recommended directory to install documentation into.")
+@@ -140,9 +140,11 @@ macro ( install_executable )
+     if ( INSTALL_VERSION )
        set_target_properties ( ${_file} PROPERTIES VERSION ${DIST_VERSION}
                                SOVERSION ${DIST_VERSION} )
++    else ()
++      set_target_properties ( ${_file} PROPERTIES OUTPUT_NAME ${_file}${ver} )
      endif ()
-+    set_target_properties ( ${_file} PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}" )
      install ( TARGETS ${_file} RUNTIME DESTINATION ${INSTALL_BIN}
-               COMPONENT Runtime )
+-              COMPONENT Runtime )
++              COMPONENT Runtime CONFIGURATIONS Release )
    endforeach()
-@@ -159,11 +160,12 @@ macro ( install_library )
+ endmacro ()
+ 
+@@ -159,11 +161,12 @@ macro ( install_library )
        set_target_properties ( ${_file} PROPERTIES VERSION ${DIST_VERSION}
                                SOVERSION ${DIST_VERSION} )
      endif ()
 -    install ( TARGETS ${_file}
-+    install ( TARGETS ${_file} EXPORT ${PROJECT_NAME}-targets
++    install ( TARGETS ${_file} EXPORT ${targetsFile}
                RUNTIME DESTINATION ${INSTALL_BIN} COMPONENT Runtime
                LIBRARY DESTINATION ${INSTALL_LIB} COMPONENT Runtime 
                ARCHIVE DESTINATION ${INSTALL_LIB} COMPONENT Library )
    endforeach()
-+  install ( EXPORT ${PROJECT_NAME}-targets DESTINATION ${INSTALL_LIB}/cmake )
++  install ( EXPORT ${targetsFile} DESTINATION ${INSTALL_LIB}/cmake )
  endmacro ()
  
  # helper function for various install_* functions, for PATTERN/REGEX args.
