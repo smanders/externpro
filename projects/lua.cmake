@@ -29,6 +29,7 @@ function(build_lua)
     return()
   endif()
   xpGetArgValue(${PRO_LUA} ARG VER VALUE VER)
+  xpGetArgValue(${PRO_LUABRIDGE} ARG VER VALUE VERB)
   configure_file(${PRO_DIR}/use/usexp-lua-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -45,7 +46,7 @@ function(build_lua)
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} CONFIGURE_COMMAND ""
       SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
       BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory
-        <SOURCE_DIR>/luabridge/Source ${STAGE_DIR}/include
+        <SOURCE_DIR>/luabridge/Source ${STAGE_DIR}/include/luabridge_${VERB}
       INSTALL_COMMAND ""
       )
     set_property(TARGET lua_luabridge_bld PROPERTY FOLDER ${bld_folder})

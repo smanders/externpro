@@ -1,5 +1,5 @@
 # LUA_FOUND - lua was found
-# LUA_INCLUDE_DIR - the lua include directory
+# LUA_INCLUDE_DIR - the lua and LuaBridge include directories
 # LUA_LIBRARIES - the lua libraries
 set(prj lua)
 # this file (-config) installed to share/cmake
@@ -14,6 +14,13 @@ find_path(${PRJ}_INCLUDE_DIR lua/lua.h PATHS ${XP_ROOTDIR}/include${verDir} NO_D
 include(${XP_ROOTDIR}/lib/cmake/${prj}${ver}-targets.cmake)
 set(${PRJ}_LIBRARIES liblua)
 set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
+# LuaBridge
+set(prjB luabridge)
+string(TOUPPER ${prjB} PRJB)
+set(verDirB /${prjB}_@VERB@)
+unset(${PRJB}_INCLUDE_DIR CACHE)
+find_path(${PRJB}_INCLUDE_DIR LuaBridge/LuaBridge.h PATHS ${XP_ROOTDIR}/include${verDirB} NO_DEFAULT_PATH)
+list(APPEND ${PRJ}_INCLUDE_DIR ${${PRJB}_INCLUDE_DIR})
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})
