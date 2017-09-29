@@ -148,7 +148,7 @@ function(build_wxv)
       PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${wxINSTALL_DIR}/include/ ${STAGE_DIR}/include/
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${wxWINUNDEF}
-        -Ddst:STRING=${STAGE_DIR}/include/externpro/
+        -Ddst:STRING=<INSTALL_DIR>/externpro/
         -P ${MODULES_DIR}/cmscopyfiles.cmake
       BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${wxSOURCE_DIR}/${TIFF_HDRS}
         -Ddst:STRING=<INSTALL_DIR>/wx/tiff/
