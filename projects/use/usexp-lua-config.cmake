@@ -23,4 +23,4 @@ find_path(${PRJB}_INCLUDE_DIR LuaBridge/LuaBridge.h PATHS ${XP_ROOTDIR}/include$
 list(APPEND ${PRJ}_INCLUDE_DIR ${${PRJB}_INCLUDE_DIR})
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
-mark_as_advanced(${reqVars})
+mark_as_advanced(${reqVars} ${PRJB}_INCLUDE_DIR)
