@@ -280,9 +280,10 @@ function(build_boostlibs)
   if(WIN32)
     include(${STAGE_DIR}/share/cmake/xpopts.cmake)
     xpSetPostfix()
-    # TRICKY: BINARY (zlibstatic, bz2) needs to match ${PRJ}_LIBRARIES in zlib, bzip2 use scripts
-    list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic${CMAKE_RELEASE_POSTFIX})
-    list(APPEND boost_BUILD -s BZIP2_BINARY=bz2${CMAKE_RELEASE_POSTFIX})
+    # TRICKY: BINARY (zlibstatic, bz2) needs to be the name of the binary,
+    # not including the file extension, or the "lib" prefix on UNIX
+    list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic_${zlibVer}${CMAKE_RELEASE_POSTFIX})
+    list(APPEND boost_BUILD -s BZIP2_BINARY=bz2_${bzip2Ver}${CMAKE_RELEASE_POSTFIX})
   endif()
   if(${CMAKE_SYSTEM_NAME} STREQUAL Linux AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     list(APPEND boost_BUILD --without-math)
