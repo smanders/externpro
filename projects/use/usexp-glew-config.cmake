@@ -9,7 +9,7 @@ get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative part
 string(TOUPPER ${prj} PRJ)
 if(MSVC)
   unset(${PRJ}_INCLUDE_DIR CACHE)
-  find_path(${PRJ}_INCLUDE_DIR GL/glew.h PATHS ${XP_ROOTDIR}/include NO_DEFAULT_PATH)
+  find_path(${PRJ}_INCLUDE_DIR GL/glew.h PATHS ${XP_ROOTDIR}/include@verDir@ NO_DEFAULT_PATH)
   set(${PRJ}_LIBRARIES glew32)
   set(${PRJ}_DLLS
     ${XP_ROOTDIR}/lib/glew32.dll

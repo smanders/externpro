@@ -57,6 +57,8 @@ function(build_glew)
   if(NOT (XP_DEFAULT OR XP_PRO_GLEW))
     return()
   endif()
+  xpGetArgValue(${PRO_GLEW} ARG VER VALUE VER)
+  set(verDir /glew_${VER})
   configure_file(${PRO_DIR}/use/usexp-glew-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -70,7 +72,7 @@ function(build_glew)
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
       SOURCE_DIR ${glew_SOURCE} BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=<SOURCE_DIR>/include/GL/*.h
-        -Ddst:STRING=${STAGE_DIR}/include/GL/ -P ${MODULES_DIR}/cmscopyfiles.cmake
+        -Ddst:STRING=${STAGE_DIR}/include${verDir}/GL/ -P ${MODULES_DIR}/cmscopyfiles.cmake
       BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=<SOURCE_DIR>/lib/*.lib
         -Ddst:STRING=${STAGE_DIR}/lib -P ${MODULES_DIR}/cmscopyfiles.cmake
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=<SOURCE_DIR>/bin/*.dll
