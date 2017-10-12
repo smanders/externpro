@@ -15,11 +15,13 @@ set(PRO_APR
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
   # Download APR following links at http://apr.apache.org/download.cgi (mirrors)
-  DLURL http://ftp.wayne.edu/apache//apr/apr-${VER}.tar.gz
-  DLMD5 98492e965963f852ab29f9e61b2ad700
-  #DLURL ${REPO}/archive/${VER}.tar.gz
-  #DLMD5 5b0bb763245c7d10b7c03214cc8756ec
-  #DLNAME apr-tag-${VER}.tar.gz
+  #DLURL http://ftp.wayne.edu/apache/apr/apr-${VER}.tar.gz
+  #DLMD5 d41d8cd98f00b204e9800998ecf8427e
+  # TODO: version 1.5.2 no longer appears to be available from apache mirrors,
+  #  so until we move to a new version that is available, download from the repo
+  DLURL ${REPO}/archive/${VER}.tar.gz
+  DLMD5 5b0bb763245c7d10b7c03214cc8756ec
+  DLNAME apr-tag-${VER}.tar.gz
   PATCH ${PATCH_DIR}/apr.patch
   DIFF ${REPO}/compare/apache:
   )

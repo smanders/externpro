@@ -14,7 +14,7 @@ set(PRO_LIBGIT2
   GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL ${REPO}/archive/v${VER}.tar.gz
-  DLMD5 7b21448c471dc76a3ca4801b61ac856a
+  DLMD5 67e0aca83964bfbb5c8806854f13fa41
   DLNAME libgit2-${VER}.tar.gz
   PATCH ${PATCH_DIR}/libgit2.patch
   DIFF ${REPO}/compare/libgit2:

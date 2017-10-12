@@ -15,7 +15,7 @@ set(PRO_PROTOBUF
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL ${REPO_UPSTREAM}/archive/v${VER}.tar.gz
-  DLMD5 9422f45da18066a691917ef51c56caec
+  DLMD5 63aad3f1814b5c6cd06c7712cd5ba9db
   DLNAME protobuf-${VER}.tar.gz
   PATCH ${PATCH_DIR}/protobuf.patch
   DIFF ${REPO}/compare/google:
