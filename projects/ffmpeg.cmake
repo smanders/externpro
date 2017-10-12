@@ -1,35 +1,56 @@
 # ffmpeg
 xpProOption(ffmpeg)
-set(VER 2.6.2.1)
-set(REPO https://github.com/smanders/ffmpegBin)
-set(PRO_FFMPEG
-  NAME ffmpeg
-  WEB "ffmpeg" https://www.ffmpeg.org/ "ffmpeg website"
-  LICENSE "LGPL" https://www.ffmpeg.org/legal.html "Lesser GPL v2.1"
-  DESC "pre-built (MSW-only) complete, cross-platform solution to record, convert and stream audio and video"
-  REPO "repo" ${REPO} "ffmpeg binary repo on github"
-  VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/ffmpegBin.git
-  GIT_TAG xp${VER} # what to 'git checkout'
-  GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL ${REPO}/archive/v${VER}.tar.gz
-  DLMD5 467d46c09726933286dff0dc0c48b692
-  DLNAME ffmpeg-v${VER}.tar.gz
-  PATCH ${PATCH_DIR}/ffmpeg.patch
-  DIFF ${REPO}/compare/
-  )
+set(FFMPEG_MSWVER 2.6.2.1)
+set(FFMPEG_CFGVER 2.6.2)
 ########################################
-function(build_ffmpeg)
-  if(NOT (XP_DEFAULT OR XP_PRO_FFMPEG))
+function(patch_ffmpeg)
+  set(mswVer ${FFMPEG_MSWVER})
+  set(cfgVer ${FFMPEG_CFGVER})
+  if(NOT (XP_DEFAULT OR XP_PRO_FFMPEG OR XP_PRO_FFMPEG_${mswVer} OR XP_PRO_FFMPEG_${cfgVer}))
     return()
   endif()
-  xpGetArgValue(${PRO_FFMPEG} ARG VER VALUE VER)
+  if(XP_DEFAULT)
+    xpListAppendIfDne(FFMPEG_VERSIONS ${mswVer}) # edit this to set default versions(s) to build
+  else()
+    if(XP_PRO_FFMPEG AND NOT (XP_PRO_FFMPEG_${mswVer} OR XP_PRO_FFMPEG_${cfgVer}))
+      set(XP_PRO_FFMPEG_${mswVer} ON CACHE BOOL "include ffmpeg_${mswVer}" FORCE)
+      set(XP_PRO_FFMPEG_${cfgVer} ON CACHE BOOL "include ffmpeg_${cfgVer}" FORCE)
+    endif()
+    if(XP_PRO_FFMPEG_${mswVer})
+      xpListAppendIfDne(FFMPEG_VERSIONS ${mswVer})
+    endif()
+    if(XP_PRO_FFMPEG_${cfgVer})
+      xpListAppendIfDne(FFMPEG_VERSIONS ${cfgVer})
+    endif()
+  endif()
+  set(FFMPEG_VERSIONS ${FFMPEG_VERSIONS} PARENT_SCOPE) # make FFMPEG_VERSIONS available to build_ffmpeg
+endfunction()
+########################################
+function(build_ffmpeg)
+  set(mswVer ${FFMPEG_MSWVER})
+  set(cfgVer ${FFMPEG_CFGVER})
+  if(NOT (XP_DEFAULT OR XP_PRO_FFMPEG_${mswVer} OR XP_PRO_FFMPEG_${cfgVer}))
+    return()
+  endif()
+  set(VER ${mswVer})
   configure_file(${PRO_DIR}/use/usexp-ffmpeg-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpBuildOnlyRelease()
-  xpCmakeBuild(ffmpeg "" "-DFFMPEG_VER=${VER}" ffmpegTargets)
-  if(ARGN)
-    set(${ARGN} "${ffmpegTargets}" PARENT_SCOPE)
+  foreach(ver ${FFMPEG_VERSIONS})
+    build_ffmpegv(VER ${ver})
+  endforeach()
+endfunction()
+########################################
+function(build_ffmpegv)
+  cmake_parse_arguments(ff "" "VER" "" ${ARGN})
+  if(NOT (XP_DEFAULT OR XP_PRO_FFMPEG_${ff_VER}))
+    return()
+  endif()
+  if(${ff_VER} STREQUAL ${FFMPEG_MSWVER})
+    xpBuildOnlyRelease()
+    xpCmakeBuild(ffmpeg_${ff_VER} "" "-DFFMPEG_VER=${ff_VER}")
+  elseif(${ff_VER} STREQUAL ${FFMPEG_CFGVER})
+    message(STATUS "target ffmpeg_${ff_VER} build in the future")
+    #xpCmakeBuild(ffmpeg_${ff_VER} "" "-DFFMPEG_VER=${ff_VER}")
   endif()
 endfunction()
