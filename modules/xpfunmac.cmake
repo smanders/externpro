@@ -761,11 +761,6 @@ function(xpGetConfigureFlags cpprefix _ret)
   set(${_ret} ${CFG_FLAGS} PARENT_SCOPE)
 endfunction()
 
-macro(xpParentListAppend parentList items)
-  list(APPEND ${parentList} ${items})
-  set(${parentList} ${${parentList}} PARENT_SCOPE)
-endmacro()
-
 function(xpGitIgnoredDirs var dir)
   if(NOT GIT_FOUND)
     include(FindGit)
