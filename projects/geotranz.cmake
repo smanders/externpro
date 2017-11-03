@@ -68,7 +68,7 @@ list(LENGTH csv csvlen)
 math(EXPR md5len "${csvlen} - 1")
 ########################################
 function(download_geotranz)
-  xpNewDownload(${PRO_GEOTRANZ})
+  xpDownloadProject(${PRO_GEOTRANZ})
   download_geotiff_tables(ftp://downloads.osgeo.org/pub/geotiff/tables ${DWNLD_DIR}/data)
 endfunction()
 ####################
