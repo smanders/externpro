@@ -4,6 +4,8 @@
 xpProOption(geotranz)
 set(VER 2.4.2)
 set(REPO https://github.com/smanders/geotranz)
+set(DLCSV ftp://downloads.osgeo.org/pub/geotiff/tables)
+set(DLDIR data)
 set(PRO_GEOTRANZ
   NAME geotranz
   WEB "GEOTRANS" http://earth-info.nga.mil/GandG/geotrans/ "GEOTRANS website"
@@ -14,84 +16,34 @@ set(PRO_GEOTRANZ
   GIT_ORIGIN git://github.com/smanders/geotranz.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL http://geotranz.sourcearchive.com/downloads/${VER}/geotranz_${VER}.orig.tar.gz
-  DLMD5 1d370d5b0daed2a541a9aa14bd3172a8
   PATCH ${PATCH_DIR}/geotranz.patch
   DIFF ${REPO}/compare/
+  DLURL http://geotranz.sourcearchive.com/downloads/${VER}/geotranz_${VER}.orig.tar.gz
+  DLMD5 1d370d5b0daed2a541a9aa14bd3172a8
+  DLMD5_01 48cffaef0651db24c43b8afaee7fbeaf DLDIR_01 ${DLDIR} DLURL_01 ${DLCSV}/README
+  DLMD5_02 8e3cb60e597f9bd36d0639406a4cf40a DLDIR_02 ${DLDIR} DLURL_02 ${DLCSV}/compd_cs.csv
+  DLMD5_03 f93d412cfaef83bf526c8938511d2b41 DLDIR_03 ${DLDIR} DLURL_03 ${DLCSV}/ellips_alias.csv
+  DLMD5_04 d9b32c58f78c3ed4b1e696987adeaaa5 DLDIR_04 ${DLDIR} DLURL_04 ${DLCSV}/ellipsoid.csv
+  DLMD5_05 2bfe9d762e0741e2cc9fbd5753b0d1f7 DLDIR_05 ${DLDIR} DLURL_05 ${DLCSV}/gdatum_alias.csv
+  DLMD5_06 459dcb5486257bdf50188e6d959264de DLDIR_06 ${DLDIR} DLURL_06 ${DLCSV}/geod_datum.csv
+  DLMD5_07 d941df77cdc93d6585cd710d30f6f5e4 DLDIR_07 ${DLDIR} DLURL_07 ${DLCSV}/geod_trf.csv
+  DLMD5_08 f8c2d94038c51f4de0ccb8342ee7fbb9 DLDIR_08 ${DLDIR} DLURL_08 ${DLCSV}/geoparms.csv
+  DLMD5_09 e0ead4963d4303a64390a178e76799f4 DLDIR_09 ${DLDIR} DLURL_09 ${DLCSV}/horiz_cs.csv
+  DLMD5_10 ba008810fdfbce99094f01b7324bf679 DLDIR_10 ${DLDIR} DLURL_10 ${DLCSV}/p_meridian.csv
+  DLMD5_11 205d5d87f7bd619bad02b6481432ec38 DLDIR_11 ${DLDIR} DLURL_11 ${DLCSV}/trf_method.csv
+  DLMD5_12 9632881925d1a9d0970249a79bc6df6c DLDIR_12 ${DLDIR} DLURL_12 ${DLCSV}/trf_nonpolynomial.csv
+  DLMD5_13 5a5ba3f91cc4b006bcfed7fe87f81cf2 DLDIR_13 ${DLDIR} DLURL_13 ${DLCSV}/trf_path.csv
+  DLMD5_14 cec548c07383fad7d75856a37b9dd8b7 DLDIR_14 ${DLDIR} DLURL_14 ${DLCSV}/uom_an_alias.csv
+  DLMD5_15 bde69d67540b036c05992321170a359c DLDIR_15 ${DLDIR} DLURL_15 ${DLCSV}/uom_angle.csv
+  DLMD5_16 cd229e95c8014caa459e9dbac4ebb33f DLDIR_16 ${DLDIR} DLURL_16 ${DLCSV}/uom_le_alias.csv
+  DLMD5_17 9c7a5b5792acd47a059861dee449e2d8 DLDIR_17 ${DLDIR} DLURL_17 ${DLCSV}/uom_length.csv
+  DLMD5_18 b97f0ebfec9099e0292799e9c2b6593f DLDIR_18 ${DLDIR} DLURL_18 ${DLCSV}/uom_scale.csv
+  DLMD5_19 73564bdea9c492078daaa25b928582be DLDIR_19 ${DLDIR} DLURL_19 ${DLCSV}/uom_sc_alias.csv
+  DLMD5_20 229f41094d6cecd56a38462a64ccdf11 DLDIR_20 ${DLDIR} DLURL_20 ${DLCSV}/vert_cs.csv
+  DLMD5_21 4e636be19defaf269d3e81bd1d7996a9 DLDIR_21 ${DLDIR} DLURL_21 ${DLCSV}/vert_datum.csv
+  DLMD5_22 4256444bb7c0bae4f7b94c01b24fddbd DLDIR_22 ${DLDIR} DLURL_22 ${DLCSV}/vert_offset.csv
+  DLADD _01 _02 _03 _04 _05 _06 _07 _08 _09 _10 _11 _12 _13 _14 _15 _16 _17 _18 _19 _20 _21 _22
   )
-####################
-list(APPEND csv README)
-list(APPEND md5 48cffaef0651db24c43b8afaee7fbeaf)
-list(APPEND csv compd_cs.csv)
-list(APPEND md5 8e3cb60e597f9bd36d0639406a4cf40a)
-list(APPEND csv ellips_alias.csv)
-list(APPEND md5 f93d412cfaef83bf526c8938511d2b41)
-list(APPEND csv ellipsoid.csv)
-list(APPEND md5 d9b32c58f78c3ed4b1e696987adeaaa5)
-list(APPEND csv gdatum_alias.csv)
-list(APPEND md5 2bfe9d762e0741e2cc9fbd5753b0d1f7)
-list(APPEND csv geod_datum.csv)
-list(APPEND md5 459dcb5486257bdf50188e6d959264de)
-list(APPEND csv geod_trf.csv)
-list(APPEND md5 d941df77cdc93d6585cd710d30f6f5e4)
-list(APPEND csv geoparms.csv)
-list(APPEND md5 f8c2d94038c51f4de0ccb8342ee7fbb9)
-list(APPEND csv horiz_cs.csv)
-list(APPEND md5 e0ead4963d4303a64390a178e76799f4)
-list(APPEND csv p_meridian.csv)
-list(APPEND md5 ba008810fdfbce99094f01b7324bf679)
-list(APPEND csv trf_method.csv)
-list(APPEND md5 205d5d87f7bd619bad02b6481432ec38)
-list(APPEND csv trf_nonpolynomial.csv)
-list(APPEND md5 9632881925d1a9d0970249a79bc6df6c)
-list(APPEND csv trf_path.csv)
-list(APPEND md5 5a5ba3f91cc4b006bcfed7fe87f81cf2)
-list(APPEND csv uom_an_alias.csv)
-list(APPEND md5 cec548c07383fad7d75856a37b9dd8b7)
-list(APPEND csv uom_angle.csv)
-list(APPEND md5 bde69d67540b036c05992321170a359c)
-list(APPEND csv uom_le_alias.csv)
-list(APPEND md5 cd229e95c8014caa459e9dbac4ebb33f)
-list(APPEND csv uom_length.csv)
-list(APPEND md5 9c7a5b5792acd47a059861dee449e2d8)
-list(APPEND csv uom_scale.csv)
-list(APPEND md5 b97f0ebfec9099e0292799e9c2b6593f)
-list(APPEND csv uom_sc_alias.csv)
-list(APPEND md5 73564bdea9c492078daaa25b928582be)
-list(APPEND csv vert_cs.csv)
-list(APPEND md5 229f41094d6cecd56a38462a64ccdf11)
-list(APPEND csv vert_datum.csv)
-list(APPEND md5 4e636be19defaf269d3e81bd1d7996a9)
-list(APPEND csv vert_offset.csv)
-list(APPEND md5 4256444bb7c0bae4f7b94c01b24fddbd)
-list(LENGTH csv csvlen)
-math(EXPR md5len "${csvlen} - 1")
-########################################
-function(download_geotranz)
-  xpDownloadProject(${PRO_GEOTRANZ})
-  download_geotiff_tables(ftp://downloads.osgeo.org/pub/geotiff/tables ${DWNLD_DIR}/data)
-endfunction()
-####################
-function(download_geotiff_tables src dst)
-  if(NOT EXISTS ${dst})
-    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${dst})
-  endif()
-  # http://stackoverflow.com/questions/7932205/parallel-iteration-over-lists-in-makefile-or-cmake-file
-  foreach(val RANGE ${md5len})
-    list(GET csv ${val} csvfile)
-    list(GET md5 ${val} md5sum)
-    if(${ARGC} EQUAL 2)
-      xpDownload(${src}/${csvfile} ${md5sum} ${dst})
-    elseif(${ARGC} EQUAL 3)
-      if(NOT EXISTS ${src}/${csvfile})
-        message(STATUS "will download ${csvfile} from ${ARGV2}...")
-        xpDownload(${ARGV2}/${csvfile} ${md5sum} ${dst})
-      else()
-        xpDownload(file://${src}/${csvfile} ${md5sum} ${dst})
-      endif()
-    endif()
-  endforeach()
-endfunction()
 ########################################
 function(build_geotranz)
   if(NOT (XP_DEFAULT OR XP_PRO_GEOTRANZ))
@@ -102,7 +54,6 @@ function(build_geotranz)
   configure_file(${PRO_DIR}/use/usexp-geotrans-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(geotranz "" "-DGEOTRANS_VER=${VER}")
-  download_geotiff_tables(${DWNLD_DIR}/data ${STAGE_DIR}/include${verDir}/geotrans/data
-                          ftp://downloads.osgeo.org/pub/geotiff/tables)
+  set(XP_CONFIGURE -DGEOTRANS_VER=${VER} -DCSV_DIR=${DWNLD_DIR}/data)
+  xpCmakeBuild(geotranz "" "${XP_CONFIGURE}")
 endfunction()
