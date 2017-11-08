@@ -9,7 +9,7 @@ unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR ffmpeg/libavcodec/avcodec.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
 list(APPEND ${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include${verDir}/ffmpeg) # for internal header includes
 set(reqVars ${PRJ}_INCLUDE_DIR)
-if(MSVC)
+if(WIN32)
   set(${PRJ}_LIBRARIES
     avcodec${ver}.lib
     avdevice${ver}.lib
@@ -30,6 +30,18 @@ if(MSVC)
     )
   link_directories(${XP_ROOTDIR}/lib)
   list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DLLS)
+else()
+  set(${PRJ}_LIBRARIES
+    avcodec${ver}
+    avdevice${ver}
+    avfilter${ver}
+    avformat${ver}
+    avutil${ver}
+    swresample${ver}
+    swscale${ver}
+    )
+  link_directories(${XP_ROOTDIR}/lib)
+  list(APPEND reqVars ${PRJ}_LIBRARIES)
 endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
