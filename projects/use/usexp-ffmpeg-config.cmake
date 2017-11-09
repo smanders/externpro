@@ -39,6 +39,8 @@ else()
     avutil${ver}
     swresample${ver}
     swscale${ver}
+    z # TODO this shouldn't be hard-coded
+    # https://stackoverflow.com/questions/27366433/linking-libavcodec-and-libavformat-undefined-references
     )
   link_directories(${XP_ROOTDIR}/lib)
   list(APPEND reqVars ${PRJ}_LIBRARIES)
