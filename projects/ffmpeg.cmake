@@ -58,9 +58,16 @@ function(build_ffmpegv)
     xpBuildOnlyRelease()
     xpCmakeBuild(ffmpeg_${ff_VER} "" "-DFFMPEG_VER=${ff_VER}")
   elseif(${ff_VER} STREQUAL ${FFMPEG_CFGVER})
-    set(XP_CONFIGURE_BASE <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
+    if(NOT (XP_DEFAULT OR XP_PRO_OPENH264))
+      message(STATUS "ffmpeg.cmake: requires openh264")
+      set(XP_PRO_OPENH264 ON CACHE BOOL "include openh264" FORCE)
+      xpPatchProject(${PRO_OPENH264})
+    endif()
+    build_openh264(openh264Tgts)
+    set(XP_CONFIGURE_BASE ${CMAKE_COMMAND} -E env PKG_CONFIG_PATH=${STAGE_DIR}/share/cmake
+      <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
       --disable-yasm #--enable-shared --disable-static
-      #--enable-libopenh264
+      --enable-libopenh264
       )
     set(XP_CONFIGURE_Debug ${XP_CONFIGURE_BASE} --enable-debug=1)
     set(XP_CONFIGURE_Release ${XP_CONFIGURE_BASE} --disable-debug)
@@ -100,7 +107,7 @@ macro(addproject_ffmpeg XP_TARGET)
     xpVerboseListing("[CONFIGURE]" "${XP_CONFIGURE_CMD}")
   endif()
   ExternalProject_Get_Property(ffmpeg_${ff_VER} SOURCE_DIR)
-  ExternalProject_Add(${XP_TARGET} DEPENDS ffmpeg_${ff_VER}
+  ExternalProject_Add(${XP_TARGET} DEPENDS ffmpeg_${ff_VER} ${openh264Tgts}
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
     SOURCE_DIR ${SOURCE_DIR}
     CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}

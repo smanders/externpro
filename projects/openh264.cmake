@@ -2,6 +2,7 @@
 xpProOption(openh264)
 set(VER 1.4.0)
 set(REPO https://github.com/cisco/openh264)
+set(FORK https://github.com/smanders/openh264)
 set(DLBIN ${REPO}/releases/download/v${VER})
 set(PRO_OPENH264
   NAME openh264
@@ -10,9 +11,12 @@ set(PRO_OPENH264
   DESC "a codec library which supports H.264 encoding and decoding"
   REPO "repo" ${REPO} "openh264 repo on github"
   VER ${VER}
-  GIT_ORIGIN git://github.com/cisco/openh264.git
+  GIT_ORIGIN git://github.com/smanders/openh264.git
   GIT_UPSTREAM git://github.com/cisco/openh264.git
-  GIT_TAG v${VER} # what to 'git checkout'
+  GIT_TAG xp${VER} # what to 'git checkout'
+  GIT_REF v${VER} # create patch from this tag to 'git checkout'
+  PATCH ${PATCH_DIR}/openh264_${VER}.patch
+  DIFF ${FORK}/compare/cisco:
   DLURL ${REPO}/archive/v${VER}.tar.gz
   DLMD5 ca77b91a7a33efb4c5e7c56a5c0f599f
   DLNAME openh264-${VER}.tar.gz
@@ -56,6 +60,8 @@ function(build_openh264)
   endif()
   get_filename_component(fn ${dwnldUrl} NAME)
   string(REPLACE ".bz2" "" sharedObj ${fn})
+  string(REPLACE "libopenh264" "" verSuffix ${sharedObj})
+  string(REPLACE ".so" "" verSuffix ${verSuffix})
   configure_file(${PRO_DIR}/use/usexp-openh264-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -66,10 +72,17 @@ function(build_openh264)
       UPDATE_COMMAND ${CMAKE_COMMAND} -E copy <DOWNLOADED_FILE> <SOURCE_DIR>
       CONFIGURE_COMMAND ${STAGE_DIR}/bin/bunzip2_${bzip2Ver}${ext} -f <SOURCE_DIR>/${fn}
       BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${SOURCE_DIR}/codec/api/svc/codec_*.h
-        -Ddst:STRING=${STAGE_DIR}/include${verDir}/openh264/ -P ${MODULES_DIR}/cmscopyfiles.cmake
+        -Ddst:STRING=${STAGE_DIR}/include${verDir}/wels/ -P ${MODULES_DIR}/cmscopyfiles.cmake
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=<SOURCE_DIR>/${sharedObj}
         -Ddst:STRING=${STAGE_DIR}/lib -P ${MODULES_DIR}/cmscopyfiles.cmake
       BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
+      )
+    ExternalProject_Add_Step(openh264_${OS}${pf} pkgconfig
+      COMMAND ${CMAKE_COMMAND} -Dinput:STRING=${SOURCE_DIR}/openh264.pc.in
+        -Doutput:STRING=${STAGE_DIR}/share/cmake/openh264.pc
+        -Dprefix:STRING=${STAGE_DIR} -DverDir=${verDir} -DVERSION=${VER} -DSUFFIX=${verSuffix}
+        -P ${MODULES_DIR}/cmsconfigurefile.cmake
+      DEPENDEES install
       )
     set_property(TARGET openh264_${OS}${pf} PROPERTY FOLDER ${bld_folder})
     message(STATUS "target openh264_${OS}${pf}")
