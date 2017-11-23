@@ -69,8 +69,8 @@ function(build_openh264)
     ExternalProject_Add(openh264_${OS}${pf} DEPENDS openh264 ${bzip2Tgts}
       URL ${dwnldUrl} URL_MD5 ${dwnldMd5} DOWNLOAD_DIR ${DWNLD_DIR}
       DOWNLOAD_NO_EXTRACT 1 # cmake can't extract bz2 https://github.com/smanders/externpro/issues/152
-      UPDATE_COMMAND ${CMAKE_COMMAND} -E copy <DOWNLOADED_FILE> <SOURCE_DIR>
-      CONFIGURE_COMMAND ${STAGE_DIR}/bin/bunzip2_${bzip2Ver}${ext} -f <SOURCE_DIR>/${fn}
+      UPDATE_COMMAND ${CMAKE_COMMAND} -E copy_if_different <DOWNLOADED_FILE> <SOURCE_DIR>
+      CONFIGURE_COMMAND ${STAGE_DIR}/bin/bunzip2_${bzip2Ver}${ext} -f -k <SOURCE_DIR>/${fn}
       BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${SOURCE_DIR}/codec/api/svc/codec_*.h
         -Ddst:STRING=${STAGE_DIR}/include${verDir}/wels/ -P ${MODULES_DIR}/cmscopyfiles.cmake
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=<SOURCE_DIR>/${sharedObj}

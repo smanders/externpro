@@ -1,3 +1,8 @@
+# FFMPEG_FOUND - FFmpeg was found
+# FFMPEG_INCLUDE_DIR - the FFmpeg include directories
+# FFMPEG_LIBRARIES - the FFmpeg libraries
+# FFMPEG_DLLS - the FFmpeg shared objects (dll, so)
+xpGetPkgVar(OpenH264 DLLS) # sets OPENH264_DLLS
 set(prj ffmpeg)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -19,6 +24,7 @@ if(WIN32)
     swresample${ver}.lib
     swscale${ver}.lib
     )
+  link_directories(${XP_ROOTDIR}/lib)
   set(${PRJ}_DLLS
     ${XP_ROOTDIR}/bin${verDir}/avcodec-56.dll
     ${XP_ROOTDIR}/bin${verDir}/avdevice-56.dll
@@ -28,7 +34,6 @@ if(WIN32)
     ${XP_ROOTDIR}/bin${verDir}/swresample-1.dll
     ${XP_ROOTDIR}/bin${verDir}/swscale-3.dll
     )
-  link_directories(${XP_ROOTDIR}/lib)
   list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DLLS)
 else()
   set(${PRJ}_LIBRARIES
@@ -41,9 +46,11 @@ else()
     swscale${ver}
     z # TODO this shouldn't be hard-coded
     # https://stackoverflow.com/questions/27366433/linking-libavcodec-and-libavformat-undefined-references
+    ${OPENH264_DLLS}
     )
   link_directories(${XP_ROOTDIR}/lib)
-  list(APPEND reqVars ${PRJ}_LIBRARIES)
+  set(${PRJ}_DLLS ${OPENH264_DLLS})
+  list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DLLS)
 endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
