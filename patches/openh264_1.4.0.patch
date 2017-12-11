@@ -70,10 +70,10 @@ index 0000000..cbaa05d
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/codec/common/CMakeLists.txt b/codec/common/CMakeLists.txt
 new file mode 100644
-index 0000000..f2ef4f0
+index 0000000..8a8dda3
 --- /dev/null
 +++ b/codec/common/CMakeLists.txt
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,100 @@
 +set(lib_name common)
 +set(obj_name ${lib_name}_obj)
 +####################
@@ -171,7 +171,9 @@ index 0000000..f2ef4f0
 +##########
 +add_library(${lib_name} STATIC ${lib_srcs} $<TARGET_OBJECTS:${obj_name}>)
 +target_include_directories(${lib_name} PUBLIC ${incDirs})
-+target_link_libraries(${lib_name} pthread)
++set(THREADS_PREFER_PTHREAD_FLAG ON)
++find_package(Threads REQUIRED)
++target_link_libraries(${lib_name} Threads::Threads)
 diff --git a/codec/console/CMakeLists.txt b/codec/console/CMakeLists.txt
 new file mode 100644
 index 0000000..a23d76f
