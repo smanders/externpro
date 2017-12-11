@@ -2,7 +2,7 @@
 # FFMPEG_INCLUDE_DIR - the FFmpeg include directories
 # FFMPEG_LIBRARIES - the FFmpeg libraries
 # FFMPEG_DLLS - the FFmpeg shared objects (dll, so)
-xpGetPkgVar(OpenH264 DLLS) # sets OPENH264_DLLS
+xpGetPkgVar(openh264 LIBRARIES) # sets OPENH264_LIBRARIES
 set(prj ffmpeg)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -46,11 +46,10 @@ else()
     swscale${ver}
     z # TODO this shouldn't be hard-coded
     # https://stackoverflow.com/questions/27366433/linking-libavcodec-and-libavformat-undefined-references
-    ${OPENH264_DLLS}
+    ${OPENH264_LIBRARIES}
     )
   link_directories(${XP_ROOTDIR}/lib)
-  set(${PRJ}_DLLS ${OPENH264_DLLS})
-  list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DLLS)
+  list(APPEND reqVars ${PRJ}_LIBRARIES)
 endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
