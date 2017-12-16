@@ -1,8 +1,16 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b4a577c..711e19f 100644
+index ed924eb..1e34982 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -353,6 +353,8 @@ macro (CMAKE_BUILD_UTILITIES)
+@@ -69,6 +69,7 @@ endif()
+ if(NOT CMake_TEST_EXTERNAL_CMAKE)
+   # include special compile flags for some compilers
+   include(CompileFlags.cmake)
++  include(flags OPTIONAL)
+ 
+   # check for available C++ features
+   include(${CMake_SOURCE_DIR}/Source/Checks/cm_cxx_features.cmake)
+@@ -401,6 +402,8 @@ macro (CMAKE_BUILD_UTILITIES)
        set(CURL_CA_BUNDLE "" CACHE FILEPATH "Path to SSL CA Certificate Bundle")
        set(CURL_CA_PATH "" CACHE PATH "Path to SSL CA Certificate Directory")
        mark_as_advanced(CURL_CA_BUNDLE CURL_CA_PATH)
@@ -11,36 +19,44 @@ index b4a577c..711e19f 100644
      endif()
      add_subdirectory(Utilities/cmcurl)
      CMAKE_SET_TARGET_FOLDER(cmcurl "Utilities/3rdParty")
-@@ -602,6 +604,7 @@ if(NOT CMake_TEST_EXTERNAL_CMAKE)
+diff --git a/Modules/FindwxWidgets.cmake b/Modules/FindwxWidgets.cmake
+index af4daf0..351f7ac 100644
+--- a/Modules/FindwxWidgets.cmake
++++ b/Modules/FindwxWidgets.cmake
+@@ -835,9 +835,9 @@ else()
+           wxWidgets_LIBRARIES "${wxWidgets_LIBRARIES}")
  
-   # include special compile flags for some compilers
-   include(CompileFlags.cmake)
-+  include(flags OPTIONAL)
+         # extract linkdirs (-L) for rpath (i.e., LINK_DIRECTORIES)
+-        string(REGEX MATCHALL "-L[^;]+"
++        string(REGEX MATCHALL "(^|;)-L[^;]+"
+           wxWidgets_LIBRARY_DIRS "${wxWidgets_LIBRARIES}")
+-        string(REPLACE "-L" ""
++        string(REGEX REPLACE "(^|;)-L" ""
+           wxWidgets_LIBRARY_DIRS "${wxWidgets_LIBRARY_DIRS}")
  
-   # no clue why we are testing for this here
-   include(CheckSymbolExists)
+         DBG_MSG_V("wxWidgets_LIBRARIES=${wxWidgets_LIBRARIES}")
 diff --git a/Utilities/cmcurl/CMakeLists.txt b/Utilities/cmcurl/CMakeLists.txt
-index 9031181..2b2ea92 100644
+index d85f366..9b270aa 100644
 --- a/Utilities/cmcurl/CMakeLists.txt
 +++ b/Utilities/cmcurl/CMakeLists.txt
-@@ -360,7 +360,11 @@ set(HAVE_LIBCRYPTO OFF)
- set(HAVE_LIBSSL OFF)
+@@ -451,7 +451,11 @@ if(CMAKE_USE_DARWINSSL)
+ endif()
  
  if(CMAKE_USE_OPENSSL)
--  find_package(OpenSSL)
+-  find_package(OpenSSL REQUIRED)
 +  if(CMAKE_USE_OPENSSL_MODULE_PATH)
 +    find_package(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
 +  else()
-+    find_package(OpenSSL)
++    find_package(OpenSSL REQUIRED)
 +  endif()
-   if(OPENSSL_FOUND)
-     list(APPEND CURL_LIBS ${OPENSSL_LIBRARIES})
-     set(USE_OPENSSL ON)
+   set(SSL_ENABLED ON)
+   set(USE_OPENSSL ON)
+   set(HAVE_LIBCRYPTO ON)
 diff --git a/Utilities/cmlibarchive/CMakeLists.txt b/Utilities/cmlibarchive/CMakeLists.txt
-index 09bef51..84787ec 100644
+index bfe6b13..9312a86 100644
 --- a/Utilities/cmlibarchive/CMakeLists.txt
 +++ b/Utilities/cmlibarchive/CMakeLists.txt
-@@ -506,7 +506,11 @@ ENDIF(ENABLE_NETTLE)
+@@ -511,7 +511,11 @@ ENDIF(ENABLE_NETTLE)
  # (Except on Mac, where OpenSSL is deprecated.)
  #
  IF(ENABLE_OPENSSL AND NOT CMAKE_SYSTEM_NAME MATCHES "Darwin")
