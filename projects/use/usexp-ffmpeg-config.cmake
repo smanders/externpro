@@ -16,13 +16,13 @@ list(APPEND ${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include${verDir}/ffmpeg) # for inte
 set(reqVars ${PRJ}_INCLUDE_DIR)
 if(WIN32)
   set(${PRJ}_LIBRARIES
-    avcodec${ver}.lib
     avdevice${ver}.lib
-    avfilter${ver}.lib
     avformat${ver}.lib
-    avutil${ver}.lib
+    avfilter${ver}.lib
+    avcodec${ver}.lib
     swresample${ver}.lib
     swscale${ver}.lib
+    avutil${ver}.lib
     )
   link_directories(${XP_ROOTDIR}/lib)
   set(${PRJ}_DLLS
