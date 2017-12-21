@@ -69,7 +69,7 @@ function(build_ffmpegv)
     build_openh264(openh264Tgts)
     set(XP_CONFIGURE_BASE ${CMAKE_COMMAND} -E env PKG_CONFIG_PATH=${STAGE_DIR}/share/cmake
       <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> #--enable-shared --disable-static
-      --enable-libopenh264 --disable-bzlib --disable-iconv --disable-zlib
+      --enable-libopenh264 --disable-bzlib --disable-iconv --disable-libxcb --disable-zlib
       )
     set(XP_CONFIGURE_Debug ${XP_CONFIGURE_BASE} --enable-debug=1)
     set(XP_CONFIGURE_Release ${XP_CONFIGURE_BASE} --disable-debug)
