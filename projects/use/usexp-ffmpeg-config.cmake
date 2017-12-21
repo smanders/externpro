@@ -14,17 +14,18 @@ unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR ffmpeg/libavcodec/avcodec.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
 list(APPEND ${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include${verDir}/ffmpeg) # for internal header includes
 set(reqVars ${PRJ}_INCLUDE_DIR)
+set(${PRJ}_LIBRARIES
+  avdevice${ver}
+  avformat${ver}
+  avfilter${ver}
+  avcodec${ver}
+  swresample${ver}
+  swscale${ver}
+  avutil${ver}
+  )
+list(APPEND reqVars ${PRJ}_LIBRARIES)
+link_directories(${XP_ROOTDIR}/lib)
 if(WIN32)
-  set(${PRJ}_LIBRARIES
-    avdevice${ver}.lib
-    avformat${ver}.lib
-    avfilter${ver}.lib
-    avcodec${ver}.lib
-    swresample${ver}.lib
-    swscale${ver}.lib
-    avutil${ver}.lib
-    )
-  link_directories(${XP_ROOTDIR}/lib)
   set(${PRJ}_DLLS
     ${XP_ROOTDIR}/bin${verDir}/avcodec-56.dll
     ${XP_ROOTDIR}/bin${verDir}/avdevice-56.dll
@@ -34,20 +35,9 @@ if(WIN32)
     ${XP_ROOTDIR}/bin${verDir}/swresample-1.dll
     ${XP_ROOTDIR}/bin${verDir}/swscale-3.dll
     )
-  list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DLLS)
+  list(APPEND reqVars ${PRJ}_DLLS)
 else()
-  set(${PRJ}_LIBRARIES
-    avcodec${ver}
-    avdevice${ver}
-    avfilter${ver}
-    avformat${ver}
-    avutil${ver}
-    swresample${ver}
-    swscale${ver}
-    ${OPENH264_LIBRARIES}
-    )
-  link_directories(${XP_ROOTDIR}/lib)
-  list(APPEND reqVars ${PRJ}_LIBRARIES)
+  list(APPEND ${PRJ}_LIBRARIES ${OPENH264_LIBRARIES})
 endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
