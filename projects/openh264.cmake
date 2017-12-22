@@ -26,11 +26,21 @@ function(build_openh264)
   if(NOT (XP_DEFAULT OR XP_PRO_OPENH264))
     return()
   endif()
+  if(NOT (XP_DEFAULT OR XP_PRO_YASM))
+    message(STATUS "openh264.cmake: requires yasm")
+    set(XP_PRO_YASM ON CACHE BOOL "include yasm" FORCE)
+    xpPatchProject(${PRO_YASM})
+  endif()
+  build_yasm(yasmTgts) # sets YASM_EXE
   xpGetArgValue(${PRO_OPENH264} ARG VER VALUE VER)
+  set(XP_CONFIGURE
+    -DOPENH264_VER=${VER}
+    -DCMAKE_ASM_NASM_COMPILER=${YASM_EXE}
+    )
   configure_file(${PRO_DIR}/use/usexp-openh264-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(openh264 "" "-DOPENH264_VER=${VER}" openh264Targets)
+  xpCmakeBuild(openh264 "${yasmTgts}" "${XP_CONFIGURE}" openh264Targets)
   if(ARGN)
     set(${ARGN} "${openh264Targets}" PARENT_SCOPE)
   endif()
