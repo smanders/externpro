@@ -1,12 +1,11 @@
 # yasm
 xpProOption(yasm)
 set(VER 1.3.0)
-string(REPLACE "." "_" VER_ ${VER})
 set(REPO https://github.com/smanders/yasm)
 set(PRO_YASM
   NAME yasm
   WEB "yasm" http://yasm.tortall.net/ "yasm website"
-  LICENSE "open" ${REPO}/blob/v${VER}/COPYING "yasm license: 'new' BSD license"
+  LICENSE "open" ${REPO}/blob/v${VER}/COPYING "new BSD license"
   DESC "assembler and disassembler for the Intel x86 architecture"
   REPO "repo" ${REPO} "forked yasm repo on github"
   VER ${VER}
@@ -39,6 +38,9 @@ function(build_yasm)
   xpCmakeBuild(yasm "" "${XP_CONFIGURE}" yasmTargets)
   if(ARGN)
     set(${ARGN} "${yasmTargets}" PARENT_SCOPE)
-    set(YASM_EXE ${STAGE_DIR}/bin/yasm PARENT_SCOPE)
+    if(WIN32)
+      set(ext ".exe")
+    endif()
+    set(YASM_EXE ${STAGE_DIR}/bin/yasm${ext} PARENT_SCOPE)
   endif()
 endfunction()
