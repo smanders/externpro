@@ -65,9 +65,12 @@ function(build_ffmpegv)
       message(STATUS "ffmpeg.cmake: requires openh264")
       set(XP_PRO_OPENH264 ON CACHE BOOL "include openh264" FORCE)
       xpPatchProject(${PRO_OPENH264})
+      # NOTE: openh264 depends on yasm, so the above already taken care of in openh264
     endif()
+    build_yasm(yasmTgts) # sets YASM_EXE
     build_openh264(openh264Tgts)
     set(XP_CONFIGURE_BASE ${CMAKE_COMMAND} -E env PKG_CONFIG_PATH=${STAGE_DIR}/share/cmake
+      PATH=${STAGE_DIR}/bin:$ENV{PATH} # prepend path to yasm
       <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> #--enable-shared --disable-static
       --enable-libopenh264 --disable-bzlib --disable-iconv --disable-libxcb --disable-zlib
       )
@@ -113,7 +116,7 @@ macro(addproject_ffmpeg XP_TARGET)
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
     SOURCE_DIR ${SOURCE_DIR}
     CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
-    BUILD_COMMAND   # use default
+    BUILD_COMMAND ${CMAKE_COMMAND} -E env PATH=${STAGE_DIR}/bin:$ENV{PATH} make # prepend path to yasm
     INSTALL_COMMAND # use default
     )
   set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
