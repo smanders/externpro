@@ -667,13 +667,13 @@ function(xpGetCompilerPrefix _ret)
     endif()
   elseif(CMAKE_COMPILER_IS_GNUCXX)
     exec_program(${CMAKE_CXX_COMPILER}
-      ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpversion
+      ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpfullversion -dumpversion
       OUTPUT_VARIABLE GCC_VERSION
       )
-    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)?" "\\1\\2\\3"
-      GCC_VERSION ${GCC_VERSION}
+    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)?"
+      "gcc\\1\\2\\3"
+      prefix ${GCC_VERSION}
       )
-    set(prefix gcc${GCC_VERSION})
   elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang") # LLVM/Apple Clang (clang.llvm.org)
     if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
       exec_program(${CMAKE_CXX_COMPILER}
