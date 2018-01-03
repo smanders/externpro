@@ -1,5 +1,5 @@
 # node
-set(NODE_OLDVER v6.9.0)
+set(NODE_OLDVER v6.11.4)
 set(NODE_NEWVER v6.11.4)
 set(NODE_VERSIONS ${NODE_OLDVER} ${NODE_NEWVER})
 ####################
