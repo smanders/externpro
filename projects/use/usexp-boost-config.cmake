@@ -94,11 +94,11 @@ if(UNIX)
   #set(Boost_DEBUG TRUE) # enable debugging output of FindBoost.cmake
   #set(Boost_DETAILED_FAILURE_MSG) # output detailed information
   set(BOOST_ROOT ${XP_ROOTDIR})
-  # TODO: remove the following conditional once FindBoost.cmake detects clang
-  if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+  # TODO: remove the following once FindBoost.cmake: uses -dumpfullversion, detects clang
+  if(TRUE) #"${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     include(${CMAKE_CURRENT_LIST_DIR}/xpfunmac.cmake)
-    xpGetCompilerPrefix(_boost_COMPILER)
-    set(_boost_COMPILER "-${_boost_COMPILER}")
+    xpGetCompilerPrefix(Boost_COMPILER GCC_TWO_VER)
+    set(Boost_COMPILER "-${Boost_COMPILER}")
   endif()
   find_package(Boost ${BOOST_VER} REQUIRED COMPONENTS ${Boost_LIBS})
   set(${PRJ}_FOUND ${Boost_FOUND})

@@ -643,6 +643,8 @@ function(xpMarkdownReadmeFinalize)
 endfunction()
 
 function(xpGetCompilerPrefix _ret)
+  set(options GCC_TWO_VER)
+  cmake_parse_arguments(X "${options}" "" "" ${ARGN})
   if(MSVC)
     if(MSVC14)
       set(prefix vc140)
@@ -670,8 +672,13 @@ function(xpGetCompilerPrefix _ret)
       ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpfullversion -dumpversion
       OUTPUT_VARIABLE GCC_VERSION
       )
+    if(X_GCC_TWO_VER)
+      set(digits "\\1\\2")
+    else()
+      set(digits "\\1\\2\\3")
+    endif()
     string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)?"
-      "gcc\\1\\2\\3"
+      "gcc${digits}"
       prefix ${GCC_VERSION}
       )
   elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang") # LLVM/Apple Clang (clang.llvm.org)
