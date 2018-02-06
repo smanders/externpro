@@ -55,6 +55,7 @@ function(build_cmakexp)
   xpBuildOnlyRelease()
   set(XP_CONFIGURE
     -DCPACK_OUTPUT_FILE_PREFIX:PATH=${STAGE_DIR}/pkg
+    -DCPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION=/usr/share/aclocal
     -DCMAKE_USE_OPENSSL=ON
     -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
     -Dusexp-OpenSSL_DIR=${STAGE_DIR}/share/cmake
