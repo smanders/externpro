@@ -1,0 +1,94 @@
+diff --git a/expat/CMakeLists.txt b/expat/CMakeLists.txt
+index 504d087..4d976a9 100644
+--- a/expat/CMakeLists.txt
++++ b/expat/CMakeLists.txt
+@@ -4,12 +4,17 @@
+ project(expat)
+ 
+ cmake_minimum_required(VERSION 2.6)
++include(flags OPTIONAL)
+ set(PACKAGE_BUGREPORT "expat-bugs@libexpat.org")
+ set(PACKAGE_NAME "expat")
+ set(PACKAGE_VERSION "2.2.5")
+ set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
+ set(PACKAGE_TARNAME "${PACKAGE_NAME}")
+ 
++set(ver _${PACKAGE_VERSION})
++set(verDir /${PROJECT_NAME}${ver})
++set(targetsFile ${PROJECT_NAME}${ver}-targets)
++
+ if(WINCE)
+     set(BUILD_tools_default OFF)
+ else()
+@@ -33,6 +38,7 @@ option(BUILD_shared "build a shared expat library" ON)
+ option(BUILD_doc "build man page for xmlwf" ${BUILD_doc_default})
+ option(USE_libbsd "utilize libbsd (for arc4random_buf)" OFF)
+ option(INSTALL "install expat files in cmake install target" ON)
++option(INSTALL_extra "install extra expat files in cmake install target" ON)
+ 
+ if(USE_libbsd)
+     find_library(LIB_BSD NAMES bsd)
+@@ -82,9 +88,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+ if(MSVC)
+     add_definitions(-D_CRT_SECURE_NO_WARNINGS -wd4996)
+ endif(MSVC)
+-if(WIN32)
++if(WIN32 AND NOT DEFINED CMAKE_DEBUG_POSTFIX)
+     set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Add a suffix, usually d on Windows")
+-endif(WIN32)
++endif()
+ 
+ set(expat_SRCS
+     lib/loadlibrary.c
+@@ -111,6 +117,9 @@ add_library(expat ${_SHARED} ${expat_SRCS})
+ if(USE_libbsd)
+     target_link_libraries(expat ${LIB_BSD})
+ endif()
++if(NOT BUILD_shared)
++  set_target_properties(expat PROPERTIES OUTPUT_NAME expat${ver})
++endif()
+ 
+ set(LIBCURRENT 7)   # sync
+ set(LIBREVISION 7)  # with
+@@ -129,9 +138,16 @@ macro(expat_install)
+     endif()
+ endmacro()
+ 
+-expat_install(TARGETS expat RUNTIME DESTINATION bin
++macro(extra_install)
++    if(INSTALL_extra)
++        install(${ARGN})
++    endif()
++endmacro()
++
++expat_install(TARGETS expat EXPORT ${targetsFile} RUNTIME DESTINATION bin
+                       LIBRARY DESTINATION lib
+                       ARCHIVE DESTINATION lib)
++expat_install(EXPORT ${targetsFile} DESTINATION lib/cmake)
+ 
+ set(prefix ${CMAKE_INSTALL_PREFIX})
+ set(exec_prefix "\${prefix}/bin")
+@@ -139,8 +155,8 @@ set(libdir "\${prefix}/lib")
+ set(includedir "\${prefix}/include")
+ configure_file(expat.pc.in ${CMAKE_CURRENT_BINARY_DIR}/expat.pc)
+ 
+-expat_install(FILES lib/expat.h lib/expat_external.h DESTINATION include)
+-expat_install(FILES ${CMAKE_CURRENT_BINARY_DIR}/expat.pc DESTINATION lib/pkgconfig)
++expat_install(FILES lib/expat.h lib/expat_external.h DESTINATION include${verDir})
++extra_install(FILES ${CMAKE_CURRENT_BINARY_DIR}/expat.pc DESTINATION lib/pkgconfig)
+ 
+ if(BUILD_tools)
+     set(xmlwf_SRCS
+@@ -153,10 +169,10 @@ if(BUILD_tools)
+     add_executable(xmlwf ${xmlwf_SRCS})
+     set_property(TARGET xmlwf PROPERTY RUNTIME_OUTPUT_DIRECTORY xmlwf)
+     target_link_libraries(xmlwf expat)
+-    expat_install(TARGETS xmlwf DESTINATION bin)
++    extra_install(TARGETS xmlwf DESTINATION bin)
+     if(BUILD_doc)
+         add_custom_command(TARGET expat PRE_BUILD COMMAND "${DOCBOOK_TO_MAN}" "${PROJECT_SOURCE_DIR}/doc/xmlwf.xml" && mv "XMLWF.1" "${PROJECT_SOURCE_DIR}/doc/xmlwf.1")
+-        expat_install(FILES "${PROJECT_SOURCE_DIR}/doc/xmlwf.1" DESTINATION share/man/man1)
++        extra_install(FILES "${PROJECT_SOURCE_DIR}/doc/xmlwf.1" DESTINATION share/man/man1)
+     endif()
+ endif()
+ 
