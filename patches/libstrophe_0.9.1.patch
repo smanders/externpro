@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..7cdf770
+index 0000000..8a2657b
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,35 @@
+@@ -0,0 +1,44 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(libstrophe)
 +include(flags OPTIONAL)
@@ -16,10 +16,19 @@ index 0000000..7cdf770
 +    -D_CRT_SECURE_NO_WARNINGS
 +    -D_WINSOCK_DEPRECATED_NO_WARNINGS
 +    )
-+  if(COMMAND xpStringAppendIfDne)
-+    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4244") # conversion from x to y, possible loss of data
-+    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4267") # conversion from x to y, possible loss of data
-+  endif()
++endif()
++########################################
++option(CMAKE_USE_OPENSSL_MODULE_PATH "Find OpenSSL in CMAKE_MODULE_PATH." OFF)
++mark_as_advanced(CMAKE_USE_OPENSSL_MODULE_PATH)
++if(CMAKE_USE_OPENSSL_MODULE_PATH)
++  find_package(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++else()
++  find_package(OpenSSL)
++endif()
++if(OPENSSL_FOUND)
++  include_directories(${OPENSSL_INCLUDE_DIR})
++else()
++  message(FATAL_ERROR "can't find OpenSSL - libstrophe cmake currently hard-coded to use OpenSSL")
 +endif()
 +########################################
 +# version
