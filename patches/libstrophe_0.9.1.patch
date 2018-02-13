@@ -1,13 +1,26 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..24de4ed
+index 0000000..7cdf770
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,35 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(libstrophe)
 +include(flags OPTIONAL)
 +enable_testing()
++set_property(GLOBAL PROPERTY USE_FOLDERS ON) # enables MSVC Solution Folders
++########################################
++if(MSVC)
++  add_definitions(
++    -D_CRT_NONSTDC_NO_DEPRECATE
++    -D_CRT_SECURE_NO_WARNINGS
++    -D_WINSOCK_DEPRECATED_NO_WARNINGS
++    )
++  if(COMMAND xpStringAppendIfDne)
++    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4244") # conversion from x to y, possible loss of data
++    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4267") # conversion from x to y, possible loss of data
++  endif()
++endif()
 +########################################
 +# version
 +set(verString "^AC_INIT.*\\[\([.0-9]*\)\\].*")
@@ -28,10 +41,10 @@ index 0000000..24de4ed
 +install(FILES strophe.h DESTINATION include${verDir}/${PROJECT_NAME})
 diff --git a/examples/CMakeLists.txt b/examples/CMakeLists.txt
 new file mode 100644
-index 0000000..0994870
+index 0000000..fa052a0
 --- /dev/null
 +++ b/examples/CMakeLists.txt
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,13 @@
 +set(examples
 +  active
 +  basic
@@ -43,6 +56,7 @@ index 0000000..0994870
 +foreach(exe ${examples})
 +  add_executable(${exe} ${exe}.c)
 +  target_link_libraries(${exe} libstrophe expat resolv) # TODO library dependencies
++  set_property(TARGET ${exe} PROPERTY FOLDER examples)
 +endforeach()
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 new file mode 100644
@@ -116,12 +130,13 @@ index 0000000..b2962a7
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
 new file mode 100644
-index 0000000..974c312
+index 0000000..7758833
 --- /dev/null
 +++ b/tests/CMakeLists.txt
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,28 @@
 +add_library(testlib STATIC test.c test.h)
 +target_link_libraries(testlib libstrophe expat resolv) # TODO library dependencies
++set_property(TARGET testlib PROPERTY FOLDER tests)
 +set(tests
 +  check_parser
 +  res_query_dump
@@ -140,9 +155,10 @@ index 0000000..974c312
 +  test_string
 +  )
 +foreach(exe ${tests})
-+  if(EXISTS ${exe}.c) # there are some tests only in repo, not in download
++  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${exe}.c) # there are some tests only in repo, not in download
 +    add_executable(${exe} ${exe}.c)
 +    target_link_libraries(${exe} testlib)
 +    add_test(NAME ${exe} COMMAND ${exe})
++    set_property(TARGET ${exe} PROPERTY FOLDER tests)
 +  endif()
 +endforeach()
