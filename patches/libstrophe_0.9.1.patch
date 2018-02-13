@@ -1,0 +1,148 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..24de4ed
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,22 @@
++cmake_minimum_required(VERSION 3.0)
++project(libstrophe)
++include(flags OPTIONAL)
++enable_testing()
++########################################
++# version
++set(verString "^AC_INIT.*\\[\([.0-9]*\)\\].*")
++set(verFile configure.ac)
++file(STRINGS ${verFile} VER REGEX "${verString}")
++string(REGEX REPLACE "${verString}" "\\1" VER ${VER})
++if(NOT DEFINED LIBSTROPHE_VER)
++  set(LIBSTROPHE_VER ${VER})
++elseif(NOT ${LIBSTROPHE_VER} STREQUAL ${VER})
++  message(AUTHOR_WARNING "version passed in (${LIBSTROPHE_VER}) doesn't match version from ${verFile} (${VER})")
++endif()
++set(ver _${LIBSTROPHE_VER})
++set(verDir /${PROJECT_NAME}${ver})
++########################################
++add_subdirectory(src)
++add_subdirectory(examples)
++add_subdirectory(tests)
++install(FILES strophe.h DESTINATION include${verDir}/${PROJECT_NAME})
+diff --git a/examples/CMakeLists.txt b/examples/CMakeLists.txt
+new file mode 100644
+index 0000000..0994870
+--- /dev/null
++++ b/examples/CMakeLists.txt
+@@ -0,0 +1,12 @@
++set(examples
++  active
++  basic
++  bot
++  component
++  roster
++  uuid
++  )
++foreach(exe ${examples})
++  add_executable(${exe} ${exe}.c)
++  target_link_libraries(${exe} libstrophe expat resolv) # TODO library dependencies
++endforeach()
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+new file mode 100644
+index 0000000..b2962a7
+--- /dev/null
++++ b/src/CMakeLists.txt
+@@ -0,0 +1,64 @@
++set(lib_name ${PROJECT_NAME})
++########################################
++# source
++set(${lib_name}_libsrcs
++  auth.c
++  common.h
++  conn.c
++  crypto.c
++  ctx.c
++  event.c
++  handler.c
++  hash.c
++  hash.h
++  jid.c
++  md5.c
++  md5.h
++  ostypes.h
++  parser_expat.c
++  parser.h
++  #parser_libxml2.c # parser_expat instead
++  rand.c
++  rand.h
++  resolver.c
++  resolver.h
++  sasl.c
++  sasl.h
++  scram.c
++  scram.h
++  sha1.c
++  sha1.h
++  snprintf.c
++  snprintf.h
++  sock.c
++  sock.h
++  stanza.c
++  tls_dummy.c
++  #tls_gnutls.c # tls_openssl instead
++  tls.h
++  tls_openssl.c
++  #tls_schannel.c # tls_openssl instead
++  util.c
++  util.h
++  uuid.c
++  )
++source_group("" FILES ${${lib_name}_libsrcs})
++########################################
++# library
++add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
++  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
++  )
++set_target_properties(${lib_name} PROPERTIES
++  OUTPUT_NAME ${lib_name}${ver}
++  PREFIX "" # strip off the "lib" prefix, since it's already libstrophe
++  )
++########################################
++# install
++set(targetsFile ${PROJECT_NAME}${ver}-targets)
++install(TARGETS ${lib_name} EXPORT ${targetsFile}
++  RUNTIME DESTINATION bin
++  LIBRARY DESTINATION lib
++  ARCHIVE DESTINATION lib
++  )
++install(EXPORT ${targetsFile} DESTINATION lib/cmake)
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+new file mode 100644
+index 0000000..974c312
+--- /dev/null
++++ b/tests/CMakeLists.txt
+@@ -0,0 +1,26 @@
++add_library(testlib STATIC test.c test.h)
++target_link_libraries(testlib libstrophe expat resolv) # TODO library dependencies
++set(tests
++  check_parser
++  res_query_dump
++  test_base64
++  test_ctx
++  test_hash
++  test_jid
++  test_md5
++  test_rand
++  test_resolver
++  test_sasl
++  test_scram
++  test_sha1
++  test_snprintf
++  test_sock
++  test_string
++  )
++foreach(exe ${tests})
++  if(EXISTS ${exe}.c) # there are some tests only in repo, not in download
++    add_executable(${exe} ${exe}.c)
++    target_link_libraries(${exe} testlib)
++    add_test(NAME ${exe} COMMAND ${exe})
++  endif()
++endforeach()
