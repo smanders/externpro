@@ -33,6 +33,7 @@ function(build_expat)
     )
   set(XP_CONFIGURE
     -DBUILD_shared=OFF
+    -DBUILD_doc=OFF
     -DINSTALL_extra=OFF
     )
   xpCmakeBuild(expat "" "${XP_CONFIGURE}" expatTargets)
