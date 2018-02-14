@@ -38,9 +38,9 @@ function(build_libstrophe)
   build_openssl(osslTgts)
   set(depTgts ${expatTgts} ${osslTgts})
   xpGetArgValue(${PRO_LIBSTROPHE} ARG VER VALUE VER)
-  #configure_file(${PRO_DIR}/use/usexp-libstrophe-config.cmake ${STAGE_DIR}/share/cmake/
-  #  @ONLY NEWLINE_STYLE LF
-  #  )
+  configure_file(${PRO_DIR}/use/usexp-libstrophe-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
   set(XP_CONFIGURE
     -DLIBSTROPHE_VER=${VER}
     -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
