@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..80ca3f8
+index 0000000..eeab699
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,64 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(libstrophe)
 +include(flags OPTIONAL)
@@ -25,9 +25,7 @@ index 0000000..80ca3f8
 +else()
 +  find_package(OpenSSL)
 +endif()
-+if(OPENSSL_FOUND)
-+  include_directories(${OPENSSL_INCLUDE_DIR})
-+else()
++if(NOT OPENSSL_FOUND)
 +  message(FATAL_ERROR "can't find OpenSSL - libstrophe cmake currently hard-coded to use OpenSSL")
 +endif()
 +####################
@@ -38,11 +36,20 @@ index 0000000..80ca3f8
 +else()
 +  find_package(EXPAT)
 +endif()
-+if(EXPAT_FOUND)
-+  include_directories(${EXPAT_INCLUDE_DIRS})
-+else()
++if(NOT EXPAT_FOUND)
 +  message(FATAL_ERROR "can't find expat - libstrophe cmake currently hard-coded to use expat")
 +endif()
++####################
++include(CheckLibraryExists)
++function(checkLibraryConcat lib symbol liblist)
++  string(TOUPPER ${lib} LIB)
++  check_library_exists("${lib}" "${symbol}" "" LIBSTROPHE_HAS_${LIB})
++  if(LIBSTROPHE_HAS_${LIB})
++    list(APPEND ${liblist} ${lib})
++    set(${liblist} ${${liblist}} PARENT_SCOPE)
++  endif()
++endfunction()
++checkLibraryConcat(resolv __res_query SYS_LIBS)
 +########################################
 +# version
 +set(verString "^AC_INIT.*\\[\([.0-9]*\)\\].*")
@@ -63,7 +70,7 @@ index 0000000..80ca3f8
 +install(FILES strophe.h DESTINATION include${verDir}/${PROJECT_NAME})
 diff --git a/examples/CMakeLists.txt b/examples/CMakeLists.txt
 new file mode 100644
-index 0000000..b70b0df
+index 0000000..3706f2e
 --- /dev/null
 +++ b/examples/CMakeLists.txt
 @@ -0,0 +1,13 @@
@@ -77,15 +84,15 @@ index 0000000..b70b0df
 +  )
 +foreach(exe ${examples})
 +  add_executable(${exe} ${exe}.c)
-+  target_link_libraries(${exe} libstrophe resolv) # TODO library dependencies
++  target_link_libraries(${exe} libstrophe)
 +  set_property(TARGET ${exe} PROPERTY FOLDER examples)
 +endforeach()
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 new file mode 100644
-index 0000000..e3c4db9
+index 0000000..c44e631
 --- /dev/null
 +++ b/src/CMakeLists.txt
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,68 @@
 +set(lib_name ${PROJECT_NAME})
 +########################################
 +# source
@@ -121,7 +128,7 @@ index 0000000..e3c4db9
 +  sock.c
 +  sock.h
 +  stanza.c
-+  tls_dummy.c
++  #tls_dummy.c # tls_openssl instead
 +  #tls_gnutls.c # tls_openssl instead
 +  tls.h
 +  tls_openssl.c
@@ -134,9 +141,12 @@ index 0000000..e3c4db9
 +########################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+target_link_libraries(${lib_name} ${EXPAT_LIBRARIES} ${OPENSSL_LIBRARIES})
++target_link_libraries(${lib_name} ${EXPAT_LIBRARIES} ${OPENSSL_LIBRARIES} ${SYS_LIBS})
 +target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
 +  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
++  PRIVATE
++  $<BUILD_INTERFACE:${EXPAT_INCLUDE_DIRS}>
++  $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>
 +  )
 +set_target_properties(${lib_name} PROPERTIES
 +  OUTPUT_NAME ${lib_name}${ver}
@@ -153,12 +163,12 @@ index 0000000..e3c4db9
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake)
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
 new file mode 100644
-index 0000000..75e8a7c
+index 0000000..5bf5a5f
 --- /dev/null
 +++ b/tests/CMakeLists.txt
 @@ -0,0 +1,28 @@
 +add_library(testlib STATIC test.c test.h)
-+target_link_libraries(testlib libstrophe resolv) # TODO library dependencies
++target_link_libraries(testlib libstrophe)
 +set_property(TARGET testlib PROPERTY FOLDER tests)
 +set(tests
 +  check_parser
