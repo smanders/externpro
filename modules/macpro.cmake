@@ -179,6 +179,8 @@ macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
     # build
     if(COMMAND build_${cmdp})
       file(APPEND ${stepBuild} "build_${cmdp}()\n")
+    elseif(DEFINED PRO_${PRO})
+      proCustomBuild(${PRO_${PRO}})
     endif()
     xpMarkdownReadmeAppend(${pro})
   endforeach()
@@ -192,6 +194,14 @@ macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
   list(APPEND xpfiles ${projects})
   xpSourceListAppend("${xpfiles}")
 endmacro()
+
+function(proCustomBuild)
+  set(oneValueArgs BUILD_FUNC)
+  cmake_parse_arguments(X "" "${oneValueArgs}" "" ${ARGN})
+  if(DEFINED X_BUILD_FUNC AND COMMAND ${X_BUILD_FUNC})
+    file(APPEND ${stepBuild} "${X_BUILD_FUNC}()\n")
+  endif()
+endfunction()
 
 macro(proExecuteStep) # NOTE: called by top-level CMakeLists.txt
   if(${XP_STEP} STREQUAL "mkpatch")
