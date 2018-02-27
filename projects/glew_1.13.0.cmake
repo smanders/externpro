@@ -28,8 +28,10 @@ function(build_glew_bldver)
     return()
   endif()
   set(XP_CONFIGURE
+    -DGLEW_VER=${gl_VER}
     -DBUILD_UTILS=OFF
     -DBUILD_SHARED_LIBS=OFF
+    -DINSTALL_PKGCONFIG=OFF
     )
   xpCmakeBuild(glew_${gl_VER} "" "${XP_CONFIGURE}")
 endfunction()
