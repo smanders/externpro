@@ -17,7 +17,7 @@ if(EXISTS ${XP_ROOTDIR}/lib/cmake/${prj}${ver}/${prj}-targets.cmake) # built via
   set(${PRJ}_LIBRARIES GLEW::glew_s) # GLEW::glewmx_s TODO determine if glewmx is needed
   list(APPEND reqVars ${PRJ}_LIBRARIES)
 elseif(MSVC) # pre-built
-  set(${PRJ}_LIBRARIES glew32)
+  set(${PRJ}_LIBRARIES glew32) # TODO opengl32 glu32 system libraries?
   set(${PRJ}_DLLS
     ${XP_ROOTDIR}/lib/glew32.dll
     ${XP_ROOTDIR}/lib/glew32mx.dll # TODO determine if this is needed
