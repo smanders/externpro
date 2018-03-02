@@ -1303,10 +1303,9 @@ function(xpPostBuildCopy theTarget copyList toPath)
   else() # toPath is relative to target location
     set(dest $<TARGET_FILE_DIR:${theTarget}>/${toPath})
   endif()
-  if(NOT EXISTS ${dest})
-    add_custom_command(TARGET ${theTarget} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${dest})
-  endif()
+  add_custom_command(TARGET ${theTarget} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${dest}
+    )
   foreach(_item ${copyList})
     # Handle target separately.
     if(TARGET ${_item})
