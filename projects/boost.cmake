@@ -1,5 +1,4 @@
 # boost
-# http://sourceforge.net/projects/boost/files/boost/
 # * to build boost.python on Linux: need to install python dev pkgs
 # *   sudo apt install python-dev [ubuntu]
 # *   sudo yum install python-devel.x86_64 [rhel6]

@@ -1,7 +1,4 @@
 # gsoap
-# http://gsoap2.sourceforge.net/
-# http://packages.debian.org/sid/gsoap
-# http://gsoap.sourcearchive.com/
 xpProOption(gsoap)
 set(VER 2.7.17)
 set(REPO https://github.com/smanders/gSOAP)
