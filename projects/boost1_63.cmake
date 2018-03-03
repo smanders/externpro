@@ -13,7 +13,7 @@ set(PRO_BOOST${VER2_}
   VER ${VER}
   GIT_ORIGIN git://github.com/boostorg/boost.git
   GIT_TAG boost-${VER} # what to 'git checkout'
-  DLURL https://downloads.sourceforge.net/project/boost/boost/${VER}/boost_${VER_}.tar.bz2
+  DLURL https://dl.bintray.com/boostorg/release/${VER}/source/boost_${VER_}.tar.bz2
   DLMD5 1c837ecd990bb022d07e7aab32b09847
   SUBPRO boostbuild${VER2_} boostgil${VER2_} boostmpl${VER2_} boostunits${VER2_}
   )

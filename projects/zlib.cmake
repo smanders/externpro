@@ -13,8 +13,7 @@ set(PRO_ZLIB
   GIT_UPSTREAM git://github.com/madler/zlib.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  #DLURL http://zlib.net/zlib-${VER}.tar.gz
-  DLURL https://downloads.sourceforge.net/project/libpng/zlib/${VER}/zlib-${VER}.tar.gz
+  DLURL http://zlib.net/fossils/zlib-${VER}.tar.gz
   DLMD5 44d667c142d7cda120332623eab69f40
   PATCH ${PATCH_DIR}/zlib.patch
   DIFF ${REPO}/compare/madler:
