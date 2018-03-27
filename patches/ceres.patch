@@ -1,0 +1,80 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 02c72b5..e036d1e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -88,6 +88,17 @@ set(CMAKE_DEBUG_POSTFIX "-debug")
+ include(ReadCeresVersionFromSource)
+ read_ceres_version_from_source(${Ceres_SOURCE_DIR})
+ 
++# externpro
++include(flags OPTIONAL) # overwrites POSTFIX defines
++
++if(DEFINED CERES_VER)
++  if(NOT ${CERES_VER} STREQUAL ${CERES_VERSION})
++    message(AUTHOR_WARNING "version passed in (${CERES_VER}) doesn't match version from ${CERES_VERSION_FILE} (${CERES_VERSION})")
++  endif()
++  set(ver _${CERES_VERSION})
++  set(verDir /ceres${ver})
++endif()
++
+ enable_testing()
+ 
+ include(CMakeDependentOption)
+@@ -823,21 +834,21 @@ endif (BUILD_EXAMPLES)
+ 
+ # Setup installation of Ceres public headers.
+ file(GLOB CERES_HDRS ${Ceres_SOURCE_DIR}/include/ceres/*.h)
+-install(FILES ${CERES_HDRS} DESTINATION include/ceres)
++install(FILES ${CERES_HDRS} DESTINATION include${verDir}/ceres)
+ 
+ file(GLOB CERES_PUBLIC_INTERNAL_HDRS ${Ceres_SOURCE_DIR}/include/ceres/internal/*.h)
+-install(FILES ${CERES_PUBLIC_INTERNAL_HDRS} DESTINATION include/ceres/internal)
++install(FILES ${CERES_PUBLIC_INTERNAL_HDRS} DESTINATION include${verDir}/ceres/internal)
+ 
+ # Also setup installation of Ceres config.h configured with the current
+ # build options into the installed headers directory.
+ install(FILES ${Ceres_BINARY_DIR}/config/ceres/internal/config.h
+-        DESTINATION include/ceres/internal)
++        DESTINATION include${verDir}/ceres/internal)
+ 
+ if (MINIGLOG)
+   # Install miniglog header if being used as logging #includes appear in
+   # installed public Ceres headers.
+   install(FILES ${Ceres_SOURCE_DIR}/internal/ceres/miniglog/glog/logging.h
+-          DESTINATION include/ceres/internal/miniglog/glog)
++          DESTINATION include${verDir}/ceres/internal/miniglog/glog)
+ endif (MINIGLOG)
+ 
+ # Ceres supports two mechanisms by which it can be detected & imported into
+@@ -876,10 +887,14 @@ configure_file("${Ceres_SOURCE_DIR}/cmake/CeresConfigVersion.cmake.in"
+ 
+ # Set the install path for the installed CeresConfig.cmake configuration file
+ # relative to CMAKE_INSTALL_PREFIX.
+-if (WIN32)
+-  set(RELATIVE_CMAKECONFIG_INSTALL_DIR CMake)
++if (DEFINED verDir)
++  set(RELATIVE_CMAKECONFIG_INSTALL_DIR lib${LIB_SUFFIX}/cmake${verDir})
+ else ()
+-  set(RELATIVE_CMAKECONFIG_INSTALL_DIR lib${LIB_SUFFIX}/cmake/Ceres)
++  if (WIN32)
++    set(RELATIVE_CMAKECONFIG_INSTALL_DIR CMake)
++  else ()
++    set(RELATIVE_CMAKECONFIG_INSTALL_DIR lib${LIB_SUFFIX}/cmake/Ceres)
++  endif ()
+ endif ()
+ 
+ # This "exports" for installation all targets which have been put into the
+diff --git a/internal/ceres/CMakeLists.txt b/internal/ceres/CMakeLists.txt
+index cc43fec..5728e89 100644
+--- a/internal/ceres/CMakeLists.txt
++++ b/internal/ceres/CMakeLists.txt
+@@ -214,6 +214,9 @@ add_library(ceres ${CERES_LIBRARY_SOURCE})
+ set_target_properties(ceres PROPERTIES
+   VERSION ${CERES_VERSION}
+   SOVERSION ${CERES_VERSION_MAJOR})
++if(NOT BUILD_SHARED_LIBS AND DEFINED ver)
++  set_target_properties(ceres PROPERTIES OUTPUT_NAME ceres${ver})
++endif()
+ 
+ include(AppendTargetProperty)
+ # Always build position-independent code (PIC), even when building Ceres as a
