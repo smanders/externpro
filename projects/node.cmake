@@ -1,6 +1,6 @@
 # node
 set(NODE_OLDVER v6.11.4)
-set(NODE_NEWVER v6.11.4)
+set(NODE_NEWVER v8.11.0)
 set(NODE_VERSIONS ${NODE_OLDVER} ${NODE_NEWVER})
 ####################
 function(build_node)
@@ -87,6 +87,11 @@ function(build_node_ver ver)
         ${npmDst}/${nm}/node-gyp/${nm}/npmlog/${nm}
         ${npmDst}/${nm}/npm-registry-client/${nm}/npmlog/${nm}
         ${npmDst}/${nm}/read-package-json/${nm}/glob/${nm}
+        )
+    endif()
+    if(${ver} MATCHES v8)
+      set(dedupeDirs
+        ${npmDst}/${nm}/pacote/${nm}/make-fetch-happen/${nm}
         )
     endif()
     list(APPEND dedupeDirs ${npmDst})
