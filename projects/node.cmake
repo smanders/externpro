@@ -44,7 +44,7 @@ function(build_node_ver ver)
       --without-etw --without-perfctr --without-dtrace
       # TODO: explore --tag=TAG custom build tag
       # TODO: explore --fully-static
-      --dest-cpu=${destcpu} --dest-os=${destos} ${addopt}
+      --dest-cpu=${destcpu} --dest-os=${destos}
       )
     set(XP_CONFIGURE_Release ${XP_CONFIGURE_BASE})
     set(XP_CONFIGURE_Debug ${XP_CONFIGURE_BASE} --debug --gdb)
