@@ -1802,106 +1802,102 @@ macro(xpCommonFlags)
 endmacro()
 
 macro(xpSetMsvcFlags)
-  if(MSVC)
-    add_definitions(
-      -D_CRT_NONSTDC_NO_DEPRECATE
-      -D_CRT_SECURE_NO_WARNINGS
-      -D_SCL_SECURE_NO_WARNINGS
-      -D_WINSOCK_DEPRECATED_NO_WARNINGS
-      -D_WIN32_WINNT=0x0502 #(Windows Server 2003 target)
-      -DWIN32_LEAN_AND_MEAN
-      -DCURL_STATICLIB # Tell cURL not to __declspec(dllimport) its symbols.
-      )
-    xpStringAppendIfDne(CMAKE_EXE_LINKER_FLAGS_DEBUG "/MANIFEST:NO")
-    # Remove Linker > System > Stack Reserve Size setting
-    string(REPLACE "/STACK:10000000" "" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
-    # Add Linker > System > Enable Large Addresses
-    xpStringAppendIfDne(CMAKE_EXE_LINKER_FLAGS "/LARGEADDRESSAWARE")
-    option(SD_BUILD_VERBOSE "use verbose compiler and linker options" OFF)
-    if(SD_BUILD_VERBOSE)
-      # Report the build times
-      xpStringAppendIfDne(CMAKE_EXE_LINKER_FLAGS "/time")
-      # Report the linker version (32/64-bit: x86_amd64/amd64)
-      xpStringAppendIfDne(CMAKE_CXX_FLAGS "/Bv")
-    endif()
-    if(MSVC12)
-      # Remove unreferenced data and functions
-      # http://blogs.msdn.com/b/vcblog/archive/2014/03/25/linker-enhancements-in-visual-studio-2013-update-2-ctp2.aspx
-      xpStringAppendIfDne(CMAKE_CXX_FLAGS "/Zc:inline")
-    endif()
-    # Increase the number of sections that an object file can contain
-    # https://msdn.microsoft.com/en-us/library/ms173499.aspx
-    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/bigobj")
-    # Treat Warnings As Errors
-    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/WX")
-    # Treat the following warnings as errors (above and beyond Warning Level 3)
-    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/we4238") # don't take address of temporaries
-    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/we4239") # don't bind temporaries to non-const references
-    # Disable the following warnings
-    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4503") # decorated name length exceeded, name was truncated
-    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4351") # new behavior: elements of array will be default initialized
+  add_definitions(
+    -D_CRT_NONSTDC_NO_DEPRECATE
+    -D_CRT_SECURE_NO_WARNINGS
+    -D_SCL_SECURE_NO_WARNINGS
+    -D_WINSOCK_DEPRECATED_NO_WARNINGS
+    -D_WIN32_WINNT=0x0502 #(Windows Server 2003 target)
+    -DWIN32_LEAN_AND_MEAN
+    -DCURL_STATICLIB # Tell cURL not to __declspec(dllimport) its symbols.
+    )
+  xpStringAppendIfDne(CMAKE_EXE_LINKER_FLAGS_DEBUG "/MANIFEST:NO")
+  # Remove Linker > System > Stack Reserve Size setting
+  string(REPLACE "/STACK:10000000" "" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+  # Add Linker > System > Enable Large Addresses
+  xpStringAppendIfDne(CMAKE_EXE_LINKER_FLAGS "/LARGEADDRESSAWARE")
+  option(SD_BUILD_VERBOSE "use verbose compiler and linker options" OFF)
+  if(SD_BUILD_VERBOSE)
+    # Report the build times
+    xpStringAppendIfDne(CMAKE_EXE_LINKER_FLAGS "/time")
+    # Report the linker version (32/64-bit: x86_amd64/amd64)
+    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/Bv")
   endif()
+  if(MSVC12)
+    # Remove unreferenced data and functions
+    # http://blogs.msdn.com/b/vcblog/archive/2014/03/25/linker-enhancements-in-visual-studio-2013-update-2-ctp2.aspx
+    xpStringAppendIfDne(CMAKE_CXX_FLAGS "/Zc:inline")
+  endif()
+  # Increase the number of sections that an object file can contain
+  # https://msdn.microsoft.com/en-us/library/ms173499.aspx
+  xpStringAppendIfDne(CMAKE_CXX_FLAGS "/bigobj")
+  # Treat Warnings As Errors
+  xpStringAppendIfDne(CMAKE_CXX_FLAGS "/WX")
+  # Treat the following warnings as errors (above and beyond Warning Level 3)
+  xpStringAppendIfDne(CMAKE_CXX_FLAGS "/we4238") # don't take address of temporaries
+  xpStringAppendIfDne(CMAKE_CXX_FLAGS "/we4239") # don't bind temporaries to non-const references
+  # Disable the following warnings
+  xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4503") # decorated name length exceeded, name was truncated
+  xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4351") # new behavior: elements of array will be default initialized
 endmacro()
 
 macro(xpSetGccFlags)
-  if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-    include(CheckCCompilerFlag)
-    include(CheckCXXCompilerFlag)
-    option(SD_USE_ASAN "use address sanitizer" OFF)
-    if(SD_USE_ASAN)
-      xpStringAppendIfDne(CMAKE_CXX_FLAGS "-fsanitize=address")
-      add_definitions(-DSD_USE_ASAN)
+  include(CheckCCompilerFlag)
+  include(CheckCXXCompilerFlag)
+  option(SD_USE_ASAN "use address sanitizer" OFF)
+  if(SD_USE_ASAN)
+    xpStringAppendIfDne(CMAKE_CXX_FLAGS "-fsanitize=address")
+    add_definitions(-DSD_USE_ASAN)
+  endif()
+  check_cxx_compiler_flag("-O0" has_O0)
+  if(has_O0)
+    xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "-O0")
+  endif()
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    # Have all executables look in the current directory for shared libraries
+    # so the user or installers don't need to update LD_LIBRARY_PATH or equivalent.
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-R,\$ORIGIN")
+    set(CMAKE_INSTALL_RPATH "\$ORIGIN")
+  endif()
+  option(SD_TREAT_WARNING_AS_ERROR "treat GCC warnings as errors" ON)
+  if(SD_TREAT_WARNING_AS_ERROR)
+    check_cxx_compiler_flag("-Werror" has_Werror)
+    if(has_Werror)
+      xpStringAppendIfDne(CMAKE_CXX_FLAGS "-Werror")
     endif()
-    check_cxx_compiler_flag("-O0" has_O0)
-    if(has_O0)
-      xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "-O0")
+    check_c_compiler_flag("-Werror" has_c_Werror)
+    if(has_c_Werror)
+      xpStringAppendIfDne(CMAKE_C_FLAGS "-Werror")
     endif()
-    if(CMAKE_COMPILER_IS_GNUCXX)
-      # Have all executables look in the current directory for shared libraries
-      # so the user or installers don't need to update LD_LIBRARY_PATH or equivalent.
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-R,\$ORIGIN")
-      set(CMAKE_INSTALL_RPATH "\$ORIGIN")
+  endif()
+  option(SD_COVERAGE "compile for gcov code coverage in debug configuration" OFF)
+  if(SD_COVERAGE)
+    xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "--coverage")
+  endif()
+  if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
+    # Makes symbols in executables inaccessible from plugins.
+    xpStringRemoveIfExists(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-rdynamic")
+    # Makes symbols hidden by default in shared libraries.  This allows
+    # SDL-developed plugins compiled against different versions of
+    # VantageShared to coexist without using each other's symbols.
+    check_cxx_compiler_flag("-fvisibility=hidden" has_visibility)
+    if(has_visibility)
+      xpStringAppendIfDne(CMAKE_CXX_FLAGS "-fvisibility=hidden")
     endif()
-    option(SD_TREAT_WARNING_AS_ERROR "treat GCC warnings as errors" ON)
-    if(SD_TREAT_WARNING_AS_ERROR)
-      check_cxx_compiler_flag("-Werror" has_Werror)
-      if(has_Werror)
-        xpStringAppendIfDne(CMAKE_CXX_FLAGS "-Werror")
-      endif()
-      check_c_compiler_flag("-Werror" has_c_Werror)
-      if(has_c_Werror)
-        xpStringAppendIfDne(CMAKE_C_FLAGS "-Werror")
-      endif()
+    # Prevents symbols from external static libraries from being visible
+    # in the shared libraries that use them.  This allows
+    # SDL-developed plugins compiled against different versions of third-
+    # party libraries to coexist without using each other's symbols.
+    check_cxx_compiler_flag("-Wl,--exclude-libs,ALL" has_exclude)
+    if(has_exclude)
+      xpStringAppendIfDne(CMAKE_CXX_FLAGS "-Wl,--exclude-libs,ALL")
     endif()
-    option(SD_COVERAGE "compile for gcov code coverage in debug configuration" OFF)
-    if(SD_COVERAGE)
-      xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "--coverage")
-    endif()
-    if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
-      # Makes symbols in executables inaccessible from plugins.
-      xpStringRemoveIfExists(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-rdynamic")
-      # Makes symbols hidden by default in shared libraries.  This allows
-      # SDL-developed plugins compiled against different versions of
-      # VantageShared to coexist without using each other's symbols.
-      check_cxx_compiler_flag("-fvisibility=hidden" has_visibility)
-      if(has_visibility)
-        xpStringAppendIfDne(CMAKE_CXX_FLAGS "-fvisibility=hidden")
-      endif()
-      # Prevents symbols from external static libraries from being visible
-      # in the shared libraries that use them.  This allows
-      # SDL-developed plugins compiled against different versions of third-
-      # party libraries to coexist without using each other's symbols.
-      check_cxx_compiler_flag("-Wl,--exclude-libs,ALL" has_exclude)
-      if(has_exclude)
-        xpStringAppendIfDne(CMAKE_CXX_FLAGS "-Wl,--exclude-libs,ALL")
-      endif()
-    endif()
-    if(NOT CMAKE_BUILD_TYPE) # if not specified, default to "Release"
-      set(CMAKE_BUILD_TYPE "Release" CACHE STRING
-        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-        FORCE
-        )
-    endif()
+  endif()
+  if(NOT CMAKE_BUILD_TYPE) # if not specified, default to "Release"
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      FORCE
+      )
   endif()
 endmacro()
 
