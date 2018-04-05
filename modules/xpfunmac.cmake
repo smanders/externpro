@@ -1801,26 +1801,7 @@ macro(xpCommonFlags)
   endif()
 endmacro()
 
-macro(sdSetFlags) # set preprocessor, compiler, linker flags
-  enable_testing()
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON) # enables Solution Folders
-  ######
-  option(SD_GENERATE_TESTTOOLS "include test tool projects" ON)
-  if(SD_GENERATE_TESTTOOLS)
-    set(TESTTOOL) # will be part of main solution
-  else()
-    set(TESTTOOL EXCLUDE_FROM_ALL) # generated, but not part of main solution
-  endif()
-  ######
-  option(SD_GENERATE_UNITTESTS "include unit test projects" ON)
-  if(SD_GENERATE_UNITTESTS)
-    set(UNITTEST) # will be part of main solution
-  else()
-    set(UNITTEST EXCLUDE_FROM_ALL) # generated, but not part of main solution
-  endif()
-  ######
-  xpCommonFlags()
-  xpEnableWarnings()
+macro(xpSetMsvcFlags)
   if(MSVC)
     add_definitions(
       -D_CRT_NONSTDC_NO_DEPRECATE
@@ -1859,7 +1840,11 @@ macro(sdSetFlags) # set preprocessor, compiler, linker flags
     # Disable the following warnings
     xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4503") # decorated name length exceeded, name was truncated
     xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4351") # new behavior: elements of array will be default initialized
-  elseif(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+  endif()
+endmacro()
+
+macro(xpSetGccFlags)
+  if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
     include(CheckCCompilerFlag)
     include(CheckCXXCompilerFlag)
     option(SD_USE_ASAN "use address sanitizer" OFF)
@@ -1917,5 +1902,33 @@ macro(sdSetFlags) # set preprocessor, compiler, linker flags
         FORCE
         )
     endif()
+  endif()
+endmacro()
+
+macro(xpSetFlags) # preprocessor, compiler, linker flags
+  enable_testing()
+  set_property(GLOBAL PROPERTY USE_FOLDERS ON) # enables Solution Folders
+  xpCommonFlags()
+  xpEnableWarnings()
+  if(MSVC)
+    xpSetMsvcFlags()
+  elseif(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+    xpSetGccFlags()
+  endif()
+endmacro()
+
+macro(xpSetUnitTestTools)
+  option(SD_GENERATE_TESTTOOLS "include test tool projects" ON)
+  if(SD_GENERATE_TESTTOOLS)
+    set(TESTTOOL) # will be part of main solution
+  else()
+    set(TESTTOOL EXCLUDE_FROM_ALL) # generated, but not part of main solution
+  endif()
+  ######
+  option(SD_GENERATE_UNITTESTS "include unit test projects" ON)
+  if(SD_GENERATE_UNITTESTS)
+    set(UNITTEST) # will be part of main solution
+  else()
+    set(UNITTEST EXCLUDE_FROM_ALL) # generated, but not part of main solution
   endif()
 endmacro()
