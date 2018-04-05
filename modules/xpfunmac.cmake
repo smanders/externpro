@@ -1905,6 +1905,9 @@ macro(xpSetFlags) # preprocessor, compiler, linker flags
   set_property(GLOBAL PROPERTY USE_FOLDERS ON) # enables Solution Folders
   xpCommonFlags()
   xpEnableWarnings()
+  if(NOT DEFINED XP_CMAKE_REPO_INSYNC)
+    set(XP_CMAKE_REPO_INSYNC ON) # cmake error if repo and cmake are not in sync
+  endif()
   if(MSVC)
     xpSetMsvcFlags()
   elseif(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
