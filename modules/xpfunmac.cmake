@@ -1807,7 +1807,7 @@ macro(xpSetMsvcFlags)
     -D_CRT_SECURE_NO_WARNINGS
     -D_SCL_SECURE_NO_WARNINGS
     -D_WINSOCK_DEPRECATED_NO_WARNINGS
-    -D_WIN32_WINNT=0x0502 #(Windows Server 2003 target)
+    -D_WIN32_WINNT=0x0601 #(Windows 7 target)
     -DWIN32_LEAN_AND_MEAN
     -DCURL_STATICLIB # Tell cURL not to __declspec(dllimport) its symbols.
     )
