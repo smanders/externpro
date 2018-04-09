@@ -1837,7 +1837,7 @@ macro(xpCommonFlags)
   endif()
 endmacro()
 
-macro(xpSetMsvcFlags)
+macro(xpSetFlagsMsvc)
   add_definitions(
     -D_CRT_NONSTDC_NO_DEPRECATE
     -D_CRT_SECURE_NO_WARNINGS
@@ -1877,7 +1877,7 @@ macro(xpSetMsvcFlags)
   xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4351") # new behavior: elements of array will be default initialized
 endmacro()
 
-macro(xpSetGccFlags)
+macro(xpSetFlagsGcc)
   include(CheckCCompilerFlag)
   include(CheckCXXCompilerFlag)
   option(XP_USE_ASAN "use address sanitizer" OFF)
@@ -1945,9 +1945,9 @@ macro(xpSetFlags) # preprocessor, compiler, linker flags
     set(XP_CMAKE_REPO_INSYNC ON) # cmake error if repo and cmake are not in sync
   endif()
   if(MSVC)
-    xpSetMsvcFlags()
+    xpSetFlagsMsvc()
   elseif(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-    xpSetGccFlags()
+    xpSetFlagsGcc()
   endif()
 endmacro()
 
