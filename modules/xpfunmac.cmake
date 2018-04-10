@@ -1855,7 +1855,6 @@ macro(xpSetFlagsMsvc)
     -D_WINSOCK_DEPRECATED_NO_WARNINGS
     -D_WIN32_WINNT=0x0601 #(Windows 7 target)
     -DWIN32_LEAN_AND_MEAN
-    -DCURL_STATICLIB # Tell cURL not to __declspec(dllimport) its symbols.
     )
   xpStringAppendIfDne(CMAKE_EXE_LINKER_FLAGS_DEBUG "/MANIFEST:NO")
   # Remove Linker > System > Stack Reserve Size setting

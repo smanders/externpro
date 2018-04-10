@@ -20,6 +20,7 @@ include(${XP_ROOTDIR}/bin/cmake/${prj}${ver}-targets.cmake)
 set(${PRJ}_LIBRARIES libcurl)
 set(${PRJ}_EXE curl)
 if(WIN32)
+  # tell cURL not to __declspec(dllimport) its symbols
   add_definitions(-DCURL_STATICLIB) # required by libcurl
 endif()
 set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_EXE)
