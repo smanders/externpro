@@ -114,13 +114,17 @@ else()
     set(${PRJ}_FOUND FALSE)
   endif()
   link_directories(${XP_ROOTDIR}/lib)
-  set(reqVars ${PRJ}_INCLUDE_DIR)
   if(DEFINED ZLIB_LIBRARIES AND DEFINED BZIP2_LIBRARIES)
     add_definitions(
       -DBOOST_ZLIB_BINARY=$<TARGET_FILE:${ZLIB_LIBRARIES}>
       -DBOOST_BZIP2_BINARY=$<TARGET_FILE:${BZIP2_LIBRARIES}>
       )
+    set(${PRJ}_DEFINITIONS
+      -DBOOST_ZLIB_BINARY=$<TARGET_FILE:${ZLIB_LIBRARIES}>
+      -DBOOST_BZIP2_BINARY=$<TARGET_FILE:${BZIP2_LIBRARIES}>
+      )
   endif()
+  set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_DEFINITIONS)
 endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})

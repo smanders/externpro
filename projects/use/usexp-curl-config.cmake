@@ -2,6 +2,7 @@
 # CURL_INCLUDE_DIR - the curl include directory
 # CURL_LIBRARIES - the curl libraries
 # CURL_EXE - the curl executable
+# CURL_DEFINITIONS - curl compile definitions
 if(COMMAND xpFindPkg)
   xpFindPkg(PKGS libssh2 cares) # dependencies
 endif()
@@ -19,11 +20,13 @@ include(${XP_ROOTDIR}/lib/cmake/lib${prj}${ver}-targets.cmake)
 include(${XP_ROOTDIR}/bin/cmake/${prj}${ver}-targets.cmake)
 set(${PRJ}_LIBRARIES libcurl)
 set(${PRJ}_EXE curl)
-if(WIN32)
-  # tell cURL not to __declspec(dllimport) its symbols
-  add_definitions(-DCURL_STATICLIB) # required by libcurl
-endif()
 set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_EXE)
+if(WIN32)
+  # tell cURL not to __declspec(dllimport) its symbols (required by libcurl)
+  add_definitions(-DCURL_STATICLIB)
+  set(${PRJ}_DEFINITIONS -DCURL_STATICLIB)
+  list(APPEND reqVars ${PRJ}_DEFINITIONS)
+endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})

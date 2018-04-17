@@ -2,6 +2,7 @@
 # WXWIDGETS_INCLUDE_DIR - the wxwidgets include directory
 # WXWIDGETS_LIBRARIES - the wxwidgets libraries
 # WXWIDGETS_VER - the wxwidgets version
+# WXWIDGETS_DEFINITIONS - wxwidgets compile definitions
 set(prj wxwidgets)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -48,6 +49,7 @@ if(UNIX)
   mark_as_advanced(_filename) # temp variable in FindwxWidgets.cmake script?
   list(APPEND ${PRJ}_INCLUDE_DIR ${wxWidgets_INCLUDE_DIRS})
   set(${PRJ}_LIBRARIES ${wxWidgets_LIBRARIES})
+  set(${PRJ}_DEFINITIONS ${wxWidgets_DEFINITIONS})
   execute_process(COMMAND sh "${wxWidgets_CONFIG_EXECUTABLE}" --prefix=${XP_ROOTDIR}
     --version=${wxVersion} --version
     OUTPUT_VARIABLE wxver OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
@@ -66,6 +68,7 @@ if(UNIX)
   endif() # NOT Darwin
 elseif(MSVC)
   add_definitions(-DwxUSE_NO_MANIFEST)
+  set(${PRJ}_DEFINITIONS -DwxUSE_NO_MANIFEST)
   list(APPEND ${PRJ}_INCLUDE_DIR
     ${XP_ROOTDIR}/include/wx-${wxVersion}
     ${XP_ROOTDIR}/include/wx-${wxVersion}/wx/msvc
@@ -79,7 +82,7 @@ elseif(MSVC)
     gdiplus # wxUSE_GRAPHICS_CONTEXT set to 1 in setup.h
     )
 endif()
-set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_VER)
+set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_VER ${PRJ}_DEFINITIONS)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})

@@ -3,6 +3,7 @@
 # CARES_INCLUDE_DIRS - the cares include directory (used by curl)
 # CARES_LIBRARIES - the cares libraries
 # CARES_LIBRARY - the cares library (used by curl)
+# CARES_DEFINITIONS - cares compile definitions
 set(prj cares)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -17,10 +18,12 @@ set(${PRJ}_INCLUDE_DIRS ${${PRJ}_INCLUDE_DIR}/cares)
 include(${XP_ROOTDIR}/lib/cmake/${prj}${ver}-targets.cmake)
 set(${PRJ}_LIBRARIES cares)
 set(${PRJ}_LIBRARY cares)
+set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_INCLUDE_DIRS ${PRJ}_LIBRARIES ${PRJ}_LIBRARY)
 if(WIN32)
   add_definitions(-DCARES_STATICLIB)
+  set(${PRJ}_DEFINITIONS -DCARES_STATICLIB)
+  list(APPEND reqVars ${PRJ}_DEFINITIONS)
 endif()
-set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_INCLUDE_DIRS ${PRJ}_LIBRARIES ${PRJ}_LIBRARY)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})
