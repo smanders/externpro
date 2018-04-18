@@ -1999,6 +1999,9 @@ macro(xpSetFlags) # preprocessor, compiler, linker flags
   endif()
   if(MSVC)
     xpSetFlagsMsvc()
+    if(EXISTS ${xpThisDir}/usexp-bzip2-config.cmake AND EXISTS ${xpThisDir}/usexp-zlib-config.cmake)
+      xpFindPkg(PKGS bzip2 zlib) # for BOOST_DEFINITIONS
+    endif()
   elseif(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
     xpSetFlagsGcc()
   endif()
