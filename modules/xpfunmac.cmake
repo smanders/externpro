@@ -962,28 +962,30 @@ macro(xpSourceListAppend)
       endif()
       list(APPEND masterSrcList ${f})
     endforeach()
-  else()
-    file(GLOB miscFiles LIST_DIRECTORIES false
-      ${_dir}/.git ${_dir}/.gitattributes ${_dir}/.gitmodules
-      ${_dir}/*clang-format
-      ${_dir}/README.md
-      )
-    if(miscFiles)
-      list(APPEND masterSrcList ${miscFiles})
-      file(RELATIVE_PATH relPath ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-      string(REPLACE "/" "" custTgt .CMake${relPath})
+  endif()
+  file(GLOB miscFiles LIST_DIRECTORIES false
+    ${_dir}/.git ${_dir}/.gitattributes ${_dir}/.gitmodules
+    ${_dir}/*clang-format
+    ${_dir}/README.md
+    ${_dir}/version.cmake
+    )
+  if(miscFiles)
+    list(APPEND masterSrcList ${miscFiles})
+    file(RELATIVE_PATH relPath ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    string(REPLACE "/" "" custTgt .CMake${relPath})
+    if(NOT TARGET ${custTgt})
       add_custom_target(${custTgt} SOURCES ${miscFiles}) # creates utility project in MSVC
       set_property(TARGET ${custTgt} PROPERTY FOLDER ${folder})
     endif()
-    if(EXISTS ${_dir}/.codereview)
-      file(RELATIVE_PATH relPath ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-      string(REPLACE "/" "" custTgt .codereview${relPath})
-      if(NOT TARGET ${custTgt})
-        file(GLOB crFiles "${_dir}/.codereview/*")
-        list(APPEND masterSrcList ${crFiles})
-        add_custom_target(${custTgt} SOURCES ${crFiles}) # creates utility project in MSVC
-        set_property(TARGET ${custTgt} PROPERTY FOLDER ${folder})
-      endif()
+  endif()
+  if(EXISTS ${_dir}/.codereview)
+    file(RELATIVE_PATH relPath ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    string(REPLACE "/" "" custTgt .codereview${relPath})
+    if(NOT TARGET ${custTgt})
+      file(GLOB crFiles "${_dir}/.codereview/*")
+      list(APPEND masterSrcList ${crFiles})
+      add_custom_target(${custTgt} SOURCES ${crFiles}) # creates utility project in MSVC
+      set_property(TARGET ${custTgt} PROPERTY FOLDER ${folder})
     endif()
   endif()
   if(NOT ${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
