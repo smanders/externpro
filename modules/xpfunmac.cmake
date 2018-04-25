@@ -1932,17 +1932,77 @@ macro(xpSetFlagsMsvc)
   xpStringAppendIfDne(CMAKE_CXX_FLAGS "/wd4351") # new behavior: elements of array will be default initialized
 endmacro()
 
+macro(xpSetFlagsGccDebug)
+  option(XP_USE_ASAN "use address sanitizer (Debug only)" OFF)
+  option(XP_COVERAGE "generate coverage information (Debug only)" OFF)
+  if(CMAKE_BUILD_TYPE STREQUAL Debug)
+    set_property(CACHE XP_USE_ASAN PROPERTY TYPE BOOL)
+    set_property(CACHE XP_COVERAGE PROPERTY TYPE BOOL)
+  else()
+    set_property(CACHE XP_USE_ASAN PROPERTY TYPE INTERNAL)
+    set_property(CACHE XP_COVERAGE PROPERTY TYPE INTERNAL)
+  endif()
+  if(XP_USE_ASAN)
+    check_cxx_compiler_flag("-fsanitize=address" has_asan)
+    if(has_asan)
+      xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=address")
+    endif()
+  endif()
+  if(XP_COVERAGE)
+    find_program(XP_PATH_LCOV lcov)
+    find_program(XP_PATH_GENHTML genhtml)
+    if(XP_PATH_LCOV AND XP_PATH_GENHTML)
+      if(DEFINED externpro_DIR AND EXISTS ${externpro_DIR})
+        list(APPEND XP_COVERAGE_RM '${externpro_DIR}/*')
+      endif()
+      if(EXISTS /usr AND IS_DIRECTORY /usr)
+        list(APPEND XP_COVERAGE_RM '/usr/*')
+      endif()
+      list(APPEND XP_COVERAGE_RM '${CMAKE_BINARY_DIR}/*')
+      list(REMOVE_DUPLICATES XP_COVERAGE_RM)
+      add_custom_target(coverage
+        COMMAND ${XP_PATH_LCOV} --directory ${CMAKE_BINARY_DIR} --zerocounters
+        COMMAND ${XP_PATH_LCOV} --capture --initial --directory ${CMAKE_BINARY_DIR} --output-file ${PROJECT_NAME}-base.info
+        COMMAND make test
+        COMMAND ${XP_PATH_LCOV} --directory ${CMAKE_BINARY_DIR} --capture --output-file ${PROJECT_NAME}-test.info
+        COMMAND ${XP_PATH_LCOV} -a ${PROJECT_NAME}-base.info -a ${PROJECT_NAME}-test.info -o ${PROJECT_NAME}.info
+        COMMAND ${XP_PATH_LCOV} --remove ${PROJECT_NAME}.info ${XP_COVERAGE_RM} --output-file ${PROJECT_NAME}-cleaned.info
+        COMMAND ${XP_PATH_GENHTML} -o report ${PROJECT_NAME}-cleaned.info
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}*.info
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        )
+      xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "--coverage")
+      # don't use debug optimizations for coverage data
+      check_cxx_compiler_flag("-O0" has_O0)
+      if(has_O0)
+        xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "-O0")
+      endif()
+    else()
+      if(NOT XP_PATH_LCOV)
+        message(AUTHOR_WARNING "lcov not found -- coverage reports will not be supported")
+      endif()
+      if(NOT XP_PATH_GENHTML)
+        message(AUTHOR_WARNING "genhtml not found -- coverage reports will not be supported")
+      endif()
+    endif()
+  else()
+    check_cxx_compiler_flag("-Og" has_Og)
+    if(has_Og)
+      xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "-Og")
+    endif()
+  endif()
+endmacro()
+
 macro(xpSetFlagsGcc)
+  if(NOT CMAKE_BUILD_TYPE) # if not specified, default to "Release"
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      FORCE
+      )
+  endif()
   include(CheckCCompilerFlag)
   include(CheckCXXCompilerFlag)
-  option(XP_USE_ASAN "use address sanitizer" OFF)
-  if(XP_USE_ASAN)
-    xpStringAppendIfDne(CMAKE_CXX_FLAGS "-fsanitize=address")
-  endif()
-  check_cxx_compiler_flag("-O0" has_O0)
-  if(has_O0)
-    xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "-O0")
-  endif()
+  xpSetFlagsGccDebug()
   if(CMAKE_COMPILER_IS_GNUCXX)
     # Have all executables look in the current directory for shared libraries
     # so the user or installers don't need to update LD_LIBRARY_PATH or equivalent.
@@ -1959,10 +2019,6 @@ macro(xpSetFlagsGcc)
     if(has_c_Werror)
       xpStringAppendIfDne(CMAKE_C_FLAGS "-Werror")
     endif()
-  endif()
-  option(XP_COVERAGE "compile for gcov code coverage in debug configuration" OFF)
-  if(XP_COVERAGE)
-    xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "--coverage")
   endif()
   if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
     # Makes symbols in executables inaccessible from plugins.
@@ -1982,12 +2038,6 @@ macro(xpSetFlagsGcc)
     if(has_exclude)
       xpStringAppendIfDne(CMAKE_CXX_FLAGS "-Wl,--exclude-libs,ALL")
     endif()
-  endif()
-  if(NOT CMAKE_BUILD_TYPE) # if not specified, default to "Release"
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
-      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-      FORCE
-      )
   endif()
 endmacro()
 
