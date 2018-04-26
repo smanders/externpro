@@ -1,18 +1,16 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..801d121
+index 0000000..543525d
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,16 @@
+@@ -0,0 +1,14 @@
 +cmake_minimum_required(VERSION 3.6)
 +project(wxInclude)
 +include(flags)
 +set(Boost_LIBS filesystem program_options system)
 +set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
-+xpGetExtern(externIncs externLibs PUBLIC boost)
 +add_executable(${CMAKE_PROJECT_NAME} wxInclude.cpp)
-+target_include_directories(${CMAKE_PROJECT_NAME} ${externIncs})
-+target_link_libraries(${CMAKE_PROJECT_NAME} ${externLibs})
++xpTargetExtern(${CMAKE_PROJECT_NAME} PRIVATE boost)
 +string(TOLOWER ${PROJECT_NAME} prj)
 +install(TARGETS ${CMAKE_PROJECT_NAME} EXPORT ${prj}-targets
 +  RUNTIME DESTINATION bin

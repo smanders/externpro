@@ -94,19 +94,14 @@ index aa68bbe..b9888a4 100644
     private:
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
 new file mode 100644
-index 0000000..ce96ee3
+index 0000000..fd37425
 --- /dev/null
 +++ b/test/CMakeLists.txt
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,17 @@
 +include_directories(${PROJECT_SOURCE_DIR})
 +set(externpro_DIR ${CMAKE_INSTALL_PREFIX})
 +set(XP_MODULE_PATH ${externpro_DIR}/share/cmake)
 +include(${XP_MODULE_PATH}/xpfunmac.cmake)
-+if(COMMAND xpGetExtern)
-+  xpGetExtern(externIncs externLibs PRIVATE boost)
-+  # header-only boost dependency
-+  # so, no need for externLibs on target_link_libraries call below
-+endif()
 +set(${PROJECT_NAME}_exes
 +  benchmark
 +  gen_test_vec
@@ -117,9 +112,8 @@ index 0000000..ce96ee3
 +foreach(exe ${${PROJECT_NAME}_exes})
 +  source_group("" FILES ${exe}.cpp)
 +  add_executable(${exe} ${exe}.cpp)
-+  add_dependencies(${exe} ${lib_name})
-+  target_link_libraries(${exe} ${lib_name})
-+  target_include_directories(${exe} ${externIncs})
++  target_link_libraries(${exe} PRIVATE ${lib_name})
++  xpTargetExtern(${exe} PRIVATE boost)
 +endforeach()
 diff --git a/test/benchmark.cpp b/test/benchmark.cpp
 index b690cef..462658a 100644
