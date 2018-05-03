@@ -78,3 +78,15 @@ index cc43fec..5728e89 100644
  
  include(AppendTargetProperty)
  # Always build position-independent code (PIC), even when building Ceres as a
+diff --git a/internal/ceres/thread_pool.h b/internal/ceres/thread_pool.h
+index d596ecd..228f344 100644
+--- a/internal/ceres/thread_pool.h
++++ b/internal/ceres/thread_pool.h
+@@ -31,6 +31,7 @@
+ #ifndef CERES_INTERNAL_THREAD_POOL_H_
+ #define CERES_INTERNAL_THREAD_POOL_H_
+ 
++#include <functional>
+ #include <mutex>
+ #include <thread>
+ #include <vector>
