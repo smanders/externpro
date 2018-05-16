@@ -4,7 +4,7 @@
 xpProOption(geotranz)
 set(VER 2.4.2)
 set(REPO https://github.com/smanders/geotranz)
-set(DLCSV ftp://downloads.osgeo.org/pub/geotiff/tables)
+set(DLCSV https://download.osgeo.org/geotiff/tables)
 set(DLDIR data)
 set(PRO_GEOTRANZ
   NAME geotranz
