@@ -216,20 +216,18 @@ function(build_boostlibs)
     set(boost_VARIANT "debug")
   endif()
   if(MSVC)
-    if(MSVC14)
+    if(MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
+      set(boost_TOOLSET msvc-14.1)
+    elseif(MSVC_VERSION EQUAL 1900) # VS 14.0 2015
       set(boost_TOOLSET msvc-14.0)
-    elseif(MSVC12)
+    elseif(MSVC_VERSION EQUAL 1800) # VS 12.0 2013
       set(boost_TOOLSET msvc-12.0)
-    elseif(MSVC11)
+    elseif(MSVC_VERSION EQUAL 1700) # VS 11.0 2012
       set(boost_TOOLSET msvc-11.0)
-    elseif(MSVC10)
+    elseif(MSVC_VERSION EQUAL 1600) # VS 10.0 2010
       set(boost_TOOLSET msvc-10.0)
-    elseif(MSVC90)
+    elseif(MSVC_VERSION EQUAL 1500) # VS 9.0 2008
       set(boost_TOOLSET msvc-9.0)
-    elseif(MSVC80)
-      set(boost_TOOLSET msvc-8.0)
-    elseif(MSVC71)
-      set(boost_TOOLSET msvc-7.1)
     else()
       message(FATAL_ERROR "boost.cmake: MSVC compiler support lacking")
     endif()
