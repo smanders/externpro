@@ -13,13 +13,23 @@ find_path(${PRJ}_INCLUDE_DIR fftw3/fftw3.h PATHS ${XP_ROOTDIR}/include${verDir} 
 if(EXISTS ${XP_ROOTDIR}/lib/cmake/${prj}${ver}-targets.cmake) # built via cmake (MSW)
   # targets file (-targets) installed to lib/cmake
   include(${XP_ROOTDIR}/lib/cmake/${prj}${ver}-targets.cmake)
-  set(${PRJ}_LIBRARIES libfftw3-3 libfftw3f-3 libfftw3l-3)
 else() # built via configure/make (UNIX)
-  set(${PRJ}_LIBRARIES
-    optimized fftw3${ver}  debug fftw3${ver}-d  # double precision FFTW
-    optimized fftw3f${ver} debug fftw3f${ver}-d # single precision FFTW
-    )
+  foreach(lib libfftw3 libfftw3f libfftw3l)
+    add_library(${lib}-3 STATIC IMPORTED)
+    set(${lib}_RELEASE ${XP_ROOTDIR}/lib/${lib}${ver}.a)
+    set(${lib}_DEBUG ${XP_ROOTDIR}/lib/${lib}${ver}-d.a)
+    foreach(cfg RELEASE DEBUG)
+      if(EXISTS "${${lib}_${cfg}}")
+        set_property(TARGET ${lib}-3 APPEND PROPERTY IMPORTED_CONFIGURATIONS ${cfg})
+        set_target_properties(${lib}-3 PROPERTIES
+          IMPORTED_LINK_INTERFACE_LANGUAGES_${cfg} "C"
+          IMPORTED_LOCATION_${cfg} "${${lib}_${cfg}}"
+          )
+      endif()
+    endforeach()
+  endforeach()
 endif()
+set(${PRJ}_LIBRARIES libfftw3-3 libfftw3f-3 libfftw3l-3)
 set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
