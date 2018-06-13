@@ -1,9 +1,9 @@
 diff --git a/adv.cmake b/adv.cmake
 new file mode 100644
-index 0000000..f6e15f1
+index 0000000..e105962
 --- /dev/null
 +++ b/adv.cmake
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,173 @@
 +set(lib_name adv)
 +#######################################
 +# library sources
@@ -175,13 +175,14 @@ index 0000000..f6e15f1
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC core)
 +set_wxtarget_properties(${lib_name})
 diff --git a/aui.cmake b/aui.cmake
 new file mode 100644
-index 0000000..4cc396f
+index 0000000..27d6af3
 --- /dev/null
 +++ b/aui.cmake
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,74 @@
 +set(lib_name aui)
 +#######################################
 +# library sources
@@ -254,13 +255,14 @@ index 0000000..4cc396f
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC adv html)
 +set_wxtarget_properties(${lib_name})
 diff --git a/base.cmake b/base.cmake
 new file mode 100644
-index 0000000..053589e
+index 0000000..ecc4895
 --- /dev/null
 +++ b/base.cmake
-@@ -0,0 +1,360 @@
+@@ -0,0 +1,367 @@
 +set(lib_name base)
 +#######################################
 +# library sources
@@ -620,13 +622,20 @@ index 0000000..053589e
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_compile_definitions(${lib_name} PUBLIC WXBUILDING __WXMSW__ UNICODE _UNICODE
++  PRIVATE wxUSE_GUI=0 wxUSE_BASE=1
++  )
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${wxroot}/include>
++  $<BUILD_INTERFACE:${LIBRARY_OUTPUT_PATH}> # find setup.h
++  )
++target_link_libraries(${lib_name} PRIVATE wxregex wxzlib)
 +set_wxtarget_properties(${lib_name})
 diff --git a/core.cmake b/core.cmake
 new file mode 100644
-index 0000000..edc82f3
+index 0000000..eef1dc9
 --- /dev/null
 +++ b/core.cmake
-@@ -0,0 +1,699 @@
+@@ -0,0 +1,690 @@
 +set(lib_name core)
 +#######################################
 +# library sources
@@ -1314,24 +1323,15 @@ index 0000000..edc82f3
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+get_directory_property(global_includes INCLUDE_DIRECTORIES)
-+set_property(TARGET ${lib_name} PROPERTY
-+  INCLUDE_DIRECTORIES ${global_includes}
-+    ${wxroot}/src/jpeg
-+    ${wxroot}/src/tiff/libtiff
-+    ${wxroot}/src/png
-+    ${wxroot}/src/zlib
-+  )
-+set_property(TARGET ${lib_name} PROPERTY
-+  COMPILE_DEFINITIONS wxUSE_BASE=0
-+  )
++target_compile_definitions(${lib_name} PRIVATE wxUSE_BASE=0)
++target_link_libraries(${lib_name} PUBLIC base PRIVATE wxjpeg wxpng wxtiff)
 +set_wxtarget_properties(${lib_name})
 diff --git a/gl.cmake b/gl.cmake
 new file mode 100644
-index 0000000..79b1935
+index 0000000..fd7e1e4
 --- /dev/null
 +++ b/gl.cmake
-@@ -0,0 +1,48 @@
+@@ -0,0 +1,49 @@
 +set(lib_name gl)
 +#######################################
 +# library sources
@@ -1379,13 +1379,14 @@ index 0000000..79b1935
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC core)
 +set_wxtarget_properties(${lib_name})
 diff --git a/html.cmake b/html.cmake
 new file mode 100644
-index 0000000..04c5f7e
+index 0000000..2e2eb63
 --- /dev/null
 +++ b/html.cmake
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,110 @@
 +set(lib_name html)
 +#######################################
 +# library sources
@@ -1494,13 +1495,14 @@ index 0000000..04c5f7e
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC core)
 +set_wxtarget_properties(${lib_name})
 diff --git a/media.cmake b/media.cmake
 new file mode 100644
-index 0000000..0e8facf
+index 0000000..024213f
 --- /dev/null
 +++ b/media.cmake
-@@ -0,0 +1,49 @@
+@@ -0,0 +1,50 @@
 +set(lib_name media)
 +#######################################
 +# library sources
@@ -1549,13 +1551,14 @@ index 0000000..0e8facf
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC core)
 +set_wxtarget_properties(${lib_name})
 diff --git a/net.cmake b/net.cmake
 new file mode 100644
-index 0000000..0cf8fa9
+index 0000000..599e94d
 --- /dev/null
 +++ b/net.cmake
-@@ -0,0 +1,67 @@
+@@ -0,0 +1,69 @@
 +set(lib_name net)
 +#######################################
 +# library sources
@@ -1622,13 +1625,15 @@ index 0000000..0cf8fa9
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_compile_definitions(${lib_name} PRIVATE wxUSE_GUI=0)
++target_link_libraries(${lib_name} PUBLIC base)
 +set_wxtarget_properties(${lib_name})
 diff --git a/propgrid.cmake b/propgrid.cmake
 new file mode 100644
-index 0000000..7458e10
+index 0000000..89dcd5d
 --- /dev/null
 +++ b/propgrid.cmake
-@@ -0,0 +1,67 @@
+@@ -0,0 +1,68 @@
 +set(lib_name propgrid)
 +#######################################
 +# library sources
@@ -1695,13 +1700,14 @@ index 0000000..7458e10
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC adv)
 +set_wxtarget_properties(${lib_name})
 diff --git a/qa.cmake b/qa.cmake
 new file mode 100644
-index 0000000..88cde5a
+index 0000000..e94fa84
 --- /dev/null
 +++ b/qa.cmake
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,54 @@
 +set(lib_name qa)
 +#######################################
 +# library sources
@@ -1754,13 +1760,14 @@ index 0000000..88cde5a
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC core xml)
 +set_wxtarget_properties(${lib_name})
 diff --git a/ribbon.cmake b/ribbon.cmake
 new file mode 100644
-index 0000000..57cf98a
+index 0000000..aff72e4
 --- /dev/null
 +++ b/ribbon.cmake
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,72 @@
 +set(lib_name ribbon)
 +#######################################
 +# library sources
@@ -1831,13 +1838,14 @@ index 0000000..57cf98a
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC core)
 +set_wxtarget_properties(${lib_name})
 diff --git a/richtext.cmake b/richtext.cmake
 new file mode 100644
-index 0000000..463991a
+index 0000000..7ed1168
 --- /dev/null
 +++ b/richtext.cmake
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,85 @@
 +set(lib_name richtext)
 +#######################################
 +# library sources
@@ -1921,6 +1929,7 @@ index 0000000..463991a
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC adv html xml)
 +set_wxtarget_properties(${lib_name})
 diff --git a/setup.h b/setup.h
 new file mode 100644
@@ -1947,10 +1956,10 @@ index 0000000..7ebaa17
 +#endif // _MSC_VER
 diff --git a/stc.cmake b/stc.cmake
 new file mode 100644
-index 0000000..280b380
+index 0000000..23bab98
 --- /dev/null
 +++ b/stc.cmake
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,56 @@
 +set(lib_name stc)
 +#######################################
 +# library sources
@@ -2004,23 +2013,15 @@ index 0000000..280b380
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+get_directory_property(global_includes INCLUDE_DIRECTORIES)
-+set_property(TARGET ${lib_name} PROPERTY
-+  INCLUDE_DIRECTORIES ${global_includes}
-+    ${wxroot}/src/stc/scintilla/include
-+    ${wxroot}/src/stc/scintilla/lexlib
-+    ${wxroot}/src/stc/scintilla/src
-+  )
-+set_property(TARGET ${lib_name} PROPERTY
-+  COMPILE_DEFINITIONS __WX__ SCI_LEXER LINK_LEXERS
-+  )
++target_compile_definitions(${lib_name} PRIVATE __WX__ SCI_LEXER LINK_LEXERS)
++target_link_libraries(${lib_name} PUBLIC core PRIVATE wxscintilla)
 +set_wxtarget_properties(${lib_name})
 diff --git a/webview.cmake b/webview.cmake
 new file mode 100644
-index 0000000..5d1143a
+index 0000000..41bf520
 --- /dev/null
 +++ b/webview.cmake
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,55 @@
 +set(lib_name webview)
 +#######################################
 +# library sources
@@ -2074,13 +2075,14 @@ index 0000000..5d1143a
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC core)
 +set_wxtarget_properties(${lib_name})
 diff --git a/wx.cmake b/wx.cmake
 new file mode 100644
-index 0000000..d8ba59b
+index 0000000..0ae4b9a
 --- /dev/null
 +++ b/wx.cmake
-@@ -0,0 +1,183 @@
+@@ -0,0 +1,154 @@
 +set(wxroot ${CMAKE_SOURCE_DIR})
 +set(CMAKE_MODULE_PATH ${wxroot}/build/cmake ${CMAKE_MODULE_PATH})
 +include(flags OPTIONAL)
@@ -2090,84 +2092,61 @@ index 0000000..d8ba59b
 +set(CMAKE_DEBUG_POSTFIX)
 +set(CMAKE_RELEASE_POSTFIX)
 +set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
-+include_directories(${wxroot}/include ${LIBRARY_OUTPUT_PATH})
-+if(NOT DEFINED WX_VERSION)
++if(NOT DEFINED WX_VERSION) # passed in
 +  set(WX_VERSION 00)
 +endif()
 +string(REGEX REPLACE "^([0-9])\([0-9]*)$" "wx-\\1.\\2" wxver ${WX_VERSION})
 +#######################################
 +# setup.h
-+# NOTE: include_directories above will find setup.h from ${LIBRARY_OUTPUT_PATH}
 +set(wxsetup ${wxroot}/include/wx/msw/setup.h)
 +if(NOT EXISTS ${LIBRARY_OUTPUT_PATH}/wx)
-+  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory
-+    ${LIBRARY_OUTPUT_PATH}/wx)
++  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}/wx)
 +endif()
-+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
-+  ${wxsetup} ${LIBRARY_OUTPUT_PATH}/wx)
++execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${wxsetup} ${LIBRARY_OUTPUT_PATH}/wx)
 +#######################################
 +# set_wx_target_properties function
 +# @param[in] target : cmake target
 +function(set_wxtarget_properties target)
 +  if(MSVC)
-+    # toolset
-+    if(MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
-+      set(toolset vc141)
-+    elseif(MSVC_VERSION EQUAL 1900) # VS 14.0 2015
-+      set(toolset vc140)
-+    elseif(MSVC_VERSION EQUAL 1800) # VS 12.0 2013
-+      set(toolset vc120)
-+    elseif(MSVC_VERSION EQUAL 1700) # VS 11.0 2012
-+      set(toolset vc110)
-+    elseif(MSVC_VERSION EQUAL 1600) # VS 10.0 2010
-+      set(toolset vc100)
-+    elseif(MSVC_VERSION EQUAL 1500) # VS 9.0 2008
-+      set(toolset vc90)
-+    else()
-+      set(toolset vcXX)
-+      message(SEND_ERROR "wx.cmake: MSVC compiler support lacking")
-+    endif()
-+    # wxbasename
++    set(toolset vc)
 +    set(wxbasename wxmsw)
 +  else()
-+    set(wxbasename wxX)
++    set(toolset cc)
++    set(wxbasename wxcc)
 +  endif()
++  if(COMMAND xpGetCompilerPrefix)
++    xpGetCompilerPrefix(toolset)
++  endif()
++  set(unicode u)
 +  if(XP_BUILD_STATIC_RT) # from flags.cmake include, xpCommonFlags, xpopts.cmake
 +    set(static s)
 +  endif()
 +  if(${target} MATCHES "base")
-+    get_directory_property(global_includes INCLUDE_DIRECTORIES)
-+    set_property(TARGET ${target} PROPERTY
-+      INCLUDE_DIRECTORIES ${global_includes} ${wxroot}/src/regex ${wxroot}/src/zlib)
-+    set_property(TARGET ${target} PROPERTY
-+      COMPILE_DEFINITIONS __WXMSW__ WXBUILDING wxUSE_GUI=0 wxUSE_BASE=1 UNICODE _UNICODE)
 +    set_property(TARGET ${target} PROPERTY FOLDER wxbase_libs)
 +    set_target_properties(${target} PROPERTIES
-+      OUTPUT_NAME wxbase${WX_VERSION}${toolset}u${static}x
-+      DEBUG_OUTPUT_NAME wxbase${WX_VERSION}${toolset}u${static}d
-+      RELEASE_OUTPUT_NAME wxbase${WX_VERSION}${toolset}u${static}
++      OUTPUT_NAME wxbase${WX_VERSION}${toolset}${unicode}${static}x
++      DEBUG_OUTPUT_NAME wxbase${WX_VERSION}${toolset}${unicode}${static}d
++      RELEASE_OUTPUT_NAME wxbase${WX_VERSION}${toolset}${unicode}${static}
 +      COMPILE_FLAGS /W4
 +      )
 +    install(FILES ${wxsetup} DESTINATION lib/msw/${wxver}/wx)
 +  elseif(${target} MATCHES "net" OR ${target} MATCHES "xml")
-+    set_property(TARGET ${target} PROPERTY
-+      COMPILE_DEFINITIONS __WXMSW__ WXBUILDING wxUSE_GUI=0 UNICODE _UNICODE)
 +    set_property(TARGET ${target} PROPERTY FOLDER wxbase_libs)
 +    set_target_properties(${target} PROPERTIES
-+      OUTPUT_NAME wxbase${WX_VERSION}${toolset}u${static}x_${target}
-+      DEBUG_OUTPUT_NAME wxbase${WX_VERSION}${toolset}u${static}d_${target}
-+      RELEASE_OUTPUT_NAME wxbase${WX_VERSION}${toolset}u${static}_${target}
++      OUTPUT_NAME wxbase${WX_VERSION}${toolset}${unicode}${static}x_${target}
++      DEBUG_OUTPUT_NAME wxbase${WX_VERSION}${toolset}${unicode}${static}d_${target}
++      RELEASE_OUTPUT_NAME wxbase${WX_VERSION}${toolset}${unicode}${static}_${target}
 +      COMPILE_FLAGS /W4
 +      )
 +  elseif(${target} MATCHES "^wx") # any target that starts with "wx"
-+    set_property(TARGET ${target} PROPERTY FOLDER wxthirdparty_libs)
-+    get_property(_defs TARGET ${target} PROPERTY COMPILE_DEFINITIONS)
++    get_target_property(_defs ${target} COMPILE_DEFINITIONS)
 +    list(FIND _defs UNICODE isUnicode)
 +    if(NOT isUnicode EQUAL -1)
 +      set(unicode u)
 +    else()
 +      set(unicode "")
 +    endif()
++    set_property(TARGET ${target} PROPERTY FOLDER wxthirdparty_libs)
 +    set_target_properties(${target} PROPERTIES
 +      OUTPUT_NAME ${target}${WX_VERSION}_${toolset}${unicode}${static}x
 +      DEBUG_OUTPUT_NAME ${target}${WX_VERSION}_${toolset}${unicode}${static}d
@@ -2175,17 +2154,11 @@ index 0000000..d8ba59b
 +      COMPILE_FLAGS /W1
 +      )
 +  else()
-+    get_target_property(target_defs ${target} COMPILE_DEFINITIONS)
-+    if(NOT target_defs)
-+      set(target_defs)
-+    endif()
-+    set_property(TARGET ${target} PROPERTY
-+      COMPILE_DEFINITIONS __WXMSW__ WXBUILDING UNICODE _UNICODE ${target_defs})
 +    set_property(TARGET ${target} PROPERTY FOLDER ${wxbasename}_libs)
 +    set_target_properties(${target} PROPERTIES
-+      OUTPUT_NAME ${wxbasename}${WX_VERSION}${toolset}u${static}x_${target}
-+      DEBUG_OUTPUT_NAME ${wxbasename}${WX_VERSION}${toolset}u${static}d_${target}
-+      RELEASE_OUTPUT_NAME ${wxbasename}${WX_VERSION}${toolset}u${static}_${target}
++      OUTPUT_NAME ${wxbasename}${WX_VERSION}${toolset}${unicode}${static}x_${target}
++      DEBUG_OUTPUT_NAME ${wxbasename}${WX_VERSION}${toolset}${unicode}${static}d_${target}
++      RELEASE_OUTPUT_NAME ${wxbasename}${WX_VERSION}${toolset}${unicode}${static}_${target}
 +      COMPILE_FLAGS /W4
 +      )
 +  endif()
@@ -2263,13 +2236,13 @@ index 0000000..d8ba59b
 +install(FILES ${wxhdrs} ${wxcpps} DESTINATION include/${wxver}/wx)
 +set(customsetuph ${wxroot}/build/cmake/setup.h)
 +install(FILES ${customsetuph} DESTINATION include/${wxver}/wx/msvc/wx)
-+install(EXPORT ${PROJECT_NAME}${WX_VERSION}-targets DESTINATION lib/cmake)
++install(EXPORT ${PROJECT_NAME}${WX_VERSION}-targets DESTINATION lib/cmake NAMESPACE wx::)
 diff --git a/wxexpat.cmake b/wxexpat.cmake
 new file mode 100644
-index 0000000..cb5d199
+index 0000000..afcea3c
 --- /dev/null
 +++ b/wxexpat.cmake
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,23 @@
 +set(lib_name wxexpat)
 +#######################################
 +# library sources
@@ -2288,20 +2261,17 @@ index 0000000..cb5d199
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+get_directory_property(global_includes INCLUDE_DIRECTORIES)
-+set_property(TARGET ${lib_name} PROPERTY
-+  INCLUDE_DIRECTORIES ${global_includes} ${wxroot}/src/expat
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${wxroot}/src/expat/lib>
++  PRIVATE ${wxroot}/src/expat
 +  )
-+set_property(TARGET ${lib_name} PROPERTY
-+  COMPILE_DEFINITIONS COMPILED_FROM_DSP
-+  )
++target_compile_definitions(${lib_name} PRIVATE COMPILED_FROM_DSP)
 +set_wxtarget_properties(${lib_name})
 diff --git a/wxjpeg.cmake b/wxjpeg.cmake
 new file mode 100644
-index 0000000..45c77b8
+index 0000000..1da11ea
 --- /dev/null
 +++ b/wxjpeg.cmake
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,63 @@
 +set(lib_name wxjpeg)
 +#######################################
 +# library sources
@@ -2363,13 +2333,14 @@ index 0000000..45c77b8
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${wxroot}/src/jpeg>)
 +set_wxtarget_properties(${lib_name})
 diff --git a/wxpng.cmake b/wxpng.cmake
 new file mode 100644
-index 0000000..9f77f52
+index 0000000..7cec8be
 --- /dev/null
 +++ b/wxpng.cmake
-@@ -0,0 +1,35 @@
+@@ -0,0 +1,33 @@
 +set(lib_name wxpng)
 +#######################################
 +# library sources
@@ -2400,17 +2371,15 @@ index 0000000..9f77f52
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+get_directory_property(global_includes INCLUDE_DIRECTORIES)
-+set_property(TARGET ${lib_name} PROPERTY
-+  INCLUDE_DIRECTORIES ${global_includes} ${wxroot}/src/zlib
-+  )
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${wxroot}/src/png>)
++target_link_libraries(${lib_name} PRIVATE wxzlib)
 +set_wxtarget_properties(${lib_name})
 diff --git a/wxregex.cmake b/wxregex.cmake
 new file mode 100644
-index 0000000..d44929b
+index 0000000..c54ed94
 --- /dev/null
 +++ b/wxregex.cmake
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,32 @@
 +set(lib_name wxregex)
 +#######################################
 +# library sources
@@ -2438,16 +2407,17 @@ index 0000000..d44929b
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+set_property(TARGET ${lib_name} PROPERTY
-+  COMPILE_DEFINITIONS __WXMSW__ UNICODE _UNICODE
++target_compile_definitions(${lib_name} PRIVATE __WXMSW__ UNICODE _UNICODE)
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${wxroot}/src/regex>
++  PRIVATE ${wxroot}/include ${LIBRARY_OUTPUT_PATH} # find setup.h
 +  )
 +set_wxtarget_properties(${lib_name})
 diff --git a/wxscintilla.cmake b/wxscintilla.cmake
 new file mode 100644
-index 0000000..737b3a3
+index 0000000..02cbe5e
 --- /dev/null
 +++ b/wxscintilla.cmake
-@@ -0,0 +1,169 @@
+@@ -0,0 +1,165 @@
 +set(lib_name wxscintilla)
 +#######################################
 +# library sources
@@ -2606,23 +2576,19 @@ index 0000000..737b3a3
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+get_directory_property(global_includes INCLUDE_DIRECTORIES)
-+set_property(TARGET ${lib_name} PROPERTY
-+  INCLUDE_DIRECTORIES ${global_includes}
-+    ${wxroot}/src/stc/scintilla/include
-+    ${wxroot}/src/stc/scintilla/lexlib
-+    ${wxroot}/src/stc/scintilla/src
-+  )
-+set_property(TARGET ${lib_name} PROPERTY
-+  COMPILE_DEFINITIONS SCI_LEXER LINK_LEXERS __WXMSW__
++target_compile_definitions(${lib_name} PRIVATE SCI_LEXER LINK_LEXERS __WXMSW__)
++target_include_directories(${lib_name} PUBLIC
++  $<BUILD_INTERFACE:${wxroot}/src/stc/scintilla/include>
++  $<BUILD_INTERFACE:${wxroot}/src/stc/scintilla/lexlib>
++  $<BUILD_INTERFACE:${wxroot}/src/stc/scintilla/src>
 +  )
 +set_wxtarget_properties(${lib_name})
 diff --git a/wxtiff.cmake b/wxtiff.cmake
 new file mode 100644
-index 0000000..2e84162
+index 0000000..48b7f37
 --- /dev/null
 +++ b/wxtiff.cmake
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,54 @@
 +set(lib_name wxtiff)
 +#######################################
 +# library sources
@@ -2674,20 +2640,15 @@ index 0000000..2e84162
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+get_directory_property(global_includes INCLUDE_DIRECTORIES)
-+set_property(TARGET ${lib_name} PROPERTY
-+  INCLUDE_DIRECTORIES ${global_includes}
-+    ${wxroot}/src/tiff/libtiff
-+    ${wxroot}/src/jpeg
-+    ${wxroot}/src/zlib
-+  )
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${wxroot}/src/tiff/libtiff>)
++target_link_libraries(${lib_name} PRIVATE wxjpeg wxzlib)
 +set_wxtarget_properties(${lib_name})
 diff --git a/wxzlib.cmake b/wxzlib.cmake
 new file mode 100644
-index 0000000..1be2664
+index 0000000..39febae
 --- /dev/null
 +++ b/wxzlib.cmake
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,32 @@
 +set(lib_name wxzlib)
 +#######################################
 +# library sources
@@ -2718,13 +2679,14 @@ index 0000000..1be2664
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${wxroot}/src/zlib>)
 +set_wxtarget_properties(${lib_name})
 diff --git a/xml.cmake b/xml.cmake
 new file mode 100644
-index 0000000..2aead4d
+index 0000000..4dd6bca
 --- /dev/null
 +++ b/xml.cmake
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,56 @@
 +set(lib_name xml)
 +#######################################
 +# library sources
@@ -2778,17 +2740,15 @@ index 0000000..2aead4d
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+get_directory_property(global_includes INCLUDE_DIRECTORIES)
-+set_property(TARGET ${lib_name} PROPERTY
-+  INCLUDE_DIRECTORIES ${global_includes} ${wxroot}/src/expat/lib
-+  )
++target_compile_definitions(${lib_name} PRIVATE wxUSE_GUI=0)
++target_link_libraries(${lib_name} PUBLIC base PRIVATE wxexpat)
 +set_wxtarget_properties(${lib_name})
 diff --git a/xrc.cmake b/xrc.cmake
 new file mode 100644
-index 0000000..f05b321
+index 0000000..bb51bd9
 --- /dev/null
 +++ b/xrc.cmake
-@@ -0,0 +1,183 @@
+@@ -0,0 +1,184 @@
 +set(lib_name xrc)
 +#######################################
 +# library sources
@@ -2971,4 +2931,5 @@ index 0000000..f05b321
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_link_libraries(${lib_name} PUBLIC adv html xml)
 +set_wxtarget_properties(${lib_name})
