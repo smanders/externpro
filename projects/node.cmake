@@ -1,7 +1,7 @@
 # node
-set(NODE_OLDVER v6.11.4)
+set(NODE_OLDVER v8.11.0)
 set(NODE_NEWVER v8.11.0)
-set(NODE_VERSIONS ${NODE_OLDVER} ${NODE_NEWVER})
+set(NODE_VERSIONS ${NODE_NEWVER})
 ####################
 function(build_node)
   configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
@@ -55,15 +55,11 @@ function(build_node_ver ver)
     set(XP_CONFIGURE_CMD ${XP_CONFIGURE_${cfg}})
     addproject_node(node${ver} ${cfg})
   endforeach() # cfg
-  # copy headers and npm to STAGE_DIR
+  # copy headers to STAGE_DIR
   ExternalProject_Get_Property(node${ver} SOURCE_DIR)
   set(nodeHdrs ${SOURCE_DIR}/src/*.h)
   set(uvDir ${SOURCE_DIR}/deps/uv/include)
   set(v8Hdrs ${SOURCE_DIR}/deps/v8/include/*.h)
-  set(nm node_modules)
-  set(npmSrc ${SOURCE_DIR}/deps/npm)
-  set(npmDst ${STAGE_DIR}/node${ver}/npm)
-  set(npmExe ${STAGE_DIR}/node${ver}/bin/node ${npmDst}/bin/npm-cli.js)
   set(XP_TARGET node${ver}_stage)
   if(NOT TARGET ${XP_TARGET})
     ExternalProject_Add(${XP_TARGET} DEPENDS ${node${ver}_DEPS}
@@ -75,37 +71,6 @@ function(build_node_ver ver)
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${v8Hdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
-    ExternalProject_Add_Step(${XP_TARGET} copy_npm
-      COMMAND ${CMAKE_COMMAND} -E remove_directory ${npmDst} # for testing (start clean)
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${npmDst}
-      COMMAND ${CMAKE_COMMAND} -E copy_directory ${npmSrc} ${npmDst}
-      DEPENDEES install
-      )
-    if(${ver} MATCHES v6)
-      set(dedupeDirs
-        ${npmDst}/${nm}/init-package-json/${nm}/glob/${nm}
-        ${npmDst}/${nm}/node-gyp/${nm}/npmlog/${nm}
-        ${npmDst}/${nm}/npm-registry-client/${nm}/npmlog/${nm}
-        ${npmDst}/${nm}/read-package-json/${nm}/glob/${nm}
-        )
-    endif()
-    if(${ver} MATCHES v8)
-      set(dedupeDirs
-        ${npmDst}/${nm}/pacote/${nm}/make-fetch-happen/${nm}
-        )
-    endif()
-    list(APPEND dedupeDirs ${npmDst})
-    list(LENGTH dedupeDirs numDirs)
-    set(dedupeDep copy_npm)
-    foreach(dir ${dedupeDirs})
-      ExternalProject_Add_Step(${XP_TARGET} dedupe_npm${numDirs}
-        COMMAND ${npmExe} dedupe
-        WORKING_DIRECTORY ${dir}
-        DEPENDEES ${dedupeDep}
-        )
-      set(dedupeDep dedupe_npm${numDirs})
-      math(EXPR numDirs "${numDirs}-1")
-    endforeach()
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
 endfunction()

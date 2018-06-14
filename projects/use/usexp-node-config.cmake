@@ -2,7 +2,6 @@
 # NODE_INCLUDE_DIR - the Node.js include directory
 # NODE_LIBRARIES - the Node.js libraries (MSW-only)
 # NODE_EXE - the Node.js executable
-# NODE_NPM - the Node.js npm script
 set(prj node)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -24,8 +23,7 @@ if(MSVC)
   list(APPEND reqVars ${PRJ}_LIBRARIES)
 endif()
 set(${PRJ}_EXE ${XP_ROOTDIR}/node${ver}/bin/node${CMAKE_EXECUTABLE_SUFFIX})
-set(${PRJ}_NPM ${XP_ROOTDIR}/node${ver}/npm/bin/npm-cli.js)
-list(APPEND reqVars ${PRJ}_EXE ${PRJ}_NPM)
+list(APPEND reqVars ${PRJ}_EXE)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})
