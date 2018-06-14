@@ -151,7 +151,6 @@ if(UNIX)
     message(STATUS "wxWidgets LIBRARIES: ${${PRJ}_LIBRARIES}")
   endif()
 elseif(MSVC)
-  add_definitions(-DwxUSE_NO_MANIFEST)
   set(${PRJ}_DEFINITIONS -DwxUSE_NO_MANIFEST)
   list(APPEND ${PRJ}_INCLUDE_DIR
     ${XP_ROOTDIR}/include/wx-${wxVersion}
