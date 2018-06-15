@@ -18,7 +18,7 @@ set(PRO_GEOTRANZ
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/geotranz.patch
   DIFF ${REPO}/compare/
-  DLURL http://geotranz.sourcearchive.com/downloads/${VER}/geotranz_${VER}.orig.tar.gz
+  DLURL https://github.com/smanders/externpro/releases/download/18.04.1/geotranz_${VER}.orig.tar.gz
   DLMD5 1d370d5b0daed2a541a9aa14bd3172a8
   DLMD5_01 48cffaef0651db24c43b8afaee7fbeaf DLDIR_01 ${DLDIR} DLURL_01 ${DLCSV}/README
   DLMD5_02 8e3cb60e597f9bd36d0639406a4cf40a DLDIR_02 ${DLDIR} DLURL_02 ${DLCSV}/compd_cs.csv
