@@ -91,10 +91,10 @@ index 0000000..3706f2e
 +endforeach()
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 new file mode 100644
-index 0000000..c44e631
+index 0000000..c540b0a
 --- /dev/null
 +++ b/src/CMakeLists.txt
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,71 @@
 +set(lib_name ${PROJECT_NAME})
 +########################################
 +# source
@@ -150,6 +150,9 @@ index 0000000..c44e631
 +  $<BUILD_INTERFACE:${EXPAT_INCLUDE_DIRS}>
 +  $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>
 +  )
++if(DEFINED EXPAT_DEFINITIONS)
++  target_compile_definitions(${lib_name} PUBLIC ${EXPAT_DEFINITIONS})
++endif()
 +set_target_properties(${lib_name} PROPERTIES
 +  OUTPUT_NAME ${lib_name}${ver}
 +  PREFIX "" # strip off the "lib" prefix, since it's already libstrophe

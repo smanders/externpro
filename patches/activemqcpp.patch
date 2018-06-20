@@ -761,10 +761,10 @@ index 0000000..7a229f2
 +endforeach()
 diff --git a/activemq-cpp/src/main/CMakeLists.txt b/activemq-cpp/src/main/CMakeLists.txt
 new file mode 100644
-index 0000000..990cfa4
+index 0000000..21231ae
 --- /dev/null
 +++ b/activemq-cpp/src/main/CMakeLists.txt
-@@ -0,0 +1,1708 @@
+@@ -0,0 +1,1711 @@
 +set(lib_name activemqcpp)
 +#######################################
 +# library sources
@@ -2461,6 +2461,9 @@ index 0000000..990cfa4
 +  $<BUILD_INTERFACE:${APR_INCLUDE_DIRS}>
 +  $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>
 +  )
++if(DEFINED APR_DEFINITIONS)
++  target_compile_definitions(${lib_name} PUBLIC ${APR_DEFINITIONS})
++endif()
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 +  DESTINATION include${verDir}/${lib_name}
