@@ -1,4 +1,5 @@
 # WXX_FOUND - wxx was found
+# WXX_VER - wxx version
 # WXX_INCLUDE_DIR - the wxx include directory
 # WXX_LIBRARIES - the wxx libraries
 if(COMMAND xpFindPkg)
@@ -11,12 +12,13 @@ get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative part
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}${WXWIDGETS_VER}-targets.cmake)
 string(TOUPPER ${prj} PRJ)
+set(${PRJ}_VER "${WXWIDGETS_VER} [@PROJECT_NAME@]")
 set(${PRJ}_INCLUDE_DIR ${WXWIDGETS_INCLUDE_DIR})
 if(NOT DEFINED wxx_libs)
   set(wxx_libs plotctrl things tlc)
 endif()
 set(${PRJ}_LIBRARIES ${wxx_libs})
-set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
+set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})

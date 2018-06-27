@@ -1,4 +1,5 @@
 # CURL_FOUND - curl was found
+# CURL_VER - curl version
 # CURL_INCLUDE_DIR - the curl include directory
 # CURL_LIBRARIES - the curl libraries
 # CURL_EXE - the curl executable
@@ -11,6 +12,7 @@ set(prj curl)
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
+set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
 set(ver _@VER@)
 set(verDir /${prj}${ver})
 unset(${PRJ}_INCLUDE_DIR CACHE)
@@ -20,7 +22,7 @@ include(${XP_ROOTDIR}/lib/cmake/lib${prj}${ver}-targets.cmake)
 include(${XP_ROOTDIR}/bin/cmake/${prj}${ver}-targets.cmake)
 set(${PRJ}_LIBRARIES libcurl)
 set(${PRJ}_EXE curl)
-set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_EXE)
+set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_EXE)
 if(WIN32)
   # tell cURL not to __declspec(dllimport) its symbols (required by libcurl)
   set(${PRJ}_DEFINITIONS -DCURL_STATICLIB)

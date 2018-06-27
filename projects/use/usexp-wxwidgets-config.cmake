@@ -1,7 +1,7 @@
 # WXWIDGETS_FOUND - wxwidgets was found
+# WXWIDGETS_VERSION - the wxwidgets version
 # WXWIDGETS_INCLUDE_DIR - the wxwidgets include directory
 # WXWIDGETS_LIBRARIES - the wxwidgets libraries
-# WXWIDGETS_VER - the wxwidgets version
 # WXWIDGETS_DEFINITIONS - wxwidgets compile definitions
 set(prj wxwidgets)
 # this file (-config) installed to share/cmake
@@ -17,6 +17,7 @@ if(XP_USE_LATEST_WX)
 else()
   set(wxVersion "3.0")
 endif()
+set(${PRJ}_VERSION "${wxVersion} [@PROJECT_NAME@]")
 # WXWIDGETS_VER should be of the form: 30, 31 (not 3.0, 3.1)
 # to account for how the targets.cmake files are named
 # this will be used by the wxx use script, too
@@ -169,7 +170,7 @@ elseif(MSVC)
     gdiplus # wxUSE_GRAPHICS_CONTEXT set to 1 in setup.h
     )
 endif()
-set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_DEFINITIONS)
+set(reqVars ${PRJ}_VERSION ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_DEFINITIONS)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})

@@ -12,6 +12,7 @@ if(XP_USE_LATEST_BOOST)
 else()
   set(BOOST_VER @BOOST_OLDVER@)
 endif()
+set(BOOST_VERSION "${BOOST_VER} [@PROJECT_NAME@]")
 if(NOT DEFINED Boost_LIBS)
   set(Boost_LIBS # dependency order
     log_setup # depends on log, regex, filesystem, thread, system (m, pthread)
@@ -114,7 +115,7 @@ if(UNIX)
   # TRICKY: Boost_LIBRARIES returned from find_package() introduces hard-coded absolute
   # paths and wrecks havoc on cmake-generated targets files, hence boostLibs
   set(${PRJ}_LIBRARIES ${boostLibs} ${syslibs})
-  set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
+  set(reqVars ${PRJ}_VERSION ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
 else()
   string(REPLACE "." "_" VER_ ${BOOST_VER2})
   set(${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include/boost-${VER_})
@@ -124,7 +125,7 @@ else()
     set(${PRJ}_FOUND FALSE)
   endif()
   link_directories(${XP_ROOTDIR}/lib)
-  set(reqVars ${PRJ}_INCLUDE_DIR)
+  set(reqVars ${PRJ}_VERSION ${PRJ}_INCLUDE_DIR)
   if(DEFINED ZLIB_LIBRARIES AND DEFINED BZIP2_LIBRARIES)
     set(${PRJ}_DEFINITIONS
       -DBOOST_ZLIB_BINARY=$<TARGET_FILE:${ZLIB_LIBRARIES}>

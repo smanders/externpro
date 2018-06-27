@@ -1,4 +1,5 @@
 # CARES_FOUND - cares was found
+# CARES_VER - cares version
 # CARES_INCLUDE_DIR - the cares include directory
 # CARES_INCLUDE_DIRS - the cares include directory (used by curl)
 # CARES_LIBRARIES - the cares libraries
@@ -9,6 +10,7 @@ set(prj cares)
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
+set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
 set(ver _@VER@)
 set(verDir /${prj}${ver})
 unset(${PRJ}_INCLUDE_DIR CACHE)
@@ -18,7 +20,7 @@ set(${PRJ}_INCLUDE_DIRS ${${PRJ}_INCLUDE_DIR}/cares)
 include(${XP_ROOTDIR}/lib/cmake/${prj}${ver}-targets.cmake)
 set(${PRJ}_LIBRARIES cares)
 set(${PRJ}_LIBRARY cares)
-set(reqVars ${PRJ}_INCLUDE_DIR ${PRJ}_INCLUDE_DIRS ${PRJ}_LIBRARIES ${PRJ}_LIBRARY)
+set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_INCLUDE_DIRS ${PRJ}_LIBRARIES ${PRJ}_LIBRARY)
 if(WIN32)
   set(${PRJ}_DEFINITIONS -DCARES_STATICLIB)
   list(APPEND reqVars ${PRJ}_DEFINITIONS)

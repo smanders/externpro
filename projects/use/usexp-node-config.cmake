@@ -1,4 +1,5 @@
 # NODE_FOUND - Node.js was found
+# NODE_VER - Node.js version
 # NODE_INCLUDE_DIR - the Node.js include directory
 # NODE_LIBRARIES - the Node.js libraries (MSW-only)
 # NODE_EXE - the Node.js executable
@@ -15,9 +16,10 @@ if(XP_USE_LATEST_NODE)
 else()
   set(ver @NODE_OLDVER@)
 endif()
+set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR node/node.h PATHS ${XP_ROOTDIR}/include/node${ver} NO_DEFAULT_PATH)
-set(reqVars ${PRJ}_INCLUDE_DIR)
+set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR)
 if(MSVC)
   set(${PRJ}_LIBRARIES ${XP_ROOTDIR}/node${ver}/lib/node.lib)
   list(APPEND reqVars ${PRJ}_LIBRARIES)
