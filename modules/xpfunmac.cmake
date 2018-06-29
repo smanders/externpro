@@ -298,15 +298,6 @@ function(xpPatchProject)
   endif()
 endfunction()
 
-macro(xpBuildOnlyRelease)
-  list(FIND BUILD_CONFIGS Release idx1)
-  if(NOT ${idx1} EQUAL -1)
-    set(BUILD_CONFIGS Release)
-  else()
-    message(FATAL_ERROR "a release build configuration is required")
-  endif()
-endmacro()
-
 function(xpCmakeBuild XP_DEPENDS)
   cmake_parse_arguments(P NO_INSTALL "TGT;BUILD_TARGET" "" ${ARGN})
   if(ARGV1) # ADDITIONAL_DEPENDS...

@@ -51,8 +51,6 @@ function(build_cmakexp)
         )
     endif()
   endif()
-  # we only need a release version
-  xpBuildOnlyRelease()
   set(XP_CONFIGURE
     -DCPACK_OUTPUT_FILE_PREFIX:PATH=${STAGE_DIR}/pkg
     -DCPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION=/usr/share/aclocal
@@ -60,6 +58,7 @@ function(build_cmakexp)
     -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
     -Dusexp-OpenSSL_DIR=${STAGE_DIR}/share/cmake
     )
+  set(BUILD_CONFIGS Release) # we only need a release version
   xpCmakeBuild(cmakexp "${osslTgts}" "${XP_CONFIGURE}" cmakexpTgts NO_INSTALL)
   xpCmakePackage("${cmakexpTgts}" pkgTgts)
   if(ARGN)

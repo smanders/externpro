@@ -27,7 +27,6 @@ function(build_yasm)
     -DBUILD_SHARED_LIBS=OFF
     -DINSTALL_YASM_ONLY=ON
     )
-  xpBuildOnlyRelease()
   if(DEFINED XP_YASM_COMPLETE_PKG)
     xpGetArgValue(${PRO_YASM} ARG VER VALUE VER)
     list(APPEND XP_CONFIGURE -DYASM_VER=${VER})
@@ -35,6 +34,7 @@ function(build_yasm)
       @ONLY NEWLINE_STYLE LF
       )
   endif()
+  set(BUILD_CONFIGS Release) # we only need a release executable
   xpCmakeBuild(yasm "" "${XP_CONFIGURE}" yasmTargets)
   if(ARGN)
     set(${ARGN} "${yasmTargets}" PARENT_SCOPE)

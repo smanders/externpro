@@ -24,8 +24,7 @@ function(build_eigen)
   configure_file(${PRO_DIR}/use/usexp-eigen-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  # since eigen is currently header only, do a single build config
-  set(BUILD_CONFIGS Release)
+  set(BUILD_CONFIGS Release) # this project is only copying headers
   xpCmakeBuild(eigen "" "${XP_CONFIGURE}" eigenTargets)
   if(ARGN)
     set(${ARGN} "${eigenTargets}" PARENT_SCOPE)

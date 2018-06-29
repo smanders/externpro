@@ -58,7 +58,7 @@ function(build_ffmpegv)
     return()
   endif()
   if(${ff_VER} STREQUAL ${FFMPEG_MSWVER})
-    xpBuildOnlyRelease()
+    set(BUILD_CONFIGS Release) # we only need a release version
     xpCmakeBuild(ffmpeg_${ff_VER} "" "-DFFMPEG_VER=${ff_VER}")
   elseif(${ff_VER} STREQUAL ${FFMPEG_CFGVER})
     if(NOT (XP_DEFAULT OR XP_PRO_OPENH264))

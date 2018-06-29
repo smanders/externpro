@@ -36,11 +36,10 @@ function(build_wxinclude)
   set(oneValueArgs TARGETS EXE)
   cmake_parse_arguments(wxinc "" "${oneValueArgs}" "" ${ARGN})
   build_boost(TARGETS boostTgts)
-  # since we only need a release executable...
-  xpBuildOnlyRelease()
   configure_file(${PRO_DIR}/use/usexp-wxinclude-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
+  set(BUILD_CONFIGS Release) # we only need a release executable
   xpCmakeBuild(wxinclude "${boostTgts}" "-DXP_USE_LATEST_BOOST=ON" wxincludeTargets)
   if(DEFINED wxinc_TARGETS)
     xpListAppendIfDne(${wxinc_TARGETS} "${wxincludeTargets}")

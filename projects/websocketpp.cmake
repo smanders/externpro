@@ -33,6 +33,6 @@ function(build_websocketpp)
   configure_file(${PRO_DIR}/use/usexp-websocketpp-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpBuildOnlyRelease() # this project is only copying headers
+  set(BUILD_CONFIGS Release) # this project is only copying headers
   xpCmakeBuild(websocketpp "" "${XP_CONFIGURE}")
 endfunction()
