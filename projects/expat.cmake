@@ -1,5 +1,5 @@
 # expat
-xpProOption(expat)
+xpProOption(expat DBG)
 set(VER 2.2.5)
 string(REPLACE "." "_" VER_ ${VER})
 set(TAG R_${VER_})

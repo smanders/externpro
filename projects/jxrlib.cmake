@@ -1,5 +1,5 @@
 # jxrlib
-xpProOption(jxrlib)
+xpProOption(jxrlib DBG)
 set(VER 15.08)
 set(REPO https://github.com/smanders/jxrlib)
 set(PRO_JXRLIB

@@ -1,5 +1,5 @@
 # bzip2
-xpProOption(bzip2)
+xpProOption(bzip2 DBG)
 set(VER 1.0.6)
 set(REPO https://github.com/smanders/bzip2)
 set(PRO_BZIP2

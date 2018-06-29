@@ -1,5 +1,5 @@
 # activemqcpp
-xpProOption(activemqcpp)
+xpProOption(activemqcpp DBG)
 set(VER 3.9.0)
 set(PROJ activemq-cpp)
 set(REPO https://github.com/smanders/${PROJ})

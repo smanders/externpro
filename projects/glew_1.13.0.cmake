@@ -1,6 +1,6 @@
 # glew
 set(VER ${GLEW_BLDVER})
-xpProOption(glew_${VER})
+xpProOption(glew_${VER} DBG)
 set(GLLN http://glew.sourceforge.net)
 set(GLDL https://downloads.sourceforge.net/project/glew/glew/${VER})
 set(REPO https://github.com/smanders/glew)

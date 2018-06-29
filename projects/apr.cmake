@@ -1,5 +1,5 @@
 # apr
-xpProOption(apr)
+xpProOption(apr DBG)
 set(VER 1.5.2)
 set(REPO https://github.com/smanders/apr)
 set(PRO_APR

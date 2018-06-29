@@ -1,7 +1,7 @@
 # fftw
 # http://packages.debian.org/sid/libfftw3-3
 # http://fftw3.sourcearchive.com/
-xpProOption(fftw)
+xpProOption(fftw DBG)
 set(VER 3.3.3)
 set(PRO_FFTW
   NAME FFTW

@@ -1,5 +1,5 @@
 # lua
-xpProOption(lua)
+xpProOption(lua DBG)
 set(VER 5.2.3)
 set(REPO https://github.com/smanders/lua)
 set(PRO_LUA

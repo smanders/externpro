@@ -1,5 +1,5 @@
 # cares
-xpProOption(cares)
+xpProOption(cares DBG)
 set(VER 1.10.0)
 string(REPLACE "." "_" VER_ ${VER})
 set(REPO https://github.com/smanders/c-ares)

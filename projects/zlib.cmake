@@ -1,5 +1,5 @@
 # zlib
-xpProOption(zlib)
+xpProOption(zlib DBG)
 set(VER 1.2.8)
 set(REPO https://github.com/smanders/zlib)
 set(PRO_ZLIB

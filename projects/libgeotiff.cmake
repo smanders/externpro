@@ -1,5 +1,5 @@
 # libgeotiff
-xpProOption(libgeotiff)
+xpProOption(libgeotiff DBG)
 # http://packages.debian.org/sid/libgeotiff-dev
 # http://libgeotiff-dfsg.sourcearchive.com/
 set(VER 1.2.4)

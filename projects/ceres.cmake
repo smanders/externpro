@@ -1,5 +1,5 @@
 # ceres
-xpProOption(ceres)
+xpProOption(ceres DBG)
 set(VER 1.14.0)
 set(REPO https://github.com/ceres-solver/ceres-solver)
 set(FORK https://github.com/smanders/ceres-solver)

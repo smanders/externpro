@@ -2,7 +2,7 @@
 # http://freecode.com/projects/shapelib
 # http://packages.debian.org/sid/shapelib
 # http://shapelib.sourcearchive.com/
-xpProOption(shapelib)
+xpProOption(shapelib DBG)
 set(VER 1.2.10)
 set(REPO https://github.com/smanders/shapelib)
 set(PRO_SHAPELIB

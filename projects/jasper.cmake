@@ -1,7 +1,7 @@
 # jasper
 # http://packages.debian.org/sid/libjasper-dev
 # http://jasper.sourcearchive.com/
-xpProOption(jasper)
+xpProOption(jasper DBG)
 set(VER 1.900.1)
 set(REPO https://github.com/smanders/jasper)
 set(PRO_JASPER

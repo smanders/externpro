@@ -1,5 +1,5 @@
 # openssl
-xpProOption(openssl)
+xpProOption(openssl DBG)
 set(BRANCH 1.0.2)
 set(VER ${BRANCH}a)
 string(REPLACE "." "_" VER_ ${VER})

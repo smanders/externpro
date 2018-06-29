@@ -73,6 +73,7 @@ macro(proSetOpts) # NOTE: called by proInit
   message(STATUS "[build]    execute through step 3: build the platform-specific binaries")
   set(XP_BUILD_RELEASE ON) # release is *always* built, debug is optional
   cmake_dependent_option(XP_BUILD_DEBUG "build debug" OFF "XP_STEP STREQUAL build" OFF)
+  cmake_dependent_option(XP_BUILD_DEBUG_ALL "build debug all (ON) or select (OFF) projects" OFF "XP_BUILD_DEBUG" OFF)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(XP_BUILD_64BIT ON)
     set(XP_BUILD_32BIT OFF)
@@ -216,7 +217,7 @@ macro(proGetBuildLists) # NOTE: called by cmake-generated pro_[patch|build].cmak
   if(XP_BUILD_RELEASE)
     xpListAppendIfDne(BUILD_CONFIGS Release)
   endif()
-  if(XP_BUILD_DEBUG)
+  if(XP_BUILD_DEBUG_ALL)
     xpListAppendIfDne(BUILD_CONFIGS Debug)
   endif()
 endmacro()

@@ -1,5 +1,5 @@
 # libssh2
-xpProOption(libssh2)
+xpProOption(libssh2 DBG)
 set(VER 1.5.0)
 set(REPO https://github.com/smanders/libssh2)
 set(PRO_LIBSSH2

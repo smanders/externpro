@@ -2,7 +2,7 @@
 # http://packages.debian.org/sid/libjpeg-dev
 # http://libjpeg6b.sourcearchive.com/
 # http://libjpeg8.sourcearchive.com/
-xpProOption(jpegxp)
+xpProOption(jpegxp DBG)
 set(VER 17.08) # latest jxp branch commit date (yr.mo)
 set(REPO https://github.com/smanders/jpegxp)
 set(PRO_JPEGXP

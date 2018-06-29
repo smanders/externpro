@@ -1,5 +1,5 @@
 # curl
-xpProOption(curl)
+xpProOption(curl DBG)
 set(VER 7.42.1)
 string(REPLACE "." "_" VER_ ${VER})
 set(REPO https://github.com/smanders/curl)

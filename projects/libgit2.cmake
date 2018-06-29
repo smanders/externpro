@@ -1,5 +1,5 @@
 # libgit2
-xpProOption(libgit2)
+xpProOption(libgit2 DBG)
 set(REPO https://github.com/smanders/libgit2)
 set(VER 0.22.2)
 set(PRO_LIBGIT2

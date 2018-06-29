@@ -1,7 +1,7 @@
 # geotranz
 # http://packages.debian.org/sid/geotranz
 # http://geotranz.sourcearchive.com/
-xpProOption(geotranz)
+xpProOption(geotranz DBG)
 set(VER 2.4.2)
 set(REPO https://github.com/smanders/geotranz)
 set(DLCSV https://download.osgeo.org/geotiff/tables)

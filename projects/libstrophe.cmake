@@ -1,5 +1,5 @@
 # libstrophe
-xpProOption(libstrophe)
+xpProOption(libstrophe DBG)
 set(VER 0.9.1)
 set(REPO https://github.com/strophe/libstrophe)
 set(FORK https://github.com/smanders/libstrophe)

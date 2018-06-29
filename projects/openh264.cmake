@@ -1,5 +1,5 @@
 # openh264
-xpProOption(openh264)
+xpProOption(openh264 DBG)
 set(VER 1.4.0)
 set(REPO https://github.com/cisco/openh264)
 set(FORK https://github.com/smanders/openh264)

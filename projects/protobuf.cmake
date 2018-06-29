@@ -1,5 +1,5 @@
 # protobuf
-xpProOption(protobuf)
+xpProOption(protobuf DBG)
 set(VER 3.0.0-beta-1)
 set(REPO https://github.com/smanders/protobuf)
 set(REPO_UPSTREAM https://github.com/google/protobuf)

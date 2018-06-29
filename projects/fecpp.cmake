@@ -1,5 +1,5 @@
 # fecpp
-xpProOption(fecpp)
+xpProOption(fecpp DBG)
 set(REPO https://github.com/smanders/fecpp)
 set(VER 0.9)
 set(PRO_FECPP

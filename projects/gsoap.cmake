@@ -1,5 +1,5 @@
 # gsoap
-xpProOption(gsoap)
+xpProOption(gsoap DBG)
 set(VER 2.7.17)
 set(REPO https://github.com/smanders/gSOAP)
 set(PRO_GSOAP
