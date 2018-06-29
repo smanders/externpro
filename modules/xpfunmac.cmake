@@ -10,15 +10,11 @@
 set(xpThisDir ${CMAKE_CURRENT_LIST_DIR})
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
+include(CMakeDependentOption)
 
 macro(xpProOption prj)
   string(TOUPPER "${prj}" PRJ)
-  option(XP_PRO_${PRJ} "include ${prj}" OFF)
-  if(XP_DEFAULT)
-    set_property(CACHE XP_PRO_${PRJ} PROPERTY TYPE INTERNAL)
-  else()
-    set_property(CACHE XP_PRO_${PRJ} PROPERTY TYPE BOOL)
-  endif()
+  cmake_dependent_option(XP_PRO_${PRJ} "include ${prj}" OFF "NOT XP_DEFAULT" OFF)
 endmacro()
 
 function(xpGetArgValue)
@@ -1628,14 +1624,9 @@ function(xpToggleDebugInfo)
 endfunction()
 
 function(xpDebugInfoOption)
-  option(XP_BUILD_WITH_DEBUG_INFO "build Release with debug information" OFF)
-  if(DEFINED CMAKE_BUILD_TYPE)
-    if(CMAKE_BUILD_TYPE STREQUAL Release)
-      set_property(CACHE XP_BUILD_WITH_DEBUG_INFO PROPERTY TYPE BOOL)
-    else()
-      set_property(CACHE XP_BUILD_WITH_DEBUG_INFO PROPERTY TYPE INTERNAL)
-    endif()
-  endif()
+  cmake_dependent_option(XP_BUILD_WITH_DEBUG_INFO "build Release with debug information" OFF
+    "DEFINED CMAKE_BUILD_TYPE;CMAKE_BUILD_TYPE STREQUAL Release" OFF
+    )
   set(checkflags
     CMAKE_C_FLAGS_RELEASE
     CMAKE_CXX_FLAGS_RELEASE
@@ -1882,22 +1873,17 @@ endmacro()
 
 macro(xpSetFlagsGccDebug)
   if(NOT DEFINED XP_USE_ASAN)
-    option(XP_USE_ASAN "use address sanitizer (Debug only)" OFF)
-  else()
-    option(XP_USE_ASAN "use address sanitizer (Debug only)" ${XP_USE_ASAN})
+    set(XP_USE_ASAN OFF)
   endif()
+  cmake_dependent_option(XP_USE_ASAN "use address sanitizer" ${XP_USE_ASAN}
+    "CMAKE_BUILD_TYPE STREQUAL Debug" ${XP_USE_ASAN}
+    )
   if(NOT DEFINED XP_COVERAGE)
-    option(XP_COVERAGE "generate coverage information (Debug only)" OFF)
-  else()
-    option(XP_COVERAGE "generate coverage information (Debug only)" ${XP_COVERAGE})
+    set(XP_COVERAGE OFF)
   endif()
-  if(CMAKE_BUILD_TYPE STREQUAL Debug)
-    set_property(CACHE XP_USE_ASAN PROPERTY TYPE BOOL)
-    set_property(CACHE XP_COVERAGE PROPERTY TYPE BOOL)
-  else()
-    set_property(CACHE XP_USE_ASAN PROPERTY TYPE INTERNAL)
-    set_property(CACHE XP_COVERAGE PROPERTY TYPE INTERNAL)
-  endif()
+  cmake_dependent_option(XP_COVERAGE "generate coverage information" ${XP_COVERAGE}
+    "CMAKE_BUILD_TYPE STREQUAL Debug" ${XP_COVERAGE}
+    )
   if(XP_USE_ASAN)
     include(CMakePushCheckState)
     cmake_push_check_state(RESET)

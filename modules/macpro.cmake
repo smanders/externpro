@@ -52,6 +52,7 @@ macro(proInit) # NOTE: called by top-level CMakeLists.txt
 endmacro()
 
 macro(proSetOpts) # NOTE: called by proInit
+  include(CMakeDependentOption)
   option(XP_DEFAULT "do the default projects" ON)
   if(NOT XP_STEP) # if not specified, default to "patch"
     set(XP_STEP "patch" CACHE STRING
@@ -71,7 +72,7 @@ macro(proSetOpts) # NOTE: called by proInit
   message(STATUS "           (suitable for debug, step into source)")
   message(STATUS "[build]    execute through step 3: build the platform-specific binaries")
   set(XP_BUILD_RELEASE ON) # release is *always* built, debug is optional
-  option(XP_BUILD_DEBUG "build debug (note: release is *always* built)" ON)
+  cmake_dependent_option(XP_BUILD_DEBUG "build debug" OFF "XP_STEP STREQUAL build" OFF)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(XP_BUILD_64BIT ON)
     set(XP_BUILD_32BIT OFF)
@@ -79,36 +80,14 @@ macro(proSetOpts) # NOTE: called by proInit
     set(XP_BUILD_64BIT OFF)
     set(XP_BUILD_32BIT ON)
   else()
-    proPlatformOpts()
+    cmake_dependent_option(XP_BUILD_64BIT "build 64-bit" ON "XP_STEP STREQUAL build" ON)
+    cmake_dependent_option(XP_BUILD_32BIT "build 32-bit" OFF "XP_STEP STREQUAL build" OFF)
   endif()
-  option(XP_BUILD_VERBOSE "show build target details" OFF)
+  cmake_dependent_option(XP_BUILD_VERBOSE "show build target details" OFF "XP_STEP STREQUAL build" OFF)
   if(MSVC)
-    option(XP_BUILD_STATIC "build with static runtime (/MT), OFF: dynamic runtime (/MD)" ON)
-  endif()
-  # hide options if step isn't build...
-  if(${XP_STEP} STREQUAL "build" AND MSVC)
-    set_property(CACHE XP_BUILD_STATIC PROPERTY TYPE BOOL)
-  elseif(MSVC)
-    set_property(CACHE XP_BUILD_STATIC PROPERTY TYPE INTERNAL)
-  endif()
-  if(${XP_STEP} STREQUAL "build")
-    set_property(CACHE XP_BUILD_DEBUG PROPERTY TYPE BOOL)
-    set_property(CACHE XP_BUILD_VERBOSE PROPERTY TYPE BOOL)
-  else()
-    set_property(CACHE XP_BUILD_DEBUG PROPERTY TYPE INTERNAL)
-    set_property(CACHE XP_BUILD_VERBOSE PROPERTY TYPE INTERNAL)
-  endif()
-endmacro()
-
-macro(proPlatformOpts)
-  option(XP_BUILD_64BIT "build 64-bit" ON)
-  option(XP_BUILD_32BIT "build 32-bit" OFF)
-  if(${XP_STEP} STREQUAL "build")
-    set_property(CACHE XP_BUILD_64BIT PROPERTY TYPE BOOL)
-    set_property(CACHE XP_BUILD_32BIT PROPERTY TYPE BOOL)
-  else()
-    set_property(CACHE XP_BUILD_64BIT PROPERTY TYPE INTERNAL)
-    set_property(CACHE XP_BUILD_32BIT PROPERTY TYPE INTERNAL)
+    cmake_dependent_option(XP_BUILD_STATIC "build with static runtime (/MT), OFF: dynamic runtime (/MD)" ON
+      "XP_STEP STREQUAL build" ON
+      )
   endif()
 endmacro()
 
