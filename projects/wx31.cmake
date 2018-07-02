@@ -1,5 +1,5 @@
 # wx31
-xpProOption(wx31)
+xpProOption(wx31 DBG_MSVC)
 set(REPO https://github.com/smanders/wxWidgets)
 set(REPO_UPSTREAM https://github.com/wxWidgets/wxWidgets)
 set(VER31 3.1.0)

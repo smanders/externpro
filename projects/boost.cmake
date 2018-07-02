@@ -2,7 +2,7 @@
 # * to build boost.python on Linux: need to install python dev pkgs
 # *   sudo apt install python-dev [ubuntu]
 # *   sudo yum install python-devel.x86_64 [rhel6]
-xpProOption(boost)
+xpProOption(boost DBG)
 set(BOOST_OLDVER 1.63.0)
 set(BOOST_NEWVER 1.63.0)
 ####################
@@ -207,7 +207,9 @@ function(build_boostlibs)
   else()
     set(boost_FLAGS)
   endif()
-  if(XP_BUILD_DEBUG AND XP_BUILD_RELEASE)
+  if(XP_BUILD_DEBUG_ALL AND XP_BUILD_RELEASE)
+    set(boost_VARIANT "debug,release")
+  elseif(XP_PRO_BOOST_BUILD_DBG AND XP_BUILD_RELEASE)
     set(boost_VARIANT "debug,release")
   elseif(XP_BUILD_RELEASE)
     set(boost_VARIANT "release")
