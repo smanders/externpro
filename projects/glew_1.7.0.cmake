@@ -1,6 +1,6 @@
 # glew
 set(VER ${GLEW_MSWVER})
-xpProOption(glew_${VER})
+cmake_dependent_option(XP_PRO_GLEW_${VER} "include glew_${VER}" OFF "NOT XP_DEFAULT;WIN32" OFF)
 set(GLLN http://glew.sourceforge.net)
 set(GLDL https://downloads.sourceforge.net/project/glew/glew/${VER})
 set(REPO https://github.com/nigels-com/glew)
@@ -23,7 +23,7 @@ set(PRO_GLEW_${VER}
 ########################################
 function(build_glew_mswver)
   set(gl_VER ${GLEW_MSWVER})
-  if(NOT (XP_DEFAULT OR XP_PRO_GLEW_${gl_VER}))
+  if(NOT WIN32 OR NOT (XP_DEFAULT OR XP_PRO_GLEW_${gl_VER}))
     return()
   endif()
   set(pf ${BUILD_PLATFORM})

@@ -8,8 +8,18 @@ set(prj glew)
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
-set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
-set(ver _@VER@)
+if(WIN32 AND NOT DEFINED XP_USE_LATEST_GLEW)
+  option(XP_USE_LATEST_GLEW "build with glew @GLEW_BLDVER@ instead of pre-built @GLEW_MSWVER@" OFF)
+else()
+  set(XP_USE_LATEST_GLEW ON)
+endif()
+if(XP_USE_LATEST_GLEW)
+  set(glewVer @GLEW_BLDVER@)
+else()
+  set(glewVer @GLEW_MSWVER@)
+endif()
+set(${PRJ}_VER "${glewVer} [@PROJECT_NAME@]")
+set(ver _${glewVer})
 set(verDir /${prj}${ver})
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR GL/glew.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
@@ -18,7 +28,7 @@ if(EXISTS ${XP_ROOTDIR}/lib/cmake/${prj}${ver}/${prj}-targets.cmake) # built via
   include(${XP_ROOTDIR}/lib/cmake/${prj}${ver}/${prj}-targets.cmake)
   set(${PRJ}_LIBRARIES GLEW::glew_s) # GLEW::glewmx_s TODO determine if glewmx is needed
   list(APPEND reqVars ${PRJ}_LIBRARIES)
-elseif(MSVC) # pre-built
+elseif(WIN32) # pre-built
   set(${PRJ}_LIBRARIES glew32) # TODO opengl32 glu32 system libraries?
   set(${PRJ}_DLLS
     ${XP_ROOTDIR}/lib/glew32.dll
