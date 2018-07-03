@@ -19,10 +19,12 @@ macro(xpProOption prj)
   if(extraArgs)
     if(extraArgs STREQUAL DBG)
       cmake_dependent_option(XP_PRO_${PRJ}_BUILD_DBG "build debug ${prj}" OFF
-        "XP_BUILD_DEBUG;NOT XP_BUILD_DEBUG_ALL" OFF)
+        "XP_BUILD_DEBUG;NOT XP_BUILD_DEBUG_ALL" OFF
+        )
     elseif(extraArgs STREQUAL DBG_MSVC AND MSVC)
       cmake_dependent_option(XP_PRO_${PRJ}_BUILD_DBG "build debug ${prj}" OFF
-        "XP_BUILD_DEBUG;NOT XP_BUILD_DEBUG_ALL" OFF)
+        "XP_BUILD_DEBUG;NOT XP_BUILD_DEBUG_ALL" OFF
+        )
     endif()
   endif()
 endmacro()
