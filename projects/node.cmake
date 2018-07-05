@@ -4,6 +4,11 @@ set(NODE_NEWVER v8.11.0)
 set(NODE_VERSIONS ${NODE_NEWVER})
 ####################
 function(build_node)
+  string(TOUPPER ${NODE_OLDVER} OV)
+  string(TOUPPER ${NODE_NEWVER} NV)
+  if(NOT (XP_DEFAULT OR XP_PRO_NODE${OV} OR XP_PRO_NODE${NV}))
+    return()
+  endif()
   configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
@@ -13,10 +18,6 @@ function(build_node)
 endfunction()
 ####################
 function(build_node_ver ver)
-  string(TOUPPER ${ver} VER)
-  if(NOT (XP_DEFAULT OR XP_PRO_NODE${VER}))
-    return()
-  endif()
   # TODO: support Debug by renaming files going into STAGE_DIR?
   set(BUILD_CONFIGS Release)
   set(node${ver}_DEPS node${ver})
