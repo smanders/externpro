@@ -18,6 +18,7 @@ function(build_clangtidy)
   if(NOT XP_BUILD_CLANGTIDY)
     return()
   endif()
+  xpGetArgValue(${PRO_LLVM} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-clangtidy-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )

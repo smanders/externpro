@@ -15,6 +15,7 @@ function(build_clangformat)
     return()
   endif()
   build_llvm(llvmTgt)
+  xpGetArgValue(${PRO_LLVM} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-clangformat-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )

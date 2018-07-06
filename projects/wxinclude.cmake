@@ -36,6 +36,7 @@ function(build_wxinclude)
   set(oneValueArgs TARGETS EXE)
   cmake_parse_arguments(wxinc "" "${oneValueArgs}" "" ${ARGN})
   build_boost(TARGETS boostTgts)
+  xpGetArgValue(${PRO_WXINCLUDE} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-wxinclude-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
