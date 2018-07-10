@@ -1,0 +1,23 @@
+digraph GG {
+  node [fontsize=12];
+  zlib [shape=diamond];
+  openssl [shape=diamond];
+  cares [label="c-ares" shape=diamond];
+  libssh2 [shape=diamond];
+  libgit2 [shape=diamond];
+  curl [shape=diamond];
+  protobuf [shape=diamond];
+  ffmpeg [shape=diamond];
+  openh264 [shape=diamond];
+  bzip2 [shape=diamond];
+  boost [shape=diamond];
+  libssh2 -> zlib;
+  libssh2 -> openssl;
+  libgit2 -> libssh2;
+  curl -> libssh2;
+  curl -> cares;
+  protobuf -> zlib;
+  ffmpeg -> openh264;
+  boost -> zlib;
+  boost -> bzip2;
+}

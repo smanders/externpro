@@ -525,9 +525,11 @@ set(g_README ${CMAKE_BINARY_DIR}/README.md)
 set(g_READMEsub ${CMAKE_BINARY_DIR}/README.sub.md)
 
 function(xpMarkdownReadmeInit)
-  file(WRITE ${g_README} "# projects\n\n")
-  file(APPEND ${g_README} "|project|license|description|version|repository|patch/diff|\n")
-  file(APPEND ${g_README} "|-------|-------|-----------|-------|----------|----------|\n")
+  file(WRITE ${g_README}
+    "# projects\n\n"
+    "|project|license|description|version|repository|patch/diff|\n"
+    "|-------|-------|-----------|-------|----------|----------|\n"
+    )
   if(EXISTS ${g_READMEsub})
     file(REMOVE ${g_READMEsub})
   endif()
@@ -584,9 +586,11 @@ function(ipMarkdownPro)
   endif()
   if(DEFINED P_SUPERPRO)
     if(NOT EXISTS ${g_READMEsub})
-      file(WRITE ${g_READMEsub} "\n\n## subprojects\n\n")
-      file(APPEND ${g_READMEsub} "|project|sub|description|version|repository|patch/diff|\n")
-      file(APPEND ${g_READMEsub} "|-------|---|-----------|-------|----------|----------|\n")
+      file(WRITE ${g_READMEsub}
+        "\n\n## subprojects\n\n"
+        "|project|sub|description|version|repository|patch/diff|\n"
+        "|-------|---|-----------|-------|----------|----------|\n"
+        )
     endif()
     file(APPEND ${g_READMEsub} "|${P_SUPERPRO}|${web}|${desc}|${ver}|${repo}|${diff}|\n")
   else()
@@ -598,6 +602,27 @@ function(xpMarkdownReadmeFinalize)
   if(EXISTS ${g_READMEsub})
     file(READ ${g_READMEsub} sub)
     file(APPEND ${g_README} ${sub})
+  endif()
+  if(EXISTS ${PRO_DIR}/deps.dot AND XP_GRAPH_DEPS)
+    set(user smanders)
+    set(branch dev)
+    set(mark customgraph01)
+    set(url "https://raw.githubusercontent.com/${user}/externpro/${branch}/projects/README.md")
+    string(REPLACE "/" "%2F" url ${url})
+    string(REPLACE ":" "%3A" url ${url})
+    file(APPEND ${g_README}
+      "\n\n## dependency graph\n\n"
+      "![deps.dot graph](https://g.gravizo.com/source/${mark}?${url})\n"
+      "<details>\n"
+      "<summary></summary>\n"
+      "${mark}\n"
+      )
+    file(READ ${PRO_DIR}/deps.dot depsDotDot)
+    file(APPEND ${g_README}
+      "${depsDotDot}"
+      "${mark}\n"
+      "</details>\n"
+      )
   endif()
   configure_file(${g_README} ${PRO_DIR}/README.md NEWLINE_STYLE LF)
 endfunction()
