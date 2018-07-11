@@ -27,7 +27,7 @@ function(build_clangformat)
     INSTALL_COMMAND ${CMAKE_COMMAND} -P cmake_install.cmake
     INSTALL_DIR ${STAGE_DIR}
     )
-  if(MSVC)
+  if(MSVC AND MSVC_VERSION EQUAL 1900) # VS 14.0 2015
     ExternalProject_Add_Step(clangformat_install clangformat_install_vsix
       COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/pkg
       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BINARY_DIR}/Release/bin/ClangFormat.vsix ${STAGE_DIR}/pkg
