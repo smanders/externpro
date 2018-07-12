@@ -28,7 +28,7 @@ function(build_llvm)
   endif()
   set(XP_DEPS llvm llvm_clang llvm_clangtoolsextra)
   set(XP_CONFIGURE -DLLVM_TARGETS_TO_BUILD:STRING=X86)
-  if(MSVC AND MSVC_VERSION EQUAL 1900) # VS 14.0 2015
+  if(MSVC AND MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
     list(APPEND XP_CONFIGURE -DBUILD_CLANG_FORMAT_VS_PLUGIN=ON)
     set(buildTgt clang_format_vsix)
   else()

@@ -1,59 +1,271 @@
+diff --git a/tools/clang-format-vs/.gitignore b/tools/clang-format-vs/.gitignore
+new file mode 100644
+index 0000000..270d840
+--- /dev/null
++++ b/tools/clang-format-vs/.gitignore
+@@ -0,0 +1,11 @@
++# Visual Studio files
++.vs/
++*.user
++/packages/
++/ClangFormat/obj/
++/ClangFormat/bin/
++
++# Generated and copied files
++/ClangFormat/Key.snk
++/ClangFormat/clang-format.exe
++/ClangFormat/source.extension.vsixmanifest
+diff --git a/tools/clang-format-vs/CMakeLists.txt b/tools/clang-format-vs/CMakeLists.txt
+index fd0d6b0..1d44a47 100644
+--- a/tools/clang-format-vs/CMakeLists.txt
++++ b/tools/clang-format-vs/CMakeLists.txt
+@@ -6,23 +6,28 @@ if (BUILD_CLANG_FORMAT_VS_PLUGIN)
+       "${CMAKE_CURRENT_SOURCE_DIR}/ClangFormat/clang-format.exe"
+       DEPENDS clang-format)
+ 
+-  add_custom_target(clang_format_license
+-      ${CMAKE_COMMAND} -E copy_if_different
+-      "${CLANG_SOURCE_DIR}/LICENSE.TXT"
+-      "${CMAKE_CURRENT_SOURCE_DIR}/ClangFormat/license.txt")
++  # Build number added to Clang version to ensure that new VSIX can be upgraded
++  string(TIMESTAMP CLANG_FORMAT_VSIX_BUILD %y%m%d%H%M UTC)
+ 
+   if (NOT CLANG_FORMAT_VS_VERSION)
+-    set(CLANG_FORMAT_VS_VERSION "${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR}.${LLVM_VERSION_PATCH}")
++    set(CLANG_FORMAT_VS_VERSION "${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR}.${LLVM_VERSION_PATCH}.${CLANG_FORMAT_VSIX_BUILD}")
+   endif()
+ 
+   configure_file("source.extension.vsixmanifest.in"
+       "${CMAKE_CURRENT_SOURCE_DIR}/ClangFormat/source.extension.vsixmanifest")
+ 
++  find_program(NUGET_EXE nuget PATHS ${NUGET_EXE_DIR})
++  if (NOT NUGET_EXE)
++    message(FATAL_ERROR "Could not find nuget.exe. Download from https://www.nuget.org/nuget.exe"
++                        " and add parent directory to PATH or pass it via NUGET_EXE_DIR var.")
++  endif()
++
+   add_custom_target(clang_format_vsix ALL
+-      devenv "${CMAKE_CURRENT_SOURCE_DIR}/ClangFormat.sln" /Build Release
++      COMMAND ${NUGET_EXE} restore "${CMAKE_CURRENT_SOURCE_DIR}/ClangFormat.sln"
++      COMMAND devenv "${CMAKE_CURRENT_SOURCE_DIR}/ClangFormat.sln" /Build Release
+       DEPENDS clang_format_exe_for_vsix "${CMAKE_CURRENT_SOURCE_DIR}/ClangFormat/source.extension.vsixmanifest"
+       COMMAND ${CMAKE_COMMAND} -E copy_if_different
+       "${CMAKE_CURRENT_SOURCE_DIR}/ClangFormat/bin/Release/ClangFormat.vsix"
+       "${LLVM_TOOLS_BINARY_DIR}/ClangFormat.vsix"
+-      DEPENDS clang_format_exe_for_vsix clang_format_license)
++      DEPENDS clang_format_exe_for_vsix)
+ endif()
 diff --git a/tools/clang-format-vs/ClangFormat.sln b/tools/clang-format-vs/ClangFormat.sln
-index d6b211f..73bf84e 100644
+index d6b211f..46d742b 100644
 --- a/tools/clang-format-vs/ClangFormat.sln
 +++ b/tools/clang-format-vs/ClangFormat.sln
 @@ -1,6 +1,8 @@
  ﻿
  Microsoft Visual Studio Solution File, Format Version 12.00
 -# Visual Studio 2012
-+# Visual Studio 14
-+VisualStudioVersion = 14.0.25420.1
++# Visual Studio 15
++VisualStudioVersion = 15.0.26228.12
 +MinimumVisualStudioVersion = 10.0.40219.1
  Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClangFormat", "ClangFormat\ClangFormat.csproj", "{7FD1783E-2D31-4D05-BF23-6EBE1B42B608}"
  EndProject
  Global
 diff --git a/tools/clang-format-vs/ClangFormat/ClangFormat.csproj b/tools/clang-format-vs/ClangFormat/ClangFormat.csproj
-index a61e431..cf9f1dd 100644
+index a61e431..e5b7ec0 100644
 --- a/tools/clang-format-vs/ClangFormat/ClangFormat.csproj
 +++ b/tools/clang-format-vs/ClangFormat/ClangFormat.csproj
-@@ -13,8 +13,8 @@
-     <AssemblyName>ClangFormat</AssemblyName>
+@@ -14,7 +14,7 @@
      <SignAssembly>true</SignAssembly>
      <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
--    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 -    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
-+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
++    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
      <FileUpgradeFlags>
      </FileUpgradeFlags>
      <UpgradeBackupLocation>
-@@ -56,8 +56,8 @@
+@@ -35,6 +35,7 @@
+     <IsWebBootstrapper>false</IsWebBootstrapper>
+     <UseApplicationTrust>false</UseApplicationTrust>
+     <BootstrapperEnabled>true</BootstrapperEnabled>
++    <TargetFrameworkProfile />
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+     <DebugSymbols>true</DebugSymbols>
+@@ -44,6 +45,7 @@
+     <DefineConstants>DEBUG;TRACE</DefineConstants>
+     <ErrorReport>prompt</ErrorReport>
+     <WarningLevel>4</WarningLevel>
++    <Prefer32Bit>false</Prefer32Bit>
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+     <DebugType>pdbonly</DebugType>
+@@ -53,27 +55,85 @@
+     <ErrorReport>prompt</ErrorReport>
+     <WarningLevel>4</WarningLevel>
+     <RunCodeAnalysis>true</RunCodeAnalysis>
++    <Prefer32Bit>false</Prefer32Bit>
    </PropertyGroup>
    <ItemGroup>
++    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
++      <EmbedInteropTypes>True</EmbedInteropTypes>
++    </Reference>
++    <Reference Include="envdte80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
++      <EmbedInteropTypes>True</EmbedInteropTypes>
++    </Reference>
      <Reference Include="Microsoft.CSharp" />
 -    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
 -    <Reference Include="Microsoft.VisualStudio.Editor, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-+    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-+    <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
-     <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
-     <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
-@@ -67,10 +67,10 @@
-     <Reference Include="Microsoft.VisualStudio.Shell.10.0">
-       <Private>false</Private>
-     </Reference>
+-    <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
+-    <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
+-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
+-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0" />
++    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
++      <HintPath>..\packages\VSSDK.CoreUtility.10.0.4\lib\net40\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.Editor, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
++      <HintPath>..\packages\VSSDK.Editor.10.0.4\lib\net40\Microsoft.VisualStudio.Editor.dll</HintPath>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
++      <HintPath>..\packages\VSSDK.OLE.Interop.7.0.4\lib\net20\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>
++      <Private>True</Private>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.Shell.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
++      <HintPath>..\packages\VSSDK.Shell.10.10.0.3\lib\net40\Microsoft.VisualStudio.Shell.10.0.dll</HintPath>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
++      <HintPath>..\packages\VSSDK.Shell.Immutable.10.10.0.3\lib\net40\Microsoft.VisualStudio.Shell.Immutable.10.0.dll</HintPath>
++      <Private>True</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
++      <HintPath>..\packages\VSSDK.Shell.Interop.7.0.4\lib\net20\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
++      <Private>True</Private>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
++      <HintPath>..\packages\VSSDK.Shell.Interop.8.8.0.3\lib\net20\Microsoft.VisualStudio.Shell.Interop.8.0.dll</HintPath>
++      <Private>True</Private>
++      <Private>False</Private>
++    </Reference>
+     <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0" />
+-    <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
+-    <Reference Include="Microsoft.VisualStudio.Shell.10.0">
+-      <Private>false</Private>
+-    </Reference>
 -    <Reference Include="Microsoft.VisualStudio.Text.Data, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
 -    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
 -    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
 -    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-+    <Reference Include="Microsoft.VisualStudio.Text.Data, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-+    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-+    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-     <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
-     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
+-    <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
+-    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
++    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
++      <HintPath>..\packages\VSSDK.Shell.Interop.9.9.0.3\lib\net20\Microsoft.VisualStudio.Shell.Interop.9.0.dll</HintPath>
++      <Private>True</Private>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.Text.Data, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
++      <HintPath>..\packages\VSSDK.Text.10.0.4\lib\net40\Microsoft.VisualStudio.Text.Data.dll</HintPath>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
++      <HintPath>..\packages\VSSDK.Text.10.0.4\lib\net40\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
++      <HintPath>..\packages\VSSDK.Text.10.0.4\lib\net40\Microsoft.VisualStudio.Text.UI.dll</HintPath>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
++      <HintPath>..\packages\VSSDK.Text.10.0.4\lib\net40\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.TextManager.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
++      <HintPath>..\packages\VSSDK.TextManager.Interop.8.8.0.4\lib\net20\Microsoft.VisualStudio.TextManager.Interop.8.0.dll</HintPath>
++      <Private>True</Private>
++      <Private>False</Private>
++    </Reference>
++    <Reference Include="PresentationCore" />
++    <Reference Include="PresentationFramework" />
++    <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
++      <HintPath>..\packages\VSSDK.DTE.7.0.3\lib\net20\stdole.dll</HintPath>
++      <EmbedInteropTypes>False</EmbedInteropTypes>
++    </Reference>
      <Reference Include="System" />
-@@ -219,7 +219,7 @@
++    <Reference Include="System.ComponentModel.Composition" />
+     <Reference Include="System.Core" />
+     <Reference Include="System.Data" />
+     <Reference Include="System.Design" />
+@@ -81,44 +141,9 @@
+     <Reference Include="System.Windows.Forms" />
+     <Reference Include="System.Xml" />
+     <Reference Include="System.Xml.Linq" />
++    <Reference Include="WindowsBase" />
+   </ItemGroup>
+   <ItemGroup>
+-    <COMReference Include="EnvDTE">
+-      <Guid>{80CC9F66-E7D8-4DDD-85B6-D9E6CD0E93E2}</Guid>
+-      <VersionMajor>8</VersionMajor>
+-      <VersionMinor>0</VersionMinor>
+-      <Lcid>0</Lcid>
+-      <WrapperTool>primary</WrapperTool>
+-      <Isolated>False</Isolated>
+-      <EmbedInteropTypes>False</EmbedInteropTypes>
+-    </COMReference>
+-    <COMReference Include="EnvDTE100">
+-      <Guid>{26AD1324-4B7C-44BC-84F8-B86AED45729F}</Guid>
+-      <VersionMajor>10</VersionMajor>
+-      <VersionMinor>0</VersionMinor>
+-      <Lcid>0</Lcid>
+-      <WrapperTool>primary</WrapperTool>
+-      <Isolated>False</Isolated>
+-      <EmbedInteropTypes>False</EmbedInteropTypes>
+-    </COMReference>
+-    <COMReference Include="EnvDTE80">
+-      <Guid>{1A31287A-4D7D-413E-8E32-3B374931BD89}</Guid>
+-      <VersionMajor>8</VersionMajor>
+-      <VersionMinor>0</VersionMinor>
+-      <Lcid>0</Lcid>
+-      <WrapperTool>primary</WrapperTool>
+-      <Isolated>False</Isolated>
+-      <EmbedInteropTypes>False</EmbedInteropTypes>
+-    </COMReference>
+-    <COMReference Include="EnvDTE90">
+-      <Guid>{2CE2370E-D744-4936-A090-3FFFE667B0E1}</Guid>
+-      <VersionMajor>9</VersionMajor>
+-      <VersionMinor>0</VersionMinor>
+-      <Lcid>0</Lcid>
+-      <WrapperTool>primary</WrapperTool>
+-      <Isolated>False</Isolated>
+-      <EmbedInteropTypes>False</EmbedInteropTypes>
+-    </COMReference>
+     <COMReference Include="Microsoft.VisualStudio.CommandBars">
+       <Guid>{1CBA492E-7263-47BB-87FE-639000619B15}</Guid>
+       <VersionMajor>8</VersionMajor>
+@@ -151,6 +176,8 @@
+     </Compile>
+     <Compile Include="Properties\AssemblyInfo.cs" />
+     <Compile Include="PkgCmdID.cs" />
++    <Compile Include="RunningDocTableEventsDispatcher.cs" />
++    <Compile Include="Vsix.cs" />
+   </ItemGroup>
+   <ItemGroup>
+     <EmbeddedResource Include="Resources.resx">
+@@ -165,6 +192,9 @@
+   </ItemGroup>
+   <ItemGroup>
+     <None Include="Key.snk" />
++    <None Include="packages.config">
++      <SubType>Designer</SubType>
++    </None>
+     <None Include="source.extension.vsixmanifest">
+       <SubType>Designer</SubType>
+     </None>
+@@ -219,7 +249,7 @@
    <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
    <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" Condition="false" />
    <PropertyGroup>
@@ -62,6 +274,453 @@ index a61e431..cf9f1dd 100644
    </PropertyGroup>
    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
         Other similar extension points exist, see Microsoft.Common.targets.
+diff --git a/tools/clang-format-vs/ClangFormat/ClangFormat.vsct b/tools/clang-format-vs/ClangFormat/ClangFormat.vsct
+index 3e3e22e..7989577 100644
+--- a/tools/clang-format-vs/ClangFormat/ClangFormat.vsct
++++ b/tools/clang-format-vs/ClangFormat/ClangFormat.vsct
+@@ -61,15 +61,21 @@
+               <CommandFlag>DynamicVisibility</CommandFlag>
+           If you do not want an image next to your command, remove the Icon node /> -->
+ 
+-      <Button guid="guidClangFormatCmdSet" id="cmdidClangFormat" priority="0x0100" type="Button">
++      <Button guid="guidClangFormatCmdSet" id="cmdidClangFormatSelection" priority="0x0100" type="Button">
+         <Parent guid="guidClangFormatCmdSet" id="MyMenuGroup" />
+         <Icon guid="guidImages" id="bmpPic1" />
+         <Strings>
+-          <ButtonText>ClangFormat</ButtonText>
++          <ButtonText>Clang Format Selection</ButtonText>
+         </Strings>
+       </Button>
+ 
+-
++      <Button guid="guidClangFormatCmdSet" id="cmdidClangFormatDocument" priority="0x0101" type="Button">
++        <Parent guid="guidClangFormatCmdSet" id="MyMenuGroup" />
++        <Icon guid="guidImages" id="bmpPic2" />
++        <Strings>
++          <ButtonText>Clang Format Document</ButtonText>
++        </Strings>
++      </Button>
+ 
+     </Buttons>
+    
+@@ -88,7 +94,8 @@
+ 
+ 
+   <KeyBindings>
+-    <KeyBinding guid="guidClangFormatCmdSet" id="cmdidClangFormat" editor="guidTextEditor" key1="R" mod1="Control" key2="F" mod2="Control"/>
++    <KeyBinding guid="guidClangFormatCmdSet" id="cmdidClangFormatSelection" editor="guidTextEditor" key1="R" mod1="Control" key2="F" mod2="Control"/>
++    <KeyBinding guid="guidClangFormatCmdSet" id="cmdidClangFormatDocument" editor="guidTextEditor" key1="R" mod1="Control" key2="D" mod2="Control"/>
+   </KeyBindings>
+ 
+ 
+@@ -101,7 +108,8 @@
+     <GuidSymbol name="guidClangFormatCmdSet" value="{e39cbab1-0f96-4022-a2bc-da5a9db7eb78}">
+ 
+       <IDSymbol name="MyMenuGroup" value="0x1020" />
+-      <IDSymbol name="cmdidClangFormat" value="0x0100" />
++      <IDSymbol name="cmdidClangFormatSelection" value="0x0100" />
++      <IDSymbol name="cmdidClangFormatDocument" value="0x0101" />
+     </GuidSymbol>
+ 
+     <GuidSymbol name="guidTextEditor" value="{8B382828-6202-11d1-8870-0000F87579D2}" />
+diff --git a/tools/clang-format-vs/ClangFormat/ClangFormatPackage.cs b/tools/clang-format-vs/ClangFormat/ClangFormatPackage.cs
+index 6af2fd1..1071b68 100644
+--- a/tools/clang-format-vs/ClangFormat/ClangFormatPackage.cs
++++ b/tools/clang-format-vs/ClangFormat/ClangFormatPackage.cs
+@@ -12,12 +12,11 @@
+ //
+ //===----------------------------------------------------------------------===//
+ 
+-using Microsoft.VisualStudio.Editor;
++using EnvDTE;
+ using Microsoft.VisualStudio.Shell;
+ using Microsoft.VisualStudio.Shell.Interop;
+ using Microsoft.VisualStudio.Text;
+ using Microsoft.VisualStudio.Text.Editor;
+-using Microsoft.VisualStudio.TextManager.Interop;
+ using System;
+ using System.Collections;
+ using System.ComponentModel;
+@@ -25,6 +24,7 @@ using System.ComponentModel.Design;
+ using System.IO;
+ using System.Runtime.InteropServices;
+ using System.Xml.Linq;
++using System.Linq;
+ 
+ namespace LLVM.ClangFormat
+ {
+@@ -36,6 +36,17 @@ namespace LLVM.ClangFormat
+         private string fallbackStyle = "LLVM";
+         private bool sortIncludes = false;
+         private string style = "file";
++        private bool formatOnSave = false;
++        private string formatOnSaveFileExtensions =
++            ".c;.cpp;.cxx;.cc;.tli;.tlh;.h;.hh;.hpp;.hxx;.hh;.inl;" +
++            ".java;.js;.ts;.m;.mm;.proto;.protodevel;.td";
++
++        public OptionPageGrid Clone()
++        {
++            // Use MemberwiseClone to copy value types.
++            var clone = (OptionPageGrid)MemberwiseClone();
++            return clone;
++        }
+ 
+         public class StyleConverter : TypeConverter
+         {
+@@ -74,7 +85,7 @@ namespace LLVM.ClangFormat
+             }
+         }
+ 
+-        [Category("LLVM/Clang")]
++        [Category("Format Options")]
+         [DisplayName("Style")]
+         [Description("Coding style, currently supports:\n" +
+                      "  - Predefined styles ('LLVM', 'Google', 'Chromium', 'Mozilla', 'WebKit').\n" +
+@@ -121,7 +132,7 @@ namespace LLVM.ClangFormat
+             }
+         }
+ 
+-        [Category("LLVM/Clang")]
++        [Category("Format Options")]
+         [DisplayName("Assume Filename")]
+         [Description("When reading from stdin, clang-format assumes this " +
+                      "filename to look for a style config file (with 'file' style) " +
+@@ -142,7 +153,7 @@ namespace LLVM.ClangFormat
+             }
+         }
+ 
+-        [Category("LLVM/Clang")]
++        [Category("Format Options")]
+         [DisplayName("Fallback Style")]
+         [Description("The name of the predefined style used as a fallback in case clang-format " +
+                      "is invoked with 'file' style, but can not find the configuration file.\n" +
+@@ -154,7 +165,7 @@ namespace LLVM.ClangFormat
+             set { fallbackStyle = value; }
+         }
+ 
+-        [Category("LLVM/Clang")]
++        [Category("Format Options")]
+         [DisplayName("Sort includes")]
+         [Description("Sort touched include lines.\n\n" +
+                      "See also: http://clang.llvm.org/docs/ClangFormat.html.")]
+@@ -163,33 +174,119 @@ namespace LLVM.ClangFormat
+             get { return sortIncludes; }
+             set { sortIncludes = value; }
+         }
++
++        [Category("Format On Save")]
++        [DisplayName("Enable")]
++        [Description("Enable running clang-format when modified files are saved. " +
++                     "Will only format if Style is found (ignores Fallback Style)."
++            )]
++        public bool FormatOnSave
++        {
++            get { return formatOnSave; }
++            set { formatOnSave = value; }
++        }
++
++        [Category("Format On Save")]
++        [DisplayName("File extensions")]
++        [Description("When formatting on save, clang-format will be applied only to " +
++                     "files with these extensions.")]
++        public string FormatOnSaveFileExtensions
++        {
++            get { return formatOnSaveFileExtensions; }
++            set { formatOnSaveFileExtensions = value; }
++        }
+     }
+ 
+     [PackageRegistration(UseManagedResourcesOnly = true)]
+     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
+     [ProvideMenuResource("Menus.ctmenu", 1)]
++    [ProvideAutoLoad(UIContextGuids80.SolutionExists)] // Load package on solution load
+     [Guid(GuidList.guidClangFormatPkgString)]
+     [ProvideOptionPage(typeof(OptionPageGrid), "LLVM/Clang", "ClangFormat", 0, 0, true)]
+     public sealed class ClangFormatPackage : Package
+     {
+         #region Package Members
++
++        RunningDocTableEventsDispatcher _runningDocTableEventsDispatcher;
++
+         protected override void Initialize()
+         {
+             base.Initialize();
+ 
++            _runningDocTableEventsDispatcher = new RunningDocTableEventsDispatcher(this);
++            _runningDocTableEventsDispatcher.BeforeSave += OnBeforeSave;
++
+             var commandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+             if (commandService != null)
+             {
+-                var menuCommandID = new CommandID(GuidList.guidClangFormatCmdSet, (int)PkgCmdIDList.cmdidClangFormat);
+-                var menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
+-                commandService.AddCommand(menuItem);
++                {
++                    var menuCommandID = new CommandID(GuidList.guidClangFormatCmdSet, (int)PkgCmdIDList.cmdidClangFormatSelection);
++                    var menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
++                    commandService.AddCommand(menuItem);
++                }
++
++                {
++                    var menuCommandID = new CommandID(GuidList.guidClangFormatCmdSet, (int)PkgCmdIDList.cmdidClangFormatDocument);
++                    var menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
++                    commandService.AddCommand(menuItem);
++                }
+             }
+         }
+         #endregion
+ 
++        OptionPageGrid GetUserOptions()
++        {
++            return (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
++        }
++
+         private void MenuItemCallback(object sender, EventArgs args)
+         {
+-            IWpfTextView view = GetCurrentView();
++            var mc = sender as System.ComponentModel.Design.MenuCommand;
++            if (mc == null)
++                return;
++
++            switch (mc.CommandID.ID)
++            {
++                case (int)PkgCmdIDList.cmdidClangFormatSelection:
++                    FormatSelection(GetUserOptions());
++                    break;
++
++                case (int)PkgCmdIDList.cmdidClangFormatDocument:
++                    FormatDocument(GetUserOptions());
++                    break;
++            }
++        }
++
++        private static bool FileHasExtension(string filePath, string fileExtensions)
++        {
++            var extensions = fileExtensions.ToLower().Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
++            return extensions.Contains(Path.GetExtension(filePath).ToLower());
++        }
++
++        private void OnBeforeSave(object sender, Document document)
++        {
++            var options = GetUserOptions();
++
++            if (!options.FormatOnSave)
++                return;
++
++            if (!FileHasExtension(document.FullName, options.FormatOnSaveFileExtensions))
++                return;
++
++            if (!Vsix.IsDocumentDirty(document))
++                return;
++
++            var optionsWithNoFallbackStyle = GetUserOptions().Clone();
++            optionsWithNoFallbackStyle.FallbackStyle = "none";
++            FormatDocument(document, optionsWithNoFallbackStyle);
++        }
++
++        /// <summary>
++        /// Runs clang-format on the current selection
++        /// </summary>
++        private void FormatSelection(OptionPageGrid options)
++        {
++            IWpfTextView view = Vsix.GetCurrentView();
+             if (view == null)
+                 // We're not in a text view.
+                 return;
+@@ -197,24 +294,55 @@ namespace LLVM.ClangFormat
+             int start = view.Selection.Start.Position.GetContainingLine().Start.Position;
+             int end = view.Selection.End.Position.GetContainingLine().End.Position;
+             int length = end - start;
++            
+             // clang-format doesn't support formatting a range that starts at the end
+             // of the file.
+             if (start >= text.Length && text.Length > 0)
+                 start = text.Length - 1;
+-            string path = GetDocumentParent(view);
+-            string filePath = GetDocumentPath(view);
++            string path = Vsix.GetDocumentParent(view);
++            string filePath = Vsix.GetDocumentPath(view);
++
++            RunClangFormatAndApplyReplacements(text, start, length, path, filePath, options, view);
++        }
++
++        /// <summary>
++        /// Runs clang-format on the current document
++        /// </summary>
++        private void FormatDocument(OptionPageGrid options)
++        {
++            FormatView(Vsix.GetCurrentView(), options);
++        }
++
++        private void FormatDocument(Document document, OptionPageGrid options)
++        {
++            FormatView(Vsix.GetDocumentView(document), options);
++        }
++
++        private void FormatView(IWpfTextView view, OptionPageGrid options)
++        {
++            if (view == null)
++                // We're not in a text view.
++                return;
++
++            string filePath = Vsix.GetDocumentPath(view);
++            var path = Path.GetDirectoryName(filePath);
++
++            string text = view.TextBuffer.CurrentSnapshot.GetText();
++            if (!text.EndsWith(Environment.NewLine))
++            {
++                view.TextBuffer.Insert(view.TextBuffer.CurrentSnapshot.Length, Environment.NewLine);
++                text += Environment.NewLine;
++            }
++
++            RunClangFormatAndApplyReplacements(text, 0, text.Length, path, filePath, options, view);
++        }
++
++        private void RunClangFormatAndApplyReplacements(string text, int offset, int length, string path, string filePath, OptionPageGrid options, IWpfTextView view)
++        {
+             try
+             {
+-                var root = XElement.Parse(RunClangFormat(text, start, length, path, filePath));
+-                var edit = view.TextBuffer.CreateEdit();
+-                foreach (XElement replacement in root.Descendants("replacement"))
+-                {
+-                    var span = new Span(
+-                        int.Parse(replacement.Attribute("offset").Value),
+-                        int.Parse(replacement.Attribute("length").Value));
+-                    edit.Replace(span, replacement.Value);
+-                }
+-                edit.Apply();
++                string replacements = RunClangFormat(text, offset, length, path, filePath, options);
++                ApplyClangFormatReplacements(replacements, view);
+             }
+             catch (Exception e)
+             {
+@@ -238,7 +366,7 @@ namespace LLVM.ClangFormat
+         /// 
+         /// Formats the text range starting at offset of the given length.
+         /// </summary>
+-        private string RunClangFormat(string text, int offset, int length, string path, string filePath)
++        private static string RunClangFormat(string text, int offset, int length, string path, string filePath, OptionPageGrid options)
+         {
+             string vsixPath = Path.GetDirectoryName(
+                 typeof(ClangFormatPackage).Assembly.Location);
+@@ -248,16 +376,16 @@ namespace LLVM.ClangFormat
+             process.StartInfo.FileName = vsixPath + "\\clang-format.exe";
+             // Poor man's escaping - this will not work when quotes are already escaped
+             // in the input (but we don't need more).
+-            string style = GetStyle().Replace("\"", "\\\"");
+-            string fallbackStyle = GetFallbackStyle().Replace("\"", "\\\"");
++            string style = options.Style.Replace("\"", "\\\"");
++            string fallbackStyle = options.FallbackStyle.Replace("\"", "\\\"");
+             process.StartInfo.Arguments = " -offset " + offset +
+                                           " -length " + length +
+                                           " -output-replacements-xml " +
+                                           " -style \"" + style + "\"" +
+                                           " -fallback-style \"" + fallbackStyle + "\"";
+-            if (GetSortIncludes())
++            if (options.SortIncludes)
+               process.StartInfo.Arguments += " -sort-includes ";
+-            string assumeFilename = GetAssumeFilename();
++            string assumeFilename = options.AssumeFilename;
+             if (string.IsNullOrEmpty(assumeFilename))
+                 assumeFilename = filePath;
+             if (!string.IsNullOrEmpty(assumeFilename))
+@@ -305,68 +433,24 @@ namespace LLVM.ClangFormat
+         }
+ 
+         /// <summary>
+-        /// Returns the currently active view if it is a IWpfTextView.
++        /// Applies the clang-format replacements (xml) to the current view
+         /// </summary>
+-        private IWpfTextView GetCurrentView()
+-        {
+-            // The SVsTextManager is a service through which we can get the active view.
+-            var textManager = (IVsTextManager)Package.GetGlobalService(typeof(SVsTextManager));
+-            IVsTextView textView;
+-            textManager.GetActiveView(1, null, out textView);
+-
+-            // Now we have the active view as IVsTextView, but the text interfaces we need
+-            // are in the IWpfTextView.
+-            var userData = (IVsUserData)textView;
+-            if (userData == null)
+-                return null;
+-            Guid guidWpfViewHost = DefGuidList.guidIWpfTextViewHost;
+-            object host;
+-            userData.GetData(ref guidWpfViewHost, out host);
+-            return ((IWpfTextViewHost)host).TextView;
+-        }
+-
+-        private string GetStyle()
+-        {
+-            var page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+-            return page.Style;
+-        }
+-
+-        private string GetAssumeFilename()
+-        {
+-            var page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+-            return page.AssumeFilename;
+-        }
+-
+-        private string GetFallbackStyle()
++        private static void ApplyClangFormatReplacements(string replacements, IWpfTextView view)
+         {
+-            var page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+-            return page.FallbackStyle;
+-        }
+-
+-        private bool GetSortIncludes()
+-        {
+-            var page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+-            return page.SortIncludes;
+-        }
+-
+-        private string GetDocumentParent(IWpfTextView view)
+-        {
+-            ITextDocument document;
+-            if (view.TextBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document))
+-            {
+-                return Directory.GetParent(document.FilePath).ToString();
+-            }
+-            return null;
+-        }
++            // clang-format returns no replacements if input text is empty
++            if (replacements.Length == 0)
++                return;
+ 
+-        private string GetDocumentPath(IWpfTextView view)
+-        {
+-            ITextDocument document;
+-            if (view.TextBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document))
++            var root = XElement.Parse(replacements);
++            var edit = view.TextBuffer.CreateEdit();
++            foreach (XElement replacement in root.Descendants("replacement"))
+             {
+-                return document.FilePath;
++                var span = new Span(
++                    int.Parse(replacement.Attribute("offset").Value),
++                    int.Parse(replacement.Attribute("length").Value));
++                edit.Replace(span, replacement.Value);
+             }
+-            return null;
++            edit.Apply();
+         }
+     }
+ }
+diff --git a/tools/clang-format-vs/ClangFormat/PkgCmdID.cs b/tools/clang-format-vs/ClangFormat/PkgCmdID.cs
+index bb6b455..fcc31ee 100644
+--- a/tools/clang-format-vs/ClangFormat/PkgCmdID.cs
++++ b/tools/clang-format-vs/ClangFormat/PkgCmdID.cs
+@@ -2,6 +2,7 @@
+ {
+     static class PkgCmdIDList
+     {
+-        public const uint cmdidClangFormat = 0x100;
++        public const uint cmdidClangFormatSelection = 0x100;
++        public const uint cmdidClangFormatDocument = 0x101;
+     };
+ }
+\ No newline at end of file
 diff --git a/tools/clang-format-vs/ClangFormat/Resources.Designer.cs b/tools/clang-format-vs/ClangFormat/Resources.Designer.cs
 index a902517..e3129b3 100644
 --- a/tools/clang-format-vs/ClangFormat/Resources.Designer.cs
@@ -75,3 +734,381 @@ index a902517..e3129b3 100644
  //
  //     Changes to this file may cause incorrect behavior and will be lost if
  //     the code is regenerated.
+diff --git a/tools/clang-format-vs/ClangFormat/RunningDocTableEventsDispatcher.cs b/tools/clang-format-vs/ClangFormat/RunningDocTableEventsDispatcher.cs
+new file mode 100644
+index 0000000..163f68d
+--- /dev/null
++++ b/tools/clang-format-vs/ClangFormat/RunningDocTableEventsDispatcher.cs
+@@ -0,0 +1,79 @@
++﻿using EnvDTE;
++using Microsoft.VisualStudio;
++using Microsoft.VisualStudio.Shell;
++using Microsoft.VisualStudio.Shell.Interop;
++using System.Linq;
++    
++namespace LLVM.ClangFormat
++{
++    // Exposes event sources for IVsRunningDocTableEvents3 events.
++    internal sealed class RunningDocTableEventsDispatcher : IVsRunningDocTableEvents3
++    {
++        private RunningDocumentTable _runningDocumentTable;
++        private DTE _dte;
++
++        public delegate void OnBeforeSaveHander(object sender, Document document);
++        public event OnBeforeSaveHander BeforeSave;
++
++        public RunningDocTableEventsDispatcher(Package package)
++        {
++            _runningDocumentTable = new RunningDocumentTable(package);
++            _runningDocumentTable.Advise(this);
++            _dte = (DTE)Package.GetGlobalService(typeof(DTE));
++        }
++
++        public int OnAfterAttributeChange(uint docCookie, uint grfAttribs)
++        {
++            return VSConstants.S_OK;
++        }
++
++        public int OnAfterAttributeChangeEx(uint docCookie, uint grfAttribs, IVsHierarchy pHierOld, uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew)
++        {
++            return VSConstants.S_OK;
++        }
++
++        public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
++        {
++            return VSConstants.S_OK;
++        }
++
++        public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
++        {
++            return VSConstants.S_OK;
++        }
++
++        public int OnAfterSave(uint docCookie)
++        {
++            return VSConstants.S_OK;
++        }
++
++        public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
++        {
++            return VSConstants.S_OK;
++        }
++
++        public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
++        {
++            return VSConstants.S_OK;
++        }
++
++        public int OnBeforeSave(uint docCookie)
++        {
++            if (BeforeSave != null)
++            {
++                var document = FindDocumentByCookie(docCookie);
++                if (document != null) // Not sure why this happens sometimes
++                {
++                    BeforeSave(this, FindDocumentByCookie(docCookie));
++                }
++            }
++            return VSConstants.S_OK;
++        }
++
++        private Document FindDocumentByCookie(uint docCookie)
++        {
++            var documentInfo = _runningDocumentTable.GetDocumentInfo(docCookie);
++            return _dte.Documents.Cast<Document>().FirstOrDefault(doc => doc.FullName == documentInfo.Moniker);
++        }
++    }
++}
+diff --git a/tools/clang-format-vs/ClangFormat/Vsix.cs b/tools/clang-format-vs/ClangFormat/Vsix.cs
+new file mode 100644
+index 0000000..0d86cb5
+--- /dev/null
++++ b/tools/clang-format-vs/ClangFormat/Vsix.cs
+@@ -0,0 +1,96 @@
++﻿using EnvDTE;
++using Microsoft.VisualStudio.Editor;
++using Microsoft.VisualStudio.Shell;
++using Microsoft.VisualStudio.Shell.Interop;
++using Microsoft.VisualStudio.Text;
++using Microsoft.VisualStudio.Text.Editor;
++using Microsoft.VisualStudio.TextManager.Interop;
++using System;
++using System.IO;
++
++namespace LLVM.ClangFormat
++{
++    internal sealed class Vsix
++    {
++        /// <summary>
++        /// Returns the currently active view if it is a IWpfTextView.
++        /// </summary>
++        public static IWpfTextView GetCurrentView()
++        {
++            // The SVsTextManager is a service through which we can get the active view.
++            var textManager = (IVsTextManager)Package.GetGlobalService(typeof(SVsTextManager));
++            IVsTextView textView;
++            textManager.GetActiveView(1, null, out textView);
++
++            // Now we have the active view as IVsTextView, but the text interfaces we need
++            // are in the IWpfTextView.
++            return VsToWpfTextView(textView);
++        }
++
++        public static bool IsDocumentDirty(Document document)
++        {
++            var textView = GetDocumentView(document);
++            var textDocument = GetTextDocument(textView);
++            return textDocument?.IsDirty == true;
++        }
++
++        public static IWpfTextView GetDocumentView(Document document)
++        {
++            var textView = GetVsTextViewFrompPath(document.FullName);
++            return VsToWpfTextView(textView);
++        }
++
++        public static IWpfTextView VsToWpfTextView(IVsTextView textView)
++        {
++            var userData = (IVsUserData)textView;
++            if (userData == null)
++                return null;
++            Guid guidWpfViewHost = DefGuidList.guidIWpfTextViewHost;
++            object host;
++            userData.GetData(ref guidWpfViewHost, out host);
++            return ((IWpfTextViewHost)host).TextView;
++        }
++
++        public static IVsTextView GetVsTextViewFrompPath(string filePath)
++        {
++            // From http://stackoverflow.com/a/2427368/4039972
++            var dte2 = (EnvDTE80.DTE2)Package.GetGlobalService(typeof(SDTE));
++            var sp = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)dte2;
++            var serviceProvider = new Microsoft.VisualStudio.Shell.ServiceProvider(sp);
++
++            IVsUIHierarchy uiHierarchy;
++            uint itemID;
++            IVsWindowFrame windowFrame;
++            if (VsShellUtilities.IsDocumentOpen(serviceProvider, filePath, Guid.Empty,
++                out uiHierarchy, out itemID, out windowFrame))
++            {
++                // Get the IVsTextView from the windowFrame.
++                return VsShellUtilities.GetTextView(windowFrame);
++            }
++            return null;
++        }
++
++        public static ITextDocument GetTextDocument(IWpfTextView view)
++        {
++            ITextDocument document;
++            if (view != null && view.TextBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document))
++                return document;
++            return null;
++        }
++
++        public static string GetDocumentParent(IWpfTextView view)
++        {
++            ITextDocument document = GetTextDocument(view);
++            if (document != null)
++            {
++                return Directory.GetParent(document.FilePath).ToString();
++            }
++            return null;
++        }
++
++        public static string GetDocumentPath(IWpfTextView view)
++        {
++            return GetTextDocument(view)?.FilePath;
++        }
++    }
++}
+diff --git a/tools/clang-format-vs/ClangFormat/license.txt b/tools/clang-format-vs/ClangFormat/license.txt
+new file mode 100644
+index 0000000..9966c81
+--- /dev/null
++++ b/tools/clang-format-vs/ClangFormat/license.txt
+@@ -0,0 +1,39 @@
++====================
++LLVM Release License
++====================
++University of Illinois/NCSA
++Open Source License
++
++Copyright (c) 2007-2017 University of Illinois at Urbana-Champaign.
++All rights reserved.
++
++Developed by:
++
++    LLVM Team
++
++    University of Illinois at Urbana-Champaign
++
++    http://llvm.org
++
++Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal with the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimers.
++
++    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimers in the documentation and/or other materials provided with the distribution.
++
++    * Neither the names of the LLVM Team, University of Illinois at Urbana-Champaign, nor the names of its contributors may be used to endorse or promote products derived from this Software without specific prior written permission.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
++
++====================
++The LLVM software contains code written by third parties.  Such software will have its own individual LICENSE.TXT file in the directory in which it appears.  This file will describe the copyrights, license, and restrictions which apply
++to that code.
++
++The disclaimer of warranty in the University of Illinois Open Source License applies to all code in the LLVM Distribution, and nothing in any of the other licenses gives permission to use the names of the LLVM Team or the University of Illinois to endorse or promote products derived from this Software.
++
++The following pieces of software have additional or alternate copyrights, licenses, and/or restrictions:
++
++Program             Directory
++-------             ---------
++<none yet>
++
+diff --git a/tools/clang-format-vs/ClangFormat/packages.config b/tools/clang-format-vs/ClangFormat/packages.config
+new file mode 100644
+index 0000000..07dc281
+--- /dev/null
++++ b/tools/clang-format-vs/ClangFormat/packages.config
+@@ -0,0 +1,21 @@
++﻿<?xml version="1.0" encoding="utf-8"?>
++<packages>
++  <package id="VSSDK.CoreUtility" version="10.0.4" targetFramework="net40" />
++  <package id="VSSDK.CoreUtility.10" version="10.0.4" targetFramework="net40" />
++  <package id="VSSDK.Editor" version="10.0.4" targetFramework="net40" />
++  <package id="VSSDK.Editor.10" version="10.0.4" targetFramework="net40" />
++  <package id="VSSDK.IDE" version="7.0.4" targetFramework="net40" />
++  <package id="VSSDK.IDE.10" version="10.0.4" targetFramework="net40" />
++  <package id="VSSDK.IDE.8" version="8.0.4" targetFramework="net40" />
++  <package id="VSSDK.IDE.9" version="9.0.3" targetFramework="net40" />
++  <package id="VSSDK.OLE.Interop" version="7.0.4" targetFramework="net40" />
++  <package id="VSSDK.Shell.10" version="10.0.3" targetFramework="net40" />
++  <package id="VSSDK.Shell.Immutable.10" version="10.0.3" targetFramework="net40" />
++  <package id="VSSDK.Shell.Interop" version="7.0.4" targetFramework="net40" />
++  <package id="VSSDK.Shell.Interop.8" version="8.0.3" targetFramework="net40" />
++  <package id="VSSDK.Shell.Interop.9" version="9.0.3" targetFramework="net40" />
++  <package id="VSSDK.Text" version="10.0.4" targetFramework="net40" />
++  <package id="VSSDK.Text.10" version="10.0.4" targetFramework="net40" />
++  <package id="VSSDK.TextManager.Interop" version="7.0.4" targetFramework="net40" />
++  <package id="VSSDK.TextManager.Interop.8" version="8.0.4" targetFramework="net40" />
++</packages>
+\ No newline at end of file
+diff --git a/tools/clang-format-vs/README.txt b/tools/clang-format-vs/README.txt
+index b23355d..84e0b45 100644
+--- a/tools/clang-format-vs/README.txt
++++ b/tools/clang-format-vs/README.txt
+@@ -2,16 +2,50 @@ This directory contains a VSPackage project to generate a Visual Studio extensio
+ for clang-format.
+ 
+ Build prerequisites are:
+-- Visual Studio 2013 Professional
+-- Visual Studio 2013 SDK
+-- Visual Studio 2010 Professional (?)
+-- Visual Studio 2010 SDK (?)
++- Visual Studio 2015
++- Extensions SDK (you'll be prompted to install it if you open ClangFormat.sln)
+ 
+-The extension is built using CMake by setting BUILD_CLANG_FORMAT_VS_PLUGIN=ON
+-when configuring a Clang build, and building the clang_format_vsix target.
++The extension is built using CMake to generate the usual LLVM.sln by setting
++the following CMake vars:
++
++- BUILD_CLANG_FORMAT_VS_PLUGIN=ON
++
++- NUGET_EXE_PATH=path/to/nuget_dir (unless nuget.exe is already available in PATH)
++
++example:
++  cd /d C:\code\llvm
++  mkdir build & cd build
++  cmake -DBUILD_CLANG_FORMAT_VS_PLUGIN=ON -DNUGET_EXE_PATH=C:\nuget ..
++
++Once LLVM.sln is generated, build the clang_format_vsix target, which will build
++ClangFormat.sln, the C# extension application.
+ 
+ The CMake build will copy clang-format.exe and LICENSE.TXT into the ClangFormat/
+ directory so they can be bundled with the plug-in, as well as creating
+ ClangFormat/source.extension.vsixmanifest. Once the plug-in has been built with
+ CMake once, it can be built manually from the ClangFormat.sln solution in Visual
+ Studio.
++
++===========
++ Debugging
++===========
++
++Once you've built the clang_format_vsix project from LLVM.sln at least once,
++open ClangFormat.sln in Visual Studio, then:
++
++- Make sure the "Debug" target is selected
++- Open the ClangFormat project properties
++- Select the Debug tab
++- Set "Start external program:" to where your devenv.exe is installed. Typically
++  it's "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe"
++- Set "Command line arguments" to: /rootsuffix Exp
++- You can now set breakpoints if you like
++- Press F5 to build and run with debugger
++
++If all goes well, a new instance of Visual Studio will be launched in a special
++mode where it uses the experimental hive instead of the normal configuration hive.
++By default, when you build a VSIX project in Visual Studio, it auto-registers the
++extension in the experimental hive, allowing you to test it. In the new Visual Studio
++instance, open or create a C++ solution, and you should now see the Clang Format
++entries in the Tool menu. You can test it out, and any breakpoints you set will be
++hit where you can debug as usual.
+diff --git a/tools/clang-format-vs/source.extension.vsixmanifest.in b/tools/clang-format-vs/source.extension.vsixmanifest.in
+index 496fa40..cf7186f 100644
+--- a/tools/clang-format-vs/source.extension.vsixmanifest.in
++++ b/tools/clang-format-vs/source.extension.vsixmanifest.in
+@@ -1,36 +1,19 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Vsix Version="1.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
+-  <Identifier Id="20dbc914-1c7a-4992-b236-ef58b37850eb">
+-    <Name>ClangFormat</Name>
+-    <Author>LLVM</Author>
+-    <Version>@CLANG_FORMAT_VS_VERSION@</Version>
++<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
++  <Metadata>
++    <Identity Id="3cb18a5e-97e9-11e7-abc4-cec278b6b50a" Version="@CLANG_FORMAT_VS_VERSION@" Language="en-US" Publisher="LLVM"/>
++    <DisplayName>ClangFormat</DisplayName>
+     <Description xml:space="preserve">A tool to format C/C++/Obj-C code.</Description>
+-    <Locale>1033</Locale>
+-    <MoreInfoUrl>http://clang.llvm.org/docs/ClangFormat.html</MoreInfoUrl>
++    <MoreInfo>http://clang.llvm.org/docs/ClangFormat.html</MoreInfo>
+     <License>license.txt</License>
+-    <InstalledByMsi>false</InstalledByMsi>
+-    <SupportedProducts>
+-      <VisualStudio Version="10.0">
+-        <Edition>Pro</Edition>
+-      </VisualStudio>
+-      <VisualStudio Version="11.0">
+-        <Edition>Pro</Edition>
+-      </VisualStudio>
+-      <VisualStudio Version="12.0">
+-        <Edition>Pro</Edition>
+-      </VisualStudio>
+-      <VisualStudio Version="14.0">
+-        <Edition>Pro</Edition>
+-      </VisualStudio>
+-    </SupportedProducts>
+-    <SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="4.0" />
+-  </Identifier>
+-  <References>
+-        <Reference Id="Microsoft.VisualStudio.MPF" MinVersion="10.0">
+-            <Name>Visual Studio MPF</Name>
+-        </Reference>
+-  </References>
+-  <Content>
+-    <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>
+-  </Content>
+-</Vsix>
++  </Metadata>
++  <Installation InstalledByMsi="false">
++    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[11.0, 15.0]" />
++  </Installation>
++  <Dependencies>
++    <Dependency Id="Microsoft.VisualStudio.MPF" MinVersion="11.0" DisplayName="Visual Studio MPF" />
++  </Dependencies>
++  <Prerequisites>
++    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[11.0,)" DisplayName="Visual Studio core editor" />
++  </Prerequisites>
++</PackageManifest>
