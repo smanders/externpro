@@ -70,7 +70,7 @@ index d6b211f..46d742b 100644
  EndProject
  Global
 diff --git a/tools/clang-format-vs/ClangFormat/ClangFormat.csproj b/tools/clang-format-vs/ClangFormat/ClangFormat.csproj
-index a61e431..e5b7ec0 100644
+index a61e431..ab543c7 100644
 --- a/tools/clang-format-vs/ClangFormat/ClangFormat.csproj
 +++ b/tools/clang-format-vs/ClangFormat/ClangFormat.csproj
 @@ -14,7 +14,7 @@
@@ -270,7 +270,7 @@ index a61e431..e5b7ec0 100644
    <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" Condition="false" />
    <PropertyGroup>
 -    <PreBuildEvent>if not exist $(ProjectDir)Key.snk ("$(FrameworkSDKDir)Bin\NETFX 4.5.1 Tools\sn.exe" -k $(ProjectDir)Key.snk)</PreBuildEvent>
-+    <PreBuildEvent>if not exist $(ProjectDir)Key.snk ("$(FrameworkSDKDir)Bin\NETFX 4.6 Tools\sn.exe" -k $(ProjectDir)Key.snk)</PreBuildEvent>
++    <PreBuildEvent>if not exist $(ProjectDir)Key.snk ("$(FrameworkSDKDir)Bin\NETFX 4.6.1 Tools\sn.exe" -k $(ProjectDir)Key.snk)</PreBuildEvent>
    </PropertyGroup>
    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
         Other similar extension points exist, see Microsoft.Common.targets.
