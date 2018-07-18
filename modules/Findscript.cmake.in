@@ -84,7 +84,9 @@ find_path(@CMAKE_PROJECT_NAME@_DIR
     # build versions
     C:/src/@CMAKE_PROJECT_NAME@/_bld/@CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}
     ~/src/@CMAKE_PROJECT_NAME@/_bld/@CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}
-    # environment variable
+    # environment variable - build versions
+    "$ENV{@CMAKE_PROJECT_NAME@_BUILD_DIR}/@CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}"
+    # environment variable - installed versions
     "$ENV{extern_DIR}/@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG}"
     "$ENV{extern_DIR}/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${CMAKE_SYSTEM_NAME}"
     # installed versions
