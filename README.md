@@ -9,19 +9,19 @@ externpro supports options for [4 steps](https://github.com/smanders/externpro/b
 
 externpro makes heavy use of cmake's [ExternalProject](http://www.kitware.com/media/html/BuildingExternalProjectsWithCMake2.8.html) module
 
-##### mkpatch
+#### mkpatch
 
 for each project in the [projects directory](projects) the mkpatch step: clones a repository (if `GIT_ORIGIN` is defined), does a checkout of a specified branch or hash (specified with `GIT_TAG`), and creates a patch (the diff between `GIT_REF` and `GIT_TAG`) -- this is how the [patches directory](patches) is populated and updated
 
 this is typically a task done by a single maintainer - others developers who wish to use externpro aren't usually doing this step
 
-##### download
+#### download
 
 for each project in the [projects directory](projects) which implements a download_*project-name*() cmake function or defines `DLURL` and `DLMD5`, the download step: downloads and/or verifies the md5 of a compressed archive of a specified URL -- this is how the **_bldpkgs directory** is populated and updated
 
 executing this step produces a directory structure suitable for light transport - burn to media to take into a closed environment or disconnect from the internet and you'll still be able to execute the next steps
 
-##### patch
+#### patch
 
 for each project in the [projects directory](projects) which implements a patch_*project-name*() cmake function or has a compressed archive or a patch, the patch step: downloads the compressed archive (if it hasn't already been downloaded), verfies the md5, expands the compressed archive, and applies the patch (made by mkpatch, if one exists)
 
@@ -29,7 +29,9 @@ executing this step produces the source code in a patched state, suitable for de
 
 if a developer already has externpro installed (using the installer produced by the build step below), they can simply run the patch step (on an externpro revision that matches their installed revision) and are now able to debug and step into third party code
 
-##### build
+if you are debugging and stepping into third party code, please note the instructions for building debug version(s) of all or selected projects below (in the usage > debug section)
+
+#### build
 
 for each project in the [projects directory](projects) which implements a build_*project-name*() cmake function, the build step: executes the patch step then builds the project with the compiler (aka cmake generator) detected or specified at cmake-time of externpro
 
@@ -53,23 +55,23 @@ to build and use externpro from another project you can either create a *build v
 
 a build version is created by simply building externpro and an installed version involves building, making the package (aka installer), and installing
 
-one difference between a build version and an installed version is where the find script looks to find externpro - you can see the PATHS searched, in order, in the [find script](https://github.com/smanders/externpro/blob/16.06.1/modules/Findscript.cmake.in#L82-L93)
+one difference between a build version and an installed version is where the find script looks to find externpro - you can see the PATHS searched, in order, in the [find script](https://github.com/smanders/externpro/blob/18.04.1/modules/Findscript.cmake.in#L89-L100)
 
 if you always plan to use an installed version the path to the source and build directories doesn't matter -- only the path where it is installed matters, unless you use an environment variable (examine the find script for suitable install locations)
 
-NOTE: if your build directory (`_bld` below) is a subdirectory of the repo, you'll need to have git ignore the build directory or the staging directory will be marked with `dirtyrepo` from [this cmake](https://github.com/smanders/externpro/blob/16.06.1/modules/macpro.cmake#L254-L263) -- and since I'm not a fan of a .gitignore file committed to the repo, I recommend adding `_bld*/` to the `.git/info/exclude` file
+**NOTE**: if your build directory (`_bld` below) is a subdirectory of the repo, you'll need to have git ignore the build directory or the staging directory will be marked with `dirtyrepo` from [this cmake](https://github.com/smanders/externpro/blob/18.04.1/modules/macpro.cmake#L270-L279) -- and since I'm not a fan of a .gitignore file committed to the repo, I recommend adding `_bld*/` to the `.git/info/exclude` file
 
 because the find script looks for a build version of externpro in `C:/src` on Windows and `~/src/` on Unix, if you have any intention of using a build version directly from another project: perform the following commands in the appropriate `src` directory
 
 ```bash
 git clone git://github.com/smanders/externpro.git
 cd externpro
-git checkout <tag>               # where tag is, for example, 16.06.1
+git checkout <tag>               # where tag is, for example, 18.04.1
 git checkout -b dev origin/dev   # --or-- if you want the latest dev branch instead of a tagged version
 mkdir _bld
 cd _bld
 ```
-##### Windows
+#### windows
 choose the cmake generator you want all of the externpro projects to be built with (Visual Studio 2015, 64-bit in example below)
 ```bash
 cmake -G "Visual Studio 14 2015 Win64" ..
@@ -77,7 +79,7 @@ cmake -DXP_STEP=build .
 explorer externpro.sln
 ```
 build the solution for a build version of externpro or build the PACKAGE project for an installed version
-##### Unix
+#### unix
 you can also choose the cmake generator, usually the default is what you'll want (Unix Makefiles)
 ```bash
 cmake -DXP_STEP=build ..
@@ -85,3 +87,9 @@ make -j8
 make package
 ```
 the first `make` gives you a build version of externpro, and the additional `make package` for an installed version
+#### debug
+building Debug versions of projects that support Debug is not `ON` by default (see [option](https://github.com/smanders/externpro/blob/9d023a5263b27d434001eaca0c4b57c28ad66be3/modules/macpro.cmake#L75))
+
+to build Debug versions first turn `ON` the `XP_BUILD_DEBUG` cmake option (with ccmake on Unix platforms, or cmake-gui on Windows, or via commandline in the build directory: `cmake -DXP_BUILD_DEBUG=ON .`
+
+if you want to build Debug versions of *all* projects that support Debug, you must also turn `ON` the `XP_BUILD_DEBUG_ALL` cmake option, otherwise you can choose selected projects to build Debug (most easily chosen with ccmake or cmake-gui) by selecting the cmake option specific for the given project -- of the form `XP_PRO_${PRJ}_BUILD_DBG` where `${PRJ}` specifies the project (see [option](https://github.com/smanders/externpro/blob/9d023a5263b27d434001eaca0c4b57c28ad66be3/modules/xpfunmac.cmake#L21))
