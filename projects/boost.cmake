@@ -13,7 +13,7 @@ function(patch_boost)
     return()
   endif()
   if(XP_DEFAULT)
-    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER}) # edit this to set default version(s) to build
+    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER}) # edit this to set default version(s) to build
   else()
     if(XP_PRO_BOOST AND NOT (XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
       set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
