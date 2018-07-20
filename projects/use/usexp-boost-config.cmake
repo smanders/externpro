@@ -3,7 +3,7 @@ set(prj boost)
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
-set(XP_USE_LATEST_BOOST ON)
+set(XP_USE_LATEST_BOOST OFF)
 if(NOT DEFINED XP_USE_LATEST_BOOST)
   option(XP_USE_LATEST_BOOST "build with boost @BOOST_NEWVER@ instead of @BOOST_OLDVER@" OFF)
 endif()
