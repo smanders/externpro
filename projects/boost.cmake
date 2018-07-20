@@ -175,38 +175,6 @@ function(build_boostlibs)
   if(DEFINED bl_TARGETS)
     set(${bl_PRO}_DEPENDS ${${bl_TARGETS}})
   endif()
-  if(MSVC)
-    # Boost.Python build
-    # The python-config.jam installed by the boost.build target above, as of 1_49_0,
-    # (in xpbase/share/boost-build/tools/python-config.jam) looks for R 2.4 2.3 2.2
-    # As of this writing, python 2.7.5 is the latest on MSW, so we use cmake to find it.
-    find_package(PythonInterp)
-    find_package(PythonLibs)
-    if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
-      if(XP_BUILD_VERBOSE)
-        message(STATUS "PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
-        message(STATUS "PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
-        message(STATUS "PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
-        message(STATUS "PYTHON_LIBRARIES: ${PYTHON_LIBRARIES}")
-      endif()
-      get_property(base_DIR DIRECTORY PROPERTY "EP_BASE")
-      set(boostbld_DIR ${base_DIR}/bld.${bl_PRO})
-      get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARIES} PATH)
-      file(WRITE ${boostbld_DIR}/python-config.jam
-        "using python\n"
-        "  : ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}\n"
-        "  : ${PYTHON_EXECUTABLE}\n"
-        "  : ${PYTHON_INCLUDE_DIRS}\n"
-        "  : ${PYTHON_LIB_DIR}\n"
-        "  : <python-debugging>off ;\n"
-        )
-      set(boost_FLAGS "--user-config=${boostbld_DIR}/python-config.jam")
-    else()
-      set(boost_FLAGS "--without-python")
-    endif()
-  else()
-    set(boost_FLAGS)
-  endif()
   if(XP_BUILD_DEBUG_ALL AND XP_BUILD_RELEASE)
     set(boost_VARIANT "debug,release")
   elseif(XP_PRO_BOOST_BUILD_DBG AND XP_BUILD_RELEASE)
@@ -266,7 +234,9 @@ function(build_boostlibs)
     address-model=${BUILD_PLATFORM} variant=${boost_VARIANT}
     runtime-link=${boost_RUNTIME_LINK} toolset=${boost_TOOLSET} ${boost_FLAGS}
     )
-  list(APPEND boost_BUILD --without-locale --without-mpi)
+  foreach(lib locale mpi python) # libraries with build issues
+    list(APPEND boost_BUILD --without-${lib})
+  endforeach()
   # TRICKY: need zlib, bzip2 include directories at cmake-time (before they're built)
   # so can't use xpGetPkgVar, xpFindPkg, etc - this complicates having multiple versions
   # of zlib and bzip2 (boost will have to choose a version here)
