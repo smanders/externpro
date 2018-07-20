@@ -4,7 +4,7 @@
 # *   sudo yum install python-devel.x86_64 [rhel6]
 xpProOption(boost DBG)
 set(BOOST_OLDVER 1.63.0)
-set(BOOST_NEWVER 1.63.0)
+set(BOOST_NEWVER 1.67.0)
 ####################
 function(patch_boost)
   string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
@@ -13,7 +13,7 @@ function(patch_boost)
     return()
   endif()
   if(XP_DEFAULT)
-    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_NEWVER}) # edit this to set default version(s) to build
+    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER}) # edit this to set default version(s) to build
   else()
     if(XP_PRO_BOOST AND NOT (XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
       set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
@@ -222,11 +222,9 @@ function(build_boostlibs)
       xpStringRemoveIfExists(CMAKE_EXE_LINKER_FLAGS "-arch x86_64")
     endif()
     stringToList("${CMAKE_CXX_FLAGS}" cxxflags)
-    list(APPEND boost_FLAGS "${cxxflags}")
     stringToList("${CMAKE_C_FLAGS}" cflags)
-    list(APPEND boost_FLAGS "${cflags}")
     stringToList("${CMAKE_EXE_LINKER_FLAGS}" linkflags)
-    list(APPEND boost_FLAGS "${linkflags}")
+    set(boost_FLAGS "${cxxflags}" "${cflags}" "${linkflags}")
     set(boost_RUNTIME_LINK static)
   endif()
   set(boost_BUILD ${bl_B2PATH}
@@ -235,7 +233,15 @@ function(build_boostlibs)
     runtime-link=${boost_RUNTIME_LINK} toolset=${boost_TOOLSET} ${boost_FLAGS}
     )
   # libraries with build issues
-  foreach(lib locale math mpi python)
+  set(exclude_libs locale math mpi python)
+  # libraries excluded until there's an argument to use them
+  list(APPEND exclude_libs context coroutine fiber graph_parallel math serialization type_erasure wave)
+  if(ver EQUAL BOOST_OLDVER) # libs specific to old version
+    list(APPEND exclude_libs coroutine2)
+  elseif(ver EQUAL BOOST_NEWVER) # libs introduced in new version
+    list(APPEND exclude_libs contract stacktrace)
+  endif()
+  foreach(lib ${exclude_libs})
     list(APPEND boost_BUILD --without-${lib})
   endforeach()
   # TRICKY: need zlib, bzip2 include directories at cmake-time (before they're built)

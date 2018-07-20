@@ -15,49 +15,35 @@ endif()
 set(BOOST_VERSION "${BOOST_VER} [@PROJECT_NAME@]")
 if(NOT DEFINED Boost_LIBS)
   set(Boost_LIBS # dependency order
-    log_setup # depends on log, regex, filesystem, thread, system (m, pthread)
+    log_setup  # ldd:log,regex
+    log        # ldd/cmake:filesystem,thread cmake:log_setup,regex
     ######
-    coroutine # depends on thread, context (m)
-    log # depends on filesystem, thread, system (rt, pthread, m)
-    timer # depends on chrono (m)
-    #type_erasure # depends on thread, system (pthread, m) NEW with @BOOST_NEWVER@
-    #wave # depends on thread, system (pthread, m) # NOTE: not a default
+    thread     # ldd/cmake:system cmake:atomic,chrono,date_time
+    timer      # ldd/cmake:chrono
     ######
-    chrono # depends on system (rt, pthread, m)
-    #fiber # depends on context (pthread, m) NEW with @BOOST_NEWVER@
-    filesystem # depends on system (pthread, m)
-    graph # depends on regex (m)
-    random # depends on system (pthread, m)
-    thread # depends on system (rt, pthread, m)
-    wserialization # depends on serialization (m)
+    chrono     # ldd/cmake:system
+    filesystem # ldd/cmake:system
+    graph      # ldd:regex
+    iostreams  # cmake:regex
+    random     # ldd/cmake:system
     ######
     atomic
-    container # depends on (pthread, m)
-    context # depends on (pthread, m)
-    date_time # depends on (pthread, m)
+    container
+    date_time
     exception
-    iostreams # depends on (z, bz2, pthread, m)
-    #math_c99 # depends on (pthread, m) # NOTE: not a default
-    #math_c99f # depends on (pthread, m) # NOTE: not a default
-    #math_c99l # depends on (pthread, m) # NOTE: not a default
-    #math_tr1 # depends on (pthread, m) # NOTE: not a default
-    #math_tr1f # depends on (pthread, m) # NOTE: not a default
-    #math_tr1l # depends on (pthread, m) # NOTE: not a default
-    #prg_exec_monitor # depends on (pthread, m) # NOTE: not a default
-    program_options # depends on (pthread, m)
-    python # depends on (pthread, m)
-    regex # depends on (pthread, m)
-    serialization # depends on (pthread, m)
-    signals # depends on (pthread, m)
-    system # depends on (pthread, m)
-    test_exec_monitor
-    unit_test_framework # depends on (pthread, m)
+    prg_exec_monitor program_options
+    regex
+    signals
+    system
+    test_exec_monitor unit_test_framework
     )
   # NOTE: determined boost library dependency order by building boost on linux
   # with link=shared and runtime-link=shared and using ldd
+  # cmake dependencies by examining cmake's Modules/FindBoost.cmake
 endif()
 list(FIND Boost_LIBS iostreams idx)
 if(NOT ${idx} EQUAL -1)
+  # iostreams depends on zlib bzip2
   xpGetPkgVar(zlib LIBRARIES) # sets ZLIB_LIBRARIES
   xpGetPkgVar(bzip2 LIBRARIES) # sets BZIP2_LIBRARIES
 endif()
