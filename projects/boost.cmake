@@ -234,7 +234,8 @@ function(build_boostlibs)
     address-model=${BUILD_PLATFORM} variant=${boost_VARIANT}
     runtime-link=${boost_RUNTIME_LINK} toolset=${boost_TOOLSET} ${boost_FLAGS}
     )
-  foreach(lib locale mpi python) # libraries with build issues
+  # libraries with build issues
+  foreach(lib locale math mpi python)
     list(APPEND boost_BUILD --without-${lib})
   endforeach()
   # TRICKY: need zlib, bzip2 include directories at cmake-time (before they're built)
@@ -253,9 +254,6 @@ function(build_boostlibs)
     # not including the file extension, or the "lib" prefix on UNIX
     list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic_${zlibVer}${CMAKE_RELEASE_POSTFIX})
     list(APPEND boost_BUILD -s BZIP2_BINARY=bz2_${bzip2Ver}${CMAKE_RELEASE_POSTFIX})
-  endif()
-  if(${CMAKE_SYSTEM_NAME} STREQUAL Linux AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    list(APPEND boost_BUILD --without-math)
   endif()
   set(boost_INSTALL install --libdir=${STAGE_DIR}/lib --includedir=${STAGE_DIR}/include)
   addproject_boost(${bl_PRO}_bld)
