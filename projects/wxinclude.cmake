@@ -41,7 +41,7 @@ function(build_wxinclude)
     @ONLY NEWLINE_STYLE LF
     )
   set(BUILD_CONFIGS Release) # we only need a release executable
-  xpCmakeBuild(wxinclude "${boostTgts}" "-DXP_USE_LATEST_BOOST=ON" wxincludeTargets)
+  xpCmakeBuild(wxinclude "${boostTgts}" "-DXP_USE_LATEST_BOOST=OFF" wxincludeTargets)
   if(DEFINED wxinc_TARGETS)
     xpListAppendIfDne(${wxinc_TARGETS} "${wxincludeTargets}")
     set(${wxinc_TARGETS} "${${wxinc_TARGETS}}" PARENT_SCOPE)
