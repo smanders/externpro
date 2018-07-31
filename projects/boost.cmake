@@ -1,7 +1,4 @@
 # boost
-# * to build boost.python on Linux: need to install python dev pkgs
-# *   sudo apt install python-dev [ubuntu]
-# *   sudo yum install python-devel.x86_64 [rhel6]
 xpProOption(boost DBG)
 set(BOOST_OLDVER 1.63.0)
 set(BOOST_NEWVER 1.67.0)
