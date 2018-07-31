@@ -1,6 +1,6 @@
 # cmakexp
 xpProOption(cmakexp)
-set(VER 3.9.6)
+set(VER 3.12.0)
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1.\\2" VER2 ${VER})
 set(REPO https://github.com/smanders/CMake)
 set(PRO_CMAKEXP
@@ -15,7 +15,7 @@ set(PRO_CMAKEXP
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://www.cmake.org/files/v${VER2}/cmake-${VER}.tar.gz
-  DLMD5 084b1c8b2efc1c1ba432dea37243c0ae
+  DLMD5 ab4aa7df9301c94cdd6f8ee4fe66458b
   PATCH ${PATCH_DIR}/cmakexp.patch
   DIFF ${REPO}/compare/Kitware:
   )
@@ -40,8 +40,6 @@ function(build_cmakexp)
   if(XP_BUILD_CCMAKE)
     # check if Curses is installed so we can build ccmake
     find_package(Curses QUIET)
-    # TRICKY: this should be marked as advanced by FindCurses.cmake, but isn't from v3.6.2 to 3.9.6
-    mark_as_advanced(CURSES_FORM_LIBRARY)
     if(NOT CURSES_FOUND)
       message(FATAL_ERROR "\n"
         "curses not found -- ccmake can't be built. install on linux:\n"
