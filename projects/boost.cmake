@@ -10,10 +10,18 @@ function(patch_boost)
     return()
   endif()
   if(XP_DEFAULT)
-    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER}) # edit this to set default version(s) to build
+    if(MSVC AND MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
+      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_NEWVER}) # edit this to set default version(s) to build
+    else()
+      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER}) # edit this to set default version(s) to build
+    endif()
   else()
     if(XP_PRO_BOOST AND NOT (XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
-      set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
+      if(MSVC AND MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
+        set(XP_PRO_BOOST${ov} OFF CACHE BOOL "include boost${ov}" FORCE)
+      else()
+        set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
+      endif()
       set(XP_PRO_BOOST${nv} ON CACHE BOOL "include boost${nv}" FORCE)
     endif()
     if(XP_PRO_BOOST${ov})
