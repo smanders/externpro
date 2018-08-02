@@ -136,22 +136,16 @@ function(build_wxv)
     endforeach()
     list(GET BUILD_CONFIGS 0 config)
   endif()
-  # stage_hdrs is a one-time thing, so copy headers from one of the wx build
-  # targets, but depend on all of them so this will always happen last
-  # (and wxx can depend on this)
   ExternalProject_Get_Property(wx${wx_VER} SOURCE_DIR)
   ExternalProject_Get_Property(wx${wx_VER}_${config} BINARY_DIR)
-  ExternalProject_Get_Property(wx${wx_VER}_${config} INSTALL_DIR)
   set(wxSOURCE_DIR ${SOURCE_DIR})
   set(wxBINARY_DIR ${BINARY_DIR})
-  set(wxINSTALL_DIR ${INSTALL_DIR})
   set(wxWINUNDEF ${wxSOURCE_DIR}/include/wx/msw/winundef.h)
+  set(TIFF_HDRS "src/tiff/libtiff/*.h")
   if(${wx_VER} EQUAL 31)
     set(wxSTAGE_DIR ${STAGE_DIR}/include/wx-3.1)
-    set(TIFF_HDRS "src/tiff/libtiff/*.h")
   elseif(${wx_VER} EQUAL 30)
     set(wxSTAGE_DIR ${STAGE_DIR}/include/wx-3.0)
-    set(TIFF_HDRS "src/tiff/libtiff/*.h")
   else()
     message(FATAL_ERROR "wx.cmake: wx version ${wx_VER} support lacking")
   endif()
@@ -159,14 +153,14 @@ function(build_wxv)
     ExternalProject_Add(wx${wx_VER}_stage_hdrs DEPENDS ${wx${wx_VER}targets}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
       SOURCE_DIR ${wxSOURCE_DIR}  INSTALL_DIR ${wxSTAGE_DIR}
-      PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${wxINSTALL_DIR}/include/ ${STAGE_DIR}/include/
+      PATCH_COMMAND ""
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${wxWINUNDEF}
         -Ddst:STRING=<INSTALL_DIR>/externpro/
         -P ${MODULES_DIR}/cmscopyfiles.cmake
       BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${wxSOURCE_DIR}/${TIFF_HDRS}
         -Ddst:STRING=<INSTALL_DIR>/wx/tiff/
         -P ${MODULES_DIR}/cmscopyfiles.cmake
+      # TRICKY: copy tiffconf.h from BINARY_DIR on Linux
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${wxBINARY_DIR}/${TIFF_HDRS}
         -Ddst:STRING=<INSTALL_DIR>/wx/tiff/
         -P ${MODULES_DIR}/cmscopyfiles.cmake
@@ -206,6 +200,10 @@ macro(addproject_wx basename cfg)
     ExternalProject_Add_Step(${XP_TARGET} postinstall_${XP_TARGET}
       COMMAND ${CMAKE_COMMAND} -E copy_directory
         <INSTALL_DIR>/lib ${STAGE_DIR}/lib
+      # NOTE: copying the include directory here would be duplicated
+      # if we ever again build more BUILD_CONFIGS than just Release
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+        <INSTALL_DIR>/include ${STAGE_DIR}/include
       DEPENDEES install
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
