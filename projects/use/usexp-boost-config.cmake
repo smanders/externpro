@@ -33,11 +33,13 @@ if(NOT DEFINED Boost_LIBS)
     container
     date_time
     exception
-    prg_exec_monitor program_options
+    #prg_exec_monitor # excluded because of link errors
+    program_options
     regex
     signals
     system
-    test_exec_monitor unit_test_framework
+    test_exec_monitor
+    unit_test_framework
     )
   # NOTE: determined boost library dependency order by building boost on linux
   # with link=shared and runtime-link=shared and using ldd
