@@ -259,10 +259,10 @@ index 0000000..27d6af3
 +set_wxtarget_properties(${lib_name})
 diff --git a/base.cmake b/base.cmake
 new file mode 100644
-index 0000000..ecc4895
+index 0000000..d07a6ef
 --- /dev/null
 +++ b/base.cmake
-@@ -0,0 +1,367 @@
+@@ -0,0 +1,368 @@
 +set(lib_name base)
 +#######################################
 +# library sources
@@ -622,7 +622,8 @@ index 0000000..ecc4895
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+target_compile_definitions(${lib_name} PUBLIC WXBUILDING __WXMSW__ UNICODE _UNICODE
++target_compile_definitions(${lib_name} PUBLIC $<BUILD_INTERFACE:WXBUILDING> $<BUILD_INTERFACE:__WXMSW__>
++  $<BUILD_INTERFACE:UNICODE> $<BUILD_INTERFACE:_UNICODE>
 +  PRIVATE wxUSE_GUI=0 wxUSE_BASE=1
 +  )
 +target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${wxroot}/include>
