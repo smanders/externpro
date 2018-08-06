@@ -240,7 +240,7 @@ function(build_boostlibs)
   # libraries with build issues
   set(exclude_libs locale math mpi python)
   # libraries excluded until there's an argument to use them
-  list(APPEND exclude_libs context coroutine fiber graph_parallel math serialization type_erasure wave)
+  list(APPEND exclude_libs context coroutine fiber graph_parallel math type_erasure wave)
   if(ver EQUAL BOOST_OLDVER) # libs specific to old version
     list(APPEND exclude_libs coroutine2)
   elseif(ver EQUAL BOOST_NEWVER) # libs introduced in new version

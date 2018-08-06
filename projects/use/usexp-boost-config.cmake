@@ -28,6 +28,7 @@ if(NOT DEFINED Boost_LIBS)
     graph      # ldd:regex
     iostreams  # cmake:regex
     random     # ldd/cmake:system
+    wserialization # ldd/cmake:serialization
     ######
     atomic
     container
@@ -36,6 +37,7 @@ if(NOT DEFINED Boost_LIBS)
     #prg_exec_monitor # excluded because of link errors
     program_options
     regex
+    serialization
     signals
     system
     test_exec_monitor
