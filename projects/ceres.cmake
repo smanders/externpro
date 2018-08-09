@@ -49,6 +49,8 @@ function(build_ceres)
     )
   if(MSVC)
     list(APPEND XP_CONFIGURE -DMSVC_USE_STATIC_CRT:BOOL=OFF)
+  elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    list(APPEND XP_CONFIGURE -DLIB_SUFFIX:STRING=) # install to lib, not lib64
   endif()
   configure_file(${PRO_DIR}/use/usexp-ceres-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
