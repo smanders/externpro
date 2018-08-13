@@ -61,8 +61,8 @@ foreach(lib ${Boost_LIBS})
   unset(Boost_${UPPERLIB}_LIBRARY_RELEASE CACHE)
 endforeach()
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1.\\2" BOOST_VER2 ${BOOST_VER})
-set(Boost_ADDITIONAL_VERSIONS ${BOOST_VER} ${BOOST_VER2})
 if(UNIX)
+  set(Boost_ADDITIONAL_VERSIONS ${BOOST_VER} ${BOOST_VER2})
   if(DEFINED ZLIB_LIBRARIES AND DEFINED BZIP2_LIBRARIES)
     set(syslibs $<TARGET_FILE:${ZLIB_LIBRARIES}> $<TARGET_FILE:${BZIP2_LIBRARIES}>)
   endif()
@@ -92,6 +92,23 @@ if(UNIX)
     include(${CMAKE_CURRENT_LIST_DIR}/xpfunmac.cmake)
     xpGetCompilerPrefix(Boost_COMPILER GCC_TWO_VER)
     set(Boost_COMPILER "-${Boost_COMPILER}")
+  endif()
+  # TODO: remove the following once CMAKE_CXX_COMPILER_ARCHITECTURE_ID is defined for all supported compilers
+  #   https://gitlab.kitware.com/cmake/cmake/issues/17702
+  # boost versions >= 1.66.0 add an additional modifier to the library name and some compilers don't set the
+  # cmake variable used in FindBoost.cmake that's used to set _boost_ARCHITECTURE_TAG
+  #   https://gitlab.kitware.com/cmake/cmake/issues/17701
+  if(BOOST_VER VERSION_GREATER_EQUAL "1.66.0" AND "x${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}" STREQUAL "x")
+    execute_process(COMMAND uname --machine
+      OUTPUT_VARIABLE unameMachine
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_VARIABLE unameErr
+      )
+    if(DEFINED unameMachine AND NOT unameErr)
+      if(unameMachine STREQUAL x86_64)
+        set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID x64)
+      endif()
+    endif()
   endif()
   find_package(Boost ${BOOST_VER} REQUIRED COMPONENTS ${Boost_LIBS})
   set(${PRJ}_FOUND ${Boost_FOUND})
