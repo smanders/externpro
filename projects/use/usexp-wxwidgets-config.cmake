@@ -89,16 +89,29 @@ if(UNIX)
     OUTPUT_VARIABLE wxbasename OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
     )
   if(wxbasename MATCHES wx_gtk)
-    find_package(PkgConfig)
-    pkg_check_modules(GTK REQUIRED gtk+-@GTK_VER@.0)
-    if(GTK_FOUND)
-      list(APPEND ${PRJ}_INCLUDE_DIR ${GTK_INCLUDE_DIRS})
-      set(_wx_core_libs ${GTK_LIBRARIES})
+    if(@GTK_VER@ EQUAL 2)
+      # NOTE: previously used pkg-config to find GTK2 and GTK3...
+      # but hit an issue building externpro on CentOS 6 and using that build of
+      # externpro for another project building on CentOS 7: pkg-config with GTK2
+      # didn't return gthread-2.0 and resulted in a link error
+      # libwx_gtk2u_core-3.1.a(corelib_gtk_app.o): undefined reference to symbol 'g_thread_init'
+      # //lib64/libgthread-2.0.so.0: error adding symbols: DSO missing from command line
+      find_package(GTK2 REQUIRED)
+      if(GTK2_FOUND)
+        list(APPEND ${PRJ}_INCLUDE_DIR ${GTK2_INCLUDE_DIRS})
+        set(_wx_core_libs ${GTK2_TARGETS})
+      endif()
+    else()
+      find_package(PkgConfig)
+      pkg_check_modules(GTK REQUIRED gtk+-@GTK_VER@.0)
+      if(GTK_FOUND)
+        list(APPEND ${PRJ}_INCLUDE_DIR ${GTK_INCLUDE_DIRS})
+        set(_wx_core_libs ${GTK_LIBRARIES})
+      endif()
     endif()
     checkLibraryConcat(X11 XGetWindowAttributes _wx_core_libs)
     checkLibraryConcat(Xxf86vm XF86VidModeGetAllModeLines _wx_core_libs)
     checkLibraryConcat(SM SmcOpenConnection _wx_core_libs)
-    # -lgthread-2.0 # TODO: determine if needed and detect appropriately
   endif()
   set(_wx_adv_deps core)
   set(_wx_aui_deps adv html)
