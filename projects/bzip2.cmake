@@ -4,8 +4,8 @@ set(VER 1.0.6)
 set(REPO https://github.com/smanders/bzip2)
 set(PRO_BZIP2
   NAME bzip2
-  WEB "bzip2" http://www.bzip.org/ "bzip2 website"
-  LICENSE "open" http://www.bzip.org/index.html "bzip2 BSD-style license"
+  WEB "bzip2" https://en.wikipedia.org/wiki/Bzip2 "bzip2 on wikipedia"
+  LICENSE "open" https://spdx.org/licenses/bzip2-1.0.6.html "bzip2 BSD-style license"
   DESC "lossless block-sorting data compression library"
   REPO "repo" ${REPO} "forked bzip2 repo on github"
   VER ${VER}
@@ -13,8 +13,9 @@ set(PRO_BZIP2
   GIT_UPSTREAM git://github.com/LuaDist/bzip2.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL http://www.bzip.org/${VER}/bzip2-${VER}.tar.gz
-  DLMD5 00b516f4704d4a7cb50a1d97e6e8e15b
+  DLURL ${REPO}/archive/v${VER}.tar.gz
+  DLMD5 768128c6df06b779256cf93149e0cae7
+  DLNAME bzip2-v${VER}.tar.gz
   PATCH ${PATCH_DIR}/bzip2.patch
   DIFF ${REPO}/compare/
   )
