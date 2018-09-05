@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9.6)
+cmake_minimum_required(VERSION 3.12)
 project(externpro)
 include(modules/macpro.cmake)
 proInit()

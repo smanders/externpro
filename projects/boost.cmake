@@ -195,20 +195,8 @@ function(build_boostlibs)
       math(EXPR major ${MSVC_TOOLSET_VERSION}/10)
       math(EXPR minor ${MSVC_TOOLSET_VERSION}%10)
       set(boost_TOOLSET msvc-${major}.${minor})
-    elseif(MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
-      set(boost_TOOLSET msvc-14.1)
-    elseif(MSVC_VERSION EQUAL 1900) # VS 14.0 2015
-      set(boost_TOOLSET msvc-14.0)
-    elseif(MSVC_VERSION EQUAL 1800) # VS 12.0 2013
-      set(boost_TOOLSET msvc-12.0)
-    elseif(MSVC_VERSION EQUAL 1700) # VS 11.0 2012
-      set(boost_TOOLSET msvc-11.0)
-    elseif(MSVC_VERSION EQUAL 1600) # VS 10.0 2010
-      set(boost_TOOLSET msvc-10.0)
-    elseif(MSVC_VERSION EQUAL 1500) # VS 9.0 2008
-      set(boost_TOOLSET msvc-9.0)
     else()
-      message(FATAL_ERROR "boost.cmake: MSVC compiler support lacking")
+      message(FATAL_ERROR "boost.cmake: MSVC toolset version unknown")
     endif()
     if(XP_BUILD_STATIC)
       set(boost_RUNTIME_LINK static)
