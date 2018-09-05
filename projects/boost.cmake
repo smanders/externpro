@@ -191,7 +191,11 @@ function(build_boostlibs)
     set(boost_VARIANT "debug")
   endif()
   if(MSVC)
-    if(MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
+    if(DEFINED MSVC_TOOLSET_VERSION)
+      math(EXPR major ${MSVC_TOOLSET_VERSION}/10)
+      math(EXPR minor ${MSVC_TOOLSET_VERSION}%10)
+      set(boost_TOOLSET msvc-${major}.${minor})
+    elseif(MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
       set(boost_TOOLSET msvc-14.1)
     elseif(MSVC_VERSION EQUAL 1900) # VS 14.0 2015
       set(boost_TOOLSET msvc-14.0)

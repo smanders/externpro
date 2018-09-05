@@ -632,7 +632,9 @@ function(xpGetCompilerPrefix _ret)
   set(options GCC_TWO_VER)
   cmake_parse_arguments(X "${options}" "" "" ${ARGN})
   if(MSVC)
-    if(MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
+    if(DEFINED MSVC_TOOLSET_VERSION)
+      set(prefix vc${MSVC_TOOLSET_VERSION})
+    elseif(MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
       set(prefix vc141)
     elseif(MSVC_VERSION EQUAL 1900) # VS 14.0 2015
       set(prefix vc140)
