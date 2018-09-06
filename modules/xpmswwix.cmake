@@ -16,8 +16,19 @@ function(xpCpackWixMsm mergeModuleIds appendTo) # optional ARGV2
   else()
     set(base 4) # main.wxs.in
   endif()
-  set(PFX86 "ProgramFiles(x86)")
-  file(TO_CMAKE_PATH "$ENV{${PFX86}}/Common Files/Merge Modules" msmDir)
+  if(MSVC_VERSION GREATER 1900) # newer than Visual Studio 2015
+    # merge modules relocated with Visual Studio 2017
+    # https://github.com/smanders/externpro/issues/214
+    if(NOT DEFINED msmDir)
+      message(FATAL_ERROR "must define msmDir to a valid merge module directory")
+    endif()
+    if(NOT EXISTS ${msmDir} OR NOT IS_DIRECTORY ${msmDir}))
+      message(FATAL_ERROR "msmDir ('${msmDir}') does not exist or is not a directory")
+    endif()
+  else()
+    set(PFX86 "ProgramFiles(x86)")
+    file(TO_CMAKE_PATH "$ENV{${PFX86}}/Common Files/Merge Modules" msmDir)
+  endif()
   xpGetCompilerPrefix(compiler)
   string(TOUPPER ${compiler} COMPILER)
   if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
