@@ -1,6 +1,6 @@
 # boost
 xpProOption(boost DBG)
-set(BOOST_OLDVER 1.63.0)
+set(BOOST_OLDVER 1.67.0)
 set(BOOST_NEWVER 1.67.0)
 ####################
 function(patch_boost)
@@ -10,18 +10,10 @@ function(patch_boost)
     return()
   endif()
   if(XP_DEFAULT)
-    if(MSVC AND MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
-      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_NEWVER}) # edit this to set default version(s) to build
-    else()
-      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER}) # edit this to set default version(s) to build
-    endif()
+    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER}) # edit this to set default version(s) to build
   else()
     if(XP_PRO_BOOST AND NOT (XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
-      if(MSVC AND MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
-        set(XP_PRO_BOOST${ov} OFF CACHE BOOL "include boost${ov}" FORCE)
-      else()
-        set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
-      endif()
+      set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
       set(XP_PRO_BOOST${nv} ON CACHE BOOL "include boost${nv}" FORCE)
     endif()
     if(XP_PRO_BOOST${ov})
@@ -31,6 +23,7 @@ function(patch_boost)
       xpListAppendIfDne(BOOST_VERSIONS ${BOOST_NEWVER})
     endif()
   endif()
+  list(REMOVE_DUPLICATES BOOST_VERSIONS)
   foreach(ver ${BOOST_VERSIONS})
     string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ver2_ ${ver})
     xpPatchProject(${PRO_BOOST${ver2_}})
@@ -61,6 +54,12 @@ function(build_boost)
     ${zlibTgts}
     ${bzip2Tgts}
     )
+  list(LENGTH BOOST_VERSIONS NUM_VER)
+  if(NUM_VER EQUAL 1)
+    set(USE_SCRIPT_INSERT "set(XP_USE_LATEST_BOOST ON) # currently only one version supported")
+  else()
+    set(USE_SCRIPT_INSERT "#set(XP_USE_LATEST_BOOST ON) # currently multiple versions supported")
+  endif()
   configure_file(${PRO_DIR}/use/usexp-boost-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
