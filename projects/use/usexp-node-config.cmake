@@ -8,7 +8,7 @@ set(prj node)
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
-set(XP_USE_LATEST_NODE ON)
+@USE_SCRIPT_INSERT@
 if(NOT DEFINED XP_USE_LATEST_NODE)
   option(XP_USE_LATEST_NODE "build with node @NODE_NEWVER@ instead of @NODE_OLDVER@" OFF)
 endif()
