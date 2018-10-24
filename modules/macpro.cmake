@@ -272,7 +272,7 @@ macro(proSetStageDir) # NOTE: called by cmake-generated pro_build.cmake file
         ERROR_VARIABLE lsbErr
         )
       if(NOT lsbErr)
-        file(APPEND ${XP_INFOFILE} "${lsbDesc}\n")
+        file(APPEND ${XP_INFOFILE} "lsb_release ${lsbDesc}\n")
       endif()
     endif()
   endif()
