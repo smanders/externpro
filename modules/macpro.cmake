@@ -269,9 +269,9 @@ macro(proSetStageDir) # NOTE: called by cmake-generated pro_build.cmake file
       execute_process(COMMAND lsb_release --description
         OUTPUT_VARIABLE lsbDesc # LSB (Linux Standard Base)
         OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_VARIABLE lsbErr
+        ERROR_QUIET
         )
-      if(NOT lsbErr)
+      if(NOT lsbDesc STREQUAL "")
         file(APPEND ${XP_INFOFILE} "lsb_release ${lsbDesc}\n")
       endif()
     endif()

@@ -104,9 +104,9 @@ else()
   execute_process(COMMAND lsb_release --description
     OUTPUT_VARIABLE lsbDesc # LSB (Linux Standard Base)
     OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_VARIABLE lsbErr
+    ERROR_QUIET
     )
-  if(NOT lsbErr)
+  if(NOT lsbDesc STREQUAL "")
     set(infoFile ${@CMAKE_PROJECT_NAME@_DIR}/@CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}.txt)
     set(lsbString "^lsb_release Description:[ \t]+(.*)")
     file(STRINGS ${infoFile} LSB REGEX "${lsbString}")
