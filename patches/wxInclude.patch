@@ -20,7 +20,7 @@ index 0000000..bd825cd
 +  )
 +install(EXPORT ${prj}-targets DESTINATION bin/cmake)
 diff --git a/wxInclude.cpp b/wxInclude.cpp
-index c2109e3..85d7a00 100644
+index c2109e3..6cff95e 100644
 --- a/wxInclude.cpp
 +++ b/wxInclude.cpp
 @@ -1,5 +1,5 @@
@@ -48,10 +48,10 @@ index c2109e3..85d7a00 100644
 -  "    --output-file=myheader.h mydata2.bin myimage.png\n"
 +  "    --output-file=myheader.h mydata2.bin myimage.png\n\n" \
 +  "Recommended usage (at Space Dynamics Lab):\n" \
-+  "  wxInclude --const --appendtype --wxnone --output-file=foo.hrc foo.png\n"
++  "  wxInclude --const --appendtype --wxnone --respectcase --output-file=foo.hrc foo.png\n"
  
 -#define WXINCLUDE_VERSION "Version 1.0, compiled at " __DATE__ " " __TIME__
-+#define WXINCLUDE_VERSION "Version 1.1, compiled on " __DATE__ " at " __TIME__
++#define WXINCLUDE_VERSION "Version 1.2, compiled on " __DATE__ " at " __TIME__
  
  #define BUFFER_SIZE 4096
  
@@ -82,18 +82,21 @@ index c2109e3..85d7a00 100644
  {
    try
    {
-@@ -165,8 +171,8 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -164,9 +170,10 @@ int _tmain(int argc, _TCHAR* argv[])
+     desc.add_options()
        ( "help,h", "Show detailed help." )
        ( "options,p", "Show parameter information." )
-       ( "version,p", "Show version information." )
+-      ( "version,p", "Show version information." )
 -      ( "input-file,i", po::value<std::vector<std::string>>(), "Define file(s) for the convertion input." )
 -      ( "input-type,I", po::value<std::vector<std::string>>(), "Define file type(s) for automatic conversion of files in the working directory." )
++      ( "version,v", "Show version information." )
++      ( "quiet,q", "Quiet at runtime, not verbose." )
 +      ( "input-file,i", po::value<std::vector<std::string> >(), "Define file(s) for the convertion input." )
 +      ( "input-type,I", po::value<std::vector<std::string> >(), "Define file type(s) for automatic conversion of files in the working directory." )
        ( "output-file,o", po::value<std::string>(), "Define file for the convertion output." )
        ( "noheader,h", "Disable adding of header support defines." )
        ( "const,C", "Define array as const." )
-@@ -174,7 +180,6 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -174,7 +181,6 @@ int _tmain(int argc, _TCHAR* argv[])
        ( "wxnone,w", "Disable adding of wxWidgets support macro's." )
        ( "wxheader,W", po::value<std::string>()->default_value( "wx/wx.h" ), "Select the header that includes wxWidgets (precompiled header?)." )
        ( "appendtype,t", "Add the file type at the end of the identifier (myimage_png)." )
@@ -101,7 +104,7 @@ index c2109e3..85d7a00 100644
      ;
  
      po::positional_options_description posdesc;
-@@ -182,7 +187,8 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -182,10 +188,12 @@ int _tmain(int argc, _TCHAR* argv[])
  
      po::variables_map opt;
      po::store( po::command_line_parser( argc, argv ).options( desc ).positional( posdesc ).run(), opt );
@@ -110,8 +113,13 @@ index c2109e3..85d7a00 100644
 +    po::store( po::parse_config_file( ifs, desc ), opt );
      po::notify( opt );
  
-     std::cout << WXINCLUDE_INFO << std::endl;
-@@ -221,15 +227,12 @@ int _tmain(int argc, _TCHAR* argv[])
+-    std::cout << WXINCLUDE_INFO << std::endl;
++    if ( !opt.count( "quiet" ) )
++      std::cout << WXINCLUDE_INFO << std::endl;
+ 
+     /* Show options when requested */
+     if ( opt.count( "options" ) )
+@@ -221,20 +229,17 @@ int _tmain(int argc, _TCHAR* argv[])
          std::string headername( opt[ "output-file" ].as<std::string>() );
  
          fs::path outputpath( headername );
@@ -128,7 +136,14 @@ index c2109e3..85d7a00 100644
          if ( !output )
            throw std::runtime_error( "Failed to create output file!" );
  
-@@ -259,7 +262,7 @@ int _tmain(int argc, _TCHAR* argv[])
+-        /* Show status */
+-        std::cout << "Build  : file '" << outputpath.leaf() << "'..." << std::endl;
++        if ( !opt.count( "quiet" ) ) /* Show status */
++          std::cout << "Build  : file '" << outputpath.leaf() << "'..." << std::endl;
+ 
+         /* Get base name of file */
+         headername = fs::basename( outputpath );
+@@ -259,7 +264,7 @@ int _tmain(int argc, _TCHAR* argv[])
          /* Process input files based on provided list */
          if ( opt.count( "input-file" ) )
          {
@@ -137,7 +152,18 @@ index c2109e3..85d7a00 100644
  
            BOOST_FOREACH( std::string& file, files )
            {
-@@ -308,7 +311,7 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -271,8 +276,8 @@ int _tmain(int argc, _TCHAR* argv[])
+ 
+             if ( input.is_open() )
+             {
+-              /* Show status */
+-              std::cout << "Process: file '" << file << "'..." << std::endl;
++              if ( !opt.count( "quiet" ) ) /* Show status */
++                std::cout << "Process: file '" << file << "'..." << std::endl;
+ 
+               /* Remove extension */
+               boost::erase_last( file, fileext );
+@@ -308,7 +313,7 @@ int _tmain(int argc, _TCHAR* argv[])
          /* Process input files based on provided type */
          if ( opt.count( "input-type" ) )
          {
@@ -146,7 +172,7 @@ index c2109e3..85d7a00 100644
  
            for ( fs::directory_iterator dir_itr( fs::initial_path() ); dir_itr != fs::directory_iterator(); ++dir_itr )
            {
-@@ -332,7 +335,7 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -332,12 +337,12 @@ int _tmain(int argc, _TCHAR* argv[])
                    fs::ifstream input( dir_itr->path(), std::ios::in | std::ios::binary | std::ios::ate );
                    input.rdbuf()->pubsetbuf( inbuffer, BUFFER_SIZE );
  
@@ -155,3 +181,21 @@ index c2109e3..85d7a00 100644
  
                    if ( input.is_open() )
                    {
+-                    /* Show status */
+-                    std::cout << "Process: file '" << file << "'..." << std::endl;
++                    if ( !opt.count( "quiet" ) ) /* Show status */
++                      std::cout << "Process: file '" << file << "'..." << std::endl;
+ 
+                     /* Remove extension */
+                     boost::erase_last( file, fileext );
+@@ -378,8 +383,8 @@ int _tmain(int argc, _TCHAR* argv[])
+         output.seekp( 0, std::ios::beg );
+         output << data.str();
+ 
+-        /* Show status */
+-        std::cout << "Build  : " << timer.elapsed() << "s needed for conversion of " << list.size() << " files." << std::endl;
++        if ( !opt.count( "quiet" ) ) /* Show status */
++          std::cout << "Build  : " << timer.elapsed() << "s needed for conversion of " << list.size() << " files." << std::endl;
+       }
+       else
+       {
