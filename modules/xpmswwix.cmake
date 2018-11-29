@@ -22,7 +22,7 @@ function(xpCpackWixMsm mergeModuleIds appendTo) # optional ARGV2
     if(NOT DEFINED msmDir)
       message(FATAL_ERROR "must define msmDir to a valid merge module directory")
     endif()
-    if(NOT EXISTS ${msmDir} OR NOT IS_DIRECTORY ${msmDir}))
+    if(NOT EXISTS ${msmDir} OR NOT IS_DIRECTORY ${msmDir})
       message(FATAL_ERROR "msmDir ('${msmDir}') does not exist or is not a directory")
     endif()
   else()
