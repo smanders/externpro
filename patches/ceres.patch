@@ -64,6 +64,21 @@ index 02c72b5..e036d1e 100644
  endif ()
  
  # This "exports" for installation all targets which have been put into the
+diff --git a/cmake/AddCeresCXX11RequirementsToTarget.cmake b/cmake/AddCeresCXX11RequirementsToTarget.cmake
+index 107eb58..ca2ad64 100644
+--- a/cmake/AddCeresCXX11RequirementsToTarget.cmake
++++ b/cmake/AddCeresCXX11RequirementsToTarget.cmake
+@@ -67,8 +67,8 @@ function(add_ceres_cxx11_requirements_to_target)
+         # gracefully, e.g. if a client of Ceres requires C++14, but Ceres was
+         # compiled against C++11 then target_compile_options() may not work as
+         # expected.
+-        target_compile_features(
+-          ${TARGET} PUBLIC cxx_alignas cxx_alignof cxx_constexpr)
++        #target_compile_features(
++        #  ${TARGET} PUBLIC cxx_alignas cxx_alignof cxx_constexpr)
+       else()
+         # CMake version >= 2.8.12 && < 3.1 supports target_compile_options()
+         # but not target_compile_features(). For these intermediary versions,
 diff --git a/internal/ceres/CMakeLists.txt b/internal/ceres/CMakeLists.txt
 index cc43fec..5728e89 100644
 --- a/internal/ceres/CMakeLists.txt
