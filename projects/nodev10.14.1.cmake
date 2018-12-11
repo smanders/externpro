@@ -1,4 +1,4 @@
-set(VER 8.11.0)
+set(VER 10.14.1)
 xpProOption(nodev${VER})
 set(REPO https://github.com/nodejs/node)
 set(PRO_NODEV${VER}
@@ -11,5 +11,5 @@ set(PRO_NODEV${VER}
   GIT_ORIGIN git://github.com/nodejs/node.git
   GIT_TAG v${VER} # what to 'git checkout'
   DLURL http://nodejs.org/dist/v${VER}/node-v${VER}.tar.gz
-  DLMD5 1f8a099a3b2a1e26421fc8d78342028c
+  DLMD5 bf274daf1dadd05a81cd567ceb3413bf
   )

@@ -1,6 +1,6 @@
 # node
-set(NODE_OLDVER v8.11.0)
-set(NODE_NEWVER v8.12.0)
+set(NODE_OLDVER v8.12.0)
+set(NODE_NEWVER v10.14.1)
 ####################
 function(build_node)
   string(TOUPPER ${NODE_OLDVER} OV)
