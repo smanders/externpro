@@ -1,3 +1,16 @@
+diff --git a/doc/texi2pod.pl b/doc/texi2pod.pl
+index 6127dd8..1235f9c 100644
+--- a/doc/texi2pod.pl
++++ b/doc/texi2pod.pl
+@@ -384,7 +384,7 @@ sub postprocess
+     # @* is also impossible in .pod; we discard it and any newline that
+     # follows it.  Similarly, our macro @gol must be discarded.
+ 
+-    s/\@anchor{(?:[^\}]*)\}//g;
++    s/\@anchor\{(?:[^\}]*)\}//g;
+     s/\(?\@xref\{(?:[^\}]*)\}(?:[^.<]|(?:<[^<>]*>))*\.\)?//g;
+     s/\s+\(\@pxref\{(?:[^\}]*)\}\)//g;
+     s/;\s+\@pxref\{(?:[^\}]*)\}//g;
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
 index 575dae1..826dc71 100644
 --- a/libavcodec/avcodec.h
