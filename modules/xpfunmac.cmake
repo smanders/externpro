@@ -960,6 +960,7 @@ macro(xpSourceListAppend)
   file(GLOB miscFiles LIST_DIRECTORIES false
     ${_dir}/.git ${_dir}/.gitattributes ${_dir}/.gitmodules
     ${_dir}/*clang-format
+    ${_dir}/.crtoolrc
     ${_dir}/README.md
     ${_dir}/version.cmake
     )
