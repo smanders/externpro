@@ -66,3 +66,36 @@
 |wxx|[wxPlotCtrl](http://wxcode.sourceforge.net/showcomp.php?name=wxPlotCtrl 'wxplotctrl on sourceforge')|interactive xy data plotting widgets|2006.04.28|[repo](https://github.com/smanders/wxplotctrl 'wxplotctrl repo on github')|[diff](https://github.com/smanders/wxplotctrl/compare/v2006.04.28...xp2006.04.28 'patch/diff')|
 |wxx|[wxThings](http://wxcode.sourceforge.net/showcomp.php?name=wxThings 'wxthings on sourceforge')|a variety of data containers and controls|2006.04.28|[repo](https://github.com/smanders/wxthings 'wxthings repo on github')|[diff](https://github.com/smanders/wxthings/compare/v2006.04.28...xp2006.04.28 'patch/diff')|
 |wxx|[wxTLC](http://wxcode.sourceforge.net/components/treelistctrl/ 'wxTLC (treelistctrl) on sourceforge')|a multi column tree control|1208|[repo](https://github.com/smanders/wxTLC 'wxTLC repo on github')|[diff](https://github.com/smanders/wxTLC/compare/v1208...xp1208 'patch/diff')|
+
+
+## dependency graph
+
+![deps.dot graph](https://g.gravizo.com/source/depgraph_586d4df4fd20950a41f1f1cd7df75cbf?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+<details>
+<summary></summary>
+depgraph_586d4df4fd20950a41f1f1cd7df75cbf
+digraph GG {
+  node [fontsize=12];
+  boost [shape=diamond];
+  boost -> zlib;
+  boost -> bzip2;
+  bzip2 [shape=diamond];
+  cares [label="c-ares" shape=diamond];
+  curl [shape=diamond];
+  curl -> libssh2;
+  curl -> cares;
+  ffmpeg [shape=diamond];
+  ffmpeg -> openh264;
+  libgit2 [shape=diamond];
+  libgit2 -> libssh2;
+  libssh2 [shape=diamond];
+  libssh2 -> zlib;
+  libssh2 -> openssl;
+  openh264 [shape=diamond];
+  openssl [shape=diamond];
+  protobuf [shape=diamond];
+  protobuf -> zlib;
+  zlib [shape=diamond];
+}
+depgraph_586d4df4fd20950a41f1f1cd7df75cbf
+</details>
