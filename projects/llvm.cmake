@@ -9,6 +9,7 @@ set(PRO_LLVM
   LICENSE "open" http://llvm.org/svn/llvm-project/llvm/trunk/LICENSE.TXT "LLVM Release License"
   DESC "The LLVM Compiler Infrastructure"
   REPO "repo" ${REPO} "llvm repo on github"
+  GRAPH GRAPH_SHAPE box
   VER ${VER}
   GIT_ORIGIN git://github.com/llvm-mirror/llvm.git
   GIT_TAG ${LLVM_BRANCH}

@@ -7,6 +7,7 @@ set(PRO_CLANGTIDY
   WEB "clang-tidy" http://clang.llvm.org/extra/clang-tidy/ "Clang-Tidy documentation"
   LICENSE "open" "http://clang.llvm.org/features.html#license" "LLVM 'BSD' License"
   DESC "clang-based C++ 'linter' tool for diagnosing and fixing typical programming errors via static analysis"
+  GRAPH GRAPH_SHAPE box GRAPH_DEPS clangtoolsextra
   VER ${llvmVer}
   )
 ########################################

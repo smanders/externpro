@@ -70,32 +70,63 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_586d4df4fd20950a41f1f1cd7df75cbf?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_0e5f9e249e3a5de824069f5a4b81d579?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_586d4df4fd20950a41f1f1cd7df75cbf
+depgraph_0e5f9e249e3a5de824069f5a4b81d579
 digraph GG {
   node [fontsize=12];
+  activemqcpp [shape=diamond];
+  activemqcpp -> apr;
+  activemqcpp -> openssl;
+  apr [shape=diamond];
   boost [shape=diamond];
   boost -> zlib;
   boost -> bzip2;
   bzip2 [shape=diamond];
   cares [label="c-ares" shape=diamond];
+  ceres [shape=diamond];
+  ceres -> eigen;
+  clang [shape=box];
+  clang -> llvm;
+  clangformat [shape=box];
+  clangformat -> clang;
+  clangtidy [shape=box];
+  clangtidy -> clangtoolsextra;
+  clangtoolsextra [shape=box];
+  clangtoolsextra -> llvm;
   curl [shape=diamond];
   curl -> libssh2;
   curl -> cares;
+  eigen [shape=diamond];
+  expat [shape=diamond];
+  fecpp [shape=diamond];
+  fecpp -> boost;
   ffmpeg [shape=diamond];
   ffmpeg -> openh264;
+  ffmpeg -> yasm;
+  libgeotiff [shape=diamond];
+  libgeotiff -> wx;
   libgit2 [shape=diamond];
   libgit2 -> libssh2;
   libssh2 [shape=diamond];
   libssh2 -> zlib;
   libssh2 -> openssl;
+  libstrophe [shape=diamond];
+  libstrophe -> expat;
+  libstrophe -> openssl;
+  llvm [shape=box];
   openh264 [shape=diamond];
   openssl [shape=diamond];
   protobuf [shape=diamond];
   protobuf -> zlib;
+  wx [shape=diamond];
+  wxinclude [shape=box];
+  wxinclude -> boost;
+  wxx [shape=diamond];
+  wxx -> wx;
+  yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_586d4df4fd20950a41f1f1cd7df75cbf
+depgraph_0e5f9e249e3a5de824069f5a4b81d579
 </details>

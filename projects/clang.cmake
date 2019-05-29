@@ -10,6 +10,7 @@ set(PRO_CLANG
   LICENSE "open" "http://clang.llvm.org/features.html#license" "LLVM 'BSD' License"
   DESC "clang: a C language family frontend for LLVM"
   REPO "repo" ${REPO} "forked clang repo on github"
+  GRAPH GRAPH_SHAPE box GRAPH_DEPS llvm
   VER ${llvmVer}
   GIT_ORIGIN git://github.com/smanders/clang.git
   GIT_UPSTREAM git://github.com/llvm-mirror/clang.git

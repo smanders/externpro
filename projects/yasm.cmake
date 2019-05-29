@@ -8,6 +8,7 @@ set(PRO_YASM
   LICENSE "open" ${REPO}/blob/v${VER}/COPYING "new BSD license"
   DESC "assembler and disassembler for the Intel x86 architecture"
   REPO "repo" ${REPO} "forked yasm repo on github"
+  GRAPH GRAPH_SHAPE box
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/yasm.git
   GIT_UPSTREAM git://github.com/yasm/yasm.git

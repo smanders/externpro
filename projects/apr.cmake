@@ -8,6 +8,7 @@ set(PRO_APR
   LICENSE "open" http://www.apache.org/licenses/LICENSE-2.0.html "Apache 2.0"
   DESC "Apache Portable Runtime project"
   REPO "repo" ${REPO} "forked apr repo on github"
+  GRAPH
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/apr.git
   GIT_UPSTREAM git://github.com/apache/apr.git
