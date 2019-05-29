@@ -10,6 +10,7 @@ set(PRO_OPENH264
   LICENSE "open" http://www.openh264.org/faq.html "Two-Clause BSD license"
   DESC "a codec library which supports H.264 encoding and decoding"
   REPO "repo" ${REPO} "openh264 repo on github"
+  GRAPH
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/openh264.git
   GIT_UPSTREAM git://github.com/cisco/openh264.git

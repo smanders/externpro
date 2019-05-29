@@ -9,6 +9,7 @@ set(PRO_CARES
   LICENSE "open" http://c-ares.haxx.se/license.html "c-ares license: MIT license"
   DESC "C library for asynchronous DNS requests (including name resolves)"
   REPO "repo" ${REPO} "forked c-ares repo on github"
+  GRAPH GRAPH_LABEL "c-ares"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/c-ares.git
   GIT_UPSTREAM git://github.com/c-ares/c-ares.git
