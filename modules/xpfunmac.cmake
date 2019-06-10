@@ -1985,7 +1985,8 @@ macro(xpSetFlagsGccDebug)
         COMMAND ${XP_PATH_LCOV} --capture --initial --directory ${CMAKE_BINARY_DIR} --output-file ${PROJECT_NAME}-base.info
         COMMAND make test
         COMMAND ${XP_PATH_LCOV} --directory ${CMAKE_BINARY_DIR} --capture --output-file ${PROJECT_NAME}-test.info
-        COMMAND ${XP_PATH_LCOV} -a ${PROJECT_NAME}-base.info -a ${PROJECT_NAME}-test.info -o ${PROJECT_NAME}.info
+        COMMAND ${XP_PATH_LCOV} -a ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-base.info
+          -a ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-test.info -o ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.info
         COMMAND ${XP_PATH_LCOV} --remove ${PROJECT_NAME}.info ${XP_COVERAGE_RM} --output-file ${PROJECT_NAME}-cleaned.info
         COMMAND ${XP_PATH_GENHTML} -o report ${PROJECT_NAME}-cleaned.info
         COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}*.info
