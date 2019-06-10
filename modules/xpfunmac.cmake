@@ -1495,11 +1495,9 @@ function(xpPostBuildCopy theTarget copyList toPath)
     else()
       if(IS_DIRECTORY ${_item})
         get_filename_component(dir ${_item} NAME)
-        if(NOT EXISTS ${dest}/${dir})
-          add_custom_command(TARGET ${theTarget} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${_item} ${dest}/${dir}
-            )
-        endif()
+        add_custom_command(TARGET ${theTarget} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_directory ${_item} ${dest}/${dir}
+          )
       else()
         if(NOT IS_ABSOLUTE ${_item})
           if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_item})
