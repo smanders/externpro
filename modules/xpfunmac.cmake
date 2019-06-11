@@ -633,10 +633,14 @@ function(xpMarkdownReadmeFinalize)
   if(EXISTS ${g_READMEsub})
     file(READ ${g_READMEsub} sub)
     file(APPEND ${g_README} ${sub})
+    file(REMOVE ${g_READMEsub})
   endif()
   if(EXISTS ${g_READMEdep})
     file(APPEND ${g_READMEdep} "}\n")
-    file(MD5 ${g_READMEdep} hash)
+    configure_file(${g_READMEdep} ${g_READMEdep}.txt NEWLINE_STYLE LF)
+    file(MD5 ${g_READMEdep}.txt hash)
+    file(READ ${g_READMEdep}.txt depsDotDot)
+    file(REMOVE ${g_READMEdep} ${g_READMEdep}.txt)
     set(user smanders)
     set(branch dev)
     set(mark depgraph_${hash})
@@ -650,7 +654,6 @@ function(xpMarkdownReadmeFinalize)
       "<summary></summary>\n"
       "${mark}\n"
       )
-    file(READ ${g_READMEdep} depsDotDot)
     file(APPEND ${g_README}
       "${depsDotDot}"
       "${mark}\n"
