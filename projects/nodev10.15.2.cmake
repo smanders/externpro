@@ -7,6 +7,7 @@ set(PRO_NODEV${VER}
   LICENSE "open" https://raw.githubusercontent.com/nodejs/node/v${VER}/LICENSE "MIT license"
   DESC "platform to build scalable network applications"
   REPO "repo" ${REPO} "node repo on github"
+  GRAPH GRAPH_NODE node.js GRAPH_DEPS nasm
   VER ${VER}
   GIT_ORIGIN git://github.com/nodejs/node.git
   GIT_TAG v${VER} # what to 'git checkout'

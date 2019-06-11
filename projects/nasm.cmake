@@ -7,6 +7,7 @@ set(PRO_NASM
   WEB "nasm" ${URL} "nasm website"
   LICENSE "BSD" ${URL} "Simplified (2-clause) BSD license"
   DESC "The Netwide Assembler - an 80x86 and x86-64 assembler"
+  GRAPH GRAPH_SHAPE box
   VER ${VER}
   DLURL ${URL}/pub/nasm/releasebuilds/${VER}/win64/nasm-${VER}-installer-x64.exe
   DLMD5 e871a6d2651e81ce8674ae2d31fe33b0
