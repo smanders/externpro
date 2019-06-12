@@ -1,11 +1,9 @@
 # node
-set(NODE_OLDVER v8.12.0)
-set(NODE_NEWVER v10.15.2)
+set(NODE_OLDVER 8.12.0)
+set(NODE_NEWVER 10.15.2)
 ####################
 function(build_node)
-  string(TOUPPER ${NODE_OLDVER} OV)
-  string(TOUPPER ${NODE_NEWVER} NV)
-  if(NOT (XP_DEFAULT OR XP_PRO_NODE${OV} OR XP_PRO_NODE${NV}))
+  if(NOT (XP_DEFAULT OR XP_PRO_NODE_${NODE_OLDVER} OR XP_PRO_NODE_${NODE_NEWVER}))
     return()
   endif()
   find_package(PythonInterp)
@@ -23,10 +21,10 @@ function(build_node)
   if(XP_DEFAULT)
     set(NODE_VERSIONS ${NODE_OLDVER} ${NODE_NEWVER})
   else()
-    if(XP_PRO_NODE${OV})
+    if(XP_PRO_NODE_${NODE_OLDVER})
       set(NODE_VERSIONS ${NODE_OLDVER})
     endif()
-    if(XP_PRO_NODE${NV})
+    if(XP_PRO_NODE_${NODE_NEWVER})
       list(APPEND NODE_VERSIONS ${NODE_NEWVER})
     endif()
   endif()
@@ -48,7 +46,7 @@ endfunction()
 function(build_node_ver ver)
   # TODO: support Debug by renaming files going into STAGE_DIR?
   set(BUILD_CONFIGS Release)
-  set(node${ver}_DEPS node${ver})
+  set(node_${ver}_DEPS node_${ver})
   if(${BUILD_PLATFORM} STREQUAL "64")
     set(destcpu x64)
   elseif(${BUILD_PLATFORM} STREQUAL "32")
@@ -82,18 +80,18 @@ function(build_node_ver ver)
   endif()
   foreach(cfg ${BUILD_CONFIGS})
     set(XP_CONFIGURE_CMD ${XP_CONFIGURE_${cfg}})
-    addproject_node(node${ver} ${cfg})
+    addproject_node(node_${ver} ${cfg})
   endforeach() # cfg
   # copy headers to STAGE_DIR
-  ExternalProject_Get_Property(node${ver} SOURCE_DIR)
+  ExternalProject_Get_Property(node_${ver} SOURCE_DIR)
   set(nodeHdrs ${SOURCE_DIR}/src/*.h)
   set(uvDir ${SOURCE_DIR}/deps/uv/include)
   set(v8Hdrs ${SOURCE_DIR}/deps/v8/include/*.h)
-  set(XP_TARGET node${ver}_stage)
+  set(XP_TARGET node_${ver}_stage)
   if(NOT TARGET ${XP_TARGET})
-    ExternalProject_Add(${XP_TARGET} DEPENDS ${node${ver}_DEPS}
+    ExternalProject_Add(${XP_TARGET} DEPENDS ${node_${ver}_DEPS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
-      SOURCE_DIR ${NULL_DIR} INSTALL_DIR ${STAGE_DIR}/include/node${ver}/node
+      SOURCE_DIR ${NULL_DIR} INSTALL_DIR ${STAGE_DIR}/include/node_${ver}/node
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy_directory ${uvDir} <INSTALL_DIR>
       BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${nodeHdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
@@ -120,25 +118,25 @@ macro(addproject_node basename cfg)
       #   MSVC thinks it always needs to build this (after what appears to be a
       #   successful build) -- and there can't be any external project steps
       #   after the step with vcbuild or they won't execute
-      ExternalProject_Add(${XP_TARGET}vcbuild DEPENDS ${node${ver}_DEPS}
+      ExternalProject_Add(${XP_TARGET}vcbuild DEPENDS ${node_${ver}_DEPS}
         DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
         SOURCE_DIR ${nodeSrcDir} INSTALL_DIR ${NULL_DIR}
         CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
         BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
         )
       set_property(TARGET ${XP_TARGET}vcbuild PROPERTY FOLDER ${bld_folder})
-      list(APPEND node${ver}_DEPS ${XP_TARGET}vcbuild) # serialize the build
+      list(APPEND node_${ver}_DEPS ${XP_TARGET}vcbuild) # serialize the build
       set(binNode <SOURCE_DIR>/${cfg}/node.exe)
       set(libNode <SOURCE_DIR>/${cfg}/node.lib)
       set(XP_CONFIGURE_CMD ${CMAKE_COMMAND} -E echo "Configure MSVC...")
-      set(XP_BUILD_CMD ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node${ver}/lib)
-      set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E copy ${libNode} ${STAGE_DIR}/node${ver}/lib)
+      set(XP_BUILD_CMD ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node_${ver}/lib)
+      set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E copy ${libNode} ${STAGE_DIR}/node_${ver}/lib)
     elseif(UNIX)
       set(binNode <SOURCE_DIR>/out/${cfg}/node)
       set(XP_BUILD_CMD)   # use default
       set(XP_INSTALL_CMD) # use default
     endif()
-    ExternalProject_Add(${XP_TARGET} DEPENDS ${node${ver}_DEPS}
+    ExternalProject_Add(${XP_TARGET} DEPENDS ${node_${ver}_DEPS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
       SOURCE_DIR ${nodeSrcDir} INSTALL_DIR ${NULL_DIR}
       CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
@@ -147,11 +145,11 @@ macro(addproject_node basename cfg)
       INSTALL_COMMAND ${XP_INSTALL_CMD}
       )
     ExternalProject_Add_Step(${XP_TARGET} copy_bin
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node${ver}/bin
-      COMMAND ${CMAKE_COMMAND} -E copy ${binNode} ${STAGE_DIR}/node${ver}/bin
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node_${ver}/bin
+      COMMAND ${CMAKE_COMMAND} -E copy ${binNode} ${STAGE_DIR}/node_${ver}/bin
       DEPENDEES install
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
-  list(APPEND node${ver}_DEPS ${XP_TARGET}) # serialize the build
+  list(APPEND node_${ver}_DEPS ${XP_TARGET}) # serialize the build
 endmacro()
