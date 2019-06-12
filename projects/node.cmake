@@ -1,6 +1,6 @@
 # node
 set(NODE_OLDVER 8.12.0)
-set(NODE_NEWVER 10.15.2)
+set(NODE_NEWVER 10.16.0)
 ####################
 function(build_node)
   if(NOT (XP_DEFAULT OR XP_PRO_NODE_${NODE_OLDVER} OR XP_PRO_NODE_${NODE_NEWVER}))
