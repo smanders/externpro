@@ -15,7 +15,7 @@ set(PRO_NODE_${VER}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/node_${VER}.patch
-  DIFF ${FORK}/compare/node:
+  DIFF https://${FORK}/compare/node:
   DLURL http://nodejs.org/dist/v${VER}/node-v${VER}.tar.gz
   DLMD5 46f47630e088540968962f1ad71b9d0a
   )
