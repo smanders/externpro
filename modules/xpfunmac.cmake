@@ -524,6 +524,7 @@ endfunction()
 
 set(g_README ${CMAKE_BINARY_DIR}/README.md)
 set(g_READMEsub ${CMAKE_BINARY_DIR}/README.sub.md)
+set(g_READMEdep ${CMAKE_BINARY_DIR}/deps.dot)
 
 function(xpMarkdownReadmeInit)
   file(WRITE ${g_README}
@@ -533,6 +534,9 @@ function(xpMarkdownReadmeInit)
     )
   if(EXISTS ${g_READMEsub})
     file(REMOVE ${g_READMEsub})
+  endif()
+  if(EXISTS ${g_READMEdep})
+    file(REMOVE ${g_READMEdep})
   endif()
 endfunction()
 
@@ -544,9 +548,10 @@ function(xpMarkdownReadmeAppend proj)
 endfunction()
 
 function(ipMarkdownPro)
-  set(oneValueArgs NAME DESC VER GIT_REF GIT_TAG SUPERPRO DIFF PATCH)
-  set(multiValueArgs WEB LICENSE REPO)
-  cmake_parse_arguments(P "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  set(options GRAPH)
+  set(oneValueArgs NAME DESC VER GIT_REF GIT_TAG SUPERPRO DIFF PATCH GRAPH_NODE GRAPH_SHAPE GRAPH_LABEL)
+  set(multiValueArgs WEB LICENSE REPO GRAPH_DEPS)
+  cmake_parse_arguments(P "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   if(DEFINED P_WEB)
     ipMarkdownLink("${P_WEB}" web)
   else()
@@ -597,17 +602,48 @@ function(ipMarkdownPro)
   else()
     file(APPEND ${g_README} "|${web}|${lic}|${desc}|${ver}|${repo}|${diff}|\n")
   endif()
+  if(P_GRAPH)
+    if(NOT EXISTS ${g_READMEdep})
+      file(WRITE ${g_READMEdep}
+        "digraph GG {\n"
+        "  node [fontsize=12];\n"
+        )
+    endif()
+    if(NOT DEFINED P_GRAPH_NODE)
+      set(P_GRAPH_NODE ${P_NAME})
+    endif()
+    file(APPEND ${g_READMEdep} "  ${P_GRAPH_NODE} [")
+    if(DEFINED P_GRAPH_LABEL)
+      file(APPEND ${g_READMEdep} "label=\"${P_GRAPH_LABEL}\" ")
+    endif()
+    if(DEFINED P_GRAPH_SHAPE)
+      file(APPEND ${g_READMEdep} "shape=${P_GRAPH_SHAPE}];\n")
+    else()
+      file(APPEND ${g_READMEdep} "shape=diamond];\n")
+    endif()
+    if(DEFINED P_GRAPH_DEPS)
+      foreach(dep ${P_GRAPH_DEPS})
+        file(APPEND ${g_READMEdep} "  ${P_GRAPH_NODE} -> ${dep};\n")
+      endforeach()
+    endif()
+  endif()
 endfunction()
 
 function(xpMarkdownReadmeFinalize)
   if(EXISTS ${g_READMEsub})
     file(READ ${g_READMEsub} sub)
     file(APPEND ${g_README} ${sub})
+    file(REMOVE ${g_READMEsub})
   endif()
-  if(EXISTS ${PRO_DIR}/deps.dot)
+  if(EXISTS ${g_READMEdep})
+    file(APPEND ${g_READMEdep} "}\n")
+    configure_file(${g_READMEdep} ${g_READMEdep}.txt NEWLINE_STYLE LF)
+    file(MD5 ${g_READMEdep}.txt hash)
+    file(READ ${g_READMEdep}.txt depsDotDot)
+    file(REMOVE ${g_READMEdep} ${g_READMEdep}.txt)
     set(user smanders)
     set(branch dev)
-    set(mark customgraph01)
+    set(mark depgraph_${hash})
     set(url "https://raw.githubusercontent.com/${user}/externpro/${branch}/projects/README.md")
     string(REPLACE "/" "%2F" url ${url})
     string(REPLACE ":" "%3A" url ${url})
@@ -618,7 +654,6 @@ function(xpMarkdownReadmeFinalize)
       "<summary></summary>\n"
       "${mark}\n"
       )
-    file(READ ${PRO_DIR}/deps.dot depsDotDot)
     file(APPEND ${g_README}
       "${depsDotDot}"
       "${mark}\n"
@@ -960,6 +995,7 @@ macro(xpSourceListAppend)
   file(GLOB miscFiles LIST_DIRECTORIES false
     ${_dir}/.git ${_dir}/.gitattributes ${_dir}/.gitmodules
     ${_dir}/*clang-format
+    ${_dir}/.crtoolrc
     ${_dir}/README.md
     ${_dir}/version.cmake
     )
@@ -1124,7 +1160,11 @@ endfunction()
 function(ipAppendPkgVars pkg _lib _inc _def)
   string(TOUPPER ${pkg} PKG)
   if(${PKG}_FOUND)
-    if(DEFINED ${PKG}_LIBRARIES)
+    if(TE_HEADER_ONLY)
+      set(${_lib} ${${_lib}} PARENT_SCOPE)
+    elseif(DEFINED TE_LIBS)
+      set(${_lib} ${${_lib}} "${TE_LIBS}" PARENT_SCOPE)
+    elseif(DEFINED ${PKG}_LIBRARIES)
       set(${_lib} ${${_lib}} "${${PKG}_LIBRARIES}" PARENT_SCOPE)
     endif()
     if(DEFINED ${PKG}_INCLUDE_DIR)
@@ -1166,8 +1206,8 @@ function(xpGetExtern _incDirs _libList)
 endfunction()
 
 function(xpTargetExtern tgt)
-  set(multiValueArgs PUBLIC PRIVATE)
-  cmake_parse_arguments(TE "" "" "${multiValueArgs}" ${ARGN})
+  set(multiValueArgs PUBLIC PRIVATE LIBS)
+  cmake_parse_arguments(TE HEADER_ONLY "" "${multiValueArgs}" ${ARGN})
   xpFindPkg(PKGS ${TE_PUBLIC} ${TE_PRIVATE})
   foreach(pkg ${TE_PUBLIC})
     ipAppendPkgVars(${pkg} publib pubinc pubdef)
@@ -1458,11 +1498,9 @@ function(xpPostBuildCopy theTarget copyList toPath)
     else()
       if(IS_DIRECTORY ${_item})
         get_filename_component(dir ${_item} NAME)
-        if(NOT EXISTS ${dest}/${dir})
-          add_custom_command(TARGET ${theTarget} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${_item} ${dest}/${dir}
-            )
-        endif()
+        add_custom_command(TARGET ${theTarget} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_directory ${_item} ${dest}/${dir}
+          )
       else()
         if(NOT IS_ABSOLUTE ${_item})
           if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_item})
@@ -1829,20 +1867,6 @@ macro(xpCommonFlags)
           xpStringAppendIfDne(CMAKE_SHARED_LINKER_FLAGS "-stdlib=libc++")
         endif()
       endif()
-      check_cxx_compiler_flag("-std=c++14" has_cxx14) # should be available gcc >= 4.9
-      if(has_cxx14)
-        xpStringAppendIfDne(CMAKE_CXX_FLAGS "-std=c++14")
-      else()
-        check_cxx_compiler_flag("-std=c++11" has_cxx11) # should be available gcc >= 4.7
-        if(has_cxx11)
-          xpStringAppendIfDne(CMAKE_CXX_FLAGS "-std=c++11")
-        else()
-          check_cxx_compiler_flag("-std=c++0x" has_cxx0x)
-          if(has_cxx0x)
-            xpStringAppendIfDne(CMAKE_CXX_FLAGS "-std=c++0x")
-          endif()
-        endif()
-      endif()
       check_cxx_compiler_flag("-fPIC" has_cxx_fPIC)
       if(has_cxx_fPIC)
         xpStringAppendIfDne(CMAKE_CXX_FLAGS "-fPIC")
@@ -1962,18 +1986,14 @@ macro(xpSetFlagsGccDebug)
         COMMAND ${XP_PATH_LCOV} --capture --initial --directory ${CMAKE_BINARY_DIR} --output-file ${PROJECT_NAME}-base.info
         COMMAND make test
         COMMAND ${XP_PATH_LCOV} --directory ${CMAKE_BINARY_DIR} --capture --output-file ${PROJECT_NAME}-test.info
-        COMMAND ${XP_PATH_LCOV} -a ${PROJECT_NAME}-base.info -a ${PROJECT_NAME}-test.info -o ${PROJECT_NAME}.info
+        COMMAND ${XP_PATH_LCOV} -a ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-base.info
+          -a ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-test.info -o ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.info
         COMMAND ${XP_PATH_LCOV} --remove ${PROJECT_NAME}.info ${XP_COVERAGE_RM} --output-file ${PROJECT_NAME}-cleaned.info
         COMMAND ${XP_PATH_GENHTML} -o report ${PROJECT_NAME}-cleaned.info
         COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}*.info
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
       xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "--coverage")
-      # don't use debug optimizations for coverage data
-      check_cxx_compiler_flag("-O0" has_O0)
-      if(has_O0)
-        xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "-O0")
-      endif()
     else()
       if(NOT XP_PATH_LCOV)
         message(AUTHOR_WARNING "lcov not found -- coverage reports will not be supported")
@@ -1982,11 +2002,10 @@ macro(xpSetFlagsGccDebug)
         message(AUTHOR_WARNING "genhtml not found -- coverage reports will not be supported")
       endif()
     endif()
-  else()
-    check_cxx_compiler_flag("-Og" has_Og)
-    if(has_Og)
-      xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "-Og")
-    endif()
+  endif()
+  check_cxx_compiler_flag("-O0" has_O0)
+  if(has_O0) # don't use debug optimizations (coverage requires this, make it the default for all debug builds)
+    xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "-O0")
   endif()
 endmacro()
 

@@ -30,9 +30,9 @@
 |[libstrophe](http://strophe.im/libstrophe/ 'libstrophe website')|[open](https://github.com/strophe/libstrophe/blob/0.9.1/LICENSE.txt 'dual licensed under MIT and GPLv3')|A simple, lightweight C library for writing XMPP client|0.9.1|[repo](https://github.com/strophe/libstrophe 'libstrophe repo on github')|[diff](https://github.com/smanders/libstrophe/compare/strophe:0.9.1...xp0.9.1 'patch/diff')|
 |[LLVM](http://llvm.org/ 'LLVM website')|[open](http://llvm.org/svn/llvm-project/llvm/trunk/LICENSE.TXT 'LLVM Release License')|The LLVM Compiler Infrastructure|3.9.0|[repo](https://github.com/llvm-mirror/llvm 'llvm repo on github')|none|
 |[Lua](http://www.lua.org/ 'Lua website')|[open](http://www.lua.org/license.html 'MIT license')|a powerful, fast, lightweight, embeddable scripting language|5.2.3|[repo](https://github.com/smanders/lua 'forked lua repo on github')|[diff](https://github.com/smanders/lua/compare/LuaDist:5.2.3...xp5.2.3 'patch/diff')|
-|[Node.js](http://nodejs.org 'Node.js website')|[open](https://raw.githubusercontent.com/nodejs/node/v8.11.0/LICENSE 'MIT license')|platform to build scalable network applications|8.11.0|[repo](https://github.com/nodejs/node 'node repo on github')|none|
+|[nasm](https://www.nasm.us/ 'nasm website')|[BSD](https://www.nasm.us/ 'Simplified (2-clause) BSD license')|The Netwide Assembler - an 80x86 and x86-64 assembler|2.14.02|none|none|
+|[Node.js](http://nodejs.org 'Node.js website')|[open](https://raw.githubusercontent.com/nodejs/node/v10.16.0/LICENSE 'MIT license')|platform to build scalable network applications|10.16.0|[repo](https://github.com/nodejs/node 'node repo on github')|[diff](https://github.com/smanders/node/compare/nodejs:v10.16.0...xp10.16.0 'patch/diff')|
 |[Node.js](http://nodejs.org 'Node.js website')|[open](https://raw.githubusercontent.com/nodejs/node/v8.12.0/LICENSE 'MIT license')|platform to build scalable network applications|8.12.0|[repo](https://github.com/nodejs/node 'node repo on github')|none|
-|[NuGet](https://www.nuget.org 'NuGet website')|[MIT](https://docs.microsoft.com/en-us/nuget/policies/nuget-faq#nuget-command-line 'MIT')|pre-built (MSW) the package manager for .NET|2.8.6|[repo](https://github.com/NuGet 'NuGet on github')|none|
 |[OpenH264](http://www.openh264.org/ 'OpenH264 website')|[open](http://www.openh264.org/faq.html 'Two-Clause BSD license')|a codec library which supports H.264 encoding and decoding|1.4.0|[repo](https://github.com/cisco/openh264 'openh264 repo on github')|[diff](https://github.com/smanders/openh264/compare/cisco:v1.4.0...xp1.4.0 'patch/diff')|
 |[OpenSSL](http://www.openssl.org/ 'OpenSSL website')|[open](http://www.openssl.org/source/license.html 'OpenSSL, SSLeay License: BSD-style')|Cryptography and SSL/TLS Toolkit|1.0.2a|[repo](https://github.com/smanders/openssl 'forked openssl repo on github')|[diff](https://github.com/smanders/openssl/compare/openssl:OpenSSL_1_0_2a...xp_1_0_2a 'patch/diff')|
 |[patch](http://www.gnu.org/software/patch 'GNU patch website')|[GPL](http://www.gnu.org/licenses/gpl.html 'GNU GPL v3')|pre-built (MSW), built here (non-MSW) used internally to apply a patch file of differences|2.5.9-7/2.7.5|[repo](http://git.savannah.gnu.org/cgit/patch.git 'patch (git) repo on gnu.org')|none|
@@ -54,7 +54,7 @@
 |boost|[gil](http://boost.org/libs/gil 'boost gil website')|gil (generic image library)|1.67.0|[repo](https://github.com/smanders/gil 'forked gil repo on github')|[diff](https://github.com/smanders/gil/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|
 |boost|[mpl](http://boost.org/libs/mpl 'boost mpl website')|mpl (metaprogramming library)|1.67.0|[repo](https://github.com/smanders/mpl 'forked mpl repo on github')|[diff](https://github.com/smanders/mpl/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|
 |boost|[units](http://boost.org/libs/units 'boost units website')|zero-overhead dimensional analysis and unit/quantity manipulation and conversion|1.67.0|[repo](https://github.com/smanders/units 'forked units repo on github')|[diff](https://github.com/smanders/units/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|
-|llvm|[clang](http://clang.llvm.org/ 'clang website')|clang: a C language family frontend for LLVM|3.9.0|[repo](https://github.com/smanders/clang 'forked clang repo on github')|[diff](https://github.com/smanders/clang/compare/v3.9.0...xp3.9.0 'patch/diff')|
+|llvm|[clang](http://clang.llvm.org/ 'clang website')|clang: a C language family frontend for LLVM|3.9.0|[repo](https://github.com/smanders/clang 'forked clang repo on github')|none|
 |clang|[clang-format](http://clang.llvm.org/docs/ClangFormat.html 'ClangFormat documentation')|used to format C/C++/Obj-C code|3.9.0|none|none|
 |clangtoolsextra|[clang-tidy](http://clang.llvm.org/extra/clang-tidy/ 'Clang-Tidy documentation')|clang-based C++ 'linter' tool for diagnosing and fixing typical programming errors via static analysis|3.9.0|none|none|
 |llvm|[clang-tools-extra](http://clang.llvm.org/docs/ClangTools.html 'clang-tools-extra website')|Clang Tools: standalone command line (and potentially GUI) tools designed for use by C++ developers|3.9.0|[repo](https://github.com/llvm-mirror/clang-tools-extra 'clang-tools-extra repo on github')|none|
@@ -71,32 +71,66 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/customgraph01?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_d08f74fc74fc9cf97efd7a1dde19c6a3?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-customgraph01
+depgraph_d08f74fc74fc9cf97efd7a1dde19c6a3
 digraph GG {
   node [fontsize=12];
-  zlib [shape=diamond];
-  openssl [shape=diamond];
-  cares [label="c-ares" shape=diamond];
-  libssh2 [shape=diamond];
-  libgit2 [shape=diamond];
-  curl [shape=diamond];
-  protobuf [shape=diamond];
-  ffmpeg [shape=diamond];
-  openh264 [shape=diamond];
-  bzip2 [shape=diamond];
+  activemqcpp [shape=diamond];
+  activemqcpp -> apr;
+  activemqcpp -> openssl;
+  apr [shape=diamond];
   boost [shape=diamond];
-  libssh2 -> zlib;
-  libssh2 -> openssl;
-  libgit2 -> libssh2;
-  curl -> libssh2;
-  curl -> cares;
-  protobuf -> zlib;
-  ffmpeg -> openh264;
   boost -> zlib;
   boost -> bzip2;
+  bzip2 [shape=diamond];
+  cares [label="c-ares" shape=diamond];
+  ceres [shape=diamond];
+  ceres -> eigen;
+  clang [shape=box];
+  clang -> llvm;
+  clangformat [shape=box];
+  clangformat -> clang;
+  clangtidy [shape=box];
+  clangtidy -> clangtoolsextra;
+  clangtoolsextra [shape=box];
+  clangtoolsextra -> llvm;
+  curl [shape=diamond];
+  curl -> libssh2;
+  curl -> cares;
+  eigen [shape=diamond];
+  expat [shape=diamond];
+  fecpp [shape=diamond];
+  fecpp -> boost;
+  ffmpeg [shape=diamond];
+  ffmpeg -> openh264;
+  ffmpeg -> yasm;
+  libgeotiff [shape=diamond];
+  libgeotiff -> wx;
+  libgit2 [shape=diamond];
+  libgit2 -> libssh2;
+  libssh2 [shape=diamond];
+  libssh2 -> zlib;
+  libssh2 -> openssl;
+  libstrophe [shape=diamond];
+  libstrophe -> expat;
+  libstrophe -> openssl;
+  llvm [shape=box];
+  nasm [shape=box];
+  nodejs [shape=diamond];
+  nodejs -> nasm;
+  openh264 [shape=diamond];
+  openssl [shape=diamond];
+  protobuf [shape=diamond];
+  protobuf -> zlib;
+  wx [shape=diamond];
+  wxinclude [shape=box];
+  wxinclude -> boost;
+  wxx [shape=diamond];
+  wxx -> wx;
+  yasm [shape=box];
+  zlib [shape=diamond];
 }
-customgraph01
+depgraph_d08f74fc74fc9cf97efd7a1dde19c6a3
 </details>

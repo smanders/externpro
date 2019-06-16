@@ -8,6 +8,7 @@ set(PRO_FECPP
   LICENSE "open" http://www.randombit.net/code/fecpp/ "BSD License"
   DESC "fecpp is a Forward Error Correction Library"
   REPO "repo" ${REPO} "forked fecpp repo on github"
+  GRAPH GRAPH_DEPS boost
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/fecpp.git
   GIT_UPSTREAM git://github.com/randombit/fecpp.git

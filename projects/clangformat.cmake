@@ -7,6 +7,7 @@ set(PRO_CLANGFORMAT
   WEB "clang-format" http://clang.llvm.org/docs/ClangFormat.html "ClangFormat documentation"
   LICENSE "open" "http://clang.llvm.org/features.html#license" "LLVM 'BSD' License"
   DESC "used to format C/C++/Obj-C code"
+  GRAPH GRAPH_SHAPE box GRAPH_DEPS clang
   VER ${llvmVer}
   )
 ########################################
@@ -27,12 +28,5 @@ function(build_clangformat)
     INSTALL_COMMAND ${CMAKE_COMMAND} -P cmake_install.cmake
     INSTALL_DIR ${STAGE_DIR}
     )
-  if(MSVC AND MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
-    ExternalProject_Add_Step(clangformat_install clangformat_install_vsix
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/pkg
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BINARY_DIR}/Release/bin/ClangFormat.vsix ${STAGE_DIR}/pkg
-      DEPENDEES install
-      )
-  endif()
   set_property(TARGET clangformat_install PROPERTY FOLDER ${bld_folder})
 endfunction()

@@ -8,6 +8,7 @@ set(PRO_WXX
   LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
   DESC "wxWidget-based extra components"
   REPO "repo" ${REPO} "wxx repo on github"
+  GRAPH GRAPH_DEPS wx
   VER 2015.10.02 # latest xpro branch commit date
   GIT_ORIGIN git://github.com/smanders/wxx.git
   GIT_TAG xpro # what to 'git checkout'

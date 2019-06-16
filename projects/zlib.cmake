@@ -8,6 +8,7 @@ set(PRO_ZLIB
   LICENSE "open" http://zlib.net/zlib_license.html "zlib license"
   DESC "compression library"
   REPO "repo" ${REPO} "forked zlib repo on github"
+  GRAPH
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/zlib.git
   GIT_UPSTREAM git://github.com/madler/zlib.git

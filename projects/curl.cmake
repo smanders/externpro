@@ -4,11 +4,12 @@ set(VER 7.42.1)
 string(REPLACE "." "_" VER_ ${VER})
 set(REPO https://github.com/smanders/curl)
 set(PRO_CURL
-  NAME cURL
+  NAME curl
   WEB "cURL" http://curl.haxx.se/libcurl/ "libcurl website"
   LICENSE "open" http://curl.haxx.se/docs/copyright.html "curl license: MIT/X derivate license"
   DESC "the multiprotocol file transfer library"
   REPO "repo" ${REPO} "forked curl repo on github"
+  GRAPH GRAPH_DEPS libssh2 cares
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/curl.git
   GIT_UPSTREAM git://github.com/curl/curl.git

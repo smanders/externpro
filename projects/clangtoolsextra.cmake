@@ -11,6 +11,7 @@ set(PRO_CLANGTOOLSEXTRA
   LICENSE "open" "http://clang.llvm.org/features.html#license" "LLVM 'BSD' License"
   DESC "Clang Tools: standalone command line (and potentially GUI) tools designed for use by C++ developers"
   REPO "repo" ${REPO} "clang-tools-extra repo on github"
+  GRAPH GRAPH_SHAPE box GRAPH_DEPS llvm
   VER ${llvmVer}
   GIT_ORIGIN git://github.com/llvm-mirror/clang-tools-extra.git
   GIT_TAG ${LLVM_BRANCH} # what to 'git checkout'

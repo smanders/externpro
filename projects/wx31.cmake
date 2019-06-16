@@ -9,6 +9,7 @@ set(PRO_WX31
   LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License: essentially LGPL with an exception"
   DESC "Cross-Platform GUI Library"
   REPO "repo" ${REPO} "forked wxWidgets repo on github"
+  GRAPH GRAPH_NODE wx
   VER ${VER31}
   GIT_ORIGIN git://github.com/smanders/wxWidgets.git
   GIT_UPSTREAM git://github.com/wxWidgets/wxWidgets.git

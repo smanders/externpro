@@ -13,6 +13,7 @@ set(PRO_WXINCLUDE
   LICENSE "open" http://wiki.wxwidgets.org/Embedding_PNG_Images "assumed wxWindows license, since source can be downloaded from wxWiki"
   DESC "embed resources into cross-platform code"
   REPO "repo" ${REPO} "wxInclude repo on github"
+  GRAPH GRAPH_SHAPE box GRAPH_DEPS boost
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/wxInclude.git
   GIT_TAG rel # what to 'git checkout'

@@ -11,6 +11,7 @@ set(PRO_EXPAT
   LICENSE "open" ${REPO}/blob/${TAG}/expat/COPYING "Expat License (MIT/X Consortium license)"
   DESC "a stream-oriented XML parser library written in C"
   REPO "repo" ${REPO} "libexpat repo on github"
+  GRAPH
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libexpat.git
   GIT_UPSTREAM git://github.com/libexpat/libexpat.git

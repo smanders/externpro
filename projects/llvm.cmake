@@ -9,6 +9,7 @@ set(PRO_LLVM
   LICENSE "open" http://llvm.org/svn/llvm-project/llvm/trunk/LICENSE.TXT "LLVM Release License"
   DESC "The LLVM Compiler Infrastructure"
   REPO "repo" ${REPO} "llvm repo on github"
+  GRAPH GRAPH_SHAPE box
   VER ${VER}
   GIT_ORIGIN git://github.com/llvm-mirror/llvm.git
   GIT_TAG ${LLVM_BRANCH}
@@ -28,25 +29,13 @@ function(build_llvm)
   endif()
   set(XP_DEPS llvm llvm_clang llvm_clangtoolsextra)
   set(XP_CONFIGURE -DLLVM_TARGETS_TO_BUILD:STRING=X86)
-  if(MSVC AND MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1919) # VS 15.0 2017
-    if(NOT (XP_DEFAULT OR XP_PRO_NUGET))
-      message(STATUS "llvm.cmake: requires nuget")
-      set(XP_PRO_NUGET ON CACHE BOOL "include nuget" FORCE)
-    endif()
-    build_nuget(nugetTgts) # sets NUGET_EXE
-    list(APPEND XP_DEPS ${nugetTgts})
-    list(APPEND XP_CONFIGURE -DBUILD_CLANG_FORMAT_VS_PLUGIN=ON -DNUGET_EXE:PATH=${NUGET_EXE})
-    set(buildTgt clang_format_vsix)
-  else()
-    set(buildTgt clang-format)
-  endif()
   set(BUILD_CONFIGS Release) # only need release builds of clang tool executables
   option(XP_BUILD_CLANGTIDY "build all of llvm to get clang-tidy" OFF)
   mark_as_advanced(XP_BUILD_CLANGTIDY)
   if(XP_BUILD_CLANGTIDY)
     xpCmakeBuild(llvm "${XP_DEPS}" "${XP_CONFIGURE}" llvmTgt NO_INSTALL)
   else()
-    xpCmakeBuild(llvm "${XP_DEPS}" "${XP_CONFIGURE}" llvmTgt NO_INSTALL BUILD_TARGET ${buildTgt} TGT format)
+    xpCmakeBuild(llvm "${XP_DEPS}" "${XP_CONFIGURE}" llvmTgt NO_INSTALL BUILD_TARGET clang-format TGT format)
   endif()
   if(ARGN)
     set(${ARGN} "${llvmTgt}" PARENT_SCOPE)

@@ -8,6 +8,7 @@ set(PRO_BZIP2
   LICENSE "open" https://spdx.org/licenses/bzip2-1.0.6.html "bzip2 BSD-style license"
   DESC "lossless block-sorting data compression library"
   REPO "repo" ${REPO} "forked bzip2 repo on github"
+  GRAPH
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/bzip2.git
   GIT_UPSTREAM git://github.com/LuaDist/bzip2.git
