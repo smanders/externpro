@@ -1,7 +1,7 @@
 # openssl
 xpProOption(openssl DBG)
-set(BRANCH 1.0.2)
-set(VER ${BRANCH}a)
+set(BRANCH 1.1.1)
+set(VER ${BRANCH}c)
 string(REPLACE "." "_" VER_ ${VER})
 set(REPO https://github.com/smanders/openssl)
 set(PRO_OPENSSL
@@ -19,7 +19,7 @@ set(PRO_OPENSSL
   # NOTE: warnings extracting tar.gz from openssl.org on Windows
   # cmake -E tar : warning : skipping symbolic link
   DLURL https://www.openssl.org/source/old/${BRANCH}/openssl-${VER}.tar.gz
-  DLMD5 a06c547dac9044161a477211049f60ef
+  DLMD5 15e21da6efe8aa0e0768ffd8cd37a5f6
   PATCH ${PATCH_DIR}/openssl.patch
   DIFF ${REPO}/compare/openssl:
   BUILD_FUNC build_openssl

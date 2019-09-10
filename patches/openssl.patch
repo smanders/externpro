@@ -1,10 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..12ecac2
+index 0000000..136161f
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,63 @@
-+cmake_minimum_required(VERSION 3.0)
+@@ -0,0 +1,50 @@
++cmake_minimum_required(VERSION 3.12)
 +project(openssl)
 +include(flags OPTIONAL)
 +########################################
@@ -16,20 +16,9 @@ index 0000000..12ecac2
 +  add_definitions(-DWIN32_LEAN_AND_MEAN)
 +endif()
 +########################################
-+# headers to openssl (for build)
-+add_custom_command(OUTPUT ossl_hdrs_cmd
-+  COMMAND ${CMAKE_COMMAND} -Dsrc:STRING="e_os2.h"
-+    -DsrcDir:PATH=${openssl_SOURCE_DIR}
-+    -Ddst:PATH=${CMAKE_BINARY_DIR}/openssl -P ${openssl_SOURCE_DIR}/cpln.cmake
-+  )
-+add_custom_target(ossl_hdrs DEPENDS ossl_hdrs_cmd SOURCES cpln.cmake)
-+set_property(TARGET ossl_hdrs PROPERTY FOLDER openssl_h)
-+########################################
 +function(compareCmakeFilesys files)
 +  file(GLOB_RECURSE filesys RELATIVE ${CMAKE_CURRENT_LIST_DIR} *)
-+  # the git repo is littered with .cvsignore files (which the tarball doesn't have)
-+  # the tar.gz file has a crypto/opensslconf.h file (which the git repo doesn't have)
-+  file(GLOB_RECURSE ignorefiles RELATIVE ${CMAKE_CURRENT_LIST_DIR} .cvsignore opensslconf.h)
++  file(GLOB_RECURSE ignorefiles RELATIVE ${CMAKE_CURRENT_LIST_DIR} .*.swp)
 +  if(ignorefiles)
 +    list(REMOVE_ITEM filesys ${ignorefiles})
 +  endif()
@@ -54,192 +43,60 @@ index 0000000..12ecac2
 +endif()
 +set(targetsFile ${PROJECT_NAME}${ver}-targets)
 +########################################
++add_subdirectory(include)
 +add_subdirectory(crypto)
 +add_subdirectory(ssl)
-+install(FILES e_os2.h DESTINATION include${verDir}/${PROJECT_NAME})
-+set(misc
-+  FAQ
-+  LICENSE
-+  PROBLEMS
-+  README
-+  README.ASN1
-+  README.ENGINE
-+  )
-+install(FILES ${misc} DESTINATION share${verDir}/openssl)
++if(FALSE)
++# TODO EXPORT of STATIC library with PRIVATE non-target dependencies broken
++# https://gitlab.kitware.com/cmake/cmake/issues/17357
++# I'm seeing the same error reported in this issue, even with EXPORT_LINK_INTERFACE_LIBRARIES
++install(EXPORT ${targetsFile} DESTINATION lib/cmake EXPORT_LINK_INTERFACE_LIBRARIES)
++else()
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake)
-diff --git a/Makefile.org b/Makefile.org
-index b7a3f96..8becb80 100644
---- a/Makefile.org
-+++ b/Makefile.org
-@@ -274,17 +274,17 @@ build_all: build_libs build_apps build_tests build_tools
- build_libs: build_crypto build_ssl build_engines
- 
- build_crypto:
--	@dir=crypto; target=all; $(BUILD_ONE_CMD)
--build_ssl:
--	@dir=ssl; target=all; $(BUILD_ONE_CMD)
--build_engines:
--	@dir=engines; target=all; $(BUILD_ONE_CMD)
--build_apps:
--	@dir=apps; target=all; $(BUILD_ONE_CMD)
--build_tests:
--	@dir=test; target=all; $(BUILD_ONE_CMD)
--build_tools:
--	@dir=tools; target=all; $(BUILD_ONE_CMD)
-+	+@dir=crypto; target=all; $(BUILD_ONE_CMD)
-+build_ssl: build_crypto
-+	+@dir=ssl; target=all; $(BUILD_ONE_CMD)
-+build_engines: build_crypto
-+	+@dir=engines; target=all; $(BUILD_ONE_CMD)
-+build_apps: build_libs
-+	+@dir=apps; target=all; $(BUILD_ONE_CMD)
-+build_tests: build_libs
-+	+@dir=test; target=all; $(BUILD_ONE_CMD)
-+build_tools: build_libs
-+	+@dir=tools; target=all; $(BUILD_ONE_CMD)
- 
- all_testapps: build_libs build_testapps
- build_testapps:
-@@ -536,9 +536,9 @@ dist:
- dist_pem_h:
- 	(cd crypto/pem; $(MAKE) -e $(BUILDENV) pem.h; $(MAKE) clean)
- 
--install: all install_docs install_sw
-+install: install_docs install_sw
- 
--install_sw:
-+install_dirs:
- 	@$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/bin \
- 		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR) \
- 		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines \
-@@ -547,12 +547,19 @@ install_sw:
- 		$(INSTALL_PREFIX)$(OPENSSLDIR)/misc \
- 		$(INSTALL_PREFIX)$(OPENSSLDIR)/certs \
- 		$(INSTALL_PREFIX)$(OPENSSLDIR)/private
-+	@$(PERL) $(TOP)/util/mkdir-p.pl \
-+		$(INSTALL_PREFIX)$(MANDIR)/man1 \
-+		$(INSTALL_PREFIX)$(MANDIR)/man3 \
-+		$(INSTALL_PREFIX)$(MANDIR)/man5 \
-+		$(INSTALL_PREFIX)$(MANDIR)/man7
-+
-+install_sw: install_dirs
- 	@set -e; headerlist="$(EXHEADER)"; for i in $$headerlist;\
- 	do \
- 	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
- 	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
- 	done;
--	@set -e; target=install; $(RECURSIVE_BUILD_CMD)
-+	+@set -e; target=install; $(RECURSIVE_BUILD_CMD)
- 	@set -e; liblist="$(LIBS)"; for i in $$liblist ;\
- 	do \
- 		if [ -f "$$i" ]; then \
-@@ -636,12 +643,7 @@ install_html_docs:
- 		done; \
- 	done
- 
--install_docs:
--	@$(PERL) $(TOP)/util/mkdir-p.pl \
--		$(INSTALL_PREFIX)$(MANDIR)/man1 \
--		$(INSTALL_PREFIX)$(MANDIR)/man3 \
--		$(INSTALL_PREFIX)$(MANDIR)/man5 \
--		$(INSTALL_PREFIX)$(MANDIR)/man7
-+install_docs: install_dirs
- 	@pod2man="`cd ./util; ./pod2mantest $(PERL)`"; \
- 	here="`pwd`"; \
- 	filecase=; \
-diff --git a/Makefile.shared b/Makefile.shared
-index e753f44..8d57163 100644
---- a/Makefile.shared
-+++ b/Makefile.shared
-@@ -105,6 +105,7 @@ LINK_SO=	\
-     SHAREDFLAGS="$${SHAREDFLAGS:-$(CFLAGS) $(SHARED_LDFLAGS)}"; \
-     LIBPATH=`for x in $$LIBDEPS; do echo $$x; done | sed -e 's/^ *-L//;t' -e d | uniq`; \
-     LIBPATH=`echo $$LIBPATH | sed -e 's/ /:/g'`; \
-+    [ -e $$SHLIB$$SHLIB_SOVER$$SHLIB_SUFFIX ] && exit 0; \
-     LD_LIBRARY_PATH=$$LIBPATH:$$LD_LIBRARY_PATH \
-     $${SHAREDCMD} $${SHAREDFLAGS} \
- 	-o $$SHLIB$$SHLIB_SOVER$$SHLIB_SUFFIX \
-@@ -122,6 +123,7 @@ SYMLINK_SO=	\
- 			done; \
- 		fi; \
- 		if [ -n "$$SHLIB_SOVER" ]; then \
-+			[ -e "$$SHLIB$$SHLIB_SUFFIX" ] || \
- 			( $(SET_X); rm -f $$SHLIB$$SHLIB_SUFFIX; \
- 			  ln -s $$prev $$SHLIB$$SHLIB_SUFFIX ); \
- 		fi; \
-diff --git a/cpln.cmake b/cpln.cmake
-new file mode 100644
-index 0000000..ba69eaa
---- /dev/null
-+++ b/cpln.cmake
-@@ -0,0 +1,26 @@
-+if(NOT EXISTS ${dst})
-+  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${dst})
 +endif()
-+separate_arguments(src)
-+foreach(item ${src})
-+  if(IS_ABSOLUTE ${item})
-+    set(fp ${item})
-+  else()
-+    set(fp ${srcDir}/${item})
-+  endif()
-+  get_filename_component(itemDir ${fp} PATH)
-+  if(EXISTS ${itemDir})
-+    file(GLOB files ${fp})
-+    foreach(f ${files})
-+      if(UNIX)
-+        file(RELATIVE_PATH rp ${dst} ${f})
-+        get_filename_component(fn ${f} NAME)
-+        execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${rp} ${fn}
-+          WORKING_DIRECTORY ${dst}
-+          )
-+      else()
-+        execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${f} ${dst})
-+      endif()
-+    endforeach()
-+  endif()
-+endforeach()
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..f3c53fd
+index 0000000..e0e493a
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,2082 @@
+@@ -0,0 +1,1715 @@
 +set(lib_name crypto)
 +########################################
-+# cmake-generate buildinf, opensslconf
-+# TODO: set BUILDINF_DATE
-+configure_file(buildinf.h.cmake buildinf.h)
-+# TODO: defines should match how OpenSSL was configured
-+file(READ opensslconf.h.in CONF)
-+set(CONF "
-+#define OPENSSL_NO_KRB5
-+#define OPENSSL_NO_SCTP
-+#define OPENSSL_NO_EC_NISTP_64_GCC_128
-+#ifndef OPENSSL_THREADS
-+# define OPENSSL_THREADS
-+#endif
-+${CONF}"
++set(gen_file include/buildinf.h)
++set(BUILDINF_PLATFORM ${CMAKE_SYSTEM_NAME})
++string(TIMESTAMP BUILDINF_DATE "%a %b %d %H:%M:%S %Y UTC" UTC)
++set(BUILDINF_COMPILER_FLAGS "") #"${CMAKE_C_COMPILER} ${CMAKE_CXX_FLAGS}"
++configure_file(${gen_file}.cmake ${gen_file} @ONLY)
++##########
++set(conf_file include/internal/bn_conf.h)
++set(INSERT_WARNING
++  "/* WARNING: do not edit! */\n/* Generated by CMakeLists.txt from crypto/${conf_file}.cmake */"
 +  )
-+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/opensslconf.h "${CONF}")
-+########################################
-+include_directories(
-+  ${CMAKE_CURRENT_BINARY_DIR} # buildinf.h
-+  ${openssl_SOURCE_DIR}
-+  ${openssl_BINARY_DIR}       # openssl/*.h
-+  ${CMAKE_CURRENT_SOURCE_DIR}
-+  asn1  # cmac includes asn1_locl.h
-+  evp   # cmac includes evp_locl.h
-+  modes # evp includes modes_lcl.h
++# only one for the following should be defined
++set(INSERT_SIXTY_FOUR_BIT_LONG define)
++set(INSERT_SIXTY_FOUR_BIT undef)
++set(INSERT_THIRTY_TWO_BIT undef)
++configure_file(${conf_file}.cmake ${conf_file} @ONLY)
++##########
++set(conf_file include/internal/dso_conf.h)
++set(INSERT_WARNING
++  "/* WARNING: do not edit! */\n/* Generated by CMakeLists.txt from crypto/${conf_file}.cmake */"
 +  )
++set(DSO_SCHEME_MACROS
++  DSO_DLFCN
++  HAVE_DLFCN_H
++  )
++foreach(mac ${DSO_SCHEME_MACROS})
++  set(INSERT_DSO_SCHEME_MACROS "${INSERT_DSO_SCHEME_MACROS}\n# define ${mac}")
++endforeach()
++set(INSERT_DSO_EXTENSION ${CMAKE_SHARED_LIBRARY_SUFFIX})
++configure_file(${conf_file}.cmake ${conf_file} @ONLY)
 +########################################
-+# library sources
-+####################
 +# root
-+set(root_srcs # order from crypto/Makefile
++set(root_srcs # order from crypto/build.info
++  build.info
 +  cryptlib.c
 +  mem.c
-+  mem_clr.c
 +  mem_dbg.c
 +  cversion.c
 +  ex_data.c
@@ -249,58 +106,48 @@ index 0000000..f3c53fd
 +  o_time.c
 +  o_str.c
 +  o_dir.c
-+  o_fips.c
++  o_fopen.c
++  ctype.c
++  threads_pthread.c
++  threads_win.c
++  threads_none.c
++  getenv.c
 +  o_init.c
-+  fips_ers.c
++  o_fips.c
++  mem_sec.c
++  init.c
 +  )
-+set(root_exhdrs
-+  crypto.h
-+  opensslv.h
-+  ${CMAKE_CURRENT_BINARY_DIR}/opensslconf.h
-+  ebcdic.h
-+  symhacks.h
-+  ossl_typ.h
-+  )
-+list(APPEND root_srcs
-+  ${root_exhdrs}
-+  cryptlib.h
-+  ${CMAKE_CURRENT_BINARY_DIR}/buildinf.h # cmake-generated (see configure_file above)
-+  md32_common.h
-+  o_time.h
-+  o_str.h
-+  o_dir.h
-+  constant_time_locl.h
-+  Makefile
-+  )
-+set(root_extra # in directory, not in Makefile LIBSRC
-+  alphacpuid.pl
-+  constant_time_test.c
-+  crypto-lib.com
-+  ia64cpuid.S
-+  LPdir_unix.c
-+  pariscid.pl
-+  ppccpuid.pl
-+  x86_64cpuid.pl
++source_group("" FILES ${root_srcs})
++list(APPEND ${lib_name}_libsrcs ${root_srcs})
++##########
++set(root_extra # order from crypto/build.info EXTRA
 +  x86cpuid.pl
++  x86_64cpuid.pl
++  ia64cpuid.S
++  ppccpuid.pl
++  pariscid.pl
++  alphacpuid.pl
++  arm64cpuid.pl
++  armv4cpuid.pl
 +  )
-+list(APPEND root_extra # in directory, not in Makefile
-+  arm64cpuid.S
++list(APPEND root_extra # in directory, not in build.info
 +  arm_arch.h
 +  armcap.c
-+  armv4cpuid.S
-+  fips_err.h
-+  install-crypto.com # maybe was install.com? (it's in Makefile)
++  c64xpluscpuid.pl
++  dllmain.c
 +  LPdir_nyi.c
++  LPdir_unix.c
 +  LPdir_vms.c
 +  LPdir_win32.c
 +  LPdir_win.c
 +  LPdir_wince.c
-+  o_dir_test.c
-+  opensslconf.h.in
++  mem_clr.c
++  mips_arch.h
 +  ppc_arch.h
 +  ppccap.c
++  s390x_arch.h
 +  s390xcap.c
-+  s390xcpuid.S
++  s390xcpuid.pl
 +  sparc_arch.h
 +  sparccpuid.S
 +  sparcv9cap.c
@@ -308,44 +155,35 @@ index 0000000..f3c53fd
 +  )
 +list(APPEND root_extra # cmake
 +  CMakeLists.txt
-+  buildinf.h.cmake
 +  )
-+source_group("" FILES ${root_srcs})
-+list(APPEND ${lib_name}_libsrcs ${root_srcs})
-+list(APPEND ${lib_name}_exhdrs ${root_exhdrs})
-+list(APPEND ${lib_name}_all ${root_srcs} ${root_extra})
-+list(REMOVE_ITEM ${lib_name}_all
-+  ${CMAKE_CURRENT_BINARY_DIR}/buildinf.h
-+  ${CMAKE_CURRENT_BINARY_DIR}/opensslconf.h
-+  )
++list(APPEND ${lib_name}_all ${root_extra})
 +####################
 +# aes
-+set(aes_srcs # order from crypto/aes/Makefile
-+  aes/aes_core.c
++set(aes_srcs # order from crypto/aes/build.info
++  aes/build.info
 +  aes/aes_misc.c
 +  aes/aes_ecb.c
-+  aes/aes_cbc.c
 +  aes/aes_cfb.c
 +  aes/aes_ofb.c
-+  aes/aes_ctr.c
 +  aes/aes_ige.c
 +  aes/aes_wrap.c
 +  )
-+set(aes_exhdrs
-+  aes/aes.h
-+  )
 +list(APPEND aes_srcs
-+  ${aes_exhdrs}
 +  aes/aes_locl.h
-+  aes/Makefile
-+  aes/README
 +  )
-+set(aes_extra # in directory, not in Makefile
++source_group(aes FILES ${aes_srcs})
++list(APPEND ${lib_name}_libsrcs ${aes_srcs})
++##########
++set(aes_extra # in directory, not in build.info
++  aes/aes_cbc.c
++  aes/aes_core.c
 +  aes/aes_x86core.c
 +  )
 +list(APPEND aes_extra # TODO asm
 +  aes/asm/aes-586.pl
 +  aes/asm/aes-armv4.pl
++  aes/asm/aes-c64xplus.pl
++  aes/asm/aesfx-sparcv9.pl
 +  aes/asm/aes-ia64.S
 +  aes/asm/aes-mips.pl
 +  aes/asm/aesni-mb-x86_64.pl
@@ -363,17 +201,24 @@ index 0000000..f3c53fd
 +  aes/asm/aes-x86_64.pl
 +  aes/asm/bsaes-armv7.pl
 +  aes/asm/bsaes-x86_64.pl
++  aes/asm/vpaes-armv8.pl
 +  aes/asm/vpaes-ppc.pl
 +  aes/asm/vpaes-x86_64.pl
 +  aes/asm/vpaes-x86.pl
 +  )
-+source_group(aes FILES ${aes_srcs})
-+list(APPEND ${lib_name}_libsrcs ${aes_srcs})
-+list(APPEND ${lib_name}_exhdrs ${aes_exhdrs})
-+list(APPEND ${lib_name}_all ${aes_srcs} ${aes_extra})
++list(APPEND ${lib_name}_all ${aes_extra})
++####################
++# aria
++set(aria_srcs # order from crypto/aria/build.info
++  aria/build.info
++  aria/aria.c
++  )
++source_group(aria FILES ${aria_srcs})
++list(APPEND ${lib_name}_libsrcs ${aria_srcs})
 +####################
 +# asn1
-+set(asn1_srcs # order from crypto/asn1/Makefile
++set(asn1_srcs # order from crypto/asn1/build.info
++  asn1/build.info
 +  asn1/a_object.c
 +  asn1/a_bitstr.c
 +  asn1/a_utctm.c
@@ -383,11 +228,9 @@ index 0000000..f3c53fd
 +  asn1/a_octet.c
 +  asn1/a_print.c
 +  asn1/a_type.c
-+  asn1/a_set.c
 +  asn1/a_dup.c
 +  asn1/a_d2i_fp.c
 +  asn1/a_i2d_fp.c
-+  asn1/a_enum.c
 +  asn1/a_utf8.c
 +  asn1/a_sign.c
 +  asn1/a_digest.c
@@ -396,28 +239,17 @@ index 0000000..f3c53fd
 +  asn1/a_strex.c
 +  asn1/x_algor.c
 +  asn1/x_val.c
-+  asn1/x_pubkey.c
 +  asn1/x_sig.c
-+  asn1/x_req.c
-+  asn1/x_attrib.c
 +  asn1/x_bignum.c
 +  asn1/x_long.c
-+  asn1/x_name.c
-+  asn1/x_x509.c
-+  asn1/x_x509a.c
-+  asn1/x_crl.c
++  asn1/x_int64.c
 +  asn1/x_info.c
 +  asn1/x_spki.c
 +  asn1/nsseq.c
-+  asn1/x_nx509.c
 +  asn1/d2i_pu.c
 +  asn1/d2i_pr.c
 +  asn1/i2d_pu.c
 +  asn1/i2d_pr.c
-+  asn1/t_req.c
-+  asn1/t_x509.c
-+  asn1/t_x509a.c
-+  asn1/t_crl.c
 +  asn1/t_pkey.c
 +  asn1/t_spki.c
 +  asn1/t_bitst.c
@@ -428,14 +260,12 @@ index 0000000..f3c53fd
 +  asn1/tasn_utl.c
 +  asn1/tasn_typ.c
 +  asn1/tasn_prn.c
++  asn1/tasn_scn.c
 +  asn1/ameth_lib.c
 +  asn1/f_int.c
 +  asn1/f_string.c
 +  asn1/n_pkey.c
-+  asn1/f_enum.c
 +  asn1/x_pkey.c
-+  asn1/a_bool.c
-+  asn1/x_exten.c
 +  asn1/bio_asn1.c
 +  asn1/bio_ndef.c
 +  asn1/asn_mime.c
@@ -443,78 +273,79 @@ index 0000000..f3c53fd
 +  asn1/asn1_par.c
 +  asn1/asn1_lib.c
 +  asn1/asn1_err.c
-+  asn1/a_bytes.c
 +  asn1/a_strnid.c
 +  asn1/evp_asn1.c
 +  asn1/asn_pack.c
 +  asn1/p5_pbe.c
 +  asn1/p5_pbev2.c
++  asn1/p5_scrypt.c
 +  asn1/p8_pkey.c
 +  asn1/asn_moid.c
-+  )
-+set(asn1_exhdrs
-+  asn1/asn1.h
-+  asn1/asn1_mac.h
-+  asn1/asn1t.h
++  asn1/asn_mstbl.c
++  asn1/asn1_item_list.c
 +  )
 +list(APPEND asn1_srcs
-+  ${asn1_exhdrs}
++  asn1/asn1_item_list.h
 +  asn1/asn1_locl.h
-+  asn1/Makefile
-+  )
-+set(asn1_extra # in directory, not in Makefile LIBSRC
 +  asn1/charmap.h
-+  )
-+list(APPEND asn1_extra # in directory, not in Makefile
 +  asn1/charmap.pl
++  asn1/standard_methods.h
++  asn1/tbl_standard.h
 +  )
 +source_group(asn1 FILES ${asn1_srcs})
 +list(APPEND ${lib_name}_libsrcs ${asn1_srcs})
-+list(APPEND ${lib_name}_exhdrs ${asn1_exhdrs})
-+list(APPEND ${lib_name}_all ${asn1_srcs} ${asn1_extra})
++####################
++# async
++set(async_srcs # order from crypto/async/build.info
++  async/build.info
++  async/async.c
++  async/async_wait.c
++  async/async_err.c
++  )
++list(APPEND async_srcs
++  async/async_locl.h
++  )
++source_group(async FILES ${async_srcs})
++##########
++set(async_arch_srcs # order from crypto/async/build.info
++  async/arch/async_posix.c
++  async/arch/async_win.c
++  async/arch/async_null.c
++  )
++list(APPEND async_arch_srcs
++  async/arch/async_posix.h
++  async/arch/async_win.h
++  async/arch/async_null.h
++  )
++source_group(async\\arch FILES ${async_arch_srcs})
++list(APPEND ${lib_name}_libsrcs ${async_srcs} ${async_arch_srcs})
 +####################
 +# bf
-+set(bf_srcs # order from crypto/bf/Makefile
++set(bf_srcs # order from crypto/bf/build.info
++  bf/build.info
 +  bf/bf_skey.c
 +  bf/bf_ecb.c
-+  bf/bf_enc.c
 +  bf/bf_cfb64.c
 +  bf/bf_ofb64.c
 +  )
-+set(bf_exhdrs
-+  bf/blowfish.h
-+  )
 +list(APPEND bf_srcs
-+  ${bf_exhdrs}
 +  bf/bf_locl.h
 +  bf/bf_pi.h
-+  bf/COPYRIGHT
-+  bf/INSTALL
-+  bf/Makefile
-+  bf/README
-+  bf/VERSION
-+  )
-+set(bf_extra # in directory, not in Makefile LIBSRC
-+  bf/bftest.c
-+  )
-+list(APPEND bf_extra # in directory, not in Makefile
-+  bf/bf_cbc.c
-+  bf/bf_opts.c
-+  bf/bfs.cpp
-+  bf/bfspeed.c
-+  )
-+list(APPEND bf_extra # TODO asm
-+  bf/asm/bf-586.pl
-+  bf/asm/bf-686.pl
-+  bf/asm/readme
 +  )
 +source_group(bf FILES ${bf_srcs})
 +list(APPEND ${lib_name}_libsrcs ${bf_srcs})
-+list(APPEND ${lib_name}_exhdrs ${bf_exhdrs})
-+list(APPEND ${lib_name}_all ${bf_srcs} ${bf_extra})
++##########
++set(bf_extra # in directory, not in build.info
++  bf/bf_enc.c
++  )
++list(APPEND bf_extra # TODO asm
++  bf/asm/bf-586.pl
++  )
++list(APPEND ${lib_name}_all ${bf_extra})
 +####################
 +# bio
-+set(bio_srcs # order from crypto/bio/Makefile
++set(bio_srcs # order from crypto/bio/build.info
++  bio/build.info
 +  bio/bio_lib.c
 +  bio/bio_cb.c
 +  bio/bio_err.c
@@ -528,34 +359,41 @@ index 0000000..f3c53fd
 +  bio/bf_buff.c
 +  bio/b_print.c
 +  bio/b_dump.c
++  bio/b_addr.c
 +  bio/b_sock.c
++  bio/b_sock2.c
 +  bio/bss_acpt.c
 +  bio/bf_nbio.c
 +  bio/bss_log.c
 +  bio/bss_bio.c
 +  bio/bss_dgram.c
-+  )
-+set(bio_exhdrs
-+  bio/bio.h
-+  )
-+list(APPEND bio_srcs
-+  ${bio_exhdrs}
-+  bio/bio_lcl.h
-+  bio/Makefile
-+  )
-+set(bio_extra # actually in Makefile LIBSRC, just commented-out
++  bio/bio_meth.c
 +  bio/bf_lbuf.c
 +  )
-+list(APPEND bio_extra # in directory, not in Makefile
-+  bio/bss_rtcp.c
++list(APPEND bio_srcs
++  bio/bio_lcl.h
 +  )
 +source_group(bio FILES ${bio_srcs})
 +list(APPEND ${lib_name}_libsrcs ${bio_srcs})
-+list(APPEND ${lib_name}_exhdrs ${bio_exhdrs})
-+list(APPEND ${lib_name}_all ${bio_srcs} ${bio_extra})
++####################
++# blake2
++set(blake2_srcs # order from crypto/blake2/build.info
++  blake2/build.info
++  blake2/blake2b.c
++  blake2/blake2s.c
++  blake2/m_blake2b.c
++  blake2/m_blake2s.c
++  )
++list(APPEND blake2_srcs
++  blake2/blake2_impl.h
++  blake2/blake2_locl.h
++  )
++source_group(blake2 FILES ${blake2_srcs})
++list(APPEND ${lib_name}_libsrcs ${blake2_srcs})
 +####################
 +# bn
-+set(bn_srcs # order from crypto/bn/Makefile
++set(bn_srcs # order from crypto/bn/build.info
++  bn/build.info
 +  bn/bn_add.c
 +  bn/bn_div.c
 +  bn/bn_exp.c
@@ -574,7 +412,6 @@ index 0000000..f3c53fd
 +  bn/bn_prime.c
 +  bn/bn_err.c
 +  bn/bn_sqr.c
-+  bn/bn_asm.c
 +  bn/bn_recp.c
 +  bn/bn_mont.c
 +  bn/bn_mpi.c
@@ -584,51 +421,41 @@ index 0000000..f3c53fd
 +  bn/bn_depr.c
 +  bn/bn_const.c
 +  bn/bn_x931p.c
-+  )
-+set(bn_exhdrs
-+  bn/bn.h
++  bn/bn_intern.c
++  bn/bn_dh.c
++  bn/bn_srp.c
 +  )
 +list(APPEND bn_srcs
-+  ${bn_exhdrs}
 +  bn/bn_lcl.h
 +  bn/bn_prime.h
-+  bn/Makefile
-+  bn/todo
 +  )
-+set(bn_extra # in directory, not in Makefile LIBSRC
++source_group(bn FILES ${bn_srcs})
++list(APPEND ${lib_name}_libsrcs ${bn_srcs})
++##########
++set(bn_extra # in directory, not in build.info
++  bn/bn_asm.c
 +  bn/bn_prime.pl
-+  bn/bntest.c
-+  bn/divtest.c
-+  bn/exptest.c
-+  )
-+list(APPEND bn_extra # in directory, not in Makefile
-+  bn/bn.mul
-+  bn/bnspeed.c
-+  bn/exp.c
-+  bn/expspeed.c
++  bn/README.pod
 +  bn/rsaz_exp.c
 +  bn/rsaz_exp.h
-+  bn/vms-helper.c
 +  )
 +list(APPEND bn_extra # TODO asm
 +  bn/asm/alpha-mont.pl
 +  bn/asm/armv4-gf2m.pl
 +  bn/asm/armv4-mont.pl
++  bn/asm/armv8-mont.pl
 +  bn/asm/bn-586.pl
++  bn/asm/bn-c64xplus.asm
++  bn/asm/c64xplus-gf2m.pl
 +  bn/asm/co-586.pl
 +  bn/asm/ia64-mont.pl
 +  bn/asm/ia64.S
-+  bn/asm/mips3-mont.pl
-+  bn/asm/mips3.s
 +  bn/asm/mips-mont.pl
 +  bn/asm/mips.pl
-+  bn/asm/pa-risc2.s
-+  bn/asm/pa-risc2W.s
 +  bn/asm/parisc-mont.pl
 +  bn/asm/ppc64-mont.pl
 +  bn/asm/ppc-mont.pl
 +  bn/asm/ppc.pl
-+  bn/asm/README
 +  bn/asm/rsaz-avx2.pl
 +  bn/asm/rsaz-x86_64.pl
 +  bn/asm/s390x-gf2m.pl
@@ -642,129 +469,107 @@ index 0000000..f3c53fd
 +  bn/asm/sparcv9-mont.pl
 +  bn/asm/via-mont.pl
 +  bn/asm/vis3-mont.pl
-+  bn/asm/vms.mar
-+  bn/asm/x86/add.pl
-+  bn/asm/x86/comba.pl
-+  bn/asm/x86/div.pl
-+  bn/asm/x86/f
-+  bn/asm/x86/mul_add.pl
-+  bn/asm/x86/mul.pl
-+  bn/asm/x86/sqr.pl
-+  bn/asm/x86/sub.pl
 +  bn/asm/x86_64-gcc.c
 +  bn/asm/x86_64-gf2m.pl
 +  bn/asm/x86_64-mont5.pl
 +  bn/asm/x86_64-mont.pl
 +  bn/asm/x86-gf2m.pl
 +  bn/asm/x86-mont.pl
-+  bn/asm/x86.pl
 +  )
-+source_group(bn FILES ${bn_srcs})
-+list(APPEND ${lib_name}_libsrcs ${bn_srcs})
-+list(APPEND ${lib_name}_exhdrs ${bn_exhdrs})
-+list(APPEND ${lib_name}_all ${bn_srcs} ${bn_extra})
++list(APPEND ${lib_name}_all ${bn_extra})
 +####################
 +# buffer
-+set(buffer_srcs # order from crypto/buffer/Makefile
++set(buffer_srcs # order from crypto/buffer/build.info
++  buffer/build.info
 +  buffer/buffer.c
-+  buffer/buf_str.c
 +  buffer/buf_err.c
-+  )
-+set(buffer_exhdrs
-+  buffer/buffer.h
-+  )
-+list(APPEND buffer_srcs
-+  ${buffer_exhdrs}
-+  buffer/Makefile
 +  )
 +source_group(buffer FILES ${buffer_srcs})
 +list(APPEND ${lib_name}_libsrcs ${buffer_srcs})
-+list(APPEND ${lib_name}_exhdrs ${buffer_exhdrs})
-+list(APPEND ${lib_name}_all ${buffer_srcs})
 +####################
 +# camellia
-+set(camellia_srcs # order from crypto/camellia/Makefile
-+  camellia/camellia.c
-+  camellia/cmll_misc.c
++set(camellia_srcs # order from crypto/camellia/build.info
++  camellia/build.info
 +  camellia/cmll_ecb.c
-+  camellia/cmll_cbc.c
 +  camellia/cmll_ofb.c
 +  camellia/cmll_cfb.c
 +  camellia/cmll_ctr.c
-+  camellia/cmll_utl.c
-+  )
-+set(camellia_exhdrs
-+  camellia/camellia.h
 +  )
 +list(APPEND camellia_srcs
-+  ${camellia_exhdrs}
 +  camellia/cmll_locl.h
-+  camellia/Makefile
 +  )
-+set(camellia_extra # TODO asm
++source_group(camellia FILES ${camellia_srcs})
++list(APPEND ${lib_name}_libsrcs ${camellia_srcs})
++##########
++set(camellia_extra
++  camellia/camellia.c
++  camellia/cmll_cbc.c
++  camellia/cmll_misc.c
++  )
++list(APPEND camellia_extra # TODO asm
 +  camellia/asm/cmllt4-sparcv9.pl
 +  camellia/asm/cmll-x86_64.pl
 +  camellia/asm/cmll-x86.pl
 +  )
-+source_group(camellia FILES ${camellia_srcs})
-+list(APPEND ${lib_name}_libsrcs ${camellia_srcs})
-+list(APPEND ${lib_name}_exhdrs ${camellia_exhdrs})
-+list(APPEND ${lib_name}_all ${camellia_srcs} ${camellia_extra})
++list(APPEND ${lib_name}_all ${camellia_extra})
 +####################
 +# cast
-+set(cast_srcs # order from crypto/cast/Makefile
++set(cast_srcs # order from crypto/cast/build.info
++  cast/build.info
 +  cast/c_skey.c
 +  cast/c_ecb.c
-+  cast/c_enc.c
 +  cast/c_cfb64.c
 +  cast/c_ofb64.c
 +  )
-+set(cast_exhdrs
-+  cast/cast.h
-+  )
 +list(APPEND cast_srcs
-+  ${cast_exhdrs}
 +  cast/cast_lcl.h
 +  cast/cast_s.h
-+  cast/Makefile
-+  )
-+set(cast_extra # in directory, not in Makefile LIBSRC
-+  cast/casttest.c
-+  )
-+list(APPEND cast_extra # in directory, not in Makefile
-+  cast/castopts.c
-+  cast/casts.cpp
-+  cast/cast_spd.c
-+  )
-+list(APPEND cast_extra # TODO asm
-+  cast/asm/cast-586.pl
-+  cast/asm/readme
 +  )
 +source_group(cast FILES ${cast_srcs})
 +list(APPEND ${lib_name}_libsrcs ${cast_srcs})
-+list(APPEND ${lib_name}_exhdrs ${cast_exhdrs})
-+list(APPEND ${lib_name}_all ${cast_srcs} ${cast_extra})
++##########
++set(cast_extra # in directory, not in build.info
++  cast/c_enc.c
++  )
++list(APPEND cast_extra # TODO asm
++  cast/asm/cast-586.pl
++  )
++list(APPEND ${lib_name}_all ${cast_extra})
++####################
++# chacha
++set(chacha_srcs # order from crypto/chacha/build.info
++  chacha/build.info
++  )
++source_group(chacha FILES ${chacha_srcs})
++list(APPEND ${lib_name}_libsrcs ${chacha_srcs})
++##########
++set(chacha_extra # in directory, not in build.info
++  chacha/chacha_enc.c
++  )
++list(APPEND chacha_extra # TODO asm
++  chacha/asm/chacha-armv4.pl
++  chacha/asm/chacha-armv8.pl
++  chacha/asm/chacha-c64xplus.pl
++  chacha/asm/chacha-ppc.pl
++  chacha/asm/chacha-s390x.pl
++  chacha/asm/chacha-x86_64.pl
++  chacha/asm/chacha-x86.pl
++  )
++list(APPEND ${lib_name}_all ${chacha_extra})
 +####################
 +# cmac
-+set(cmac_srcs # order from crypto/cmac/Makefile
++set(cmac_srcs # order from crypto/cmac/build.info
++  cmac/build.info
 +  cmac/cmac.c
 +  cmac/cm_ameth.c
 +  cmac/cm_pmeth.c
 +  )
-+set(cmac_exhdrs
-+  cmac/cmac.h
-+  )
-+list(APPEND cmac_srcs
-+  ${cmac_exhdrs}
-+  cmac/Makefile
-+  )
 +source_group(cmac FILES ${cmac_srcs})
 +list(APPEND ${lib_name}_libsrcs ${cmac_srcs})
-+list(APPEND ${lib_name}_exhdrs ${cmac_exhdrs})
-+list(APPEND ${lib_name}_all ${cmac_srcs})
 +####################
 +# cms
-+set(cms_srcs # order from crypto/cms/Makefile
++set(cms_srcs # order from crypto/cms/build.info
++  cms/build.info
 +  cms/cms_lib.c
 +  cms/cms_asn1.c
 +  cms/cms_att.c
@@ -780,40 +585,28 @@ index 0000000..f3c53fd
 +  cms/cms_pwri.c
 +  cms/cms_kari.c
 +  )
-+set(cms_exhdrs
-+  cms/cms.h
-+  )
 +list(APPEND cms_srcs
-+  ${cms_exhdrs}
 +  cms/cms_lcl.h
-+  cms/Makefile
 +  )
 +source_group(cms FILES ${cms_srcs})
 +list(APPEND ${lib_name}_libsrcs ${cms_srcs})
-+list(APPEND ${lib_name}_exhdrs ${cms_exhdrs})
-+list(APPEND ${lib_name}_all ${cms_srcs})
 +####################
 +# comp
-+set(comp_srcs # order from crypto/comp/Makefile
++set(comp_srcs # order from crypto/comp/build.info
++  comp/build.info
 +  comp/comp_lib.c
 +  comp/comp_err.c
-+  comp/c_rle.c
 +  comp/c_zlib.c
 +  )
-+set(comp_exhdrs
-+  comp/comp.h
-+  )
 +list(APPEND comp_srcs
-+  ${comp_exhdrs}
-+  comp/Makefile
++  comp/comp_lcl.h
 +  )
 +source_group(comp FILES ${comp_srcs})
 +list(APPEND ${lib_name}_libsrcs ${comp_srcs})
-+list(APPEND ${lib_name}_exhdrs ${comp_exhdrs})
-+list(APPEND ${lib_name}_all ${comp_srcs})
 +####################
 +# conf
-+set(conf_srcs # order from crypto/conf/Makefile
++set(conf_srcs # order from crypto/conf/build.info
++  conf/build.info
 +  conf/conf_err.c
 +  conf/conf_lib.c
 +  conf/conf_api.c
@@ -821,107 +614,68 @@ index 0000000..f3c53fd
 +  conf/conf_mod.c
 +  conf/conf_mall.c
 +  conf/conf_sap.c
-+  )
-+set(conf_exhdrs
-+  conf/conf.h
-+  conf/conf_api.h
++  conf/conf_ssl.c
 +  )
 +list(APPEND conf_srcs
-+  ${conf_exhdrs}
 +  conf/conf_def.h
-+  conf/Makefile
-+  conf/README
-+  )
-+set(conf_extra # in directory, not in Makefile
-+  conf/cnf_save.c
++  conf/conf_lcl.h
 +  conf/keysets.pl
-+  conf/ssleay.cnf
-+  conf/test.c
 +  )
 +source_group(conf FILES ${conf_srcs})
 +list(APPEND ${lib_name}_libsrcs ${conf_srcs})
-+list(APPEND ${lib_name}_exhdrs ${conf_exhdrs})
-+list(APPEND ${lib_name}_all ${conf_srcs} ${conf_extra})
++####################
++# ct
++set(ct_srcs # order from crypto/ct/build.info
++  ct/build.info
++  ct/ct_b64.c
++  ct/ct_err.c
++  ct/ct_log.c
++  ct/ct_oct.c
++  ct/ct_policy.c
++  ct/ct_prn.c
++  ct/ct_sct.c
++  ct/ct_sct_ctx.c
++  ct/ct_vfy.c
++  ct/ct_x509v3.c
++  )
++list(APPEND ct_srcs
++  ct/ct_locl.h
++  )
++source_group(ct FILES ${ct_srcs})
++list(APPEND ${lib_name}_libsrcs ${ct_srcs})
 +####################
 +# des
-+set(des_srcs # order from crypto/des/Makefile
-+  des/cbc_cksm.c
++set(des_srcs # order from crypto/des/build.info
++  des/build.info
++  des/set_key.c
++  des/ecb_enc.c
 +  des/cbc_enc.c
++  des/ecb3_enc.c
 +  des/cfb64enc.c
 +  des/cfb_enc.c
-+  des/ecb3_enc.c
-+  des/ecb_enc.c
-+  des/enc_read.c
-+  des/enc_writ.c
-+  des/fcrypt.c
++  des/ofb64ede.c
 +  des/ofb64enc.c
 +  des/ofb_enc.c
++  des/str2key.c
 +  des/pcbc_enc.c
 +  des/qud_cksm.c
 +  des/rand_key.c
-+  des/rpc_enc.c
-+  des/set_key.c
-+  des/des_enc.c
-+  des/fcrypt_b.c
++  des/fcrypt.c
 +  des/xcbc_enc.c
-+  des/str2key.c
-+  des/cfb64ede.c
-+  des/ofb64ede.c
-+  des/ede_cbcm_enc.c
-+  des/des_old.c
-+  des/des_old2.c
-+  des/read2pwd.c
-+  )
-+set(des_exhdrs
-+  des/des.h
-+  des/des_old.h
++  des/cbc_cksm.c
 +  )
 +list(APPEND des_srcs
-+  ${des_exhdrs}
 +  des/des_locl.h
-+  des/des_ver.h
-+  des/rpc_des.h
 +  des/spr.h
-+  des/COPYRIGHT
-+  des/des-lib.com
-+  des/DES.pm
-+  des/des.pod
-+  des/FILES0
-+  des/Imakefile
-+  des/INSTALL
-+  des/KERBEROS
-+  des/Makefile
-+  des/makefile.bc
-+  des/options.txt
-+  des/README
-+  des/typemap
-+  des/VERSION
 +  )
-+set(des_extra # in directory, not in Makefile LIBSRC
-+  des/destest.c
++source_group(des FILES ${des_srcs})
++list(APPEND ${lib_name}_libsrcs ${des_srcs})
++##########
++set(des_extra # in directory, not in build.info
++  des/cfb64ede.c
++  des/des_enc.c
++  des/fcrypt_b.c
 +  des/ncbc_enc.c
-+  )
-+list(APPEND des_extra # in directory, not in Makefile
-+  des/cbc3_enc.c
-+  des/des3s.cpp
-+  des/des.c
-+  des/des_opts.c
-+  des/dess.cpp
-+  des/DES.xs
-+  des/read_pwd.c
-+  des/rpw.c
-+  des/speed.c
-+  )
-+list(APPEND des_extra # subdirectories
-+  des/t/test
-+  des/times/486-50.sol
-+  des/times/586-100.lnx
-+  des/times/686-200.fre
-+  des/times/aix.cc
-+  des/times/alpha.cc
-+  des/times/hpux.cc
-+  des/times/sparc.gcc
-+  des/times/usparc.cc
 +  )
 +list(APPEND des_extra # TODO asm
 +  des/asm/crypt586.pl
@@ -929,15 +683,12 @@ index 0000000..f3c53fd
 +  des/asm/desboth.pl
 +  des/asm/des_enc.m4
 +  des/asm/dest4-sparcv9.pl
-+  des/asm/readme
 +  )
-+source_group(des FILES ${des_srcs})
-+list(APPEND ${lib_name}_libsrcs ${des_srcs})
-+list(APPEND ${lib_name}_exhdrs ${des_exhdrs})
-+list(APPEND ${lib_name}_all ${des_srcs} ${des_extra})
++list(APPEND ${lib_name}_all ${des_extra})
 +####################
 +# dh
-+set(dh_srcs # order from crypto/dh/Makefile
++set(dh_srcs # order from crypto/dh/build.info
++  dh/build.info
 +  dh/dh_asn1.c
 +  dh/dh_gen.c
 +  dh/dh_key.c
@@ -950,36 +701,23 @@ index 0000000..f3c53fd
 +  dh/dh_prn.c
 +  dh/dh_rfc5114.c
 +  dh/dh_kdf.c
-+  )
-+set(dh_exhdrs
-+  dh/dh.h
++  dh/dh_meth.c
++  dh/dh_rfc7919.c
 +  )
 +list(APPEND dh_srcs
-+  ${dh_exhdrs}
++  dh/dh_locl.h
 +  dh/dh1024.pem
 +  dh/dh192.pem
 +  dh/dh2048.pem
 +  dh/dh4096.pem
 +  dh/dh512.pem
-+  dh/example
-+  dh/generate
-+  dh/Makefile
-+  )
-+set(dh_extra # in directory, not in Makefile LIBSRC
-+  dh/dhtest.c
-+  )
-+list(APPEND dh_extra # in directory, not in Makefile
-+  dh/p1024.c
-+  dh/p192.c
-+  dh/p512.c
 +  )
 +source_group(dh FILES ${dh_srcs})
 +list(APPEND ${lib_name}_libsrcs ${dh_srcs})
-+list(APPEND ${lib_name}_exhdrs ${dh_exhdrs})
-+list(APPEND ${lib_name}_all ${dh_srcs} ${dh_extra})
 +####################
 +# dsa
-+set(dsa_srcs # order from crypto/dsa/Makefile
++set(dsa_srcs # order from crypto/dsa/build.info
++  dsa/build.info
 +  dsa/dsa_gen.c
 +  dsa/dsa_key.c
 +  dsa/dsa_lib.c
@@ -992,55 +730,34 @@ index 0000000..f3c53fd
 +  dsa/dsa_ameth.c
 +  dsa/dsa_pmeth.c
 +  dsa/dsa_prn.c
-+  )
-+set(dsa_exhdrs
-+  dsa/dsa.h
++  dsa/dsa_meth.c
 +  )
 +list(APPEND dsa_srcs
-+  ${dsa_exhdrs}
 +  dsa/dsa_locl.h
-+  dsa/fips186a.txt
-+  dsa/Makefile
-+  dsa/README
-+  )
-+set(dsa_extra # in directory, not in Makefile LIBSRC
-+  dsa/dsatest.c
-+  )
-+list(APPEND dsa_extra # in directory, not in Makefile
-+  dsa/dsagen.c
 +  )
 +source_group(dsa FILES ${dsa_srcs})
 +list(APPEND ${lib_name}_libsrcs ${dsa_srcs})
-+list(APPEND ${lib_name}_exhdrs ${dsa_exhdrs})
-+list(APPEND ${lib_name}_all ${dsa_srcs} ${dsa_extra})
 +####################
 +# dso
-+set(dso_srcs # order from crypto/dso/Makefile
++set(dso_srcs # order from crypto/dso/build.info
++  dso/build.info
 +  dso/dso_dl.c
 +  dso/dso_dlfcn.c
 +  dso/dso_err.c
 +  dso/dso_lib.c
-+  dso/dso_null.c
 +  dso/dso_openssl.c
 +  dso/dso_win32.c
 +  dso/dso_vms.c
-+  dso/dso_beos.c
-+  )
-+set(dso_exhdrs
-+  dso/dso.h
 +  )
 +list(APPEND dso_srcs
-+  ${dso_exhdrs}
-+  dso/Makefile
-+  dso/README
++  dso/dso_locl.h
 +  )
 +source_group(dso FILES ${dso_srcs})
 +list(APPEND ${lib_name}_libsrcs ${dso_srcs})
-+list(APPEND ${lib_name}_exhdrs ${dso_exhdrs})
-+list(APPEND ${lib_name}_all ${dso_srcs})
 +####################
 +# ec
-+set(ec_srcs # order from crypto/ec/Makefile
++set(ec_srcs # order from crypto/ec/build.info
++  ec/build.info
 +  ec/ec_lib.c
 +  ec/ecp_smpl.c
 +  ec/ecp_mont.c
@@ -1054,7 +771,6 @@ index 0000000..f3c53fd
 +  ec/ec_asn1.c
 +  ec/ec_key.c
 +  ec/ec2_smpl.c
-+  ec/ec2_mult.c
 +  ec/ec_ameth.c
 +  ec/ec_pmeth.c
 +  ec/eck_prn.c
@@ -1065,82 +781,69 @@ index 0000000..f3c53fd
 +  ec/ecp_oct.c
 +  ec/ec2_oct.c
 +  ec/ec_oct.c
-+  )
-+set(ec_exhdrs
-+  ec/ec.h
++  ec/ec_kmeth.c
++  ec/ecdh_ossl.c
++  ec/ecdh_kdf.c
++  ec/ecdsa_ossl.c
++  ec/ecdsa_sign.c
++  ec/ecdsa_vrf.c
++  ec/curve25519.c
++  ec/ecx_meth.c
 +  )
 +list(APPEND ec_srcs
-+  ${ec_exhdrs}
 +  ec/ec_lcl.h
-+  ec/Makefile
 +  )
-+set(ec_extra # in directory, not in Makefile LIBSRC
-+  ec/ectest.c
++source_group(ec FILES ${ec_srcs})
++####
++set(ec_curve448_srcs # order from crypto/ec/build.info
++  ec/curve448/f_generic.c
++  ec/curve448/scalar.c
++  ec/curve448/curve448_tables.c
++  ec/curve448/eddsa.c
++  ec/curve448/curve448.c
 +  )
-+list(APPEND ec_extra # in directory, not in Makefile
++list(APPEND ec_curve448_srcs
++  ec/curve448/curve448_lcl.h
++  ec/curve448/curve448utils.h
++  ec/curve448/ed448.h
++  ec/curve448/field.h
++  ec/curve448/point_448.h
++  ec/curve448/word.h
++  )
++source_group(ec\\curve448 FILES ${ec_curve448_srcs})
++list(APPEND ec_srcs ${ec_curve448_srcs})
++####
++set(ec_curve448_arch_32_srcs
++  ec/curve448/arch_32/f_impl.c
++  )
++list(APPEND ec_curve448_arch_32_srcs
++  ec/curve448/arch_32/arch_intrinsics.h
++  ec/curve448/arch_32/f_impl.h
++  )
++source_group(ec\\curve448\\arch_32 FILES ${ec_curve448_arch_32_srcs})
++list(APPEND ec_srcs ${ec_curve448_arch_32_srcs})
++list(APPEND ${lib_name}_libsrcs ${ec_srcs})
++##########
++set(ec_extra # in directory, not in build.info
 +  ec/ecp_nistz256.c
 +  ec/ecp_nistz256_table.c
 +  )
 +list(APPEND ec_extra # TODO asm
++  ec/asm/ecp_nistz256-armv4.pl
++  ec/asm/ecp_nistz256-armv8.pl
 +  ec/asm/ecp_nistz256-avx2.pl
++  ec/asm/ecp_nistz256-ppc64.pl
++  ec/asm/ecp_nistz256-sparcv9.pl
 +  ec/asm/ecp_nistz256-x86_64.pl
++  ec/asm/ecp_nistz256-x86.pl
++  ec/asm/x25519-ppc64.pl
++  ec/asm/x25519-x86_64.pl
 +  )
-+source_group(ec FILES ${ec_srcs})
-+list(APPEND ${lib_name}_libsrcs ${ec_srcs})
-+list(APPEND ${lib_name}_exhdrs ${ec_exhdrs})
-+list(APPEND ${lib_name}_all ${ec_srcs} ${ec_extra})
-+####################
-+# ecdh
-+set(ecdh_srcs # order from crypto/ecdh/Makefile
-+  ecdh/ech_lib.c
-+  ecdh/ech_ossl.c
-+  ecdh/ech_key.c
-+  ecdh/ech_err.c
-+  ecdh/ech_kdf.c
-+  )
-+set(ecdh_exhdrs
-+  ecdh/ecdh.h
-+  )
-+list(APPEND ecdh_srcs
-+  ${ecdh_exhdrs}
-+  ecdh/ech_locl.h
-+  ecdh/Makefile
-+  )
-+set(ecdh_extra # in directory, not in Makefile LIBSRC
-+  ecdh/ecdhtest.c
-+  )
-+source_group(ecdh FILES ${ecdh_srcs})
-+list(APPEND ${lib_name}_libsrcs ${ecdh_srcs})
-+list(APPEND ${lib_name}_exhdrs ${ecdh_exhdrs})
-+list(APPEND ${lib_name}_all ${ecdh_srcs} ${ecdh_extra})
-+####################
-+# ecdsa
-+set(ecdsa_srcs # order from crypto/ecdsa/Makefile
-+  ecdsa/ecs_lib.c
-+  ecdsa/ecs_asn1.c
-+  ecdsa/ecs_ossl.c
-+  ecdsa/ecs_sign.c
-+  ecdsa/ecs_vrf.c
-+  ecdsa/ecs_err.c
-+  )
-+set(ecdsa_exhdrs
-+  ecdsa/ecdsa.h
-+  )
-+list(APPEND ecdsa_srcs
-+  ${ecdsa_exhdrs}
-+  ecdsa/ecs_locl.h
-+  ecdsa/Makefile
-+  )
-+set(ecdsa_extra # in directory, not in Makefile LIBSRC
-+  ecdsa/ecdsatest.c
-+  )
-+source_group(ecdsa FILES ${ecdsa_srcs})
-+list(APPEND ${lib_name}_libsrcs ${ecdsa_srcs})
-+list(APPEND ${lib_name}_exhdrs ${ecdsa_exhdrs})
-+list(APPEND ${lib_name}_all ${ecdsa_srcs} ${ecdsa_extra})
++list(APPEND ${lib_name}_all ${ec_extra})
 +####################
 +# engine
-+set(engine_srcs # order from crypto/engine/Makefile
++set(engine_srcs # order from crypto/engine/build.info
++  engine/build.info
 +  engine/eng_err.c
 +  engine/eng_lib.c
 +  engine/eng_list.c
@@ -1152,64 +855,52 @@ index 0000000..f3c53fd
 +  engine/eng_all.c
 +  engine/tb_rsa.c
 +  engine/tb_dsa.c
-+  engine/tb_ecdsa.c
 +  engine/tb_dh.c
-+  engine/tb_ecdh.c
 +  engine/tb_rand.c
-+  engine/tb_store.c
 +  engine/tb_cipher.c
 +  engine/tb_digest.c
 +  engine/tb_pkmeth.c
 +  engine/tb_asnmth.c
++  engine/tb_eckey.c
 +  engine/eng_openssl.c
 +  engine/eng_cnf.c
 +  engine/eng_dyn.c
-+  engine/eng_cryptodev.c
 +  engine/eng_rdrand.c
 +  )
-+set(engine_exhdrs
-+  engine/engine.h
-+  )
 +list(APPEND engine_srcs
-+  ${engine_exhdrs}
 +  engine/eng_int.h
-+  engine/Makefile
 +  engine/README
-+  )
-+set(engine_extra # in directory, not in Makefile LIBSRC
-+  engine/enginetest.c
 +  )
 +source_group(engine FILES ${engine_srcs})
 +list(APPEND ${lib_name}_libsrcs ${engine_srcs})
-+list(APPEND ${lib_name}_exhdrs ${engine_exhdrs})
-+list(APPEND ${lib_name}_all ${engine_srcs} ${engine_extra})
++##########
++set(engine_extra # in directory, not in build.info
++  engine/eng_devcrypto.c # TODO determine if part of library
++  )
++list(APPEND ${lib_name}_all ${engine_extra})
 +####################
 +# err
-+set(err_srcs # order from crypto/err/Makefile
++set(err_srcs # order from crypto/err/build.info
++  err/build.info
 +  err/err.c
 +  err/err_all.c
 +  err/err_prn.c
 +  )
-+set(err_exhdrs
-+  err/err.h
-+  )
 +list(APPEND err_srcs
-+  ${err_exhdrs}
-+  err/Makefile
 +  err/openssl.ec
++  err/openssl.txt
++  err/README
 +  )
 +source_group(err FILES ${err_srcs})
 +list(APPEND ${lib_name}_libsrcs ${err_srcs})
-+list(APPEND ${lib_name}_exhdrs ${err_exhdrs})
-+list(APPEND ${lib_name}_all ${err_srcs})
 +####################
 +# evp
-+set(evp_srcs # order from crypto/evp/Makefile
++set(evp_srcs # order from crypto/evp/build.info
++  evp/build.info
 +  evp/encode.c
 +  evp/digest.c
 +  evp/evp_enc.c
 +  evp/evp_key.c
-+  evp/evp_acnf.c
 +  evp/evp_cnf.c
 +  evp/e_des.c
 +  evp/e_bf.c
@@ -1220,6 +911,8 @@ index 0000000..f3c53fd
 +  evp/e_aes.c
 +  evp/names.c
 +  evp/e_seed.c
++  evp/e_aria.c
++  evp/e_sm4.c
 +  evp/e_xcbc_d.c
 +  evp/e_rc2.c
 +  evp/e_cast.c
@@ -1228,14 +921,12 @@ index 0000000..f3c53fd
 +  evp/m_md2.c
 +  evp/m_md4.c
 +  evp/m_md5.c
-+  evp/m_sha.c
 +  evp/m_sha1.c
 +  evp/m_wp.c
-+  evp/m_dss.c
-+  evp/m_dss1.c
++  evp/m_md5_sha1.c
 +  evp/m_mdc2.c
 +  evp/m_ripemd.c
-+  evp/m_ecdsa.c
++  evp/m_sha3.c
 +  evp/p_open.c
 +  evp/p_seal.c
 +  evp/p_sign.c
@@ -1248,7 +939,6 @@ index 0000000..f3c53fd
 +  evp/bio_enc.c
 +  evp/evp_err.c
 +  evp/e_null.c
-+  evp/c_all.c
 +  evp/c_allc.c
 +  evp/c_alld.c
 +  evp/evp_lib.c
@@ -1257,6 +947,7 @@ index 0000000..f3c53fd
 +  evp/evp_pbe.c
 +  evp/p5_crpt.c
 +  evp/p5_crpt2.c
++  evp/pbe_scrypt.c
 +  evp/e_old.c
 +  evp/pmeth_lib.c
 +  evp/pmeth_fn.c
@@ -1265,236 +956,165 @@ index 0000000..f3c53fd
 +  evp/e_aes_cbc_hmac_sha1.c
 +  evp/e_aes_cbc_hmac_sha256.c
 +  evp/e_rc4_hmac_md5.c
-+  )
-+set(evp_exhdrs
-+  evp/evp.h
++  evp/e_chacha20_poly1305.c
++  evp/cmeth_lib.c
 +  )
 +list(APPEND evp_srcs
-+  ${evp_exhdrs}
 +  evp/evp_locl.h
-+  evp/evptests.txt
-+  evp/Makefile
-+  )
-+set(evp_extra # in directory, not in Makefile LIBSRC
-+  evp/evp_test.c
-+  evp/evp_extra_test.c
-+  )
-+list(APPEND evp_extra # in directory, not in Makefile
-+  evp/e_dsa.c
-+  evp/openbsd_hw.c
 +  )
 +source_group(evp FILES ${evp_srcs})
 +list(APPEND ${lib_name}_libsrcs ${evp_srcs})
-+list(APPEND ${lib_name}_exhdrs ${evp_exhdrs})
-+list(APPEND ${lib_name}_all ${evp_srcs} ${evp_extra})
 +####################
 +# hmac
-+set(hmac_srcs # order from crypto/hmac/Makefile
++set(hmac_srcs # order from crypto/hmac/build.info
++  hmac/build.info
 +  hmac/hmac.c
 +  hmac/hm_ameth.c
 +  hmac/hm_pmeth.c
 +  )
-+set(hmac_exhdrs
-+  hmac/hmac.h
-+  )
 +list(APPEND hmac_srcs
-+  ${hmac_exhdrs}
-+  hmac/Makefile
-+  )
-+set(hmac_extra # in directory, not in Makefile LIBSRC
-+  hmac/hmactest.c
++  hmac/hmac_lcl.h
 +  )
 +source_group(hmac FILES ${hmac_srcs})
 +list(APPEND ${lib_name}_libsrcs ${hmac_srcs})
-+list(APPEND ${lib_name}_exhdrs ${hmac_exhdrs})
-+list(APPEND ${lib_name}_all ${hmac_srcs} ${hmac_extra})
 +####################
 +# idea
-+set(idea_srcs # order from crypto/idea/Makefile
++set(idea_srcs # order from crypto/idea/build.info
++  idea/build.info
 +  idea/i_cbc.c
 +  idea/i_cfb64.c
 +  idea/i_ofb64.c
 +  idea/i_ecb.c
 +  idea/i_skey.c
 +  )
-+set(idea_exhdrs
-+  idea/idea.h
-+  )
 +list(APPEND idea_srcs
-+  ${idea_exhdrs}
 +  idea/idea_lcl.h
-+  idea/Makefile
-+  idea/version
-+  )
-+set(idea_extra # in directory, not in Makefile LIBSRC
-+  idea/ideatest.c
-+  )
-+list(APPEND idea_extra # in directory, not in Makefile
-+  idea/idea_spd.c
 +  )
 +source_group(idea FILES ${idea_srcs})
 +list(APPEND ${lib_name}_libsrcs ${idea_srcs})
-+list(APPEND ${lib_name}_exhdrs ${idea_exhdrs})
-+list(APPEND ${lib_name}_all ${idea_srcs} ${idea_extra})
 +####################
-+# jpake
-+set(jpake_srcs # order from crypto/jpake/Makefile
-+  jpake/jpake.c
-+  jpake/jpake_err.c
++set(include_srcs
++  include/buildinf.h.cmake
++  ${CMAKE_CURRENT_BINARY_DIR}/include/buildinf.h
 +  )
-+set(jpake_exhdrs
-+  jpake/jpake.h
++source_group(include FILES ${include_srcs})
++list(APPEND ${lib_name}_libsrcs ${include_srcs})
++##########
++set(include_internal_srcs
++  include/internal/aria.h
++  include/internal/asn1_int.h
++  include/internal/async.h
++  include/internal/bn_conf.h.cmake
++  include/internal/bn_conf.h.in
++  include/internal/bn_dh.h
++  include/internal/bn_int.h
++  include/internal/bn_srp.h
++  include/internal/chacha.h
++  include/internal/cryptlib_int.h
++  include/internal/ctype.h
++  include/internal/__DECC_INCLUDE_EPILOGUE.H
++  include/internal/__DECC_INCLUDE_PROLOGUE.H
++  include/internal/dso_conf.h.cmake
++  include/internal/dso_conf.h.in
++  include/internal/ec_int.h
++  include/internal/engine.h
++  include/internal/err_int.h
++  include/internal/evp_int.h
++  include/internal/lhash.h
++  include/internal/md32_common.h
++  include/internal/objects.h
++  include/internal/poly1305.h
++  include/internal/rand_int.h
++  include/internal/sha.h
++  include/internal/siphash.h
++  include/internal/sm2err.h
++  include/internal/sm2.h
++  include/internal/sm3.h
++  include/internal/sm4.h
++  include/internal/store.h
++  include/internal/store_int.h
++  include/internal/x509_int.h
++  ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h
++  ${CMAKE_CURRENT_BINARY_DIR}/include/internal/dso_conf.h
 +  )
-+list(APPEND jpake_srcs
-+  ${jpake_exhdrs}
-+  jpake/Makefile
-+  )
-+set(jpake_extra # in directory, not in Makefile LIBSRC
-+  jpake/jpaketest.c
-+  )
-+source_group(jpake FILES ${jpake_srcs})
-+list(APPEND ${lib_name}_libsrcs ${jpake_srcs})
-+list(APPEND ${lib_name}_exhdrs ${jpake_exhdrs})
-+list(APPEND ${lib_name}_all ${jpake_srcs} ${jpake_extra})
++source_group(include\\internal FILES ${include_internal_srcs})
++list(APPEND ${lib_name}_libsrcs ${include_internal_srcs})
 +####################
-+# krb5
-+set(krb5_srcs # order from crypto/krb5/Makefile
-+  krb5/krb5_asn.c
++# kdf
++set(kdf_srcs # order from crypto/kdf/build.info
++  kdf/build.info
++  kdf/tls1_prf.c
++  kdf/kdf_err.c
++  kdf/hkdf.c
++  kdf/scrypt.c
 +  )
-+set(krb5_exhdrs
-+  krb5/krb5_asn.h
-+  )
-+list(APPEND krb5_srcs
-+  ${krb5_exhdrs}
-+  krb5/Makefile
-+  )
-+source_group(krb5 FILES ${krb5_srcs})
-+list(APPEND ${lib_name}_libsrcs ${krb5_srcs})
-+list(APPEND ${lib_name}_exhdrs ${krb5_exhdrs})
-+list(APPEND ${lib_name}_all ${krb5_srcs})
++source_group(kdf FILES ${kdf_srcs})
++list(APPEND ${lib_name}_libsrcs ${kdf_srcs})
 +####################
 +# lhash
-+set(lhash_srcs # order from crypto/lhash/Makefile
++set(lhash_srcs # order from crypto/lhash/build.info
++  lhash/build.info
 +  lhash/lhash.c
 +  lhash/lh_stats.c
 +  )
-+set(lhash_exhdrs
-+  lhash/lhash.h
-+  )
 +list(APPEND lhash_srcs
-+  ${lhash_exhdrs}
-+  lhash/Makefile
-+  lhash/num.pl
-+  )
-+set(lhash_extra # in directory, not in Makefile
-+  lhash/lh_test.c
++  lhash/lhash_lcl.h
 +  )
 +source_group(lhash FILES ${lhash_srcs})
 +list(APPEND ${lib_name}_libsrcs ${lhash_srcs})
-+list(APPEND ${lib_name}_exhdrs ${lhash_exhdrs})
-+list(APPEND ${lib_name}_all ${lhash_srcs} ${lhash_extra})
 +####################
 +# md2
-+set(md2_srcs # order from crypto/md2/Makefile
++set(md2_srcs # order from crypto/md2/build.info
++  md2/build.info
 +  md2/md2_dgst.c
 +  md2/md2_one.c
 +  )
-+set(md2_exhdrs
-+  md2/md2.h
-+  )
-+list(APPEND md2_srcs
-+  ${md2_exhdrs}
-+  md2/Makefile
-+  )
-+set(md2_extra # in directory, not in Makefile LIBSRC
-+  md2/md2test.c
-+  )
-+list(APPEND md2_extra # in directory, not in Makefile
-+  md2/md2.c
-+  )
 +source_group(md2 FILES ${md2_srcs})
 +list(APPEND ${lib_name}_libsrcs ${md2_srcs})
-+list(APPEND ${lib_name}_exhdrs ${md2_exhdrs})
-+list(APPEND ${lib_name}_all ${md2_srcs} ${md2_extra})
 +####################
 +# md4
-+set(md4_srcs # order from crypto/md4/Makefile
++set(md4_srcs # order from crypto/md4/build.info
++  md4/build.info
 +  md4/md4_dgst.c
 +  md4/md4_one.c
 +  )
-+set(md4_exhdrs
-+  md4/md4.h
-+  )
 +list(APPEND md4_srcs
-+  ${md4_exhdrs}
 +  md4/md4_locl.h
-+  md4/Makefile
-+  )
-+set(md4_extra # in directory, not in Makefile LIBSRC
-+  md4/md4.c
-+  md4/md4test.c
-+  )
-+list(APPEND md4_extra # in directory, not in Makefile
-+  md4/md4s.cpp
 +  )
 +source_group(md4 FILES ${md4_srcs})
 +list(APPEND ${lib_name}_libsrcs ${md4_srcs})
-+list(APPEND ${lib_name}_exhdrs ${md4_exhdrs})
-+list(APPEND ${lib_name}_all ${md4_srcs} ${md4_extra})
 +####################
 +# md5
-+set(md5_srcs # order from crypto/md5/Makefile
++set(md5_srcs # order from crypto/md5/build.info
++  md5/build.info
 +  md5/md5_dgst.c
 +  md5/md5_one.c
 +  )
-+set(md5_exhdrs
-+  md5/md5.h
-+  )
 +list(APPEND md5_srcs
-+  ${md5_exhdrs}
 +  md5/md5_locl.h
-+  md5/Makefile
-+  )
-+set(md5_extra # in directory, not in Makefile LIBSRC
-+  md5/md5test.c
-+  )
-+list(APPEND md5_extra # in directory, not in Makefile
-+  md5/md5.c
-+  md5/md5s.cpp
-+  )
-+list(APPEND md5_extra # TODO asm
-+  md5/asm/md5-586.pl
-+  md5/asm/md5-ia64.S
-+  md5/asm/md5-sparcv9.pl
-+  md5/asm/md5-x86_64.pl
 +  )
 +source_group(md5 FILES ${md5_srcs})
 +list(APPEND ${lib_name}_libsrcs ${md5_srcs})
-+list(APPEND ${lib_name}_exhdrs ${md5_exhdrs})
-+list(APPEND ${lib_name}_all ${md5_srcs} ${md5_extra})
++##########
++set(md5_extra # TODO asm
++  md5/asm/md5-586.pl
++  md5/asm/md5-sparcv9.pl
++  md5/asm/md5-x86_64.pl
++  )
++list(APPEND ${lib_name}_all ${md5_extra})
 +####################
 +# mdc2
-+set(mdc2_srcs # order from crypto/mdc2/Makefile
++set(mdc2_srcs # order from crypto/mdc2/build.info
++  mdc2/build.info
 +  mdc2/mdc2dgst.c
 +  mdc2/mdc2_one.c
 +  )
-+set(mdc2_exhdrs
-+  mdc2/mdc2.h
-+  )
-+list(APPEND mdc2_srcs
-+  ${mdc2_exhdrs}
-+  mdc2/Makefile
-+  )
-+set(mdc2_extra # in directory, not in Makefile LIBSRC
-+  mdc2/mdc2test.c
-+  )
 +source_group(mdc2 FILES ${mdc2_srcs})
 +list(APPEND ${lib_name}_libsrcs ${mdc2_srcs})
-+list(APPEND ${lib_name}_exhdrs ${mdc2_exhdrs})
-+list(APPEND ${lib_name}_all ${mdc2_srcs} ${mdc2_extra})
 +####################
 +# modes
-+set(modes_srcs # order from crypto/modes/Makefile
++set(modes_srcs # order from crypto/modes/build.info
++  modes/build.info
 +  modes/cbc128.c
 +  modes/ctr128.c
 +  modes/cts128.c
@@ -1504,19 +1124,19 @@ index 0000000..f3c53fd
 +  modes/ccm128.c
 +  modes/xts128.c
 +  modes/wrap128.c
-+  )
-+set(modes_exhdrs
-+  modes/modes.h
++  modes/ocb128.c
 +  )
 +list(APPEND modes_srcs
-+  ${modes_exhdrs}
 +  modes/modes_lcl.h
-+  modes/Makefile
 +  )
++source_group(modes FILES ${modes_srcs})
++list(APPEND ${lib_name}_libsrcs ${modes_srcs})
++##########
 +set(modes_extra # TODO asm
 +  modes/asm/aesni-gcm-x86_64.pl
 +  modes/asm/ghash-alpha.pl
 +  modes/asm/ghash-armv4.pl
++  modes/asm/ghash-c64xplus.pl
 +  modes/asm/ghash-ia64.pl
 +  modes/asm/ghashp8-ppc.pl
 +  modes/asm/ghash-parisc.pl
@@ -1526,43 +1146,35 @@ index 0000000..f3c53fd
 +  modes/asm/ghash-x86_64.pl
 +  modes/asm/ghash-x86.pl
 +  )
-+source_group(modes FILES ${modes_srcs})
-+list(APPEND ${lib_name}_libsrcs ${modes_srcs})
-+list(APPEND ${lib_name}_exhdrs ${modes_exhdrs})
-+list(APPEND ${lib_name}_all ${modes_srcs} ${modes_extra})
++list(APPEND ${lib_name}_all ${modes_extra})
 +####################
 +# objects
-+set(objects_srcs # order from crypto/objects/Makefile
++set(objects_srcs # order from crypto/objects/build.info
++  objects/build.info
 +  objects/o_names.c
 +  objects/obj_dat.c
 +  objects/obj_lib.c
 +  objects/obj_err.c
 +  objects/obj_xref.c
 +  )
-+set(objects_exhdrs
-+  objects/objects.h
-+  objects/obj_mac.h
-+  )
 +list(APPEND objects_srcs
-+  ${objects_exhdrs}
 +  objects/obj_dat.h
++  objects/obj_lcl.h
 +  objects/obj_xref.h
-+  objects/Makefile
 +  objects/obj_dat.pl
 +  objects/objects.pl
-+  objects/objects.README
-+  objects/objects.txt
-+  objects/obj_mac.num
 +  objects/objxref.pl
++  objects/objects.txt
 +  objects/obj_xref.txt
++  objects/obj_mac.num
++  objects/README
 +  )
 +source_group(objects FILES ${objects_srcs})
 +list(APPEND ${lib_name}_libsrcs ${objects_srcs})
-+list(APPEND ${lib_name}_exhdrs ${objects_exhdrs})
-+list(APPEND ${lib_name}_all ${objects_srcs})
 +####################
 +# ocsp
-+set(ocsp_srcs # order from crypto/ocsp/Makefile
++set(ocsp_srcs # order from crypto/ocsp/build.info
++  ocsp/build.info
 +  ocsp/ocsp_asn.c
 +  ocsp/ocsp_ext.c
 +  ocsp/ocsp_ht.c
@@ -1572,23 +1184,18 @@ index 0000000..f3c53fd
 +  ocsp/ocsp_prn.c
 +  ocsp/ocsp_vfy.c
 +  ocsp/ocsp_err.c
-+  )
-+set(ocsp_exhdrs
-+  ocsp/ocsp.h
++  ocsp/v3_ocsp.c
 +  )
 +list(APPEND ocsp_srcs
-+  ${ocsp_exhdrs}
-+  ocsp/Makefile
++  ocsp/ocsp_lcl.h
 +  )
 +source_group(ocsp FILES ${ocsp_srcs})
 +list(APPEND ${lib_name}_libsrcs ${ocsp_srcs})
-+list(APPEND ${lib_name}_exhdrs ${ocsp_exhdrs})
-+list(APPEND ${lib_name}_all ${ocsp_srcs})
 +####################
 +# pem
-+set(pem_srcs # order from crypto/pem/Makefile
++set(pem_srcs # order from crypto/pem/build.info
++  pem/build.info
 +  pem/pem_sign.c
-+  pem/pem_seal.c
 +  pem/pem_info.c
 +  pem/pem_lib.c
 +  pem/pem_all.c
@@ -1600,26 +1207,15 @@ index 0000000..f3c53fd
 +  pem/pem_pkey.c
 +  pem/pvkfmt.c
 +  )
-+set(pem_exhdrs
-+  pem/pem.h
-+  pem/pem2.h
-+  )
-+list(APPEND pem_srcs
-+  ${pem_exhdrs}
-+  pem/Makefile
-+  pem/message
-+  pem/pkcs7.lis
-+  )
 +source_group(pem FILES ${pem_srcs})
 +list(APPEND ${lib_name}_libsrcs ${pem_srcs})
-+list(APPEND ${lib_name}_exhdrs ${pem_exhdrs})
-+list(APPEND ${lib_name}_all ${pem_srcs})
 +####################
 +# perlasm
-+set(perlasm_srcs # no Makefile in directory
++set(perlasm_srcs # no build.info in directory
++  perlasm/arm-xlate.pl
 +  perlasm/cbc.pl
 +  perlasm/ppc-xlate.pl
-+  perlasm/readme
++  perlasm/README
 +  perlasm/sparcv9_modes.pl
 +  perlasm/x86_64-xlate.pl
 +  perlasm/x86asm.pl
@@ -1629,10 +1225,10 @@ index 0000000..f3c53fd
 +  )
 +source_group(perlasm FILES ${perlasm_srcs})
 +list(APPEND ${lib_name}_libsrcs ${perlasm_srcs})
-+list(APPEND ${lib_name}_all ${perlasm_srcs})
 +####################
 +# pkcs12
-+set(pkcs12_srcs # order from crypto/pkcs12/Makefile
++set(pkcs12_srcs # order from crypto/pkcs12/build.info
++  pkcs12/build.info
 +  pkcs12/p12_add.c
 +  pkcs12/p12_asn.c
 +  pkcs12/p12_attr.c
@@ -1643,26 +1239,22 @@ index 0000000..f3c53fd
 +  pkcs12/p12_key.c
 +  pkcs12/p12_kiss.c
 +  pkcs12/p12_mutl.c
++  pkcs12/p12_sbag.c
 +  pkcs12/p12_utl.c
 +  pkcs12/p12_npas.c
 +  pkcs12/pk12err.c
 +  pkcs12/p12_p8d.c
 +  pkcs12/p12_p8e.c
 +  )
-+set(pkcs12_exhdrs
-+  pkcs12/pkcs12.h
-+  )
 +list(APPEND pkcs12_srcs
-+  ${pkcs12_exhdrs}
-+  pkcs12/Makefile
++  pkcs12/p12_lcl.h
 +  )
 +source_group(pkcs12 FILES ${pkcs12_srcs})
 +list(APPEND ${lib_name}_libsrcs ${pkcs12_srcs})
-+list(APPEND ${lib_name}_exhdrs ${pkcs12_exhdrs})
-+list(APPEND ${lib_name}_all ${pkcs12_srcs})
 +####################
 +# pkcs7
-+set(pkcs7_srcs # order from crypto/pkcs7/Makefile
++set(pkcs7_srcs # order from crypto/pkcs7/build.info
++  pkcs7/build.info
 +  pkcs7/pk7_asn1.c
 +  pkcs7/pk7_lib.c
 +  pkcs7/pkcs7err.c
@@ -1672,202 +1264,140 @@ index 0000000..f3c53fd
 +  pkcs7/pk7_mime.c
 +  pkcs7/bio_pk7.c
 +  )
-+set(pkcs7_exhdrs
-+  pkcs7/pkcs7.h
-+  )
-+list(APPEND pkcs7_srcs
-+  ${pkcs7_exhdrs}
-+  pkcs7/Makefile
-+  )
-+set(pkcs7_extra # in directory, not in Makefile
-+  pkcs7/pk7_dgst.c
-+  pkcs7/pk7_enc.c
-+  )
 +source_group(pkcs7 FILES ${pkcs7_srcs})
 +list(APPEND ${lib_name}_libsrcs ${pkcs7_srcs})
-+list(APPEND ${lib_name}_exhdrs ${pkcs7_exhdrs})
-+list(APPEND ${lib_name}_all ${pkcs7_srcs} ${pkcs7_extra})
 +####################
-+# pqueue
-+set(pqueue_srcs
-+  pqueue/pqueue.c
++# poly1305
++set(poly1305_srcs # order from crypto/poly1305/build.info
++  poly1305/build.info
++  poly1305/poly1305_pmeth.c
++  poly1305/poly1305_ameth.c
++  poly1305/poly1305.c
 +  )
-+set(pqueue_exhdrs
-+  pqueue/pqueue.h
++list(APPEND poly1305_srcs
++  poly1305/poly1305_local.h
 +  )
-+list(APPEND pqueue_srcs
-+  ${pqueue_exhdrs}
-+  pqueue/Makefile
++source_group(poly1305 FILES ${poly1305_srcs})
++list(APPEND ${lib_name}_libsrcs ${poly1305_srcs})
++##########
++set(poly1305_extra # in directory, not in build.info
++  poly1305/poly1305_base2_44.c
++  poly1305/poly1305_ieee754.c
 +  )
-+set(pqueue_extra # in directory, not in Makefile
-+  pqueue/pq_test.c
++list(APPEND poly1305_extra # TODO asm
++  poly1305/asm/poly1305-armv4.pl
++  poly1305/asm/poly1305-armv8.pl
++  poly1305/asm/poly1305-c64xplus.pl
++  poly1305/asm/poly1305-mips.pl
++  poly1305/asm/poly1305-ppcfp.pl
++  poly1305/asm/poly1305-ppc.pl
++  poly1305/asm/poly1305-s390x.pl
++  poly1305/asm/poly1305-sparcv9.pl
++  poly1305/asm/poly1305-x86_64.pl
++  poly1305/asm/poly1305-x86.pl
 +  )
-+source_group(pqueue FILES ${pqueue_srcs})
-+list(APPEND ${lib_name}_libsrcs ${pqueue_srcs})
-+list(APPEND ${lib_name}_exhdrs ${pqueue_exhdrs})
-+list(APPEND ${lib_name}_all ${pqueue_srcs} ${pqueue_extra})
++list(APPEND ${lib_name}_all ${poly1305_extra})
 +####################
 +# rand
-+set(rand_srcs # order from crypto/rand/Makefile
-+  rand/md_rand.c
++set(rand_srcs # order from crypto/rand/build.info
++  rand/build.info
 +  rand/randfile.c
 +  rand/rand_lib.c
 +  rand/rand_err.c
 +  rand/rand_egd.c
 +  rand/rand_win.c
 +  rand/rand_unix.c
-+  rand/rand_os2.c
-+  rand/rand_nw.c
-+  )
-+set(rand_exhdrs
-+  rand/rand.h
++  rand/rand_vms.c
++  rand/drbg_lib.c
++  rand/drbg_ctr.c
 +  )
 +list(APPEND rand_srcs
-+  ${rand_exhdrs}
 +  rand/rand_lcl.h
-+  rand/Makefile
-+  )
-+set(rand_extra # in directory, not in Makefile LIBSRC
-+  rand/randtest.c
-+  )
-+list(APPEND rand_extra # in directory, not in Makefile
-+  rand/rand_vms.c
 +  )
 +source_group(rand FILES ${rand_srcs})
 +list(APPEND ${lib_name}_libsrcs ${rand_srcs})
-+list(APPEND ${lib_name}_exhdrs ${rand_exhdrs})
-+list(APPEND ${lib_name}_all ${rand_srcs} ${rand_extra})
 +####################
 +# rc2
-+set(rc2_srcs # order from crypto/rc2/Makefile
++set(rc2_srcs # order from crypto/rc2/build.info
++  rc2/build.info
 +  rc2/rc2_ecb.c
 +  rc2/rc2_skey.c
 +  rc2/rc2_cbc.c
 +  rc2/rc2cfb64.c
 +  rc2/rc2ofb64.c
 +  )
-+set(rc2_exhdrs
-+  rc2/rc2.h
-+  )
 +list(APPEND rc2_srcs
-+  ${rc2_exhdrs}
 +  rc2/rc2_locl.h
-+  rc2/Makefile
-+  rc2/rrc2.doc
-+  rc2/version
-+  )
-+set(rc2_extra # in directory, not in Makefile LIBSRC
-+  rc2/rc2test.c
-+  )
-+list(APPEND rc2_extra # in directory, not in Makefile
-+  rc2/rc2speed.c
-+  rc2/tab.c
 +  )
 +source_group(rc2 FILES ${rc2_srcs})
 +list(APPEND ${lib_name}_libsrcs ${rc2_srcs})
-+list(APPEND ${lib_name}_exhdrs ${rc2_exhdrs})
-+list(APPEND ${lib_name}_all ${rc2_srcs} ${rc2_extra})
 +####################
 +# rc4
-+set(rc4_srcs # order from crypto/rc4/Makefile
-+  rc4/rc4_skey.c
-+  rc4/rc4_enc.c
-+  rc4/rc4_utl.c
-+  )
-+set(rc4_exhdrs
-+  rc4/rc4.h
-+  )
-+list(APPEND rc4_srcs
-+  ${rc4_exhdrs}
++set(rc4_srcs
++  rc4/build.info
 +  rc4/rc4_locl.h
-+  rc4/Makefile
-+  rc4/rrc4.doc
 +  )
++source_group(rc4 FILES ${rc4_srcs})
++list(APPEND ${lib_name}_libsrcs ${rc4_srcs})
++##########
 +set(rc4_extra # in directory, not in Makefile LIBSRC
-+  rc4/rc4test.c
-+  )
-+list(APPEND rc4_extra # in directory, not in Makefile
-+  rc4/rc4.c
-+  rc4/rc4s.cpp
-+  rc4/rc4speed.c
++  rc4/rc4_enc.c
++  rc4/rc4_skey.c
 +  )
 +list(APPEND rc4_extra # TODO asm
 +  rc4/asm/rc4-586.pl
-+  rc4/asm/rc4-ia64.pl
++  rc4/asm/rc4-c64xplus.pl
 +  rc4/asm/rc4-md5-x86_64.pl
 +  rc4/asm/rc4-parisc.pl
 +  rc4/asm/rc4-s390x.pl
 +  rc4/asm/rc4-x86_64.pl
 +  )
-+source_group(rc4 FILES ${rc4_srcs})
-+list(APPEND ${lib_name}_libsrcs ${rc4_srcs})
-+list(APPEND ${lib_name}_exhdrs ${rc4_exhdrs})
-+list(APPEND ${lib_name}_all ${rc4_srcs} ${rc4_extra})
++list(APPEND ${lib_name}_all ${rc4_extra})
 +####################
 +# rc5
-+set(rc5_srcs # order from crypto/rc5/Makefile
++set(rc5_srcs # order from crypto/rc5/build.info
++  rc5/build.info
 +  rc5/rc5_skey.c
 +  rc5/rc5_ecb.c
-+  rc5/rc5_enc.c
 +  rc5/rc5cfb64.c
 +  rc5/rc5ofb64.c
 +  )
-+set(rc5_exhdrs
-+  rc5/rc5.h
-+  )
 +list(APPEND rc5_srcs
-+  ${rc5_exhdrs}
 +  rc5/rc5_locl.h
-+  rc5/Makefile
 +  )
-+set(rc5_extra # in directory, not in Makefile LIBSRC
-+  rc5/rc5test.c
-+  )
-+list(APPEND rc5_extra # in directory, not in Makefile
-+  rc5/rc5s.cpp
-+  rc5/rc5speed.c
++source_group(rc5 FILES ${rc5_srcs})
++list(APPEND ${lib_name}_libsrcs ${rc5_srcs})
++##########
++set(rc5_extra # in directory, not in build.info
++  rc5/rc5_enc.c
 +  )
 +list(APPEND rc5_extra # TODO asm
 +  rc5/asm/rc5-586.pl
 +  )
-+source_group(rc5 FILES ${rc5_srcs})
-+list(APPEND ${lib_name}_libsrcs ${rc5_srcs})
-+list(APPEND ${lib_name}_exhdrs ${rc5_exhdrs})
-+list(APPEND ${lib_name}_all ${rc5_srcs} ${rc5_extra})
++list(APPEND ${lib_name}_all ${rc5_extra})
 +####################
 +# ripemd
-+set(ripemd_srcs # order from crypto/ripemd/Makefile
++set(ripemd_srcs # order from crypto/ripemd/build.info
++  ripemd/build.info
 +  ripemd/rmd_dgst.c
 +  ripemd/rmd_one.c
 +  )
-+set(ripemd_exhdrs
-+  ripemd/ripemd.h
-+  )
 +list(APPEND ripemd_srcs
-+  ${ripemd_exhdrs}
 +  ripemd/rmd_locl.h
 +  ripemd/rmdconst.h
-+  ripemd/Makefile
-+  ripemd/README
-+  )
-+set(ripemd_extra # in directory, not in Makefile LIBSRC
-+  ripemd/rmdtest.c
-+  )
-+list(APPEND ripemd_extra # in directory, not in Makefile
-+  ripemd/rmd160.c
-+  )
-+list(APPEND ripemd_extra # TODO asm
-+  ripemd/asm/rips.cpp
-+  ripemd/asm/rmd-586.pl
 +  )
 +source_group(ripemd FILES ${ripemd_srcs})
 +list(APPEND ${lib_name}_libsrcs ${ripemd_srcs})
-+list(APPEND ${lib_name}_exhdrs ${ripemd_exhdrs})
-+list(APPEND ${lib_name}_all ${ripemd_srcs} ${ripemd_extra})
++##########
++set(ripemd_extra # TODO asm
++  ripemd/asm/rmd-586.pl
++  )
++list(APPEND ${lib_name}_all ${ripemd_extra})
 +####################
 +# rsa
-+set(rsa_srcs # order from crypto/rsa/Makefile
-+  rsa/rsa_eay.c
++set(rsa_srcs # order from crypto/rsa/build.info
++  rsa/build.info
++  rsa/rsa_ossl.c
 +  rsa/rsa_gen.c
 +  rsa/rsa_lib.c
 +  rsa/rsa_sign.c
@@ -1878,7 +1408,6 @@ index 0000000..f3c53fd
 +  rsa/rsa_none.c
 +  rsa/rsa_oaep.c
 +  rsa/rsa_chk.c
-+  rsa/rsa_null.c
 +  rsa/rsa_pss.c
 +  rsa/rsa_x931.c
 +  rsa/rsa_asn1.c
@@ -1887,77 +1416,65 @@ index 0000000..f3c53fd
 +  rsa/rsa_prn.c
 +  rsa/rsa_pmeth.c
 +  rsa/rsa_crpt.c
-+  )
-+set(rsa_exhdrs
-+  rsa/rsa.h
++  rsa/rsa_x931g.c
++  rsa/rsa_meth.c
++  rsa/rsa_mp.c
 +  )
 +list(APPEND rsa_srcs
-+  ${rsa_exhdrs}
 +  rsa/rsa_locl.h
-+  rsa/Makefile
-+  )
-+set(rsa_extra # in directory, not in Makefile LIBSRC
-+  rsa/rsa_test.c
 +  )
 +source_group(rsa FILES ${rsa_srcs})
 +list(APPEND ${lib_name}_libsrcs ${rsa_srcs})
-+list(APPEND ${lib_name}_exhdrs ${rsa_exhdrs})
-+list(APPEND ${lib_name}_all ${rsa_srcs} ${rsa_extra})
 +####################
 +# seed
-+set(seed_srcs # order from crypto/seed/Makefile
++set(seed_srcs # order from crypto/seed/build.info
++  seed/build.info
 +  seed/seed.c
 +  seed/seed_ecb.c
 +  seed/seed_cbc.c
 +  seed/seed_cfb.c
 +  seed/seed_ofb.c
 +  )
-+set(seed_exhdrs
-+  seed/seed.h
-+  )
 +list(APPEND seed_srcs
-+  ${seed_exhdrs}
 +  seed/seed_locl.h
-+  seed/Makefile
 +  )
 +source_group(seed FILES ${seed_srcs})
 +list(APPEND ${lib_name}_libsrcs ${seed_srcs})
-+list(APPEND ${lib_name}_exhdrs ${seed_exhdrs})
-+list(APPEND ${lib_name}_all ${seed_srcs})
 +####################
 +# sha
 +set(sha_srcs # order from crypto/sha/Makefile
-+  sha/sha_dgst.c
++  sha/build.info
 +  sha/sha1dgst.c
-+  sha/sha_one.c
 +  sha/sha1_one.c
 +  sha/sha256.c
 +  sha/sha512.c
 +  )
-+set(sha_exhdrs
-+  sha/sha.h
-+  )
 +list(APPEND sha_srcs
-+  ${sha_exhdrs}
 +  sha/sha_locl.h
-+  sha/Makefile
 +  )
-+set(sha_extra # in directory, not in Makefile LIBSRC
-+  sha/sha1test.c
-+  sha/sha256t.c
-+  sha/sha512t.c
-+  sha/shatest.c
-+  )
-+list(APPEND sha_extra # in directory, not in Makefile
-+  sha/sha1.c
-+  sha/sha.c
++source_group(sha FILES ${sha_srcs})
++list(APPEND ${lib_name}_libsrcs ${sha_srcs})
++##########
++set(sha_extra # in directory, not in build.info
++  sha/keccak1600.c
 +  )
 +list(APPEND sha_extra # TODO asm
-+  sha/asm/README
++  sha/asm/keccak1600-armv4.pl
++  sha/asm/keccak1600-armv8.pl
++  sha/asm/keccak1600-avx2.pl
++  sha/asm/keccak1600-avx512.pl
++  sha/asm/keccak1600-avx512vl.pl
++  sha/asm/keccak1600-c64x.pl
++  sha/asm/keccak1600-mmx.pl
++  sha/asm/keccak1600p8-ppc.pl
++  sha/asm/keccak1600-ppc64.pl
++  sha/asm/keccak1600-s390x.pl
++  sha/asm/keccak1600-x86_64.pl
 +  sha/asm/sha1-586.pl
 +  sha/asm/sha1-alpha.pl
 +  sha/asm/sha1-armv4-large.pl
 +  sha/asm/sha1-armv8.pl
++  sha/asm/sha1-c64xplus.pl
 +  sha/asm/sha1-ia64.pl
 +  sha/asm/sha1-mb-x86_64.pl
 +  sha/asm/sha1-mips.pl
@@ -1970,10 +1487,12 @@ index 0000000..f3c53fd
 +  sha/asm/sha1-x86_64.pl
 +  sha/asm/sha256-586.pl
 +  sha/asm/sha256-armv4.pl
++  sha/asm/sha256-c64xplus.pl
 +  sha/asm/sha256-mb-x86_64.pl
 +  sha/asm/sha512-586.pl
 +  sha/asm/sha512-armv4.pl
 +  sha/asm/sha512-armv8.pl
++  sha/asm/sha512-c64xplus.pl
 +  sha/asm/sha512-ia64.pl
 +  sha/asm/sha512-mips.pl
 +  sha/asm/sha512p8-ppc.pl
@@ -1983,94 +1502,88 @@ index 0000000..f3c53fd
 +  sha/asm/sha512-sparcv9.pl
 +  sha/asm/sha512-x86_64.pl
 +  )
-+source_group(sha FILES ${sha_srcs})
-+list(APPEND ${lib_name}_libsrcs ${sha_srcs})
-+list(APPEND ${lib_name}_exhdrs ${sha_exhdrs})
-+list(APPEND ${lib_name}_all ${sha_srcs} ${sha_extra})
++list(APPEND ${lib_name}_all ${sha_extra})
++####################
++# siphash
++set(siphash_srcs # order from crypto/siphash/build.info
++  siphash/build.info
++  siphash/siphash.c
++  siphash/siphash_pmeth.c
++  siphash/siphash_ameth.c
++  )
++list(APPEND siphash_srcs
++  siphash/siphash_local.h
++  )
++source_group(siphash FILES ${siphash_srcs})
++list(APPEND ${lib_name}_libsrcs ${siphash_srcs})
++####################
++# sm2
++set(sm2_srcs # order from crypto/sm2/build.info
++  sm2/build.info
++  sm2/sm2_sign.c
++  sm2/sm2_crypt.c
++  sm2/sm2_err.c
++  sm2/sm2_pmeth.c
++  )
++source_group(sm2 FILES ${sm2_srcs})
++list(APPEND ${lib_name}_libsrcs ${sm2_srcs})
++####################
++# sm3
++set(sm3_srcs # order from crypto/sm3/build.info
++  sm3/build.info
++  sm3/sm3.c
++  sm3/m_sm3.c
++  )
++list(APPEND sm3_srcs
++  sm3/sm3_locl.h
++  )
++source_group(sm3 FILES ${sm3_srcs})
++list(APPEND ${lib_name}_libsrcs ${sm3_srcs})
++####################
++# sm4
++set(sm4_srcs # order from crypto/sm4/build.info
++  sm4/build.info
++  sm4/sm4.c
++  )
++source_group(sm4 FILES ${sm4_srcs})
++list(APPEND ${lib_name}_libsrcs ${sm4_srcs})
 +####################
 +# srp
-+set(srp_srcs
++set(srp_srcs # order from crypto/srp/build.info
++  srp/build.info
 +  srp/srp_lib.c
 +  srp/srp_vfy.c
 +  )
-+set(srp_exhdrs
-+  srp/srp.h
-+  )
-+list(APPEND srp_srcs
-+  ${srp_exhdrs}
-+  srp/srp_grps.h
-+  srp/srp_lcl.h
-+  srp/Makefile
-+  )
-+set(srp_extra # in directory, not in Makefile LIBSRC
-+  srp/srptest.c
-+  )
 +source_group(srp FILES ${srp_srcs})
 +list(APPEND ${lib_name}_libsrcs ${srp_srcs})
-+list(APPEND ${lib_name}_exhdrs ${srp_exhdrs})
-+list(APPEND ${lib_name}_all ${srp_srcs} ${srp_extra})
 +####################
 +# stack
 +set(stack_srcs
++  stack/build.info
 +  stack/stack.c
-+  )
-+set(stack_exhdrs
-+  stack/stack.h
-+  stack/safestack.h
-+  )
-+list(APPEND stack_srcs
-+  ${stack_exhdrs}
-+  stack/Makefile
 +  )
 +source_group(stack FILES ${stack_srcs})
 +list(APPEND ${lib_name}_libsrcs ${stack_srcs})
-+list(APPEND ${lib_name}_exhdrs ${stack_exhdrs})
-+list(APPEND ${lib_name}_all ${stack_srcs})
 +####################
 +# store
-+set(store_srcs # order from crypto/store/Makefile
-+  store/str_err.c
-+  store/str_lib.c
-+  store/str_meth.c
-+  store/str_mem.c
-+  )
-+set(store_exhdrs
-+  store/store.h
++set(store_srcs # order from crypto/store/build.info
++  store/build.info
++  store/store_err.c
++  store/store_init.c
++  store/store_lib.c
++  store/store_register.c
++  store/store_strings.c
++  store/loader_file.c
 +  )
 +list(APPEND store_srcs
-+  ${store_exhdrs}
-+  store/str_locl.h
-+  store/Makefile
-+  store/README
++  store/store_locl.h
 +  )
 +source_group(store FILES ${store_srcs})
 +list(APPEND ${lib_name}_libsrcs ${store_srcs})
-+list(APPEND ${lib_name}_exhdrs ${store_exhdrs})
-+list(APPEND ${lib_name}_all ${store_srcs})
-+####################
-+# threads
-+set(threads_srcs # no Makefile in directory
-+  threads/netware.bat
-+  threads/profile.sh
-+  threads/ptest.bat
-+  threads/pthread2.sh
-+  threads/pthread.sh
-+  threads/pthreads-vms.com
-+  threads/purify.sh
-+  threads/README
-+  threads/solaris.sh
-+  threads/win32.bat
-+  )
-+set(threads_extra # in directory, no Makefile (source code)
-+  threads/mttest.c
-+  threads/th-lock.c
-+  )
-+source_group(threads FILES ${threads_srcs})
-+list(APPEND ${lib_name}_libsrcs ${threads_srcs})
-+list(APPEND ${lib_name}_all ${threads_srcs} ${threads_extra})
 +####################
 +# ts
-+set(ts_srcs # order from crypto/ts/Makefile
++set(ts_srcs # order from crypto/ts/build.info
++  ts/build.info
 +  ts/ts_err.c
 +  ts/ts_req_utils.c
 +  ts/ts_req_print.c
@@ -2083,83 +1596,58 @@ index 0000000..f3c53fd
 +  ts/ts_conf.c
 +  ts/ts_asn1.c
 +  )
-+set(ts_exhdrs
-+  ts/ts.h
-+  )
 +list(APPEND ts_srcs
-+  ${ts_exhdrs}
-+  ts/Makefile
++  ts/ts_lcl.h
 +  )
 +source_group(ts FILES ${ts_srcs})
 +list(APPEND ${lib_name}_libsrcs ${ts_srcs})
-+list(APPEND ${lib_name}_exhdrs ${ts_exhdrs})
-+list(APPEND ${lib_name}_all ${ts_srcs})
 +####################
 +# txt_db
 +set(txt_db_srcs
++  txt_db/build.info
 +  txt_db/txt_db.c
-+  )
-+set(txt_db_exhdrs
-+  txt_db/txt_db.h
-+  )
-+list(APPEND txt_db_srcs
-+  ${txt_db_exhdrs}
-+  txt_db/Makefile
 +  )
 +source_group(txt_db FILES ${txt_db_srcs})
 +list(APPEND ${lib_name}_libsrcs ${txt_db_srcs})
-+list(APPEND ${lib_name}_exhdrs ${txt_db_exhdrs})
-+list(APPEND ${lib_name}_all ${txt_db_srcs})
 +####################
 +# ui
-+set(ui_srcs # order from crypto/ui/Makefile
++set(ui_srcs # order from crypto/ui/build.info
++  ui/build.info
 +  ui/ui_err.c
 +  ui/ui_lib.c
 +  ui/ui_openssl.c
++  ui/ui_null.c
 +  ui/ui_util.c
-+  ui/ui_compat.c
-+  )
-+set(ui_exhdrs
-+  ui/ui.h
-+  ui/ui_compat.h
 +  )
 +list(APPEND ui_srcs
-+  ${ui_exhdrs}
 +  ui/ui_locl.h
-+  ui/Makefile
 +  )
 +source_group(ui FILES ${ui_srcs})
 +list(APPEND ${lib_name}_libsrcs ${ui_srcs})
-+list(APPEND ${lib_name}_exhdrs ${ui_exhdrs})
-+list(APPEND ${lib_name}_all ${ui_srcs})
 +####################
 +# whrlpool
-+set(whrlpool_srcs # order from crypto/whrlpool/Makefile
++set(whrlpool_srcs # order from crypto/whrlpool/build.info
++  whrlpool/build.info
 +  whrlpool/wp_dgst.c
-+  whrlpool/wp_block.c
-+  )
-+set(whrlpool_exhdrs
-+  whrlpool/whrlpool.h
 +  )
 +list(APPEND whrlpool_srcs
-+  ${whrlpool_exhdrs}
 +  whrlpool/wp_locl.h
-+  whrlpool/Makefile
 +  )
-+set(whrlpool_extra # in directory, not in Makefile LIBSRC
-+  whrlpool/wp_test.c
++source_group(whrlpool FILES ${whrlpool_srcs})
++list(APPEND ${lib_name}_libsrcs ${whrlpool_srcs})
++##########
++set(whrlpool_extra # in directory, not in build.info
++  whrlpool/wp_block.c
 +  )
 +list(APPEND whrlpool_extra # TODO asm
 +  whrlpool/asm/wp-mmx.pl
 +  whrlpool/asm/wp-x86_64.pl
 +  )
-+source_group(whrlpool FILES ${whrlpool_srcs})
-+list(APPEND ${lib_name}_libsrcs ${whrlpool_srcs})
-+list(APPEND ${lib_name}_exhdrs ${whrlpool_exhdrs})
-+list(APPEND ${lib_name}_all ${whrlpool_srcs} ${whrlpool_extra})
++list(APPEND ${lib_name}_all ${whrlpool_extra})
 +####################
 +# x509
-+set(x509_srcs # order from crypto/x509/Makefile
++set(x509_srcs # order from crypto/x509/build.info
++  x509/build.info
 +  x509/x509_def.c
 +  x509/x509_d2.c
 +  x509/x509_r2x.c
@@ -2177,6 +1665,7 @@ index 0000000..f3c53fd
 +  x509/x509_ext.c
 +  x509/x509_att.c
 +  x509/x509type.c
++  x509/x509_meth.c
 +  x509/x509_lu.c
 +  x509/x_all.c
 +  x509/x509_txt.c
@@ -2184,23 +1673,27 @@ index 0000000..f3c53fd
 +  x509/by_file.c
 +  x509/by_dir.c
 +  x509/x509_vpm.c
-+  )
-+set(x509_exhdrs
-+  x509/x509.h
-+  x509/x509_vfy.h
++  x509/x_crl.c
++  x509/t_crl.c
++  x509/x_req.c
++  x509/t_req.c
++  x509/x_x509.c
++  x509/t_x509.c
++  x509/x_pubkey.c
++  x509/x_x509a.c
++  x509/x_attrib.c
++  x509/x_exten.c
++  x509/x_name.c
 +  )
 +list(APPEND x509_srcs
-+  ${x509_exhdrs}
-+  x509/vpm_int.h
-+  x509/Makefile
++  x509/x509_lcl.h
 +  )
 +source_group(x509 FILES ${x509_srcs})
 +list(APPEND ${lib_name}_libsrcs ${x509_srcs})
-+list(APPEND ${lib_name}_exhdrs ${x509_exhdrs})
-+list(APPEND ${lib_name}_all ${x509_srcs})
 +####################
 +# x509v3
-+set(x509v3_srcs # order from crypto/x509v3/Makefile
++set(x509v3_srcs # order from crypto/x509v3/build.info
++  x509v3/build.info
 +  x509v3/v3_bcons.c
 +  x509v3/v3_bitst.c
 +  x509v3/v3_conf.c
@@ -2222,7 +1715,6 @@ index 0000000..f3c53fd
 +  x509v3/v3_crld.c
 +  x509v3/v3_purp.c
 +  x509v3/v3_info.c
-+  x509v3/v3_ocsp.c
 +  x509v3/v3_akeya.c
 +  x509v3/v3_pmaps.c
 +  x509v3/v3_pcons.c
@@ -2237,214 +1729,549 @@ index 0000000..f3c53fd
 +  x509v3/pcy_lib.c
 +  x509v3/v3_asid.c
 +  x509v3/v3_addr.c
-+  x509v3/v3_scts.c
-+  )
-+set(x509v3_exhdrs
-+  x509v3/x509v3.h
++  x509v3/v3_tlsf.c
++  x509v3/v3_admis.c
 +  )
 +list(APPEND x509v3_srcs
-+  ${x509v3_exhdrs}
-+  x509v3/pcy_int.h
 +  x509v3/ext_dat.h
-+  x509v3/Makefile
-+  )
-+set(x509v3_extra # in directory, not in Makefile LIBSRC
-+  x509v3/v3nametest.c
-+  )
-+list(APPEND x509v3_extra # in directory, not in Makefile
-+  x509v3/tabtest.c
-+  x509v3/v3conf.c
-+  x509v3/v3prin.c
++  x509v3/pcy_int.h
++  x509v3/standard_exts.h
++  x509v3/v3_admis.h
 +  )
 +source_group(x509v3 FILES ${x509v3_srcs})
 +list(APPEND ${lib_name}_libsrcs ${x509v3_srcs})
-+list(APPEND ${lib_name}_exhdrs ${x509v3_exhdrs})
-+list(APPEND ${lib_name}_all ${x509v3_srcs} ${x509v3_extra})
 +########################################
-+compareCmakeFilesys("${${lib_name}_all}")
-+########################################
-+# headers to openssl (for build)
-+add_custom_command(OUTPUT ${lib_name}_hdrs_cmd
-+  COMMAND ${CMAKE_COMMAND} -Dsrc:STRING="${${lib_name}_exhdrs}"
-+    -DsrcDir:PATH=${CMAKE_CURRENT_SOURCE_DIR}
-+    -Ddst:PATH=${CMAKE_BINARY_DIR}/openssl -P ${openssl_SOURCE_DIR}/cpln.cmake
-+  )
-+add_custom_target(${lib_name}_hdrs
-+  DEPENDS ossl_hdrs ${lib_name}_hdrs_cmd
-+  SOURCES ${openssl_SOURCE_DIR}/cpln.cmake
-+  )
-+set_property(TARGET ${lib_name}_hdrs PROPERTY FOLDER openssl_h)
-+########################################
-+# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_include_directories(${lib_name} PRIVATE
++  ${CMAKE_CURRENT_SOURCE_DIR}/include
++  ${CMAKE_CURRENT_BINARY_DIR}/include # buildinf.h, internal/[bn|dso]_conf.h
++  ec/curve448
++  ec/curve448/arch_32
++  modes # evp includes modes_lcl.h
++  )
++if(FALSE)
++# TODO: EXPORT of STATIC library with PRIVATE non-target dependencies broken
++# https://gitlab.kitware.com/cmake/cmake/issues/17357
++# I'm seeing the same error reported in this issue
++target_link_libraries(${lib_name} PRIVATE include)
++else()
++target_include_directories(${lib_name} PRIVATE
++  ${CMAKE_SOURCE_DIR}/include
++  ${CMAKE_BINARY_DIR}/include # e_os.h, openssl/opensslconf.h
++  )
++endif()
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
-+add_dependencies(${lib_name} ${lib_name}_hdrs ssl_hdrs)
 +########################################
-+# install
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${${lib_name}_exhdrs} DESTINATION include${verDir}/${PROJECT_NAME})
-diff --git a/crypto/Makefile b/crypto/Makefile
-index 9a39e93..15828ce 100644
---- a/crypto/Makefile
-+++ b/crypto/Makefile
-@@ -85,11 +85,11 @@ testapps:
- 	@if [ -z "$(THIS)" ]; then $(MAKE) -f $(TOP)/Makefile reflect THIS=$@; fi
- 
- subdirs:
--	@target=all; $(RECURSIVE_MAKE)
-+	+@target=all; $(RECURSIVE_MAKE)
- 
- files:
- 	$(PERL) $(TOP)/util/files.pl "CPUID_OBJ=$(CPUID_OBJ)" Makefile >> $(TOP)/MINFO
--	@target=files; $(RECURSIVE_MAKE)
-+	+@target=files; $(RECURSIVE_MAKE)
- 
- links:
- 	@$(PERL) $(TOP)/util/mklink.pl ../include/openssl $(EXHEADER)
-@@ -100,7 +100,7 @@ links:
- # lib: $(LIB): are splitted to avoid end-less loop
- lib:	$(LIB)
- 	@touch lib
--$(LIB):	$(LIBOBJ)
-+$(LIB):	$(LIBOBJ) | subdirs
- 	$(AR) $(LIB) $(LIBOBJ)
- 	test -z "$(FIPSLIBDIR)" || $(AR) $(LIB) $(FIPSLIBDIR)fipscanister.o
- 	$(RANLIB) $(LIB) || echo Never mind.
-@@ -111,7 +111,7 @@ shared: buildinf.h lib subdirs
- 	fi
- 
- libs:
--	@target=lib; $(RECURSIVE_MAKE)
-+	+@target=lib; $(RECURSIVE_MAKE)
- 
- install:
- 	@[ -n "$(INSTALLTOP)" ] # should be set by top Makefile...
-@@ -120,7 +120,7 @@ install:
- 	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
- 	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
- 	done;
--	@target=install; $(RECURSIVE_MAKE)
-+	+@target=install; $(RECURSIVE_MAKE)
- 
- lint:
- 	@target=lint; $(RECURSIVE_MAKE)
-diff --git a/crypto/buildinf.h.cmake b/crypto/buildinf.h.cmake
++########################################
++list(APPEND ${lib_name}_all ${${lib_name}_libsrcs})
++list(REMOVE_ITEM ${lib_name}_all
++  ${CMAKE_CURRENT_BINARY_DIR}/include/buildinf.h
++  ${CMAKE_CURRENT_BINARY_DIR}/include/internal/bn_conf.h
++  ${CMAKE_CURRENT_BINARY_DIR}/include/internal/dso_conf.h
++  )
++compareCmakeFilesys("${${lib_name}_all}")
+diff --git a/crypto/include/buildinf.h.cmake b/crypto/include/buildinf.h.cmake
 new file mode 100644
-index 0000000..e6fd68a
+index 0000000..23663ea
 --- /dev/null
-+++ b/crypto/buildinf.h.cmake
-@@ -0,0 +1,6 @@
-+#ifndef MK1MF_BUILD
-+  /* auto-generated by crypto/CMakeLists.txt for crypto/cversion.c */
-+  #define CFLAGS "@CMAKE_C_COMPILER@ @CMAKE_C_FLAGS@"
-+  #define PLATFORM "@CMAKE_SYSTEM_NAME@"
-+  #define DATE "@BUILDINF_DATE@"
++++ b/crypto/include/buildinf.h.cmake
+@@ -0,0 +1,24 @@
++/*
++ * WARNING: do not edit!
++ * Generated by CMakeLists.txt from crypto/include/buildinf.h.cmake
++ * (cmake version of util/mkbuildinf.pl)
++ *
++ * Copyright 2014-2017 The OpenSSL Project Authors. All Rights Reserved.
++ *
++ * Licensed under the OpenSSL license (the "License").  You may not use
++ * this file except in compliance with the License.  You can obtain a copy
++ * in the file LICENSE in the source distribution or at
++ * https://www.openssl.org/source/license.html
++ */
++
++#define PLATFORM "platform: @BUILDINF_PLATFORM@"
++#define DATE "built on: @BUILDINF_DATE@"
++
++/*
++ * Generate compiler_flags as an array of individual characters. This is a
++ * workaround for the situation where CFLAGS gets too long for a C90 string
++ * literal
++ */
++static const char compiler_flags[] = {
++@BUILDINF_COMPILER_FLAGS@
++};
+diff --git a/crypto/include/internal/bn_conf.h.cmake b/crypto/include/internal/bn_conf.h.cmake
+new file mode 100644
+index 0000000..6faeca9
+--- /dev/null
++++ b/crypto/include/internal/bn_conf.h.cmake
+@@ -0,0 +1,27 @@
++@INSERT_WARNING@
++/*
++ * Copyright 2016 The OpenSSL Project Authors. All Rights Reserved.
++ *
++ * Licensed under the OpenSSL license (the "License").  You may not use
++ * this file except in compliance with the License.  You can obtain a copy
++ * in the file LICENSE in the source distribution or at
++ * https://www.openssl.org/source/license.html
++ */
++
++#ifndef HEADER_BN_CONF_H
++# define HEADER_BN_CONF_H
++
++/*
++ * The contents of this file are not used in the UEFI build, as
++ * both 32-bit and 64-bit builds are supported from a single run
++ * of the Configure script.
++ */
++
++/* Should we define BN_DIV2W here? */
++
++/* Only one for the following should be defined */
++#@INSERT_SIXTY_FOUR_BIT_LONG@ SIXTY_FOUR_BIT_LONG
++#@INSERT_SIXTY_FOUR_BIT@ SIXTY_FOUR_BIT
++#@INSERT_THIRTY_TWO_BIT@ THIRTY_TWO_BIT
++
 +#endif
-diff --git a/crypto/objects/Makefile b/crypto/objects/Makefile
-index a8aedbd..aaa8d29 100644
---- a/crypto/objects/Makefile
-+++ b/crypto/objects/Makefile
-@@ -44,11 +44,11 @@ obj_dat.h: obj_dat.pl obj_mac.h
- # objects.pl both reads and writes obj_mac.num
- obj_mac.h: objects.pl objects.txt obj_mac.num
- 	$(PERL) objects.pl objects.txt obj_mac.num obj_mac.h
--	@sleep 1; touch obj_mac.h; sleep 1
+diff --git a/crypto/include/internal/dso_conf.h.cmake b/crypto/include/internal/dso_conf.h.cmake
+new file mode 100644
+index 0000000..cf6f04f
+--- /dev/null
++++ b/crypto/include/internal/dso_conf.h.cmake
+@@ -0,0 +1,14 @@
++@INSERT_WARNING@
++/*
++ * Copyright 2016-2019 The OpenSSL Project Authors. All Rights Reserved.
++ *
++ * Licensed under the OpenSSL license (the "License").  You may not use
++ * this file except in compliance with the License.  You can obtain a copy
++ * in the file LICENSE in the source distribution or at
++ * https://www.openssl.org/source/license.html
++ */
++
++#ifndef HEADER_DSO_CONF_H
++# define HEADER_DSO_CONF_H@INSERT_DSO_SCHEME_MACROS@
++# define DSO_EXTENSION "@INSERT_DSO_EXTENSION@"
++#endif
+diff --git a/include/CMakeLists.txt b/include/CMakeLists.txt
+new file mode 100644
+index 0000000..390adbe
+--- /dev/null
++++ b/include/CMakeLists.txt
+@@ -0,0 +1,237 @@
++set(lib_name include)
++########################################
++# cmake-generate openssl/opensslconf.h
++set(INSERT_WARNING
++  "WARNING: do not edit!\n * Generated by CMakeLists.txt from include/openssl/opensslconf.h.cmake"
++  )
++##########
++# ./configure; perl configdata.pm --dump
++# Disable features
++set(OPENSSL_DEFINES
++  #OPENSSL_NO_MD2
++  #OPENSSL_NO_RC5
++  OPENSSL_THREADS
++  OPENSSL_RAND_SEED_OS
++  OPENSSL_NO_ASAN
++  OPENSSL_NO_CRYPTO_MDEBUG
++  OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
++  OPENSSL_NO_DEVCRYPTOENG
++  OPENSSL_NO_EC_NISTP_64_GCC_128
++  OPENSSL_NO_EGD
++  OPENSSL_NO_EXTERNAL_TESTS
++  OPENSSL_NO_FUZZ_AFL
++  OPENSSL_NO_FUZZ_LIBFUZZER
++  OPENSSL_NO_HEARTBEATS
++  OPENSSL_NO_MSAN
++  OPENSSL_NO_SCTP
++  OPENSSL_NO_SSL_TRACE
++  OPENSSL_NO_SSL3
++  OPENSSL_NO_SSL3_METHOD
++  OPENSSL_NO_UBSAN
++  OPENSSL_NO_UNIT_TEST
++  OPENSSL_NO_WEAK_SSL_CIPHERS
++  #OPENSSL_NO_STATIC_ENGINE
++  )
++foreach(def ${OPENSSL_DEFINES})
++  set(INSERT_DEFINES "${INSERT_DEFINES}#ifndef ${def}\n# define ${def}\n#endif\n")
++endforeach()
++##########
++if(CMAKE_SYSTEM_PROCESSOR STREQUAL i386)
++  set(INSERT_I386 define)
++else()
++  set(INSERT_I386 undef)
++endif()
++##########
++include(CheckIncludeFile)
++check_include_file(unistd.h HAS_UNISTD_H_OSSL)
++if(HAS_UNISTD_H_OSSL)
++  set(INSERT_UNISTD <unistd.h>)
++else()
++  set(INSERT_UNISTD <unknown.h>)
++endif()
++##########
++if(TRUE)
++  set(INSERT_EXPORT_VAR_AS_FN undef)
++  set(INSERT_BN_LLONG undef)
++else()
++  set(INSERT_EXPORT_VAR_AS_FN define)
++  set(INSERT_BN_LLONG define)
++endif()
++##########
++# only one for the following should be defined
++set(INSERT_SIXTY_FOUR_BIT_LONG define)
++set(INSERT_SIXTY_FOUR_BIT undef)
++set(INSERT_THIRTY_TWO_BIT undef)
++##########
++set(INSERT_RC4_INT "unsigned int")
++##########
++configure_file(openssl/opensslconf.h.cmake openssl/opensslconf.h @ONLY)
++# copy root header to CMAKE_CURRENT_BINARY_DIR
++configure_file(${CMAKE_SOURCE_DIR}/e_os.h e_os.h COPYONLY)
++########################################
++set(internal_srcs
++  internal/bio.h
++  internal/comp.h
++  internal/conf.h
++  internal/constant_time_locl.h
++  internal/cryptlib.h
++  internal/dane.h
++  internal/__DECC_INCLUDE_EPILOGUE.H
++  internal/__DECC_INCLUDE_PROLOGUE.H
++  internal/dsoerr.h
++  internal/dso.h
++  internal/err.h
++  internal/nelem.h
++  internal/numbers.h
++  internal/o_dir.h
++  internal/o_str.h
++  internal/refcount.h
++  internal/sockets.h
++  internal/sslconf.h
++  internal/thread_once.h
++  internal/tsan_assist.h
++  ${CMAKE_CURRENT_BINARY_DIR}/e_os.h
++  )
++source_group(internal FILES ${internal_srcs})
++list(APPEND ${lib_name}_libsrcs ${internal_srcs})
++########################################
++set(openssl_srcs
++  openssl/aes.h
++  openssl/asn1err.h
++  openssl/asn1.h
++  openssl/asn1_mac.h
++  openssl/asn1t.h
++  openssl/asyncerr.h
++  openssl/async.h
++  openssl/bioerr.h
++  openssl/bio.h
++  openssl/blowfish.h
++  openssl/bnerr.h
++  openssl/bn.h
++  openssl/buffererr.h
++  openssl/buffer.h
++  openssl/camellia.h
++  openssl/cast.h
++  openssl/cmac.h
++  openssl/cmserr.h
++  openssl/cms.h
++  openssl/comperr.h
++  openssl/comp.h
++  openssl/conf_api.h
++  openssl/conferr.h
++  openssl/conf.h
++  openssl/cryptoerr.h
++  openssl/crypto.h
++  openssl/cterr.h
++  openssl/ct.h
++  openssl/__DECC_INCLUDE_EPILOGUE.H
++  openssl/__DECC_INCLUDE_PROLOGUE.H
++  openssl/des.h
++  openssl/dherr.h
++  openssl/dh.h
++  openssl/dsaerr.h
++  openssl/dsa.h
++  openssl/dtls1.h
++  openssl/ebcdic.h
++  openssl/ecdh.h
++  openssl/ecdsa.h
++  openssl/ecerr.h
++  openssl/ec.h
++  openssl/engineerr.h
++  openssl/engine.h
++  openssl/e_os2.h
++  openssl/err.h
++  openssl/evperr.h
++  openssl/evp.h
++  openssl/hmac.h
++  openssl/idea.h
++  openssl/kdferr.h
++  openssl/kdf.h
++  openssl/lhash.h
++  openssl/md2.h
++  openssl/md4.h
++  openssl/md5.h
++  openssl/mdc2.h
++  openssl/modes.h
++  openssl/objectserr.h
++  openssl/objects.h
++  openssl/obj_mac.h
++  openssl/ocsperr.h
++  openssl/ocsp.h
++  openssl/opensslconf.h.cmake
++  openssl/opensslconf.h.in
++  openssl/opensslv.h
++  openssl/ossl_typ.h
++  openssl/pem2.h
++  openssl/pemerr.h
++  openssl/pem.h
++  openssl/pkcs12err.h
++  openssl/pkcs12.h
++  openssl/pkcs7err.h
++  openssl/pkcs7.h
++  openssl/rand_drbg.h
++  openssl/randerr.h
++  openssl/rand.h
++  openssl/rc2.h
++  openssl/rc4.h
++  openssl/rc5.h
++  openssl/ripemd.h
++  openssl/rsaerr.h
++  openssl/rsa.h
++  openssl/safestack.h
++  openssl/seed.h
++  openssl/sha.h
++  openssl/srp.h
++  openssl/srtp.h
++  openssl/ssl2.h
++  openssl/ssl3.h
++  openssl/sslerr.h
++  openssl/ssl.h
++  openssl/stack.h
++  openssl/storeerr.h
++  openssl/store.h
++  openssl/symhacks.h
++  openssl/tls1.h
++  openssl/tserr.h
++  openssl/ts.h
++  openssl/txt_db.h
++  openssl/uierr.h
++  openssl/ui.h
++  openssl/whrlpool.h
++  openssl/x509err.h
++  openssl/x509.h
++  openssl/x509v3err.h
++  openssl/x509v3.h
++  openssl/x509_vfy.h
++  ${CMAKE_CURRENT_BINARY_DIR}/openssl/opensslconf.h
++  )
++source_group(openssl FILES ${openssl_srcs})
++list(APPEND ${lib_name}_libsrcs ${openssl_srcs})
++########################################
++if(FALSE)
++add_library(${lib_name} INTERFACE)
++# TODO: it appears cmake 3.13 has a fix for the target_sources() call to work
++# https://cmake.org/pipermail/cmake/2016-July/063896.html
++target_sources(${lib_name} INTERFACE ${${lib_name}_libsrcs})
++target_include_directories(${lib_name} INTERFACE
++  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
++  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # e_os.h, openssl/opensslconf.h
++  )
++else()
++add_custom_target(${lib_name} SOURCES ${${lib_name}_libsrcs})
++endif()
++# don't install the following...
++list(REMOVE_ITEM openssl_srcs
++  openssl/__DECC_INCLUDE_EPILOGUE.H
++  openssl/__DECC_INCLUDE_PROLOGUE.H
++  openssl/opensslconf.h.cmake
++  openssl/opensslconf.h.in
++  )
++install(FILES ${openssl_srcs} DESTINATION include${verDir}/${PROJECT_NAME})
++########################################
++list(APPEND ${lib_name}_libsrcs CMakeLists.txt)
++list(REMOVE_ITEM ${lib_name}_libsrcs
++  ${CMAKE_CURRENT_BINARY_DIR}/e_os.h
++  ${CMAKE_CURRENT_BINARY_DIR}/openssl/opensslconf.h
++  )
++compareCmakeFilesys("${${lib_name}_libsrcs}")
+diff --git a/include/internal/cryptlib.h b/include/internal/cryptlib.h
+index b4d76d5..22e3006 100644
+--- a/include/internal/cryptlib.h
++++ b/include/internal/cryptlib.h
+@@ -53,6 +53,13 @@ DEFINE_LHASH_OF(MEM);
  
--obj_xref.h: objxref.pl obj_xref.txt obj_mac.num
-+# This doesn't really need obj_mac.h, but since that rule reads & writes
-+# obj_mac.num, we can't run in parallel with it.
-+obj_xref.h: objxref.pl obj_xref.txt obj_mac.num obj_mac.h
- 	$(PERL) objxref.pl obj_mac.num obj_xref.txt > obj_xref.h
--	@sleep 1; touch obj_xref.h; sleep 1
+ # define OPENSSL_CONF             "openssl.cnf"
  
- files:
- 	$(PERL) $(TOP)/util/files.pl Makefile >> $(TOP)/MINFO
-diff --git a/engines/Makefile b/engines/Makefile
-index da6c875..d675f5c 100644
---- a/engines/Makefile
-+++ b/engines/Makefile
-@@ -72,7 +72,7 @@ top:
- 
- all:	lib subdirs
- 
--lib:	$(LIBOBJ)
-+lib:	$(LIBOBJ) | subdirs
- 	@if [ -n "$(SHARED_LIBS)" ]; then \
- 		set -e; \
- 		for l in $(LIBNAMES); do \
-@@ -89,7 +89,7 @@ lib:	$(LIBOBJ)
- 
- subdirs:
- 	echo $(EDIRS)
--	@target=all; $(RECURSIVE_MAKE)
-+	+@target=all; $(RECURSIVE_MAKE)
- 
- files:
- 	$(PERL) $(TOP)/util/files.pl Makefile >> $(TOP)/MINFO
-@@ -128,7 +128,7 @@ install:
- 			  mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx ); \
- 		done; \
- 	fi
--	@target=install; $(RECURSIVE_MAKE)
-+	+@target=install; $(RECURSIVE_MAKE)
- 
- tags:
- 	ctags $(SRC)
++# if !(defined(VMS) || defined(__VMS)) /* VMS uses logical names instead */
++#  if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
++#   define ENGINESDIR "/usr/local/ssl/lib/engines"
++#   define OPENSSLDIR "/usr/local/ssl"
++#  endif
++# endif
++
+ # ifndef OPENSSL_SYS_VMS
+ #  define X509_CERT_AREA          OPENSSLDIR
+ #  define X509_CERT_DIR           OPENSSLDIR "/certs"
+diff --git a/include/openssl/opensslconf.h.cmake b/include/openssl/opensslconf.h.cmake
+new file mode 100644
+index 0000000..1782ddd
+--- /dev/null
++++ b/include/openssl/opensslconf.h.cmake
+@@ -0,0 +1,122 @@
++/*
++ * @INSERT_WARNING@
++ *
++ * Copyright 2016-2018 The OpenSSL Project Authors. All Rights Reserved.
++ *
++ * Licensed under the OpenSSL license (the "License").  You may not use
++ * this file except in compliance with the License.  You can obtain a copy
++ * in the file LICENSE in the source distribution or at
++ * https://www.openssl.org/source/license.html
++ */
++
++#include <openssl/opensslv.h>
++
++#ifdef  __cplusplus
++extern "C" {
++#endif
++
++#ifdef OPENSSL_ALGORITHM_DEFINES
++# error OPENSSL_ALGORITHM_DEFINES no longer supported
++#endif
++
++/*
++ * OpenSSL was configured with the following options:
++ */
++
++@INSERT_DEFINES@
++
++/*
++ * Sometimes OPENSSSL_NO_xxx ends up with an empty file and some compilers
++ * don't like that.  This will hopefully silence them.
++ */
++#define NON_EMPTY_TRANSLATION_UNIT static void *dummy = &dummy;
++
++/*
++ * Applications should use -DOPENSSL_API_COMPAT=<version> to suppress the
++ * declarations of functions deprecated in or before <version>. Otherwise, they
++ * still won't see them if the library has been built to disable deprecated
++ * functions.
++ */
++#ifndef DECLARE_DEPRECATED
++# define DECLARE_DEPRECATED(f)   f;
++# ifdef __GNUC__
++#  if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ > 0)
++#   undef DECLARE_DEPRECATED
++#   define DECLARE_DEPRECATED(f)    f __attribute__ ((deprecated));
++#  endif
++# endif
++#endif
++
++#ifndef OPENSSL_FILE
++# ifdef OPENSSL_NO_FILENAMES
++#  define OPENSSL_FILE ""
++#  define OPENSSL_LINE 0
++# else
++#  define OPENSSL_FILE __FILE__
++#  define OPENSSL_LINE __LINE__
++# endif
++#endif
++
++#ifndef OPENSSL_MIN_API
++# define OPENSSL_MIN_API 0
++#endif
++
++#if !defined(OPENSSL_API_COMPAT) || OPENSSL_API_COMPAT < OPENSSL_MIN_API
++# undef OPENSSL_API_COMPAT
++# define OPENSSL_API_COMPAT OPENSSL_MIN_API
++#endif
++
++/*
++ * Do not deprecate things to be deprecated in version 1.2.0 before the
++ * OpenSSL version number matches.
++ */
++#if OPENSSL_VERSION_NUMBER < 0x10200000L
++# define DEPRECATEDIN_1_2_0(f)   f;
++#elif OPENSSL_API_COMPAT < 0x10200000L
++# define DEPRECATEDIN_1_2_0(f)   DECLARE_DEPRECATED(f)
++#else
++# define DEPRECATEDIN_1_2_0(f)
++#endif
++
++#if OPENSSL_API_COMPAT < 0x10100000L
++# define DEPRECATEDIN_1_1_0(f)   DECLARE_DEPRECATED(f)
++#else
++# define DEPRECATEDIN_1_1_0(f)
++#endif
++
++#if OPENSSL_API_COMPAT < 0x10000000L
++# define DEPRECATEDIN_1_0_0(f)   DECLARE_DEPRECATED(f)
++#else
++# define DEPRECATEDIN_1_0_0(f)
++#endif
++
++#if OPENSSL_API_COMPAT < 0x00908000L
++# define DEPRECATEDIN_0_9_8(f)   DECLARE_DEPRECATED(f)
++#else
++# define DEPRECATEDIN_0_9_8(f)
++#endif
++
++/* Generate 80386 code? */
++#@INSERT_I386@ I386_ONLY
++
++#undef OPENSSL_UNISTD
++#define OPENSSL_UNISTD @INSERT_UNISTD@
++
++#@INSERT_EXPORT_VAR_AS_FN@ OPENSSL_EXPORT_VAR_AS_FUNCTION
++
++/*
++ * The following are cipher-specific, but are part of the public API.
++ */
++#if !defined(OPENSSL_SYS_UEFI)
++# @INSERT_BN_LLONG@ BN_LLONG
++/* Only one for the following should be defined */
++# @INSERT_SIXTY_FOUR_BIT_LONG@ SIXTY_FOUR_BIT_LONG
++# @INSERT_SIXTY_FOUR_BIT@ SIXTY_FOUR_BIT
++# @INSERT_THIRTY_TWO_BIT@ THIRTY_TWO_BIT
++#endif
++
++#define RC4_INT @INSERT_RC4_INT@
++
++#ifdef  __cplusplus
++}
++#endif
 diff --git a/ssl/CMakeLists.txt b/ssl/CMakeLists.txt
 new file mode 100644
-index 0000000..8916231
+index 0000000..b41753c
 --- /dev/null
 +++ b/ssl/CMakeLists.txt
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,108 @@
 +set(lib_name ssl)
-+set(lib_deps crypto)
 +########################################
-+include_directories(
-+  ${openssl_SOURCE_DIR}
-+  ${openssl_BINARY_DIR} # openssl/*.h
-+  ${openssl_SOURCE_DIR}/crypto # o_dir.h
-+  )
-+####################
 +# root
-+set(root_srcs # order from ssl/Makefile
-+  s2_meth.c
-+  s2_srvr.c
-+  s2_clnt.c
-+  s2_lib.c
-+  s2_enc.c
-+  s2_pkt.c
-+  s3_meth.c
-+  s3_srvr.c
-+  s3_clnt.c
++set(root_srcs # order from ssl/build.info
++  build.info
++  pqueue.c
++  packet.c
 +  s3_lib.c
 +  s3_enc.c
-+  s3_pkt.c
-+  s3_both.c
 +  s3_cbc.c
-+  s23_meth.c
-+  s23_srvr.c
-+  s23_clnt.c
-+  s23_lib.c
-+  s23_pkt.c
-+  t1_meth.c
-+  t1_srvr.c
-+  t1_clnt.c
++  s3_msg.c
++  methods.c
 +  t1_lib.c
 +  t1_enc.c
-+  t1_ext.c
-+  d1_meth.c
-+  d1_srvr.c
-+  d1_clnt.c
++  tls13_enc.c
 +  d1_lib.c
-+  d1_pkt.c
-+  d1_both.c
++  d1_msg.c
 +  d1_srtp.c
 +  ssl_lib.c
-+  ssl_err2.c
 +  ssl_cert.c
 +  ssl_sess.c
 +  ssl_ciph.c
@@ -2452,71 +2279,85 @@ index 0000000..8916231
 +  ssl_rsa.c
 +  ssl_asn1.c
 +  ssl_txt.c
-+  ssl_algs.c
++  ssl_init.c
 +  ssl_conf.c
++  ssl_mcnf.c
 +  bio_ssl.c
 +  ssl_err.c
-+  kssl.c
-+  t1_reneg.c
 +  tls_srp.c
 +  t1_trce.c
 +  ssl_utst.c
 +  )
-+set(root_exhdrs
-+  ssl.h
-+  ssl2.h
-+  ssl3.h
-+  ssl23.h
-+  tls1.h
-+  dtls1.h
-+  kssl.h
-+  srtp.h
-+  )
 +list(APPEND root_srcs
-+  ${root_exhdrs}
++  packet_locl.h
++  ssl_cert_table.h
 +  ssl_locl.h
-+  kssl_lcl.h
-+  install-ssl.com
-+  Makefile
-+  ssl-lib.com
-+  )
-+set(root_extra # in directory, not in Makefile LIBSRC
-+  ssltest.c
-+  heartbeat_test.c
-+  )
-+list(APPEND root_extra # in directory, not in Makefile
-+  ssl_task.c
-+  CMakeLists.txt
 +  )
 +source_group("" FILES ${root_srcs})
 +list(APPEND ${lib_name}_libsrcs ${root_srcs})
-+list(APPEND ${lib_name}_exhdrs ${root_exhdrs})
-+list(APPEND ${lib_name}_all ${root_srcs} ${root_extra})
-+########################################
-+compareCmakeFilesys("${${lib_name}_all}")
-+########################################
-+# headers to openssl (for build)
-+add_custom_command(OUTPUT ${lib_name}_hdrs_cmd
-+  COMMAND ${CMAKE_COMMAND} -Dsrc:STRING="${${lib_name}_exhdrs}"
-+    -DsrcDir:PATH=${CMAKE_CURRENT_SOURCE_DIR}
-+    -Ddst:PATH=${CMAKE_BINARY_DIR}/openssl -P ${openssl_SOURCE_DIR}/cpln.cmake
++##########
++set(root_extra # in directory, not in build.info
++  CMakeLists.txt
 +  )
-+add_custom_target(${lib_name}_hdrs
-+  DEPENDS ${lib_name}_hdrs_cmd
-+  SOURCES ${openssl_SOURCE_DIR}/cpln.cmake
++list(APPEND ${lib_name}_all ${root_extra})
++####################
++# record
++set(record_srcs # order from ssl/build.info
++  record/rec_layer_s3.c
++  record/rec_layer_d1.c
++  record/ssl3_buffer.c
++  record/ssl3_record.c
++  record/dtls1_bitmap.c
++  record/ssl3_record_tls13.c
 +  )
-+set_property(TARGET ${lib_name}_hdrs PROPERTY FOLDER openssl_h)
++list(APPEND record_srcs
++  record/README
++  record/record.h
++  record/record_locl.h
++  )
++source_group(record FILES ${record_srcs})
++list(APPEND ${lib_name}_libsrcs ${record_srcs})
++####################
++# statem
++set(statem_srcs # order from ssl/build.info
++  statem/statem_srvr.c
++  statem/statem_clnt.c
++  statem/statem_lib.c
++  statem/extensions.c
++  statem/extensions_srvr.c
++  statem/extensions_clnt.c
++  statem/extensions_cust.c
++  statem/statem_dtls.c
++  statem/statem.c
++  )
++list(APPEND statem_srcs
++  statem/README
++  statem/statem.h
++  statem/statem_locl.h
++  )
++source_group(statem FILES ${statem_srcs})
++list(APPEND ${lib_name}_libsrcs ${statem_srcs})
 +########################################
-+# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++if(FALSE) # cmake bugs with INTERFACE library
++# TODO: EXPORT of STATIC library with PRIVATE non-target dependencies broken
++# https://gitlab.kitware.com/cmake/cmake/issues/17357
++# I'm seeing the same error reported in this issue
++target_link_libraries(${lib_name} PRIVATE include)
++else()
++target_include_directories(${lib_name} PRIVATE
++  ${CMAKE_SOURCE_DIR}/include
++  ${CMAKE_BINARY_DIR}/include # e_os.h, openssl/opensslconf.h
++  )
++endif()
++target_link_libraries(${lib_name} PUBLIC crypto)
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
-+add_dependencies(${lib_name} ${lib_deps} ${lib_name}_hdrs)
-+target_link_libraries(${lib_name} ${lib_deps})
 +########################################
-+# install
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
 +  LIBRARY DESTINATION lib
 +  ARCHIVE DESTINATION lib
 +  )
-+install(FILES ${${lib_name}_exhdrs} DESTINATION include${verDir}/${PROJECT_NAME})
++########################################
++list(APPEND ${lib_name}_all ${${lib_name}_libsrcs})
++compareCmakeFilesys("${${lib_name}_all}")
