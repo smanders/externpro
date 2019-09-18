@@ -22,6 +22,7 @@ set(PRO_EXPAT
   DIFF ${FORK}/compare/libexpat:
   DLURL ${REPO}/releases/download/${TAG}/expat-${VER}.tar.bz2
   DLMD5 789e297f547980fc9ecc036f9a070d49
+  BUILD_FUNC build_expat
   )
 ########################################
 function(build_expat)
