@@ -1,39 +1,38 @@
 # openssl
-xpProOption(openssl DBG)
-set(BRANCH 1.1.1)
-set(VER ${BRANCH}c)
-string(REPLACE "." "_" VER_ ${VER})
-set(REPO https://github.com/smanders/openssl)
-set(PRO_OPENSSL
-  NAME openssl
-  WEB "OpenSSL" http://www.openssl.org/ "OpenSSL website"
-  LICENSE "open" http://www.openssl.org/source/license.html "OpenSSL, SSLeay License: BSD-style"
-  DESC "Cryptography and SSL/TLS Toolkit"
-  REPO "repo" ${REPO} "forked openssl repo on github"
-  GRAPH
-  VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/openssl.git
-  GIT_UPSTREAM git://github.com/openssl/openssl.git
-  GIT_TAG xp_${VER_} # what to 'git checkout'
-  GIT_REF OpenSSL_${VER_} # create patch from this tag to 'git checkout'
-  # NOTE: warnings extracting tar.gz from openssl.org on Windows
-  # cmake -E tar : warning : skipping symbolic link
-  DLURL https://www.openssl.org/source/old/${BRANCH}/openssl-${VER}.tar.gz
-  DLMD5 15e21da6efe8aa0e0768ffd8cd37a5f6
-  PATCH ${PATCH_DIR}/openssl.patch
-  DIFF ${REPO}/compare/openssl:
-  BUILD_FUNC build_openssl
-  )
+set(OPENSSL_OLDVER 1.0.2a)
+set(OPENSSL_NEWVER 1.1.1c)
 ########################################
 function(build_openssl)
-  if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL))
+  string(TOUPPER ${OPENSSL_OLDVER} OLDVER)
+  string(TOUPPER ${OPENSSL_NEWVER} NEWVER)
+  if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL_${OLDVER} OR XP_PRO_OPENSSL_${NEWVER}))
     return()
   endif()
-  xpGetArgValue(${PRO_OPENSSL} ARG VER VALUE VER)
+  if(XP_DEFAULT)
+    set(OPENSSL_VERSIONS ${OPENSSL_OLDVER} ${OPENSSL_NEWVER})
+  else()
+    if(XP_PRO_OPENSSL_${OLDVER})
+      set(OPENSSL_VERSIONS ${OPENSSL_OLDVER})
+    endif()
+    if(XP_PRO_OPENSSL_${NEWVER})
+      list(APPEND OPENSSL_VERSIONS ${OPENSSL_NEWVER})
+    endif()
+  endif()
+  list(REMOVE_DUPLICATES OPENSSL_VERSIONS)
+  list(LENGTH OPENSSL_VERSIONS NUM_VER)
+  if(NUM_VER EQUAL 1)
+    set(ONE_VER "set(XP_USE_LATEST_OPENSSL ON) # currently only one version supported\n")
+  endif()
+  set(MOD_OPT "set(VER_MOD)")
+  set(VER_CFG xpConfigBase)
+  set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
   configure_file(${PRO_DIR}/use/usexp-openssl-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(openssl "" "-DOPENSSL_VER=${VER}" opensslTargets)
+  foreach(ver ${OPENSSL_VERSIONS})
+    xpCmakeBuild(openssl_${ver} "" "-DOPENSSL_VER=${ver}" opensslTargets_${ver})
+    list(APPEND opensslTargets ${opensslTargets_${ver}})
+  endforeach()
   if(ARGN)
     set(${ARGN} "${opensslTargets}" PARENT_SCOPE)
   endif()
