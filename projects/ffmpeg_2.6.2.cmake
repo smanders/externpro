@@ -8,7 +8,6 @@ set(PRO_FFMPEG_${VER}
   LICENSE "LGPL" https://www.ffmpeg.org/legal.html "Lesser GPL v2.1"
   DESC "complete, cross-platform solution to record, convert and stream audio and video"
   REPO "repo" ${REPO} "forked ffmpeg repo on github"
-  GRAPH GRAPH_NODE ffmpeg GRAPH_DEPS openh264 yasm
   VER ${VER}
   GIT_ORIGIN git://github.com/ndrasmussen/FFmpeg.git
   GIT_UPSTREAM git://github.com/FFmpeg/FFmpeg.git
