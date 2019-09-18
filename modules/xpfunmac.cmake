@@ -522,9 +522,9 @@ function(ipMarkdownLink var _ret)
   set(${_ret} "[${text}](${url} '${title}')" PARENT_SCOPE)
 endfunction()
 
-set(g_README ${CMAKE_BINARY_DIR}/README.md)
-set(g_READMEsub ${CMAKE_BINARY_DIR}/README.sub.md)
-set(g_READMEdep ${CMAKE_BINARY_DIR}/deps.dot)
+set(g_README ${CMAKE_BINARY_DIR}/xpbase/pro/README.md)
+set(g_READMEsub ${CMAKE_BINARY_DIR}/xpbase/pro/README.sub.md)
+set(g_READMEdep ${CMAKE_BINARY_DIR}/xpbase/pro/deps.dot)
 
 function(xpMarkdownReadmeInit)
   file(WRITE ${g_README}

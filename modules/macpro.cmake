@@ -93,11 +93,11 @@ macro(proSetOpts) # NOTE: called by proInit
 endmacro()
 
 macro(proInitFunFiles) # NOTE: called by proInit
-  # cmake-generate the pro_${XP_STEP}.cmake function files
-  set(stepMkpatch ${CMAKE_BINARY_DIR}/pro_mkpatch.cmake)
-  set(stepDownload ${CMAKE_BINARY_DIR}/pro_download.cmake)
-  set(stepPatch ${CMAKE_BINARY_DIR}/pro_patch.cmake)
-  set(stepBuild ${CMAKE_BINARY_DIR}/pro_build.cmake)
+  # cmake-generate the xpbase/pro/${XP_STEP}.cmake function files
+  set(stepMkpatch ${CMAKE_BINARY_DIR}/xpbase/pro/mkpatch.cmake)
+  set(stepDownload ${CMAKE_BINARY_DIR}/xpbase/pro/download.cmake)
+  set(stepPatch ${CMAKE_BINARY_DIR}/xpbase/pro/patch.cmake)
+  set(stepBuild ${CMAKE_BINARY_DIR}/xpbase/pro/build.cmake)
   ####
   file(WRITE ${stepMkpatch} "message(STATUS \"XP_STEP: mkpatch\")\n")
   file(WRITE ${stepDownload} "message(STATUS \"XP_STEP: download\")\n")
@@ -157,7 +157,7 @@ macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
   file(GLOB xpfiles
     ${PROJECT_SOURCE_DIR}/README* ${PROJECT_SOURCE_DIR}/LICENSE*
     ${PRO_DIR}/README*
-    ${CMAKE_BINARY_DIR}/pro_*.cmake
+    ${CMAKE_BINARY_DIR}/xpbase/pro/*.cmake
     ${MODULES_DIR}/*.cmake ${MODULES_DIR}/*.in
     ${PRO_DIR}/use/usexp-*-config.cmake
     )
@@ -178,17 +178,17 @@ macro(proExecuteStep) # NOTE: called by top-level CMakeLists.txt
     if(NOT GIT_EXECUTABLE)
       message(FATAL_ERROR "mkpatch step requires GIT_EXECUTABLE to be set")
     endif()
-    include(${CMAKE_BINARY_DIR}/pro_mkpatch.cmake)
+    include(${CMAKE_BINARY_DIR}/xpbase/pro/mkpatch.cmake)
     xpMarkdownReadmeFinalize()
   elseif(${XP_STEP} STREQUAL "download")
-    include(${CMAKE_BINARY_DIR}/pro_download.cmake)
+    include(${CMAKE_BINARY_DIR}/xpbase/pro/download.cmake)
     xpMarkdownReadmeFinalize()
   elseif(${XP_STEP} STREQUAL "patch")
-    include(${CMAKE_BINARY_DIR}/pro_patch.cmake)
+    include(${CMAKE_BINARY_DIR}/xpbase/pro/patch.cmake)
     xpMarkdownReadmeFinalize()
   elseif(${XP_STEP} STREQUAL "build")
-    include(${CMAKE_BINARY_DIR}/pro_patch.cmake)
-    include(${CMAKE_BINARY_DIR}/pro_build.cmake)
+    include(${CMAKE_BINARY_DIR}/xpbase/pro/patch.cmake)
+    include(${CMAKE_BINARY_DIR}/xpbase/pro/build.cmake)
     install(DIRECTORY ${STAGE_DIR}/ DESTINATION . USE_SOURCE_PERMISSIONS)
     proSetCpackOpts()
     include(CPack)
@@ -197,7 +197,7 @@ macro(proExecuteStep) # NOTE: called by top-level CMakeLists.txt
   endif()
 endmacro()
 
-macro(proGetBuildLists) # NOTE: called by cmake-generated pro_[patch|build].cmake files
+macro(proGetBuildLists) # NOTE: called by cmake-generated xpbase/pro/[patch|build].cmake files
   # BUILD_PLATFORM
   if(NOT XP_BUILD_64BIT AND NOT XP_BUILD_32BIT) # at least one platform should be set
     message(FATAL_ERROR "neither XP_BUILD_64BIT or XP_BUILD_32BIT are set")
@@ -222,7 +222,7 @@ macro(proGetBuildLists) # NOTE: called by cmake-generated pro_[patch|build].cmak
   endif()
 endmacro()
 
-macro(proSetStageDir) # NOTE: called by cmake-generated pro_build.cmake file
+macro(proSetStageDir) # NOTE: called by cmake-generated xpbase/pro/build.cmake file
   if(NOT DEFINED INSTALL_NAME)
     set(INSTALL_NAME ${PROJECT_NAME})
   endif()
