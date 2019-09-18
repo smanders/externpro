@@ -160,6 +160,7 @@ macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
     ${CMAKE_BINARY_DIR}/xpbase/pro/*.cmake
     ${MODULES_DIR}/*.cmake ${MODULES_DIR}/*.in
     ${PRO_DIR}/use/usexp-*-config.cmake
+    ${PATCH_DIR}/*.patch
     )
   list(APPEND xpfiles ${projects})
   xpSourceListAppend("${xpfiles}")
