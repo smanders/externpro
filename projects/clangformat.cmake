@@ -7,7 +7,7 @@ set(PRO_CLANGFORMAT
   WEB "clang-format" http://clang.llvm.org/docs/ClangFormat.html "ClangFormat documentation"
   LICENSE "open" "http://clang.llvm.org/features.html#license" "LLVM 'BSD' License"
   DESC "used to format C/C++/Obj-C code"
-  GRAPH GRAPH_SHAPE box GRAPH_DEPS clang
+  GRAPH GRAPH_SHAPE box BUILD_DEPS clang
   VER ${llvmVer}
   )
 ########################################

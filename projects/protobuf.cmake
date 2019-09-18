@@ -9,7 +9,7 @@ set(PRO_PROTOBUF
   LICENSE "open" ${REPO_UPSTREAM}/blob/v${VER}/LICENSE "3-clause BSD license"
   DESC "language-neutral, platform-neutral extensible mechanism for serializing structured data"
   REPO "repo" ${REPO} "forked protobuf repo on github"
-  GRAPH GRAPH_DEPS zlib
+  GRAPH BUILD_DEPS zlib
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/protobuf.git
   GIT_UPSTREAM git://github.com/google/protobuf.git

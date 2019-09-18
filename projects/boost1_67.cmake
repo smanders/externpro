@@ -10,7 +10,7 @@ set(PRO_BOOST${VER2_}
   LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "libraries that give C++ a boost"
   REPO "repo" ${REPO} "boost repo on github"
-  GRAPH GRAPH_NODE boost GRAPH_DEPS zlib bzip2
+  GRAPH GRAPH_NODE boost BUILD_DEPS zlib bzip2
   VER ${VER}
   GIT_ORIGIN git://github.com/boostorg/boost.git
   GIT_TAG boost-${VER} # what to 'git checkout'

@@ -10,7 +10,7 @@ set(PRO_LIBGEOTIFF
   LICENSE "open" http://trac.osgeo.org/geotiff/ "trac site states it is an open source library (no specific license mentioned)"
   DESC "georeferencing info embedded within TIFF file"
   REPO "repo" ${REPO} "libgeotiff repo on github"
-  GRAPH GRAPH_DEPS wx
+  GRAPH BUILD_DEPS wx
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libgeotiff.git
   GIT_TAG xp${VER} # what to 'git checkout'

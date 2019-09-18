@@ -9,7 +9,7 @@ set(PRO_CERES
   LICENSE "open" "http://ceres-solver.org/license.html" "New BSD License"
   DESC "C++ library for modeling and solving large, complicated optimization problems"
   REPO "repo" ${REPO} "ceres-solver repo on github"
-  GRAPH GRAPH_DEPS eigen
+  GRAPH BUILD_DEPS eigen
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/ceres-solver.git
   GIT_UPSTREAM git://github.com/ceres-solver/ceres-solver.git

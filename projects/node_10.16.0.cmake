@@ -8,7 +8,7 @@ set(PRO_NODE_${VER}
   LICENSE "open" https://raw.githubusercontent.com/nodejs/node/v${VER}/LICENSE "MIT license"
   DESC "platform to build scalable network applications"
   REPO "repo" https://${REPO} "node repo on github"
-  GRAPH GRAPH_NODE nodejs GRAPH_DEPS nasm
+  GRAPH GRAPH_NODE nodejs BUILD_DEPS nasm
   VER ${VER}
   GIT_ORIGIN git://${FORK}.git
   GIT_UPSTREAM git://${REPO}.git
