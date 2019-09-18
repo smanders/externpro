@@ -25,6 +25,7 @@ set(PRO_APR
   DLNAME apr-tag-${VER}.tar.gz
   PATCH ${PATCH_DIR}/apr.patch
   DIFF ${REPO}/compare/apache:
+  BUILD_FUNC build_apr
   )
 ########################################
 function(build_apr)
