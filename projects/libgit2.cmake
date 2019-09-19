@@ -33,17 +33,12 @@ function(build_libgit2)
     -DLIBGIT2_VER=${VER}
     )
   if(WIN32)
-    set(libssh2Tgts)
+    set(depTgts)
     list(APPEND XP_CONFIGURE
       -DSKIP_MSVC_FLAGS=ON
       )
   else()
-    if(NOT (XP_DEFAULT OR XP_PRO_LIBSSH2))
-      message(STATUS "libgit2.cmake: requires libssh2")
-      set(XP_PRO_LIBSSH2 ON CACHE BOOL "include libssh2" FORCE)
-      xpPatchProject(${PRO_LIBSSH2})
-    endif()
-    build_libssh2(libssh2Tgts)
+    xpBuildDeps(depTgts ${PRO_LIBGIT2})
     list(APPEND XP_CONFIGURE
       -DOPENSSL_MODULE_PATH=ON
       -DZLIB_MODULE_PATH=ON
@@ -53,5 +48,5 @@ function(build_libgit2)
   configure_file(${PRO_DIR}/use/usexp-libgit2-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(libgit2 "${libssh2Tgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(libgit2 "${depTgts}" "${XP_CONFIGURE}")
 endfunction()
