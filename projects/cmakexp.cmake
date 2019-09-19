@@ -9,6 +9,7 @@ set(PRO_CMAKEXP
   LICENSE "open" http://www.cmake.org/cmake/project/license.html "CMake License"
   DESC "the cross-platform, open-source build system"
   REPO "repo" ${REPO} "forked CMake repo on github"
+  GRAPH GRAPH_SHAPE box BUILD_DEPS openssl
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/CMake.git
   GIT_UPSTREAM git://github.com/Kitware/CMake.git
@@ -29,12 +30,7 @@ function(build_cmakexp)
   if(${CMAKE_SYSTEM_NAME} STREQUAL Windows OR ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     return()
   endif()
-  if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL))
-    message(STATUS "cmakexp.cmake: requires openssl")
-    set(XP_PRO_OPENSSL ON CACHE BOOL "include openssl" FORCE)
-    xpPatchProject(${PRO_OPENSSL})
-  endif()
-  build_openssl(osslTgts)
+  xpBuildDeps(depTgts ${PRO_CMAKEXP})
   option(XP_BUILD_CCMAKE "build ccmake as part of cmakexp project" ON)
   mark_as_advanced(XP_BUILD_CCMAKE)
   if(XP_BUILD_CCMAKE)
@@ -57,7 +53,7 @@ function(build_cmakexp)
     -Dusexp-OpenSSL_DIR=${STAGE_DIR}/share/cmake
     )
   set(BUILD_CONFIGS Release) # we only need a release version
-  xpCmakeBuild(cmakexp "${osslTgts}" "${XP_CONFIGURE}" cmakexpTgts NO_INSTALL)
+  xpCmakeBuild(cmakexp "${depTgts}" "${XP_CONFIGURE}" cmakexpTgts NO_INSTALL)
   xpCmakePackage("${cmakexpTgts}" pkgTgts)
   if(ARGN)
     list(APPEND cmakexpTgts ${pkgTgts})
