@@ -61,14 +61,7 @@ function(build_ffmpegv)
     set(BUILD_CONFIGS Release) # we only need a release version
     xpCmakeBuild(ffmpeg_${ff_VER} "" "-DFFMPEG_VER=${ff_VER}")
   elseif(${ff_VER} STREQUAL ${FFMPEG_CFGVER})
-    if(NOT (XP_DEFAULT OR XP_PRO_OPENH264))
-      message(STATUS "ffmpeg.cmake: requires openh264")
-      set(XP_PRO_OPENH264 ON CACHE BOOL "include openh264" FORCE)
-      xpPatchProject(${PRO_OPENH264})
-      # NOTE: openh264 depends on yasm, so the above already taken care of in openh264
-    endif()
-    build_yasm(yasmTgts) # sets YASM_EXE
-    build_openh264(openh264Tgts)
+    xpBuildDeps(depTgts ${PRO_FFMPEG_${FFMPEG_CFGVER}})
     set(XP_CONFIGURE_BASE ${CMAKE_COMMAND} -E env PKG_CONFIG_PATH=${STAGE_DIR}/share/cmake
       PATH=${STAGE_DIR}/bin:$ENV{PATH} # prepend path to yasm
       <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> #--enable-shared --disable-static
@@ -112,9 +105,10 @@ macro(addproject_ffmpeg XP_TARGET)
   message(STATUS "target ${XP_TARGET}")
   if(XP_BUILD_VERBOSE)
     xpVerboseListing("[CONFIGURE]" "${XP_CONFIGURE_CMD}")
+    xpVerboseListing("[DEPS]" "${depTgts}")
   endif()
   ExternalProject_Get_Property(ffmpeg_${ff_VER} SOURCE_DIR)
-  ExternalProject_Add(${XP_TARGET} DEPENDS ffmpeg_${ff_VER} ${openh264Tgts}
+  ExternalProject_Add(${XP_TARGET} DEPENDS ffmpeg_${ff_VER} ${depTgts}
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
     SOURCE_DIR ${SOURCE_DIR}
     CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}

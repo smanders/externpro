@@ -10,7 +10,7 @@ set(PRO_OPENH264
   LICENSE "open" http://www.openh264.org/faq.html "Two-Clause BSD license"
   DESC "a codec library which supports H.264 encoding and decoding"
   REPO "repo" ${REPO} "openh264 repo on github"
-  GRAPH
+  GRAPH BUILD_DEPS yasm
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/openh264.git
   GIT_UPSTREAM git://github.com/cisco/openh264.git
@@ -21,18 +21,14 @@ set(PRO_OPENH264
   DLURL ${REPO}/archive/v${VER}.tar.gz
   DLMD5 ca77b91a7a33efb4c5e7c56a5c0f599f
   DLNAME openh264-${VER}.tar.gz
+  BUILD_FUNC build_openh264
   )
 ########################################
 function(build_openh264)
   if(NOT (XP_DEFAULT OR XP_PRO_OPENH264))
     return()
   endif()
-  if(NOT (XP_DEFAULT OR XP_PRO_YASM))
-    message(STATUS "openh264.cmake: requires yasm")
-    set(XP_PRO_YASM ON CACHE BOOL "include yasm" FORCE)
-    xpPatchProject(${PRO_YASM})
-  endif()
-  build_yasm(yasmTgts) # sets YASM_EXE
+  xpBuildDeps(depTgts ${PRO_OPENH264}) # sets YASM_EXE
   xpGetArgValue(${PRO_OPENH264} ARG VER VALUE VER)
   set(XP_CONFIGURE
     -DOPENH264_VER=${VER}
@@ -41,7 +37,7 @@ function(build_openh264)
   configure_file(${PRO_DIR}/use/usexp-openh264-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(openh264 "${yasmTgts}" "${XP_CONFIGURE}" openh264Targets)
+  xpCmakeBuild(openh264 "${depTgts}" "${XP_CONFIGURE}" openh264Targets)
   if(ARGN)
     set(${ARGN} "${openh264Targets}" PARENT_SCOPE)
   endif()

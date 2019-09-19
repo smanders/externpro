@@ -18,6 +18,8 @@ set(PRO_YASM
   DLMD5 fc9e586751ff789b34b1f21d572d96af
   PATCH ${PATCH_DIR}/yasm.patch
   DIFF ${REPO}/compare/yasm:
+  BUILD_FUNC build_yasm
+  BUILD_VARS YASM_EXE
   )
 ########################################
 function(build_yasm)
