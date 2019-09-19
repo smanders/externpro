@@ -12,6 +12,8 @@ set(PRO_EIGEN
   DLURL http://bitbucket.org/eigen/eigen/get/${VER}.tar.bz2
   DLMD5 cc1bacbad97558b97da6b77c9644f184
   DLNAME eigen-${VER}.tar.bz2
+  BUILD_FUNC build_eigen
+  BUILD_VARS EIGEN_INCDIR
   )
 ########################################
 function(build_eigen)
@@ -29,6 +31,6 @@ function(build_eigen)
   xpCmakeBuild(eigen "" "${XP_CONFIGURE}" eigenTargets)
   if(ARGN)
     set(${ARGN} "${eigenTargets}" PARENT_SCOPE)
-    set(incDir ${incDir} PARENT_SCOPE)
+    set(EIGEN_INCDIR ${incDir} PARENT_SCOPE)
   endif()
 endfunction()

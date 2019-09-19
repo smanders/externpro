@@ -26,12 +26,7 @@ function(build_ceres)
   if(NOT (XP_DEFAULT OR XP_PRO_CERES))
     return()
   endif()
-  if(NOT (XP_DEFAULT OR XP_PRO_EIGEN))
-    message(STATUS "ceres.cmake: requires eigen")
-    set(XP_PRO_EIGEN ON CACHE BOOL "include eigen" FORCE)
-    xpPatchProject(${PRO_EIGEN})
-  endif()
-  build_eigen(eigenTgts) # defines incDir
+  xpBuildDeps(depTgts ${PRO_CERES}) # defines EIGEN_INCDIR
   xpGetArgValue(${PRO_CERES} ARG VER VALUE VER)
   set(XP_CONFIGURE
     -DMINIGLOG:BOOL=ON
@@ -45,7 +40,7 @@ function(build_ceres)
     -DEIGENSPARSE:BOOL=ON # default as of 1.14.0
     -DBUILD_TESTING:BOOL=OFF
     -DBUILD_EXAMPLES:BOOL=OFF
-    -DEIGEN_INCLUDE_DIR_HINTS:PATH=${STAGE_DIR}/${incDir}
+    -DEIGEN_INCLUDE_DIR_HINTS:PATH=${STAGE_DIR}/${EIGEN_INCDIR}
     -DCERES_VER:STRING=${VER}
     )
   if(MSVC)
@@ -56,5 +51,5 @@ function(build_ceres)
   configure_file(${PRO_DIR}/use/usexp-ceres-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(ceres "${eigenTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(ceres "${depTgts}" "${XP_CONFIGURE}")
 endfunction()
