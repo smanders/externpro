@@ -22,4 +22,5 @@ set(PRO_OPENSSL_${VER_UC}
   DLMD5 15e21da6efe8aa0e0768ffd8cd37a5f6
   PATCH ${PATCH_DIR}/openssl_${VER}.patch
   DIFF ${REPO}/compare/openssl:
+  BUILD_FUNC build_openssl
   )

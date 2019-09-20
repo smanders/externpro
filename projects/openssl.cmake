@@ -29,7 +29,6 @@ function(build_openssl)
     set(ONE_VER "set(XP_USE_LATEST_OPENSSL ${boolean}) # currently only one version supported\n")
   endif()
   set(MOD_OPT "set(VER_MOD)")
-  set(VER_CFG xpConfigBase)
   set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
   configure_file(${PRO_DIR}/use/usexp-openssl-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF

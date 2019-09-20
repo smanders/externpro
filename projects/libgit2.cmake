@@ -8,7 +8,7 @@ set(PRO_LIBGIT2
   LICENSE "open" "https://github.com/libgit2/libgit2/blob/master/README.md#license" "GPL2 with linking exception"
   DESC "portable, pure C implementation of the Git core methods"
   REPO "repo" ${REPO} "forked libgit2 repo on github"
-  GRAPH BUILD_DEPS libssh2
+  GRAPH BUILD_DEPS libssh2_1.5.0
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libgit2.git
   GIT_UPSTREAM git://github.com/libgit2/libgit2.git
