@@ -14,6 +14,7 @@ set(PRO_GEOTRANZ
   REPO "repo" ${REPO} "geotranz repo on github"
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/geotranz.git
+  GIT_TRACKING_BRANCH xp2.4.2 # not master, to avoid Git-LFS bandwidth
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/geotranz.patch
