@@ -11,7 +11,7 @@ set(PRO_OPENSSL_${VER_UC}
   LICENSE "open" http://www.openssl.org/source/license.html "OpenSSL, SSLeay License: BSD-style"
   DESC "Cryptography and SSL/TLS Toolkit"
   REPO "repo" ${REPO} "forked openssl repo on github"
-  GRAPH GRAPH_NODE openssl
+  GRAPH
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/openssl.git
   GIT_UPSTREAM git://github.com/openssl/openssl.git
