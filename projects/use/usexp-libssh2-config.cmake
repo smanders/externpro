@@ -1,6 +1,5 @@
 # LIBSSH2_FOUND - libssh2 was found
 # LIBSSH2_VER - libssh2 version
-# LIBSSH2_INCLUDE_DIR - the libssh2 include directory
 # LIBSSH2_INCLUDE_DIRS - the libssh2 include directory (used by libgit2, curl)
 # LIBSSH2_LIBRARIES - the libssh2 libraries
 # LIBSSH2_LIBRARY - the libssh2 library (used by curl)
@@ -21,17 +20,13 @@ if(XP_USE_LATEST_LIBSSH2)
 else()
   set(ver @LIBSSH2_OLDVER@)
 endif()
-set(verUnd _${ver})
-set(verDir /${prj}${verUnd})
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
-unset(${PRJ}_INCLUDE_DIR CACHE)
-find_path(${PRJ}_INCLUDE_DIR libssh2/libssh2.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
-set(${PRJ}_INCLUDE_DIRS ${${PRJ}_INCLUDE_DIR}/libssh2)
+set(${PRJ}_INCLUDE_DIRS ${XP_ROOTDIR}/include/${prj}_${ver}/libssh2)
 # targets file (-targets) installed to lib/cmake
-include(${XP_ROOTDIR}/lib/cmake/${prj}${verUnd}-targets.cmake)
-set(${PRJ}_LIBRARIES libssh2)
-set(${PRJ}_LIBRARY libssh2)
-set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_INCLUDE_DIRS ${PRJ}_LIBRARIES ${PRJ}_LIBRARY)
+include(${XP_ROOTDIR}/lib/cmake/${prj}_${ver}/Libssh2Config.cmake)
+set(${PRJ}_LIBRARIES Libssh2::libssh2)
+set(${PRJ}_LIBRARY Libssh2::libssh2)
+set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIRS ${PRJ}_LIBRARIES ${PRJ}_LIBRARY)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})

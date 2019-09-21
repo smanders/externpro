@@ -1,6 +1,6 @@
 # libssh2
 set(LIBSSH2_OLDVER 1.5.0)
-set(LIBSSH2_NEWVER 1.5.0)
+set(LIBSSH2_NEWVER 1.9.0)
 ########################################
 function(build_libssh2)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBSSH2_${LIBSSH2_OLDVER} OR XP_PRO_LIBSSH2_${LIBSSH2_NEWVER}))
@@ -31,12 +31,22 @@ function(build_libssh2)
   configure_file(${PRO_DIR}/use/usexp-libssh2-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
+  set(XP_CONFIGURE_${LIBSSH2_OLDVER}
+    -DCMAKE_USE_ZLIB_MODULE_PATH=ON
+    -DXP_USE_LATEST_OPENSSL:BOOL=OFF
+    )
+  set(XP_CONFIGURE_${LIBSSH2_NEWVER}
+    -DENABLE_ZLIB_COMPRESSION=ON
+    -DFIND_ZLIB_MODULE_PATH=ON
+    -DXP_USE_LATEST_OPENSSL:BOOL=ON
+    )
   foreach(ver ${LIBSSH2_VERSIONS})
     xpBuildDeps(depTgts ${PRO_LIBSSH2_${ver}})
     set(XP_CONFIGURE
+      ${XP_CONFIGURE_${ver}}
       -DCRYPTO_BACKEND:STRING=OpenSSL
       -DFIND_OPENSSL_MODULE_PATH=ON
-      -DCMAKE_USE_ZLIB_MODULE_PATH=ON
+      -DXP_INSTALL_DIRS:BOOL=ON
       -DLIBSSH2_VER=${ver}
       )
     xpCmakeBuild(libssh2_${ver} "${depTgts}" "${XP_CONFIGURE}" libssh2Targets_${ver})
