@@ -72,15 +72,15 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_455fccb44c05038070a9dfbf286e341c?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_c2c5b2759ffc6782b9c22c68aac977d7?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_455fccb44c05038070a9dfbf286e341c
+depgraph_c2c5b2759ffc6782b9c22c68aac977d7
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
   activemqcpp -> apr;
-  activemqcpp -> openssl_1.0.2a;
+  activemqcpp -> openssl_1_0_2a;
   apr [shape=diamond];
   boost [shape=diamond];
   boost -> zlib;
@@ -98,9 +98,9 @@ digraph GG {
   clangtoolsextra [shape=box];
   clangtoolsextra -> llvm;
   cmakexp [shape=box];
-  cmakexp -> openssl_1.0.2a;
+  cmakexp -> openssl_1_0_2a;
   curl [shape=diamond];
-  curl -> libssh2_1.5.0;
+  curl -> libssh2_1_5_0;
   curl -> cares;
   eigen [shape=diamond];
   expat [shape=diamond];
@@ -112,20 +112,20 @@ digraph GG {
   libgeotiff [shape=diamond];
   libgeotiff -> wx;
   libgit2 [shape=diamond];
-  libgit2 -> libssh2_1.5.0;
-  libssh2_1.5.0 [shape=diamond];
-  libssh2_1.5.0 -> zlib;
-  libssh2_1.5.0 -> openssl_1.0.2a;
+  libgit2 -> libssh2_1_5_0;
+  libssh2_1_5_0 [label="libssh2_1.5.0" shape=diamond];
+  libssh2_1_5_0 -> zlib;
+  libssh2_1_5_0 -> openssl_1_0_2a;
   libstrophe [shape=diamond];
   libstrophe -> expat;
-  libstrophe -> openssl_1.0.2a;
+  libstrophe -> openssl_1_0_2a;
   llvm [shape=box];
   nasm [shape=box];
   nodejs [shape=diamond];
   nodejs -> nasm;
   openh264 [shape=diamond];
   openh264 -> yasm;
-  openssl_1.0.2a [shape=diamond];
+  openssl_1_0_2a [label="openssl_1.0.2a" shape=diamond];
   protobuf [shape=diamond];
   protobuf -> zlib;
   wx [shape=diamond];
@@ -136,5 +136,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_455fccb44c05038070a9dfbf286e341c
+depgraph_c2c5b2759ffc6782b9c22c68aac977d7
 </details>
