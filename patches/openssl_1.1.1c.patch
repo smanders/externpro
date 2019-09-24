@@ -62,10 +62,10 @@ index 0000000..b1e91ac
 +endif()
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..3f5f248
+index 0000000..2c8760c
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1729 @@
+@@ -0,0 +1,1713 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file include/buildinf.h)
@@ -136,6 +136,7 @@ index 0000000..3f5f248
 +  o_fips.c
 +  mem_sec.c
 +  init.c
++  mem_clr.c # cpuid_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group("" FILES ${root_srcs})
 +list(APPEND ${lib_name}_libsrcs ${root_srcs})
@@ -161,7 +162,6 @@ index 0000000..3f5f248
 +  LPdir_win32.c
 +  LPdir_win.c
 +  LPdir_wince.c
-+  mem_clr.c
 +  mips_arch.h
 +  ppc_arch.h
 +  ppccap.c
@@ -190,13 +190,13 @@ index 0000000..3f5f248
 +  )
 +list(APPEND aes_srcs
 +  aes/aes_locl.h
++  aes/aes_core.c # aes_asm_src DEFAULT (Configurations/00-base-templates.conf)
++  aes/aes_cbc.c # aes_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(aes FILES ${aes_srcs})
 +list(APPEND ${lib_name}_libsrcs ${aes_srcs})
 +##########
-+set(aes_extra # in directory, not in build.info
-+  aes/aes_cbc.c
-+  aes/aes_core.c
++set(aes_extra
 +  aes/aes_x86core.c
 +  )
 +list(APPEND aes_extra # TODO asm
@@ -351,14 +351,12 @@ index 0000000..3f5f248
 +list(APPEND bf_srcs
 +  bf/bf_locl.h
 +  bf/bf_pi.h
++  bf/bf_enc.c # bf_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(bf FILES ${bf_srcs})
 +list(APPEND ${lib_name}_libsrcs ${bf_srcs})
 +##########
-+set(bf_extra # in directory, not in build.info
-+  bf/bf_enc.c
-+  )
-+list(APPEND bf_extra # TODO asm
++set(bf_extra # TODO asm
 +  bf/asm/bf-586.pl
 +  )
 +list(APPEND ${lib_name}_all ${bf_extra})
@@ -448,12 +446,12 @@ index 0000000..3f5f248
 +list(APPEND bn_srcs
 +  bn/bn_lcl.h
 +  bn/bn_prime.h
++  bn/bn_asm.c # bn_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(bn FILES ${bn_srcs})
 +list(APPEND ${lib_name}_libsrcs ${bn_srcs})
 +##########
 +set(bn_extra # in directory, not in build.info
-+  bn/bn_asm.c
 +  bn/bn_prime.pl
 +  bn/README.pod
 +  bn/rsaz_exp.c
@@ -517,16 +515,14 @@ index 0000000..3f5f248
 +  )
 +list(APPEND camellia_srcs
 +  camellia/cmll_locl.h
++  camellia/camellia.c # cmll_asm_src DEFAULT (Configurations/00-base-templates.conf)
++  camellia/cmll_misc.c # cmll_asm_src DEFAULT (Configurations/00-base-templates.conf)
++  camellia/cmll_cbc.c # cmll_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(camellia FILES ${camellia_srcs})
 +list(APPEND ${lib_name}_libsrcs ${camellia_srcs})
 +##########
-+set(camellia_extra
-+  camellia/camellia.c
-+  camellia/cmll_cbc.c
-+  camellia/cmll_misc.c
-+  )
-+list(APPEND camellia_extra # TODO asm
++set(camellia_extra # TODO asm
 +  camellia/asm/cmllt4-sparcv9.pl
 +  camellia/asm/cmll-x86_64.pl
 +  camellia/asm/cmll-x86.pl
@@ -544,14 +540,12 @@ index 0000000..3f5f248
 +list(APPEND cast_srcs
 +  cast/cast_lcl.h
 +  cast/cast_s.h
++  cast/c_enc.c # cast_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(cast FILES ${cast_srcs})
 +list(APPEND ${lib_name}_libsrcs ${cast_srcs})
 +##########
-+set(cast_extra # in directory, not in build.info
-+  cast/c_enc.c
-+  )
-+list(APPEND cast_extra # TODO asm
++set(cast_extra # TODO asm
 +  cast/asm/cast-586.pl
 +  )
 +list(APPEND ${lib_name}_all ${cast_extra})
@@ -559,14 +553,12 @@ index 0000000..3f5f248
 +# chacha
 +set(chacha_srcs # order from crypto/chacha/build.info
 +  chacha/build.info
++  chacha/chacha_enc.c # chacha_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(chacha FILES ${chacha_srcs})
 +list(APPEND ${lib_name}_libsrcs ${chacha_srcs})
 +##########
-+set(chacha_extra # in directory, not in build.info
-+  chacha/chacha_enc.c
-+  )
-+list(APPEND chacha_extra # TODO asm
++set(chacha_extra # TODO asm
 +  chacha/asm/chacha-armv4.pl
 +  chacha/asm/chacha-armv8.pl
 +  chacha/asm/chacha-c64xplus.pl
@@ -672,6 +664,7 @@ index 0000000..3f5f248
 +  des/cbc_enc.c
 +  des/ecb3_enc.c
 +  des/cfb64enc.c
++  des/cfb64ede.c
 +  des/cfb_enc.c
 +  des/ofb64ede.c
 +  des/ofb64enc.c
@@ -687,14 +680,13 @@ index 0000000..3f5f248
 +list(APPEND des_srcs
 +  des/des_locl.h
 +  des/spr.h
++  des/des_enc.c # des_asm_src DEFAULT (Configurations/00-base-templates.conf)
++  des/fcrypt_b.c # des_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(des FILES ${des_srcs})
 +list(APPEND ${lib_name}_libsrcs ${des_srcs})
 +##########
 +set(des_extra # in directory, not in build.info
-+  des/cfb64ede.c
-+  des/des_enc.c
-+  des/fcrypt_b.c
 +  des/ncbc_enc.c
 +  )
 +list(APPEND des_extra # TODO asm
@@ -1356,15 +1348,13 @@ index 0000000..3f5f248
 +set(rc4_srcs
 +  rc4/build.info
 +  rc4/rc4_locl.h
++  rc4/rc4_enc.c # rc4_asm_src DEFAULT (Configurations/00-base-templates.conf)
++  rc4/rc4_skey.c # rc4_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(rc4 FILES ${rc4_srcs})
 +list(APPEND ${lib_name}_libsrcs ${rc4_srcs})
 +##########
-+set(rc4_extra # in directory, not in Makefile LIBSRC
-+  rc4/rc4_enc.c
-+  rc4/rc4_skey.c
-+  )
-+list(APPEND rc4_extra # TODO asm
++set(rc4_extra # TODO asm
 +  rc4/asm/rc4-586.pl
 +  rc4/asm/rc4-c64xplus.pl
 +  rc4/asm/rc4-md5-x86_64.pl
@@ -1384,14 +1374,12 @@ index 0000000..3f5f248
 +  )
 +list(APPEND rc5_srcs
 +  rc5/rc5_locl.h
++  rc5/rc5_enc.c # rc5_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(rc5 FILES ${rc5_srcs})
 +list(APPEND ${lib_name}_libsrcs ${rc5_srcs})
 +##########
-+set(rc5_extra # in directory, not in build.info
-+  rc5/rc5_enc.c
-+  )
-+list(APPEND rc5_extra # TODO asm
++set(rc5_extra # TODO asm
 +  rc5/asm/rc5-586.pl
 +  )
 +list(APPEND ${lib_name}_all ${rc5_extra})
@@ -1471,14 +1459,12 @@ index 0000000..3f5f248
 +  )
 +list(APPEND sha_srcs
 +  sha/sha_locl.h
++  sha/keccak1600.c # keccak1600_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(sha FILES ${sha_srcs})
 +list(APPEND ${lib_name}_libsrcs ${sha_srcs})
 +##########
-+set(sha_extra # in directory, not in build.info
-+  sha/keccak1600.c
-+  )
-+list(APPEND sha_extra # TODO asm
++set(sha_extra # TODO asm
 +  sha/asm/keccak1600-armv4.pl
 +  sha/asm/keccak1600-armv8.pl
 +  sha/asm/keccak1600-avx2.pl
@@ -1652,14 +1638,12 @@ index 0000000..3f5f248
 +  )
 +list(APPEND whrlpool_srcs
 +  whrlpool/wp_locl.h
++  whrlpool/wp_block.c # wp_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  )
 +source_group(whrlpool FILES ${whrlpool_srcs})
 +list(APPEND ${lib_name}_libsrcs ${whrlpool_srcs})
 +##########
-+set(whrlpool_extra # in directory, not in build.info
-+  whrlpool/wp_block.c
-+  )
-+list(APPEND whrlpool_extra # TODO asm
++set(whrlpool_extra # TODO asm
 +  whrlpool/asm/wp-mmx.pl
 +  whrlpool/asm/wp-x86_64.pl
 +  )
