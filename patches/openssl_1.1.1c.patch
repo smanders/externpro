@@ -62,10 +62,10 @@ index 0000000..b1e91ac
 +endif()
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..2c8760c
+index 0000000..cf793dd
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1713 @@
+@@ -0,0 +1,1716 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file include/buildinf.h)
@@ -1753,6 +1753,9 @@ index 0000000..2c8760c
 +  ec/curve448/arch_32
 +  modes # evp includes modes_lcl.h
 +  )
++set(THREADS_PREFER_PTHREAD_FLAG ON)
++find_package(Threads REQUIRED)
++target_link_libraries(${lib_name} Threads::Threads ${CMAKE_DL_LIBS})
 +if(FALSE)
 +# TODO: EXPORT of STATIC library with PRIVATE non-target dependencies broken
 +# https://gitlab.kitware.com/cmake/cmake/issues/17357
@@ -1863,7 +1866,7 @@ index 0000000..cf6f04f
 +#endif
 diff --git a/include/CMakeLists.txt b/include/CMakeLists.txt
 new file mode 100644
-index 0000000..390adbe
+index 0000000..ca3759f
 --- /dev/null
 +++ b/include/CMakeLists.txt
 @@ -0,0 +1,237 @@
@@ -1899,7 +1902,7 @@ index 0000000..390adbe
 +  OPENSSL_NO_UBSAN
 +  OPENSSL_NO_UNIT_TEST
 +  OPENSSL_NO_WEAK_SSL_CIPHERS
-+  #OPENSSL_NO_STATIC_ENGINE
++  OPENSSL_NO_STATIC_ENGINE
 +  )
 +foreach(def ${OPENSSL_DEFINES})
 +  set(INSERT_DEFINES "${INSERT_DEFINES}#ifndef ${def}\n# define ${def}\n#endif\n")

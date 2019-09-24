@@ -21,6 +21,8 @@ set(verDir /${prj}${verUnd})
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR openssl/opensslv.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
+set(THREAD_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED) # crypto depends on Threads::Threads
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}${verUnd}-targets.cmake)
 set(${PRJ}_LIBRARIES crypto ssl)
