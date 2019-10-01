@@ -18,7 +18,7 @@ set(PRO_ZLIB
   DLMD5 44d667c142d7cda120332623eab69f40
   PATCH ${PATCH_DIR}/zlib.patch
   DIFF ${REPO}/compare/madler:
-  BUILD_FUNC build_zlib
+  DEPS_FUNC build_zlib
   )
 ########################################
 function(build_zlib)

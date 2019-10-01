@@ -18,5 +18,5 @@ set(PRO_LIBSSH2_${VER}
   DLMD5 e7fa3f5c6bd2d67a9b360ff726bbc6ba
   PATCH ${PATCH_DIR}/libssh2_${VER}.patch
   DIFF ${REPO}/compare/libssh2:
-  BUILD_FUNC build_libssh2
+  DEPS_FUNC build_libssh2
   )

@@ -21,7 +21,7 @@ set(PRO_OPENH264
   DLURL ${REPO}/archive/v${VER}.tar.gz
   DLMD5 ca77b91a7a33efb4c5e7c56a5c0f599f
   DLNAME openh264-${VER}.tar.gz
-  BUILD_FUNC build_openh264
+  DEPS_FUNC build_openh264
   )
 ########################################
 function(build_openh264)

@@ -19,7 +19,7 @@ set(PRO_CARES
   DLMD5 1196067641411a75d3cbebe074fd36d8
   PATCH ${PATCH_DIR}/cares.patch
   DIFF ${REPO}/compare/c-ares:
-  BUILD_FUNC build_cares
+  DEPS_FUNC build_cares
   )
 ########################################
 function(build_cares)

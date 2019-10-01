@@ -12,8 +12,8 @@ set(PRO_EIGEN
   DLURL http://bitbucket.org/eigen/eigen/get/${VER}.tar.bz2
   DLMD5 cc1bacbad97558b97da6b77c9644f184
   DLNAME eigen-${VER}.tar.bz2
-  BUILD_FUNC build_eigen
-  BUILD_VARS EIGEN_INCDIR
+  DEPS_FUNC build_eigen
+  DEPS_VARS EIGEN_INCDIR
   )
 ########################################
 function(build_eigen)
