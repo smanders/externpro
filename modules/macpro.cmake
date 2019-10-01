@@ -167,10 +167,14 @@ macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
 endmacro()
 
 function(proCustomBuild)
-  set(oneValueArgs BUILD_FUNC)
+  set(oneValueArgs BUILD_FUNC BUILD_FUNC_ARG)
   cmake_parse_arguments(X "" "${oneValueArgs}" "" ${ARGN})
   if(DEFINED X_BUILD_FUNC AND COMMAND ${X_BUILD_FUNC})
-    file(APPEND ${stepBuild} "${X_BUILD_FUNC}()\n")
+    if(DEFINED X_BUILD_FUNC_ARG)
+      file(APPEND ${stepBuild} "${X_BUILD_FUNC}(${X_BUILD_FUNC_ARG})\n")
+    else()
+      file(APPEND ${stepBuild} "${X_BUILD_FUNC}()\n")
+    endif()
   endif()
 endfunction()
 
