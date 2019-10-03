@@ -20,6 +20,7 @@ endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR node/node.h PATHS ${XP_ROOTDIR}/include/node_${ver} NO_DEFAULT_PATH)
+list(APPEND ${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include/node_${ver}/node) # for internal header includes
 set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR)
 if(MSVC)
   set(${PRJ}_LIBRARIES ${XP_ROOTDIR}/node_${ver}/lib/node.lib)
