@@ -44,7 +44,7 @@ function(build_ceres)
     -DCERES_VER:STRING=${VER}
     )
   if(MSVC)
-    list(APPEND XP_CONFIGURE -DMSVC_USE_STATIC_CRT:BOOL=OFF)
+    list(APPEND XP_CONFIGURE -DMSVC_USE_STATIC_CRT:BOOL=ON)
   elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     list(APPEND XP_CONFIGURE -DLIB_SUFFIX:STRING=) # install to lib, not lib64
   endif()
