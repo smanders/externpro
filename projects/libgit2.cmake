@@ -8,7 +8,7 @@ set(PRO_LIBGIT2
   LICENSE "open" "https://github.com/libgit2/libgit2/blob/master/README.md#license" "GPL2 with linking exception"
   DESC "portable, pure C implementation of the Git core methods"
   REPO "repo" ${REPO} "forked libgit2 repo on github"
-  GRAPH BUILD_DEPS libssh2_1.5.0
+  GRAPH BUILD_DEPS libssh2_1.9.0
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libgit2.git
   GIT_UPSTREAM git://github.com/libgit2/libgit2.git
@@ -40,6 +40,8 @@ function(build_libgit2)
   else()
     xpBuildDeps(depTgts ${PRO_LIBGIT2})
     list(APPEND XP_CONFIGURE
+      -DXP_USE_LATEST_OPENSSL=ON
+      -DXP_USE_LATEST_LIBSSH2=ON
       -DOPENSSL_MODULE_PATH=ON
       -DZLIB_MODULE_PATH=ON
       -DLIBSSH2_MODULE_PATH=ON

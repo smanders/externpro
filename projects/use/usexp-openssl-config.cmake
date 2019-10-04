@@ -9,7 +9,7 @@ get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative part
 string(TOUPPER ${prj} PRJ)
 @USE_SCRIPT_INSERT@
 if(NOT DEFINED XP_USE_LATEST_OPENSSL)
-  option(XP_USE_LATEST_OPENSSL "build with OpenSSL latest @OPENSSL_NEWVER@ instead of @OPENSSL_OLDVER@" OFF)
+  option(XP_USE_LATEST_OPENSSL "build with OpenSSL latest @OPENSSL_NEWVER@ instead of @OPENSSL_OLDVER@" ON)
 endif()
 if(XP_USE_LATEST_OPENSSL)
   set(ver @OPENSSL_NEWVER@)

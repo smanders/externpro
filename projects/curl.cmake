@@ -46,6 +46,8 @@ function(build_curl)
     -DCMAKE_USE_LIBSSH2_MODULE_PATH=ON
     -DCURL_DISABLE_LDAP=ON
     -DENABLE_LIBIDN=OFF
+    -DXP_USE_LATEST_OPENSSL=OFF
+    -DXP_USE_LATEST_LIBSSH2=OFF
     )
   configure_file(${PRO_DIR}/use/usexp-curl-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF

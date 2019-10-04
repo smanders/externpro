@@ -9,7 +9,7 @@ set(PRO_CMAKEXP
   LICENSE "open" http://www.cmake.org/cmake/project/license.html "CMake License"
   DESC "the cross-platform, open-source build system"
   REPO "repo" ${REPO} "forked CMake repo on github"
-  GRAPH GRAPH_SHAPE box BUILD_DEPS openssl_1.0.2a
+  GRAPH GRAPH_SHAPE box BUILD_DEPS openssl_1.1.1c
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/CMake.git
   GIT_UPSTREAM git://github.com/Kitware/CMake.git
@@ -51,6 +51,7 @@ function(build_cmakexp)
     -DCMAKE_USE_OPENSSL=ON
     -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
     -Dusexp-OpenSSL_DIR=${STAGE_DIR}/share/cmake
+    -DXP_USE_LATEST_OPENSSL=ON
     )
   set(BUILD_CONFIGS Release) # we only need a release version
   xpCmakeBuild(cmakexp "${depTgts}" "${XP_CONFIGURE}" cmakexpTgts NO_INSTALL)

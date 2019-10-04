@@ -9,7 +9,7 @@ set(PRO_LIBSTROPHE
   LICENSE "open" "${REPO}/blob/${VER}/LICENSE.txt" "dual licensed under MIT and GPLv3"
   DESC "A simple, lightweight C library for writing XMPP client"
   REPO "repo" ${REPO} "libstrophe repo on github"
-  GRAPH BUILD_DEPS expat openssl_1.0.2a
+  GRAPH BUILD_DEPS expat openssl_1.1.1c
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libstrophe.git
   GIT_UPSTREAM git://github.com/strophe/libstrophe.git
@@ -34,6 +34,7 @@ function(build_libstrophe)
     -DLIBSTROPHE_VER=${VER}
     -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
     -DCMAKE_USE_EXPAT_MODULE_PATH=ON
+    -DXP_USE_LATEST_OPENSSL=ON
     )
   xpCmakeBuild(libstrophe "${depTgts}" "${XP_CONFIGURE}")
 endfunction()

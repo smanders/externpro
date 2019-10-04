@@ -32,6 +32,7 @@ function(build_activemqcpp)
   set(XP_CONFIGURE
     -DFIND_APR_MODULE_PATH=ON
     -DFIND_OPENSSL_MODULE_PATH=ON
+    -DXP_USE_LATEST_OPENSSL=OFF
     -DACTIVEMQCPP_VER=${VER}
     )
   configure_file(${PRO_DIR}/use/usexp-activemqcpp-config.cmake ${STAGE_DIR}/share/cmake/

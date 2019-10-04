@@ -13,7 +13,7 @@ get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative part
 string(TOUPPER ${prj} PRJ)
 @USE_SCRIPT_INSERT@
 if(NOT DEFINED XP_USE_LATEST_LIBSSH2)
-  option(XP_USE_LATEST_LIBSSH2 "build with libssh2 latest @LIBSSH2_NEWVER@ instead of @LIBSSH2_OLDVER@" OFF)
+  option(XP_USE_LATEST_LIBSSH2 "build with libssh2 latest @LIBSSH2_NEWVER@ instead of @LIBSSH2_OLDVER@" ON)
 endif()
 if(XP_USE_LATEST_LIBSSH2)
   set(ver @LIBSSH2_NEWVER@)
