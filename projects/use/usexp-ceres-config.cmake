@@ -11,6 +11,7 @@ set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
 set(verDir /${prj}_@VER@)
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR ceres/ceres.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
+list(APPEND ${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include${verDir}/ceres/internal/miniglog)
 # ceres installs a Targets file among other .cmake files
 include(${XP_ROOTDIR}/lib/cmake${verDir}/CeresTargets.cmake)
 set(${PRJ}_LIBRARIES ceres)
