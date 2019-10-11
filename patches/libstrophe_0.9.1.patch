@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..3d78715
+index 0000000..fdfebc6
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,69 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(libstrophe)
 +include(flags OPTIONAL)
@@ -64,6 +64,9 @@ index 0000000..3d78715
 +  message(AUTHOR_WARNING "version passed in (${LIBSTROPHE_VER}) doesn't match version from ${verFile} (${VER})")
 +endif()
 +set(ver _${LIBSTROPHE_VER})
++if(DEFINED VER_MOD)
++  set(ver ${ver}${VER_MOD})
++endif()
 +set(verDir /${PROJECT_NAME}${ver})
 +########################################
 +add_subdirectory(src)
