@@ -2,6 +2,7 @@
 # OPENSSL_VER - OpenSSL version
 # OPENSSL_INCLUDE_DIR - the OpenSSL include directory
 # OPENSSL_LIBRARIES - the OpenSSL libraries
+# OPENSSL_DEFINITIONS - OpenSSL compile definitions
 set(prj openssl)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -13,8 +14,10 @@ if(NOT DEFINED XP_USE_LATEST_OPENSSL)
 endif()
 if(XP_USE_LATEST_OPENSSL)
   set(ver @OPENSSL_NEWVER@)
+  set(${PRJ}_DEFINITIONS -DOPENSSL_API_COMPAT=@OPENSSL_API_COMPAT_NEW@)
 else()
   set(ver @OPENSSL_OLDVER@)
+  set(${PRJ}_DEFINITIONS -DOPENSSL_API_COMPAT=@OPENSSL_API_COMPAT_OLD@)
 endif()
 set(verUnd _${ver})
 set(verDir /${prj}${verUnd})
@@ -26,7 +29,7 @@ find_package(Threads REQUIRED) # crypto depends on Threads::Threads
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}${verUnd}-targets.cmake)
 set(${PRJ}_LIBRARIES crypto ssl)
-set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
+set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_DEFINITIONS)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})
