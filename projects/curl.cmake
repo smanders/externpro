@@ -37,7 +37,7 @@ function(build_curl)
     build_cmakexp(cmTgts)
   endif()
   foreach(ver ${CURL_VERSIONS})
-    xpBuildDeps(depTgts ${PRO_CURL})
+    xpBuildDeps(depTgts ${PRO_CURL_${ver}})
     list(APPEND depTgts ${cmTgts})
     set(XP_CONFIGURE
       -DCURL_VER=${ver}
