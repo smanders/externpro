@@ -73,10 +73,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_8d5fcdd0a65918218a722e200ec1b231?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_aeaeb58160fd3d6145cb06fd2a783fc8?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_8d5fcdd0a65918218a722e200ec1b231
+depgraph_aeaeb58160fd3d6145cb06fd2a783fc8
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
@@ -100,9 +100,9 @@ digraph GG {
   clangtoolsextra -> llvm;
   cmakexp [shape=box];
   cmakexp -> openssl_1_1_1c;
-  curl [shape=diamond];
-  curl -> libssh2_1_5_0;
-  curl -> cares;
+  curl_7_42_1 [label="curl_7.42.1" shape=diamond];
+  curl_7_42_1 -> libssh2_1_5_0;
+  curl_7_42_1 -> cares;
   eigen [shape=diamond];
   expat [shape=diamond];
   fecpp [shape=diamond];
@@ -140,5 +140,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_8d5fcdd0a65918218a722e200ec1b231
+depgraph_aeaeb58160fd3d6145cb06fd2a783fc8
 </details>
