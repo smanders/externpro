@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 77a591f..9e92472 100644
+index 77a591f..9f0ce3c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,6 +20,7 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mo
@@ -103,12 +103,15 @@ index 77a591f..9e92472 100644
  	SET(WIN_RC "src/win32/git2.rc")
  
     # Precompiled headers
-@@ -407,6 +427,18 @@ ELSE()
+@@ -407,6 +427,21 @@ ELSE()
  	MESSAGE(FATAL_ERROR "Unsupported architecture")
  ENDIF()
  
 +IF(DEFINED LIBGIT2_VER)
 +  SET(ver _${LIBGIT2_VER})
++  IF(DEFINED VER_MOD)
++    SET(ver ${ver}${VER_MOD})
++  ENDIF()
 +  SET(verDir /${PROJECT_NAME}${ver})
 +  SET(LIBGIT2_FILENAME git2${ver})
 +ENDIF()
@@ -122,7 +125,7 @@ index 77a591f..9e92472 100644
  # Compile and link libgit2
  ADD_LIBRARY(git2 ${SRC_H} ${SRC_GIT2} ${SRC_OS} ${SRC_ZLIB} ${SRC_HTTP} ${SRC_REGEX} ${SRC_SSH} ${SRC_SHA1} ${WIN_RC})
  TARGET_LINK_LIBRARIES(git2 ${SSL_LIBRARIES})
-@@ -440,14 +472,18 @@ IF (MSVC_IDE)
+@@ -440,14 +475,18 @@ IF (MSVC_IDE)
  ENDIF ()
  
  # Install

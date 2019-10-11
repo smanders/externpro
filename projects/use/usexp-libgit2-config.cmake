@@ -11,7 +11,8 @@ get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
 set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
-set(ver _@VER@)
+@USE_SCRIPT_INSERT@
+set(ver _@VER@${VER_MOD})
 set(verDir /${prj}${ver})
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR git2.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
