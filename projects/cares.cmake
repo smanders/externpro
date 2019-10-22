@@ -30,7 +30,12 @@ function(build_cares)
   configure_file(${PRO_DIR}/use/usexp-cares-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(cares "" "-DCARES_VER=${VER}" caresTargets)
+  set(XP_CONFIGURE
+    -DXP_INSTALL_DIRS:BOOL=ON
+    -DXP_NAMESPACE:STRING=${PROJECT_NAME}
+    -DCARES_VER:STRING=${VER}
+    )
+  xpCmakeBuild(cares "" "${XP_CONFIGURE}" caresTargets)
   if(ARGN)
     set(${ARGN} "${caresTargets}" PARENT_SCOPE)
   endif()
