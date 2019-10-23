@@ -8,7 +8,7 @@ set(PRO_LIBGIT2
   LICENSE "open" "https://github.com/libgit2/libgit2/blob/master/README.md#license" "GPL2 with linking exception"
   DESC "portable, pure C implementation of the Git core methods"
   REPO "repo" ${REPO} "forked libgit2 repo on github"
-  GRAPH BUILD_DEPS libssh2_1.5.0 libssh2_1.9.0
+  GRAPH BUILD_DEPS libssh2_1.5.0
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/libgit2.git
   GIT_UPSTREAM git://github.com/libgit2/libgit2.git
@@ -28,17 +28,17 @@ function(build_libgit2)
   if(WIN32)
     set(MOD_OPT "set(VER_MOD)")
     set(VER_CFG xpConfigBase)
-  elseif(TRUE)
+  elseif(FALSE)
     # build multiple versions against different versions of openssl/libssh2
     set(MOD_OLD _ossl10)
     set(MOD_NEW _ossl11)
     set(MOD_OPT "if(XP_USE_LATEST_OPENSSL)\n  set(VER_MOD ${MOD_NEW})\nelse()\n  set(VER_MOD ${MOD_OLD})\nendif()")
     set(VER_CFG ${MOD_OLD} ${MOD_NEW})
-  elseif(FALSE)
+  elseif(TRUE)
     # build against single versions of openssl/libssh2
-    set(MOD_NEW _ossl11)
-    set(MOD_OPT "set(VER_MOD ${MOD_NEW})")
-    set(VER_CFG ${MOD_NEW})
+    set(MOD_OLD _ossl10)
+    set(MOD_OPT "set(VER_MOD ${MOD_OLD})")
+    set(VER_CFG ${MOD_OLD})
   else()
     set(MOD_OPT "set(VER_MOD)")
     set(VER_CFG xpConfigBase)

@@ -73,10 +73,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_e7604c5384ae32027aa1e4830ed9f446?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_4738605a3709c5a0d3a7d27280baedbc?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_e7604c5384ae32027aa1e4830ed9f446
+depgraph_4738605a3709c5a0d3a7d27280baedbc
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
@@ -114,7 +114,6 @@ digraph GG {
   libgeotiff -> wx;
   libgit2 [shape=diamond];
   libgit2 -> libssh2_1_5_0;
-  libgit2 -> libssh2_1_9_0;
   libssh2_1_5_0 [label="libssh2_1.5.0" shape=diamond];
   libssh2_1_5_0 -> zlib;
   libssh2_1_5_0 -> openssl_1_0_2a;
@@ -143,5 +142,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_e7604c5384ae32027aa1e4830ed9f446
+depgraph_4738605a3709c5a0d3a7d27280baedbc
 </details>
