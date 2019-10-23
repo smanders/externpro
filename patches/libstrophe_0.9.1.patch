@@ -1,10 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..fdfebc6
+index 0000000..dbfa40b
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,69 @@
-+cmake_minimum_required(VERSION 3.0)
++cmake_minimum_required(VERSION 3.12)
 +project(libstrophe)
 +include(flags OPTIONAL)
 +enable_testing()
@@ -75,7 +75,7 @@ index 0000000..fdfebc6
 +install(FILES strophe.h strophepp.h DESTINATION include${verDir}/${PROJECT_NAME})
 diff --git a/examples/CMakeLists.txt b/examples/CMakeLists.txt
 new file mode 100644
-index 0000000..3706f2e
+index 0000000..5de7bc3
 --- /dev/null
 +++ b/examples/CMakeLists.txt
 @@ -0,0 +1,13 @@
@@ -89,18 +89,17 @@ index 0000000..3706f2e
 +  )
 +foreach(exe ${examples})
 +  add_executable(${exe} ${exe}.c)
-+  target_link_libraries(${exe} libstrophe)
++  target_link_libraries(${exe} PRIVATE libstrophe)
 +  set_property(TARGET ${exe} PROPERTY FOLDER examples)
 +endforeach()
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 new file mode 100644
-index 0000000..c540b0a
+index 0000000..fb9fcfe
 --- /dev/null
 +++ b/src/CMakeLists.txt
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,67 @@
 +set(lib_name ${PROJECT_NAME})
 +########################################
-+# source
 +set(${lib_name}_libsrcs
 +  auth.c
 +  common.h
@@ -144,14 +143,12 @@ index 0000000..c540b0a
 +  )
 +source_group("" FILES ${${lib_name}_libsrcs})
 +########################################
-+# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+target_link_libraries(${lib_name} ${EXPAT_LIBRARIES} ${OPENSSL_LIBRARIES} ${SYS_LIBS})
++target_link_libraries(${lib_name} PRIVATE ${EXPAT_LIBRARIES} ${OPENSSL_LIBRARIES} ${SYS_LIBS})
 +target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
 +  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 +  PRIVATE
 +  $<BUILD_INTERFACE:${EXPAT_INCLUDE_DIRS}>
-+  $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>
 +  )
 +if(DEFINED EXPAT_DEFINITIONS)
 +  target_compile_definitions(${lib_name} PUBLIC ${EXPAT_DEFINITIONS})
@@ -161,7 +158,6 @@ index 0000000..c540b0a
 +  PREFIX "" # strip off the "lib" prefix, since it's already libstrophe
 +  )
 +########################################
-+# install
 +set(targetsFile ${PROJECT_NAME}${ver}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
@@ -169,14 +165,31 @@ index 0000000..c540b0a
 +  ARCHIVE DESTINATION lib
 +  )
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake)
+diff --git a/src/tls_openssl.c b/src/tls_openssl.c
+index 0e440c1..04f379e 100644
+--- a/src/tls_openssl.c
++++ b/src/tls_openssl.c
+@@ -49,8 +49,12 @@ static void _tls_log_error(xmpp_ctx_t *ctx);
+ 
+ void tls_initialize(void)
+ {
++#if OPENSSL_API_COMPAT < 0x10100000L
+     SSL_library_init();
+     SSL_load_error_strings();
++#else
++    OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
++#endif
+ }
+ 
+ void tls_shutdown(void)
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
 new file mode 100644
-index 0000000..5bf5a5f
+index 0000000..dabc2ae
 --- /dev/null
 +++ b/tests/CMakeLists.txt
 @@ -0,0 +1,28 @@
 +add_library(testlib STATIC test.c test.h)
-+target_link_libraries(testlib libstrophe)
++target_link_libraries(testlib PUBLIC libstrophe)
 +set_property(TARGET testlib PROPERTY FOLDER tests)
 +set(tests
 +  check_parser
@@ -198,7 +211,7 @@ index 0000000..5bf5a5f
 +foreach(exe ${tests})
 +  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${exe}.c) # there are some tests only in repo, not in download
 +    add_executable(${exe} ${exe}.c)
-+    target_link_libraries(${exe} testlib)
++    target_link_libraries(${exe} PRIVATE testlib)
 +    add_test(NAME ${exe} COMMAND ${exe})
 +    set_property(TARGET ${exe} PROPERTY FOLDER tests)
 +  endif()
