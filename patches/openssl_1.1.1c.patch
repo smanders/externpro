@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..1befb48
+index 0000000..97dcc17
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,61 @@
 +cmake_minimum_required(VERSION 3.12)
 +project(openssl)
 +include(flags OPTIONAL)
@@ -54,20 +54,23 @@ index 0000000..1befb48
 +add_subdirectory(include)
 +add_subdirectory(crypto)
 +add_subdirectory(ssl)
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
 +if(FALSE)
 +# TODO EXPORT of STATIC library with PRIVATE non-target dependencies broken
 +# https://gitlab.kitware.com/cmake/cmake/issues/17357
 +# I'm seeing the same error reported in this issue, even with EXPORT_LINK_INTERFACE_LIBRARIES
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake EXPORT_LINK_INTERFACE_LIBRARIES)
++install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace} EXPORT_LINK_INTERFACE_LIBRARIES)
 +else()
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake)
++install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
 +endif()
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..9c41212
+index 0000000..bea87ad
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1720 @@
+@@ -0,0 +1,1723 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file include/buildinf.h)
@@ -1758,7 +1761,10 @@ index 0000000..9c41212
 +  ec/curve448
 +  ec/curve448/arch_32
 +  modes # evp includes modes_lcl.h
++  PUBLIC
++  $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>
 +  )
++target_compile_definitions(${lib_name} PUBLIC $<INSTALL_INTERFACE:OPENSSL_API_COMPAT=0x10100000L>)
 +set(THREADS_PREFER_PTHREAD_FLAG ON)
 +find_package(Threads REQUIRED)
 +target_link_libraries(${lib_name} Threads::Threads ${CMAKE_DL_LIBS})

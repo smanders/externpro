@@ -30,13 +30,15 @@ function(build_openssl)
   endif()
   set(MOD_OPT "set(VER_MOD)")
   set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
-  set(OPENSSL_API_COMPAT_OLD 0x10000000L)
-  set(OPENSSL_API_COMPAT_NEW 0x10100000L)
   configure_file(${PRO_DIR}/use/usexp-openssl-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   foreach(ver ${OPENSSL_VERSIONS})
-    xpCmakeBuild(openssl_${ver} "" "-DOPENSSL_VER=${ver}" opensslTargets_${ver})
+    set(XP_CONFIGURE
+      -DXP_NAMESPACE:STRING=${PROJECT_NAME}
+      -DOPENSSL_VER:STRING=${ver}
+      )
+    xpCmakeBuild(openssl_${ver} "" "${XP_CONFIGURE}" opensslTargets_${ver})
     list(APPEND opensslTargets ${opensslTargets_${ver}})
   endforeach()
   if(ARGN)
