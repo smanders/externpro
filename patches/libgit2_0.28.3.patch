@@ -1,0 +1,151 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 88eb9ec..3d8b499 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -39,6 +39,7 @@ INCLUDE(FindStatNsec)
+ INCLUDE(IdeSplitSources)
+ INCLUDE(FeatureSummary)
+ INCLUDE(EnableWarnings)
++INCLUDE(flags OPTIONAL)
+ 
+ # Build options
+ #
+@@ -65,6 +66,14 @@ OPTION(DEBUG_POOL			"Enable debug pool allocator"				OFF)
+ OPTION(ENABLE_WERROR			"Enable compilation with -Werror"			OFF)
+ OPTION(USE_BUNDLED_ZLIB    		"Use the bundled version of zlib"			OFF)
+ OPTION(DEPRECATE_HARD			"Do not include deprecated functions in the library"	OFF)
++OPTION(OPENSSL_MODULE_PATH		"Find OpenSSL in CMAKE_MODULE_PATH"			OFF)
++OPTION(ZLIB_MODULE_PATH			"Find zlib in CMAKE_MODULE_PATH"			OFF)
++OPTION(LIBSSH2_MODULE_PATH		"Find libssh2 in CMAKE_MODULE_PATH"			OFF)
++OPTION(INSTALL_LIBGIT2_CONFIG		"Install libgit2 config (pkg-config libgit2.pc)"	ON)
++MARK_AS_ADVANCED(OPENSSL_MODULE_PATH)
++MARK_AS_ADVANCED(ZLIB_MODULE_PATH)
++MARK_AS_ADVANCED(LIBSSH2_MODULE_PATH)
++MARK_AS_ADVANCED(INSTALL_LIBGIT2_CONFIG)
+ 
+ IF (UNIX AND NOT APPLE)
+ 	OPTION(ENABLE_REPRODUCIBLE_BUILDS "Enable reproducible builds"				OFF)
+@@ -79,6 +88,10 @@ IF(MSVC)
+ 	# are linking statically
+ 	OPTION(STATIC_CRT		"Link the static CRT libraries"		 		 ON)
+ 
++	# Some MSVC flags are not compatible with what's been set externally
++	OPTION(SKIP_MSVC_FLAGS		"Skip MSVC flags set here"		 		OFF)
++	MARK_AS_ADVANCED(SKIP_MSVC_FLAGS)
++
+ 	# If you want to embed a copy of libssh2 into libgit2, pass a
+ 	# path to libssh2
+ 	OPTION(EMBED_SSH_PATH		"Path to libssh2 to embed (Windows)"			OFF)
+@@ -112,6 +125,8 @@ ENDIF()
+ 
+ # Platform specific compilation flags
+ IF (MSVC)
++	IF (NOT SKIP_MSVC_FLAGS)
++
+ 	IF (STDCALL)
+ 		MESSAGE(FATAL_ERROR "The STDCALL option is no longer supported; libgit2 is now always built as a cdecl library.  If you're using PInvoke, please add the CallingConventions.Cdecl attribute for support.")
+ 	ENDIF()
+@@ -191,6 +206,8 @@ IF (MSVC)
+ 	SET(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+ 	SET(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
+ 	SET(CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL}")
++
++	ENDIF() # SKIP_MSVC_FLAGS
+ ELSE ()
+ 	IF (ENABLE_REPRODUCIBLE_BUILDS)
+ 		SET(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> Dqc <TARGET> <LINK_FLAGS> <OBJECTS>")
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 213dd79..f8ebaaf 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -19,11 +19,21 @@ SET(LIBGIT2_INCLUDES
+ SET(LIBGIT2_SYSTEM_INCLUDES "")
+ SET(LIBGIT2_LIBS "")
+ 
++IF(DEFINED LIBGIT2_VER)
++  SET(ver _${LIBGIT2_VER})
++  IF(DEFINED VER_MOD)
++    SET(ver ${ver}${VER_MOD})
++  ENDIF()
++  SET(verDir /${PROJECT_NAME}${ver})
++  SET(LIBGIT2_FILENAME git2${ver})
++ENDIF()
++SET(LIBGIT2_TARGETS_FILE ${PROJECT_NAME}${ver}-targets)
++
+ # Installation paths
+ #
+ SET(BIN_INSTALL_DIR bin CACHE PATH "Where to install binaries to.")
+ SET(LIB_INSTALL_DIR lib CACHE PATH "Where to install libraries to.")
+-SET(INCLUDE_INSTALL_DIR include CACHE PATH "Where to install headers to.")
++SET(INCLUDE_INSTALL_DIR include${verDir} CACHE PATH "Where to install headers to.")
+ 
+ # Set a couple variables to be substituted inside the .pc file.
+ # We can't just use LIB_INSTALL_DIR in the .pc file, as passing them as absolue
+@@ -141,7 +151,11 @@ ENDIF()
+ 
+ IF (USE_HTTPS)
+ 	# We try to find any packages our backends might use
+-	FIND_PACKAGE(OpenSSL)
++	IF(OPENSSL_MODULE_PATH)
++		FIND_PACKAGE(usexp-OpenSSL PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++	ELSE()
++		FIND_PACKAGE(OpenSSL)
++	ENDIF()
+ 	FIND_PACKAGE(mbedTLS)
+ 	IF (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+ 		FIND_PACKAGE(Security)
+@@ -262,7 +276,11 @@ ENDIF()
+ # Specify sha1 implementation
+ IF(SHA1_BACKEND STREQUAL "OpenSSL")
+ 	IF(NOT OPENSSL_FOUND)
+-		FIND_PACKAGE(OpenSSL)
++		IF(OPENSSL_MODULE_PATH)
++			FIND_PACKAGE(usexp-OpenSSL PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++		ELSE()
++			FIND_PACKAGE(OpenSSL)
++		ENDIF()
+ 		IF(NOT OPENSSL_FOUND)
+ 		    MESSAGE(FATAL_ERROR "Requested OpenSSL SHA1 backend, but OpenSSL could not be found")
+ 		ENDIF()
+@@ -323,7 +341,11 @@ ENDIF()
+ 
+ # Optional external dependency: zlib
+ IF(NOT USE_BUNDLED_ZLIB)
+-	FIND_PACKAGE(ZLIB)
++	IF(ZLIB_MODULE_PATH)
++		FIND_PACKAGE(usexp-ZLIB PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++	ELSE()
++		FIND_PACKAGE(ZLIB)
++	ENDIF()
+ 	IF(ZLIB_FOUND)
+ 		LIST(APPEND LIBGIT2_SYSTEM_INCLUDES ${ZLIB_INCLUDE_DIRS})
+ 		LIST(APPEND LIBGIT2_LIBS ${ZLIB_LIBRARIES})
+@@ -347,7 +369,11 @@ ENDIF()
+ 
+ # Optional external dependency: libssh2
+ IF (USE_SSH)
+-	FIND_PKGLIBRARIES(LIBSSH2 libssh2)
++	IF(LIBSSH2_MODULE_PATH)
++		FIND_PACKAGE(usexp-libssh2 PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++	ELSE()
++		FIND_PKGLIBRARIES(LIBSSH2 libssh2)
++	ENDIF()
+ ENDIF()
+ IF (LIBSSH2_FOUND)
+ 	SET(GIT_SSH 1)
+@@ -520,11 +546,14 @@ IF (MSVC_IDE)
+ ENDIF ()
+ 
+ # Install
+-INSTALL(TARGETS git2
++INSTALL(TARGETS git2 EXPORT ${LIBGIT2_TARGETS_FILE}
+ 	RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+ 	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+ 	ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+ )
++IF(INSTALL_LIBGIT2_CONFIG)
+ INSTALL(FILES ${libgit2_BINARY_DIR}/libgit2.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig )
++ENDIF()
+ INSTALL(DIRECTORY ${libgit2_SOURCE_DIR}/include/git2 DESTINATION ${INCLUDE_INSTALL_DIR} )
+ INSTALL(FILES ${libgit2_SOURCE_DIR}/include/git2.h DESTINATION ${INCLUDE_INSTALL_DIR} )
++INSTALL(EXPORT ${LIBGIT2_TARGETS_FILE} DESTINATION ${LIB_INSTALL_DIR}/cmake )

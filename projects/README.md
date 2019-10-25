@@ -26,6 +26,7 @@
 |[jxrlib](https://jxrlib.codeplex.com/ 'jxrlib project hosted on CodePlex')|[open](https://jxrlib.codeplex.com/license 'New BSD License (BSD)')|open source implementation of the jpegxr image format standard|15.08|[repo](https://github.com/smanders/jxrlib 'forked jxrlib repo on github')|[diff](https://github.com/smanders/jxrlib/compare/v15.08...xp15.08 'patch/diff')|
 |[libgeotiff](http://trac.osgeo.org/geotiff/ 'GeoTIFF trac website')|[open](http://trac.osgeo.org/geotiff/ 'trac site states it is an open source library (no specific license mentioned)')|georeferencing info embedded within TIFF file|1.2.4|[repo](https://github.com/smanders/libgeotiff 'libgeotiff repo on github')|[diff](https://github.com/smanders/libgeotiff/compare/v1.2.4...xp1.2.4 'patch/diff')|
 |[libgit2](https://libgit2.github.com/ 'libgit2 website')|[open](https://github.com/libgit2/libgit2/blob/master/README.md#license 'GPL2 with linking exception')|portable, pure C implementation of the Git core methods|0.22.2|[repo](https://github.com/smanders/libgit2 'forked libgit2 repo on github')|[diff](https://github.com/smanders/libgit2/compare/libgit2:v0.22.2...xp0.22.2 'patch/diff')|
+|[libgit2](https://libgit2.github.com/ 'libgit2 website')|[open](https://github.com/libgit2/libgit2/blob/master/README.md#license 'GPL2 with linking exception')|portable, pure C implementation of the Git core methods|0.28.3|[repo](https://github.com/smanders/libgit2 'forked libgit2 repo on github')|[diff](https://github.com/smanders/libgit2/compare/libgit2:v0.28.3...xp0.28.3 'patch/diff')|
 |[libssh2](http://www.libssh2.org/ 'libssh2 website')|[open](http://www.libssh2.org/license.html 'BSD 3-Clause License - https://www.openhub.net/licenses/BSD-3-Clause')|client-side C library implementing SSH2 protocol|1.5.0|[repo](https://github.com/smanders/libssh2 'forked libssh2 repo on github')|[diff](https://github.com/smanders/libssh2/compare/libssh2:libssh2-1.5.0...xp-1.5.0 'patch/diff')|
 |[libssh2](http://www.libssh2.org/ 'libssh2 website')|[open](http://www.libssh2.org/license.html 'BSD 3-Clause License - https://www.openhub.net/licenses/BSD-3-Clause')|client-side C library implementing SSH2 protocol|1.9.0|[repo](https://github.com/smanders/libssh2 'forked libssh2 repo on github')|[diff](https://github.com/smanders/libssh2/compare/libssh2:libssh2-1.9.0...xp-1.9.0 'patch/diff')|
 |[libstrophe](http://strophe.im/libstrophe/ 'libstrophe website')|[open](https://github.com/strophe/libstrophe/blob/0.9.1/LICENSE.txt 'dual licensed under MIT and GPLv3')|A simple, lightweight C library for writing XMPP client|0.9.1|[repo](https://github.com/strophe/libstrophe 'libstrophe repo on github')|[diff](https://github.com/smanders/libstrophe/compare/strophe:0.9.1...xp0.9.1 'patch/diff')|
@@ -73,10 +74,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_78b160825279fef341f2db97213b19c3?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_ce42b86de8e2b71b52404ab8372fb37e?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_78b160825279fef341f2db97213b19c3
+depgraph_ce42b86de8e2b71b52404ab8372fb37e
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
@@ -114,6 +115,8 @@ digraph GG {
   libgeotiff -> wx;
   libgit2_0_22_2 [label="libgit2_0.22.2" shape=diamond];
   libgit2_0_22_2 -> libssh2_1_5_0;
+  libgit2_0_28_3 [label="libgit2_0.28.3" shape=diamond];
+  libgit2_0_28_3 -> libssh2_1_9_0;
   libssh2_1_5_0 [label="libssh2_1.5.0" shape=diamond];
   libssh2_1_5_0 -> zlib;
   libssh2_1_5_0 -> openssl_1_0_2a;
@@ -142,5 +145,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_78b160825279fef341f2db97213b19c3
+depgraph_ce42b86de8e2b71b52404ab8372fb37e
 </details>

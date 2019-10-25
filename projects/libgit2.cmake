@@ -1,6 +1,6 @@
 # libgit2
 set(LIBGIT2_OLDVER 0.22.2)
-set(LIBGIT2_NEWVER 0.22.2)
+set(LIBGIT2_NEWVER 0.28.3)
 ########################################
 function(build_libgit2)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBGIT2_${LIBGIT2_OLDVER} OR XP_PRO_LIBGIT2_${LIBGIT2_NEWVER}))
@@ -35,7 +35,7 @@ function(build_libgit2)
     set(MOD_NEW _ossl11)
     set(MOD_OPT "if(XP_USE_LATEST_OPENSSL)\n  set(VER_MOD ${MOD_NEW})\nelse()\n  set(VER_MOD ${MOD_OLD})\nendif()")
     set(VER_CFG ${MOD_OLD} ${MOD_NEW})
-  elseif(TRUE)
+  elseif(FALSE)
     # build against single versions of openssl/libssh2
     set(MOD_OLD _ossl10)
     set(MOD_OPT "set(VER_MOD ${MOD_OLD})")
@@ -49,14 +49,15 @@ function(build_libgit2)
     @ONLY NEWLINE_STYLE LF
     )
   if(NOT WIN32)
-    #set(XP_CONFIGURE_${LIBGIT2_OLDVER}
-    #  -DXP_USE_LATEST_OPENSSL:BOOL=OFF
-    #  -DXP_USE_LATEST_LIBSSH2:BOOL=OFF
-    #  )
-    #set(XP_CONFIGURE_${LIBGIT2_NEWVER}
-    #  -DXP_USE_LATEST_OPENSSL:BOOL=ON
-    #  -DXP_USE_LATEST_LIBSSH2:BOOL=ON
-    #  )
+    set(XP_CONFIGURE_${LIBGIT2_OLDVER}
+      -DXP_USE_LATEST_OPENSSL:BOOL=OFF
+      -DXP_USE_LATEST_LIBSSH2:BOOL=OFF
+      )
+    set(XP_CONFIGURE_${LIBGIT2_NEWVER}
+      -DXP_USE_LATEST_OPENSSL:BOOL=ON
+      -DXP_USE_LATEST_LIBSSH2:BOOL=ON
+      -DBUILD_CLAR:BOOL=OFF
+      )
     set(${MOD_OLD}
       -DXP_USE_LATEST_OPENSSL:BOOL=OFF
       -DXP_USE_LATEST_LIBSSH2:BOOL=OFF
