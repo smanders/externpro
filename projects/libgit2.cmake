@@ -1,29 +1,30 @@
 # libgit2
-xpProOption(libgit2 DBG)
-set(REPO https://github.com/smanders/libgit2)
-set(VER 0.22.2)
-set(PRO_LIBGIT2
-  NAME libgit2
-  WEB "libgit2" https://libgit2.github.com/ "libgit2 website"
-  LICENSE "open" "https://github.com/libgit2/libgit2/blob/master/README.md#license" "GPL2 with linking exception"
-  DESC "portable, pure C implementation of the Git core methods"
-  REPO "repo" ${REPO} "forked libgit2 repo on github"
-  GRAPH BUILD_DEPS libssh2_1.5.0
-  VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/libgit2.git
-  GIT_UPSTREAM git://github.com/libgit2/libgit2.git
-  GIT_TAG xp${VER}
-  GIT_REF v${VER}
-  DLURL ${REPO}/archive/v${VER}.tar.gz
-  DLMD5 67e0aca83964bfbb5c8806854f13fa41
-  DLNAME libgit2-${VER}.tar.gz
-  PATCH ${PATCH_DIR}/libgit2.patch
-  DIFF ${REPO}/compare/libgit2:
-  )
+set(LIBGIT2_OLDVER 0.22.2)
+set(LIBGIT2_NEWVER 0.22.2)
 ########################################
 function(build_libgit2)
-  if(NOT (XP_DEFAULT OR XP_PRO_LIBGIT2))
+  if(NOT (XP_DEFAULT OR XP_PRO_LIBGIT2_${LIBGIT2_OLDVER} OR XP_PRO_LIBGIT2_${LIBGIT2_NEWVER}))
     return()
+  endif()
+  if(XP_DEFAULT)
+    set(LIBGIT2_VERSIONS ${LIBGIT2_OLDVER} ${LIBGIT2_NEWVER})
+  else()
+    if(XP_PRO_LIBGIT2_${LIBGIT2_OLDVER})
+      set(LIBGIT2_VERSIONS ${LIBGIT2_OLDVER})
+    endif()
+    if(XP_PRO_LIBGIT2_${LIBGIT2_NEWVER})
+      list(APPEND LIBGIT2_VERSIONS ${LIBGIT2_NEWVER})
+    endif()
+  endif()
+  list(REMOVE_DUPLICATES LIBGIT2_VERSIONS)
+  list(LENGTH LIBGIT2_VERSIONS NUM_VER)
+  if(NUM_VER EQUAL 1)
+    if(LIBGIT2_VERSIONS EQUAL LIBGIT2_OLDVER)
+      set(boolean OFF)
+    else() # LIBGIT2_VERSIONS EQUAL LIBGIT2_NEWVER
+      set(boolean ON)
+    endif()
+    set(ONE_VER "set(XP_USE_LATEST_LIBGIT2 ${boolean}) # currently only one version supported\n")
   endif()
   if(WIN32)
     set(MOD_OPT "set(VER_MOD)")
@@ -43,48 +44,65 @@ function(build_libgit2)
     set(MOD_OPT "set(VER_MOD)")
     set(VER_CFG xpConfigBase)
   endif()
-  set(USE_SCRIPT_INSERT ${MOD_OPT})
-  xpGetArgValue(${PRO_LIBGIT2} ARG VER VALUE VER)
+  set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
   configure_file(${PRO_DIR}/use/usexp-libgit2-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  set(xpConfigBase
-    -DBUILD_SHARED_LIBS=OFF
-    -DTHREADSAFE=ON
-    -DINSTALL_LIBGIT2_CONFIG=OFF
-    -DLIBGIT2_VER=${VER}
-    )
-  if(WIN32)
-    set(depTgts)
-    list(APPEND xpConfigBase
-      -DSKIP_MSVC_FLAGS=ON
-      )
-  else()
-    xpBuildDeps(depTgts ${PRO_LIBGIT2})
-    list(APPEND xpConfigBase
-      -DOPENSSL_MODULE_PATH=ON
-      -DZLIB_MODULE_PATH=ON
-      -DLIBSSH2_MODULE_PATH=ON
-      )
-    set(${MOD_OLD} ${xpConfigBase}
-      -DVER_MOD:STRING=${MOD_OLD}
+  if(NOT WIN32)
+    #set(XP_CONFIGURE_${LIBGIT2_OLDVER}
+    #  -DXP_USE_LATEST_OPENSSL:BOOL=OFF
+    #  -DXP_USE_LATEST_LIBSSH2:BOOL=OFF
+    #  )
+    #set(XP_CONFIGURE_${LIBGIT2_NEWVER}
+    #  -DXP_USE_LATEST_OPENSSL:BOOL=ON
+    #  -DXP_USE_LATEST_LIBSSH2:BOOL=ON
+    #  )
+    set(${MOD_OLD}
       -DXP_USE_LATEST_OPENSSL:BOOL=OFF
       -DXP_USE_LATEST_LIBSSH2:BOOL=OFF
+      -DVER_MOD:STRING=${MOD_OLD}
       )
-    set(${MOD_NEW} ${xpConfigBase}
-      -DVER_MOD:STRING=${MOD_NEW}
+    set(${MOD_NEW}
       -DXP_USE_LATEST_OPENSSL:BOOL=ON
       -DXP_USE_LATEST_LIBSSH2:BOOL=ON
+      -DVER_MOD:STRING=${MOD_NEW}
       )
   endif()
-  foreach(cfg ${VER_CFG})
-    build_libgit2_cfg(${cfg})
+  foreach(ver ${LIBGIT2_VERSIONS})
+    if(WIN32)
+      set(depTgts)
+    else()
+      xpBuildDeps(depTgts ${PRO_LIBGIT2_${ver}})
+    endif()
+    set(xpConfigBase
+      -DBUILD_SHARED_LIBS=OFF
+      -DTHREADSAFE=ON
+      -DINSTALL_LIBGIT2_CONFIG=OFF
+      -DLIBGIT2_VER=${ver}
+      )
+    if(WIN32)
+      list(APPEND xpConfigBase
+        -DSKIP_MSVC_FLAGS=ON
+        )
+    else()
+      list(APPEND xpConfigBase
+        -DOPENSSL_MODULE_PATH=ON
+        -DZLIB_MODULE_PATH=ON
+        -DLIBSSH2_MODULE_PATH=ON
+        ${XP_CONFIGURE_${ver}}
+        )
+    endif()
+    foreach(cfg ${VER_CFG})
+      list(INSERT ${cfg} 0 ${xpConfigBase})
+      list(REMOVE_DUPLICATES ${cfg})
+      build_libgit2_ver(${ver} ${cfg})
+    endforeach()
   endforeach()
 endfunction()
-function(build_libgit2_cfg cfg)
+function(build_libgit2_ver ver cfg)
   if(${cfg} STREQUAL xpConfigBase)
-    xpCmakeBuild(libgit2 "${depTgts}" "${${cfg}}")
+    xpCmakeBuild(libgit2_${ver} "${depTgts}" "${${cfg}}")
   else()
-    xpCmakeBuild(libgit2 "${depTgts}" "${${cfg}}" "" TGT ${cfg})
+    xpCmakeBuild(libgit2_${ver} "${depTgts}" "${${cfg}}" "" TGT ${cfg})
   endif()
 endfunction()
