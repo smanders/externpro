@@ -11,6 +11,7 @@
 |[CMake](http://cmake.org/ 'CMake website')|[open](http://www.cmake.org/cmake/project/license.html 'CMake License')|the cross-platform, open-source build system|3.12.0|[repo](https://github.com/smanders/CMake 'forked CMake repo on github')|[diff](https://github.com/smanders/CMake/compare/Kitware:v3.12.0...xp3.12.0 'patch/diff')|
 |[CUB](http://nvlabs.github.io/cub/ 'CUB Project Website')|[open](https://github.com/NVlabs/cub/tree/v1.8.0#open-source-license 'BSD 3-Clause')|flexible library of cooperative threadblock primitives and other utilites for CUDA kernel programming|1.8.0|[repo](https://github.com/NVlabs/cub 'CUB repo on github')|none|
 |[cURL](http://curl.haxx.se/libcurl/ 'libcurl website')|[open](http://curl.haxx.se/docs/copyright.html 'curl license: MIT/X derivate license')|the multiprotocol file transfer library|7.42.1|[repo](https://github.com/smanders/curl 'forked curl repo on github')|[diff](https://github.com/smanders/curl/compare/curl:curl-7_42_1...xp-7_42_1 'patch/diff')|
+|[cURL](http://curl.haxx.se/libcurl/ 'libcurl website')|[open](http://curl.haxx.se/docs/copyright.html 'curl license: MIT/X derivate license')|the multiprotocol file transfer library|7.66.0|[repo](https://github.com/smanders/curl 'forked curl repo on github')|[diff](https://github.com/smanders/curl/compare/curl:curl-7_66_0...xp-7_66_0 'patch/diff')|
 |[Eigen](http://eigen.tuxfamily.org/ 'Eigen website')|[open](http://eigen.tuxfamily.org/index.php?title=Main_Page#License 'Eigen license: MPL2 (aka Mozilla Public License)')|C++ template library for linear algebra|3.2.7|[repo](https://bitbucket.org/eigen/eigen 'eigen hg repo on bitbucket')|none|
 |[Expat](https://libexpat.github.io 'Expat website')|[open](https://github.com/libexpat/libexpat/blob/R_2_2_5/expat/COPYING 'Expat License (MIT/X Consortium license)')|a stream-oriented XML parser library written in C|2.2.5|[repo](https://github.com/libexpat/libexpat 'libexpat repo on github')|[diff](https://github.com/smanders/libexpat/compare/libexpat:R_2_2_5...xp2.2.5 'patch/diff')|
 |[fecpp](http://www.randombit.net/code/fecpp/ 'C++ forward error correction with SIMD optimizations')|[open](http://www.randombit.net/code/fecpp/ 'BSD License')|fecpp is a Forward Error Correction Library|0.9|[repo](https://github.com/smanders/fecpp 'forked fecpp repo on github')|[diff](https://github.com/smanders/fecpp/compare/v0.9...xp0.9 'patch/diff')|
@@ -74,10 +75,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_ce42b86de8e2b71b52404ab8372fb37e?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_27a69d8e671c4512e6e0ffa72acabf3c?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_ce42b86de8e2b71b52404ab8372fb37e
+depgraph_27a69d8e671c4512e6e0ffa72acabf3c
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
@@ -104,6 +105,9 @@ digraph GG {
   curl_7_42_1 [label="curl_7.42.1" shape=diamond];
   curl_7_42_1 -> libssh2_1_5_0;
   curl_7_42_1 -> cares;
+  curl_7_66_0 [label="curl_7.66.0" shape=diamond];
+  curl_7_66_0 -> libssh2_1_9_0;
+  curl_7_66_0 -> cares;
   eigen [shape=diamond];
   expat [shape=diamond];
   fecpp [shape=diamond];
@@ -145,5 +149,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_ce42b86de8e2b71b52404ab8372fb37e
+depgraph_27a69d8e671c4512e6e0ffa72acabf3c
 </details>

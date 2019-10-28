@@ -1,6 +1,6 @@
 # curl
 set(CURL_OLDVER 7.42.1)
-set(CURL_NEWVER 7.42.1)
+set(CURL_NEWVER 7.66.0)
 ########################################
 function(build_curl)
   if(NOT (XP_DEFAULT OR XP_PRO_CURL_${CURL_OLDVER} OR XP_PRO_CURL_${CURL_NEWVER}))
@@ -36,15 +36,25 @@ function(build_curl)
     # otherwise cmake finds externpro curl and not it's own internal cmcurl
     build_cmakexp(cmTgts)
   endif()
+  set(XP_CONFIGURE_${CURL_OLDVER}
+    -DXP_USE_LATEST_OPENSSL=OFF
+    -DXP_USE_LATEST_LIBSSH2=OFF
+    -DBUILD_CURL_TESTS=OFF
+    -DCURL_STATICLIB=ON
+    )
+  set(XP_CONFIGURE_${CURL_NEWVER}
+    -DXP_USE_LATEST_OPENSSL=ON
+    -DXP_USE_LATEST_LIBSSH2=ON
+    -DBUILD_TESTING=OFF
+    -DBUILD_SHARED_LIBS=OFF
+    )
   foreach(ver ${CURL_VERSIONS})
     xpBuildDeps(depTgts ${PRO_CURL_${ver}})
     list(APPEND depTgts ${cmTgts})
     set(XP_CONFIGURE
       -DCURL_VER=${ver}
       -DBUILD_CURL_EXE=ON
-      -DBUILD_CURL_TESTS=OFF
       -DINSTALL_CURL_CONFIG=OFF
-      -DCURL_STATICLIB=ON
       -DENABLE_ARES=ON
       -DFIND_ARES_MODULE_PATH=ON
       -DCURL_ZLIB_MODULE_PATH=ON
@@ -52,8 +62,8 @@ function(build_curl)
       -DCMAKE_USE_LIBSSH2_MODULE_PATH=ON
       -DCURL_DISABLE_LDAP=ON
       -DENABLE_LIBIDN=OFF
-      -DXP_USE_LATEST_OPENSSL=OFF
-      -DXP_USE_LATEST_LIBSSH2=OFF
+      -DXP_INSTALL_DIRS=ON
+      ${XP_CONFIGURE_${ver}}
       )
     xpCmakeBuild(curl_${ver} "${depTgts}" "${XP_CONFIGURE}")
   endforeach()

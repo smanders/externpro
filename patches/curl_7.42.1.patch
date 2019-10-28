@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8aa44bb..83bbb4e 100644
+index 8aa44bb..1ef08e0 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -44,6 +44,7 @@ include(Utilities)
@@ -96,22 +96,29 @@ index 8aa44bb..83bbb4e 100644
    endif(LIBSSH2_FOUND)
  endif(CMAKE_USE_LIBSSH2)
  
-@@ -1014,6 +1045,14 @@ function(TRANSFORM_MAKEFILE_INC INPUT_FILE OUTPUT_FILE)
+@@ -1014,6 +1045,21 @@ function(TRANSFORM_MAKEFILE_INC INPUT_FILE OUTPUT_FILE)
  
  endfunction()
  
 +if(NOT DEFINED CURL_VER)
 +  set(CURL_VER ${CURL_VERSION})
-+elseif(NOT ${CURL_VER} STREQUAL ${CURL_VERSION})
++elseif(NOT CURL_VER STREQUAL CURL_VERSION)
 +  message(AUTHOR_WARNING "version passed in (${CURL_VER}) doesn't match internal version (${CURL_VERSION})")
 +endif()
-+set(ver _${CURL_VER})
-+set(verDir /curl${ver})
++if(XP_INSTALL_DIRS)
++  set(_ver _${CURL_VER})
++  set(CMAKE_INSTALL_INCLUDEDIR include/curl${_ver})
++endif()
++
++include(GNUInstallDirs)
++
++set(CURL_INSTALL_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}${_ver})
++set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 +
  add_subdirectory(lib)
  if(BUILD_CURL_EXE)
    add_subdirectory(src)
-@@ -1110,8 +1149,8 @@ set(CURLVERSION             "${CURL_VERSION}")
+@@ -1110,8 +1156,8 @@ set(CURLVERSION             "${CURL_VERSION}")
  set(ENABLE_SHARED           "yes")
  if(CURL_STATICLIB)
    # Broken: LIBCURL_LIBS below; .a lib is not built
@@ -122,7 +129,7 @@ index 8aa44bb..83bbb4e 100644
  else()
    set(ENABLE_STATIC         "no")
  endif()
-@@ -1133,21 +1172,27 @@ set(REQUIRE_LIB_DEPS        "no")
+@@ -1133,21 +1179,27 @@ set(REQUIRE_LIB_DEPS        "no")
  # SUPPORT_PROTOCOLS
  set(VERSIONNUM              "${CURL_VERSION_NUM}")
  
@@ -133,7 +140,8 @@ index 8aa44bb..83bbb4e 100644
                 "${CURL_BINARY_DIR}/curl-config" @ONLY)
 +if(INSTALL_CURL_CONFIG)
  install(FILES "${CMAKE_BINARY_DIR}/curl-config"
-         DESTINATION bin
+-        DESTINATION bin
++        DESTINATION ${CMAKE_INSTALL_BINDIR}
          PERMISSIONS
            OWNER_READ OWNER_WRITE OWNER_EXECUTE
            GROUP_READ GROUP_EXECUTE
@@ -145,21 +153,22 @@ index 8aa44bb..83bbb4e 100644
                 "${CURL_BINARY_DIR}/libcurl.pc" @ONLY)
 +if(INSTALL_CURL_CONFIG)
  install(FILES "${CMAKE_BINARY_DIR}/libcurl.pc"
-         DESTINATION lib/pkgconfig)
+-        DESTINATION lib/pkgconfig)
++        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 +endif()
  
  # This needs to be run very last so other parts of the scripts can take advantage of this.
  if(NOT CURL_CONFIG_HAS_BEEN_RUN_BEFORE)
-@@ -1157,10 +1202,10 @@ endif()
+@@ -1157,10 +1209,10 @@ endif()
  # Installation.
  # First, install generated curlbuild.h
  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/curl/curlbuild.h"
 -    DESTINATION include/curl )
-+    DESTINATION include${verDir}/curl )
++    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/curl )
  # Next, install other headers excluding curlbuild.h
  install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/curl"
 -    DESTINATION include
-+    DESTINATION include${verDir}
++    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
      FILES_MATCHING PATTERN "*.h"
      PATTERN "curlbuild.h" EXCLUDE)
  
@@ -177,22 +186,26 @@ index ae1b0e4..aad4974 100644
  
  #ifndef CURL_MAX_HTTP_HEADER
 diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
-index 49a3409..5fe65a8 100644
+index 49a3409..ae5f998 100644
 --- a/lib/CMakeLists.txt
 +++ b/lib/CMakeLists.txt
-@@ -98,7 +98,11 @@ if(WIN32)
+@@ -98,7 +98,12 @@ if(WIN32)
    endif()
  endif()
  
 -install(TARGETS ${LIB_NAME}
-+set_target_properties(${LIB_NAME} PROPERTIES OUTPUT_NAME ${LIB_NAME}${ver})
-+set(targetsFile ${LIB_NAME}${ver}-targets)
+-  ARCHIVE DESTINATION lib
+-  LIBRARY DESTINATION lib
+-  RUNTIME DESTINATION bin)
++set_target_properties(${LIB_NAME} PROPERTIES OUTPUT_NAME ${LIB_NAME}${_ver})
 +
-+install(TARGETS ${LIB_NAME} EXPORT ${targetsFile}
-   ARCHIVE DESTINATION lib
-   LIBRARY DESTINATION lib
-   RUNTIME DESTINATION bin)
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake)
++install(TARGETS ${LIB_NAME} EXPORT ${TARGETS_EXPORT_NAME}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
++install(EXPORT ${TARGETS_EXPORT_NAME}
++  NAMESPACE "${PROJECT_NAME}::"
++  DESTINATION ${CURL_INSTALL_CMAKE_DIR})
 diff --git a/projects/Windows/VC7.1/lib/libcurl.sln b/projects/Windows/VC7.1/lib/libcurl.sln
 index 7513d35..c5ca5d4 100644
 --- a/projects/Windows/VC7.1/lib/libcurl.sln
@@ -1190,19 +1203,21 @@ index a6619d5..7e01073 100644
 +	EndGlobalSection
 +EndGlobal
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index bfb866b..7304c8e 100644
+index bfb866b..5c2507c 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -71,8 +71,11 @@ target_link_libraries( ${EXE_NAME} libcurl ${CURL_LIBS})
+@@ -71,8 +71,13 @@ target_link_libraries( ${EXE_NAME} libcurl ${CURL_LIBS})
  
  # Add the postfix to the executable since it is not added automatically as for modules and shared libraries
  set_target_properties(${EXE_NAME} PROPERTIES
-+  OUTPUT_NAME ${EXE_NAME}${ver}
++  OUTPUT_NAME ${EXE_NAME}${_ver}
    DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
  
  #INCLUDE(ModuleInstall OPTIONAL)
  
 -install(TARGETS ${EXE_NAME} DESTINATION bin)
-+set(targetsFile ${EXE_NAME}${ver}-targets)
-+install(TARGETS ${EXE_NAME} EXPORT ${targetsFile} DESTINATION bin CONFIGURATIONS Release)
-+install(EXPORT ${targetsFile} DESTINATION bin/cmake CONFIGURATIONS Release)
++install(TARGETS ${EXE_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR} CONFIGURATIONS Release)
++install(EXPORT ${TARGETS_EXPORT_NAME}
++  NAMESPACE "${PROJECT_NAME}::"
++  DESTINATION ${CURL_INSTALL_CMAKE_DIR}
++  CONFIGURATIONS Release)
