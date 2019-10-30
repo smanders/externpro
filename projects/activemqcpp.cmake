@@ -29,6 +29,7 @@ function(build_activemqcpp)
   endif()
   xpBuildDeps(depTgts ${PRO_ACTIVEMQCPP})
   xpGetArgValue(${PRO_ACTIVEMQCPP} ARG VER VALUE VER)
+  xpGetArgValue(${PRO_ACTIVEMQCPP} ARG BUILD_DEPS VALUES BUILD_DEPS NEXT VER)
   set(XP_CONFIGURE
     -DFIND_APR_MODULE_PATH=ON
     -DFIND_OPENSSL_MODULE_PATH=ON
