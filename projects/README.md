@@ -38,7 +38,7 @@
 |[Node.js](http://nodejs.org 'Node.js website')|[open](https://raw.githubusercontent.com/nodejs/node/v8.12.0/LICENSE 'MIT license')|platform to build scalable network applications|8.12.0|[repo](https://github.com/nodejs/node 'node repo on github')|none|
 |[OpenH264](http://www.openh264.org/ 'OpenH264 website')|[open](http://www.openh264.org/faq.html 'Two-Clause BSD license')|a codec library which supports H.264 encoding and decoding|1.4.0|[repo](https://github.com/cisco/openh264 'openh264 repo on github')|[diff](https://github.com/smanders/openh264/compare/cisco:v1.4.0...xp1.4.0 'patch/diff')|
 |[OpenSSL](http://www.openssl.org/ 'OpenSSL website')|[open](http://www.openssl.org/source/license.html 'OpenSSL, SSLeay License: BSD-style')|Cryptography and SSL/TLS Toolkit|1.0.2a|[repo](https://github.com/smanders/openssl 'forked openssl repo on github')|[diff](https://github.com/smanders/openssl/compare/openssl:OpenSSL_1_0_2a...xp_1_0_2a 'patch/diff')|
-|[OpenSSL](http://www.openssl.org/ 'OpenSSL website')|[open](http://www.openssl.org/source/license.html 'OpenSSL, SSLeay License: BSD-style')|Cryptography and SSL/TLS Toolkit|1.1.1c|[repo](https://github.com/smanders/openssl 'forked openssl repo on github')|[diff](https://github.com/smanders/openssl/compare/openssl:OpenSSL_1_1_1c...xp_1_1_1c 'patch/diff')|
+|[OpenSSL](http://www.openssl.org/ 'OpenSSL website')|[open](http://www.openssl.org/source/license.html 'OpenSSL, SSLeay License: BSD-style')|Cryptography and SSL/TLS Toolkit|1.1.1d|[repo](https://github.com/smanders/openssl 'forked openssl repo on github')|[diff](https://github.com/smanders/openssl/compare/openssl:OpenSSL_1_1_1d...xp_1_1_1d 'patch/diff')|
 |[patch](http://www.gnu.org/software/patch 'GNU patch website')|[GPL](http://www.gnu.org/licenses/gpl.html 'GNU GPL v3')|pre-built (MSW), built here (non-MSW) used internally to apply a patch file of differences|2.5.9-7/2.7.5|[repo](http://git.savannah.gnu.org/cgit/patch.git 'patch (git) repo on gnu.org')|none|
 |[protobuf](https://developers.google.com/protocol-buffers/ 'Protocol Buffers website')|[open](https://github.com/google/protobuf/blob/v3.0.0-beta-1/LICENSE '3-clause BSD license')|language-neutral, platform-neutral extensible mechanism for serializing structured data|3.0.0-beta-1|[repo](https://github.com/smanders/protobuf 'forked protobuf repo on github')|[diff](https://github.com/smanders/protobuf/compare/google:v3.0.0-beta-1...xp3.0.0-beta-1 'patch/diff')|
 |[RapidJSON](http://miloyip.github.io/rapidjson/ 'RapidJSON on githubio')|[open](https://raw.githubusercontent.com/miloyip/rapidjson/master/license.txt 'The MIT License - http://opensource.org/licenses/mit-license.php')|C++ library for parsing and generating JSON|1.1.0|[repo](https://github.com/miloyip/rapidjson 'rapidjson repo on github')|none|
@@ -75,10 +75,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_27a69d8e671c4512e6e0ffa72acabf3c?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_5dab4d9f6e5fa2ef12379421d8cd273a?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_27a69d8e671c4512e6e0ffa72acabf3c
+depgraph_5dab4d9f6e5fa2ef12379421d8cd273a
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
@@ -101,7 +101,7 @@ digraph GG {
   clangtoolsextra [shape=box];
   clangtoolsextra -> llvm;
   cmakexp [shape=box];
-  cmakexp -> openssl_1_1_1c;
+  cmakexp -> openssl_1_1_1d;
   curl_7_42_1 [label="curl_7.42.1" shape=diamond];
   curl_7_42_1 -> libssh2_1_5_0;
   curl_7_42_1 -> cares;
@@ -126,11 +126,11 @@ digraph GG {
   libssh2_1_5_0 -> openssl_1_0_2a;
   libssh2_1_9_0 [label="libssh2_1.9.0" shape=diamond];
   libssh2_1_9_0 -> zlib;
-  libssh2_1_9_0 -> openssl_1_1_1c;
+  libssh2_1_9_0 -> openssl_1_1_1d;
   libstrophe [shape=diamond];
   libstrophe -> expat;
   libstrophe -> openssl_1_0_2a;
-  libstrophe -> openssl_1_1_1c;
+  libstrophe -> openssl_1_1_1d;
   llvm [shape=box];
   nasm [shape=box];
   nodejs [shape=diamond];
@@ -138,7 +138,7 @@ digraph GG {
   openh264 [shape=diamond];
   openh264 -> yasm;
   openssl_1_0_2a [label="openssl_1.0.2a" shape=diamond];
-  openssl_1_1_1c [label="openssl_1.1.1c" shape=diamond];
+  openssl_1_1_1d [label="openssl_1.1.1d" shape=diamond];
   protobuf [shape=diamond];
   protobuf -> zlib;
   wx [shape=diamond];
@@ -149,5 +149,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_27a69d8e671c4512e6e0ffa72acabf3c
+depgraph_5dab4d9f6e5fa2ef12379421d8cd273a
 </details>

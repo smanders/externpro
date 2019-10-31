@@ -1,6 +1,6 @@
 # openssl
 set(BRANCH 1.1.1)
-set(VER ${BRANCH}c)
+set(VER ${BRANCH}d)
 xpProOption(openssl_${VER} DBG)
 string(REPLACE "." "_" VER_ ${VER})
 string(TOUPPER ${VER} VER_UC)
@@ -17,10 +17,9 @@ set(PRO_OPENSSL_${VER_UC}
   GIT_UPSTREAM git://github.com/openssl/openssl.git
   GIT_TAG xp_${VER_} # what to 'git checkout'
   GIT_REF OpenSSL_${VER_} # create patch from this tag to 'git checkout'
-  # NOTE: warnings extracting tar.gz from openssl.org on Windows
-  # cmake -E tar : warning : skipping symbolic link
-  DLURL https://www.openssl.org/source/old/${BRANCH}/openssl-${VER}.tar.gz
-  DLMD5 15e21da6efe8aa0e0768ffd8cd37a5f6
+  #DLURL https://www.openssl.org/source/old/${BRANCH}/openssl-${VER}.tar.gz
+  DLURL https://www.openssl.org/source/openssl-${VER}.tar.gz
+  DLMD5 3be209000dbc7e1b95bcdf47980a3baa
   PATCH ${PATCH_DIR}/openssl_${VER}.patch
   DIFF ${REPO}/compare/openssl:
   DEPS_FUNC build_openssl

@@ -9,7 +9,7 @@ set(PRO_CMAKEXP
   LICENSE "open" http://www.cmake.org/cmake/project/license.html "CMake License"
   DESC "the cross-platform, open-source build system"
   REPO "repo" ${REPO} "forked CMake repo on github"
-  GRAPH GRAPH_SHAPE box BUILD_DEPS openssl_1.1.1c
+  GRAPH GRAPH_SHAPE box BUILD_DEPS openssl_1.1.1d
   VER ${VER}
   GIT_ORIGIN git://github.com/smanders/CMake.git
   GIT_UPSTREAM git://github.com/Kitware/CMake.git

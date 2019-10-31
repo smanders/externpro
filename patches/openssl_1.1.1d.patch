@@ -67,10 +67,10 @@ index 0000000..97dcc17
 +endif()
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..bea87ad
+index 0000000..98f68e9
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1723 @@
+@@ -0,0 +1,1720 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file include/buildinf.h)
@@ -209,7 +209,6 @@ index 0000000..bea87ad
 +  aes/aes_x86core.c
 +  )
 +list(APPEND aes_extra # TODO asm
-+  aes/asm/aes-586.pl
 +  aes/asm/aes-armv4.pl
 +  aes/asm/aes-c64xplus.pl
 +  aes/asm/aesfx-sparcv9.pl
@@ -227,9 +226,7 @@ index 0000000..bea87ad
 +  aes/asm/aes-sparcv9.pl
 +  aes/asm/aest4-sparcv9.pl
 +  aes/asm/aesv8-armx.pl
-+  aes/asm/aes-x86_64.pl
 +  aes/asm/bsaes-armv7.pl
-+  aes/asm/bsaes-x86_64.pl
 +  aes/asm/vpaes-armv8.pl
 +  aes/asm/vpaes-ppc.pl
 +  aes/asm/vpaes-x86_64.pl
@@ -2120,7 +2117,7 @@ index 0000000..ca3759f
 +  )
 +compareCmakeFilesys("${${lib_name}_libsrcs}")
 diff --git a/include/internal/cryptlib.h b/include/internal/cryptlib.h
-index b4d76d5..22e3006 100644
+index 23e17e5..b425b81 100644
 --- a/include/internal/cryptlib.h
 +++ b/include/internal/cryptlib.h
 @@ -53,6 +53,13 @@ DEFINE_LHASH_OF(MEM);
