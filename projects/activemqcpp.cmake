@@ -1,43 +1,50 @@
 # activemqcpp
-xpProOption(activemqcpp DBG)
-set(VER 3.9.0)
-set(PROJ activemq-cpp)
-set(REPO https://github.com/smanders/${PROJ})
-set(PRO_ACTIVEMQCPP
-  NAME activemqcpp
-  WEB "ActiveMQ-CPP" http://activemq.apache.org/cms/ "ActiveMQ CMS website"
-  LICENSE "open" http://www.apache.org/licenses/LICENSE-2.0.html "Apache 2.0"
-  DESC "ActiveMQ C++ Messaging Service (CMS) client library"
-  REPO "repo" ${REPO} "forked ${PROJ} repo on github"
-  GRAPH BUILD_DEPS apr openssl_1.0.2a
-  VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/${PROJ}.git
-  GIT_UPSTREAM git://github.com/apache/${PROJ}.git
-  GIT_TAG xp-${VER} # what to 'git checkout'
-  GIT_REF ${PROJ}-${VER} # create patch from this tag to 'git checkout'
-  DLURL https://archive.apache.org/dist/activemq/${PROJ}/${VER}/${PROJ}-library-${VER}-src.tar.gz
-  DLMD5 414ac7de16d305058c7f0e2a333a5960
-  PATCH ${PATCH_DIR}/activemqcpp.patch
-  # TRICKY: PATCH_STRIP because the repo has an extra level of directories that the .tar.gz file doesn't have
-  PATCH_STRIP 2 # Strip NUM leading components from file names (defaults to 1)
-  DIFF ${REPO}/compare/apache:
-  )
+set(AMQ_OLDVER 3.9.0)
+set(AMQ_NEWVER 3.9.0)
 ########################################
 function(build_activemqcpp)
-  if(NOT (XP_DEFAULT OR XP_PRO_ACTIVEMQCPP))
+  if(NOT (XP_DEFAULT OR XP_PRO_ACTIVEMQCPP_${AMQ_OLDVER} OR XP_PRO_ACTIVEMQCPP_${AMQ_NEWVER}))
     return()
   endif()
-  xpBuildDeps(depTgts ${PRO_ACTIVEMQCPP})
-  xpGetArgValue(${PRO_ACTIVEMQCPP} ARG VER VALUE VER)
-  xpGetArgValue(${PRO_ACTIVEMQCPP} ARG BUILD_DEPS VALUES BUILD_DEPS NEXT VER)
-  set(XP_CONFIGURE
-    -DFIND_APR_MODULE_PATH=ON
-    -DFIND_OPENSSL_MODULE_PATH=ON
-    -DXP_USE_LATEST_OPENSSL=OFF
-    -DACTIVEMQCPP_VER=${VER}
-    )
+  if(XP_DEFAULT)
+    set(AMQ_VERSIONS ${AMQ_OLDVER} ${AMQ_NEWVER})
+  else()
+    if(XP_PRO_ACTIVEMQCPP_${AMQ_OLDVER})
+      set(AMQ_VERSIONS ${AMQ_OLDVER})
+    endif()
+    if(XP_PRO_ACTIVEMQCPP_${AMQ_NEWVER})
+      list(APPEND AMQ_VERSIONS ${AMQ_NEWVER})
+    endif()
+  endif()
+  list(REMOVE_DUPLICATES AMQ_VERSIONS)
+  list(LENGTH AMQ_VERSIONS NUM_VER)
+  if(NUM_VER EQUAL 1)
+    if(AMQ_VERSIONS EQUAL AMQ_OLDVER)
+      set(boolean OFF)
+    else() # AMQ_VERSIONS EQUAL AMQ_NEWVER
+      set(boolean ON)
+    endif()
+    set(ONE_VER "set(XP_USE_LATEST_ACTIVEMQCPP ${boolean}) # currently only one version supported\n")
+  endif()
+  set(MOD_OPT "set(VER_MOD)")
+  set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
   configure_file(${PRO_DIR}/use/usexp-activemqcpp-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(activemqcpp "${depTgts}" "${XP_CONFIGURE}")
+  set(XP_CONFIGURE_${AMQ_OLDVER}
+    -DXP_USE_LATEST_OPENSSL=OFF
+    )
+  set(XP_CONFIGURE_${AMQ_NEWVER}
+    -DXP_USE_LATEST_OPENSSL=OFF
+    )
+  foreach(ver ${AMQ_VERSIONS})
+    xpBuildDeps(depTgts ${PRO_ACTIVEMQCPP_${ver}})
+    set(XP_CONFIGURE
+      -DFIND_APR_MODULE_PATH=ON
+      -DFIND_OPENSSL_MODULE_PATH=ON
+      -DACTIVEMQCPP_VER=${ver}
+      ${XP_CONFIGURE_${ver}}
+      )
+    xpCmakeBuild(activemqcpp_${ver} "${depTgts}" "${XP_CONFIGURE}")
+  endforeach()
 endfunction()
