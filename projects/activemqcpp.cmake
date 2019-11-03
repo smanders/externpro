@@ -1,6 +1,6 @@
 # activemqcpp
 set(AMQ_OLDVER 3.9.0)
-set(AMQ_NEWVER 3.9.0)
+set(AMQ_NEWVER 3.9.5)
 ########################################
 function(build_activemqcpp)
   if(NOT (XP_DEFAULT OR XP_PRO_ACTIVEMQCPP_${AMQ_OLDVER} OR XP_PRO_ACTIVEMQCPP_${AMQ_NEWVER}))
@@ -35,7 +35,7 @@ function(build_activemqcpp)
     -DXP_USE_LATEST_OPENSSL=OFF
     )
   set(XP_CONFIGURE_${AMQ_NEWVER}
-    -DXP_USE_LATEST_OPENSSL=OFF
+    -DXP_USE_LATEST_OPENSSL=ON
     )
   foreach(ver ${AMQ_VERSIONS})
     xpBuildDeps(depTgts ${PRO_ACTIVEMQCPP_${ver}})

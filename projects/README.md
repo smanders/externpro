@@ -3,6 +3,7 @@
 |project|license|description|version|repository|patch/diff|
 |-------|-------|-----------|-------|----------|----------|
 |[ActiveMQ-CPP](http://activemq.apache.org/cms/ 'ActiveMQ CMS website')|[open](http://www.apache.org/licenses/LICENSE-2.0.html 'Apache 2.0')|ActiveMQ C++ Messaging Service (CMS) client library|3.9.0|[repo](https://github.com/smanders/activemq-cpp 'forked activemq-cpp repo on github')|[diff](https://github.com/smanders/activemq-cpp/compare/apache:activemq-cpp-3.9.0...xp-3.9.0 'patch/diff')|
+|[ActiveMQ-CPP](http://activemq.apache.org/cms/ 'ActiveMQ CMS website')|[open](http://www.apache.org/licenses/LICENSE-2.0.html 'Apache 2.0')|ActiveMQ C++ Messaging Service (CMS) client library|3.9.5|[repo](https://github.com/smanders/activemq-cpp 'forked activemq-cpp repo on github')|[diff](https://github.com/smanders/activemq-cpp/compare/apache:activemq-cpp-3.9.5...xp-3.9.5 'patch/diff')|
 |[APR](http://apr.apache.org/ 'Apache Portable Runtime Project website')|[open](http://www.apache.org/licenses/LICENSE-2.0.html 'Apache 2.0')|Apache Portable Runtime project|1.5.2|[repo](https://github.com/smanders/apr 'forked apr repo on github')|[diff](https://github.com/smanders/apr/compare/apache:1.5.2...xp1.5.2 'patch/diff')|
 |[boost](http://www.boost.org/ 'Boost website')|[open](http://www.boost.org/users/license.html 'Boost Software License')|libraries that give C++ a boost|1.67.0|[repo](https://github.com/boostorg/boost 'boost repo on github')|none|
 |[bzip2](https://en.wikipedia.org/wiki/Bzip2 'bzip2 on wikipedia')|[open](https://spdx.org/licenses/bzip2-1.0.6.html 'bzip2 BSD-style license')|lossless block-sorting data compression library|1.0.6|[repo](https://github.com/smanders/bzip2 'forked bzip2 repo on github')|[diff](https://github.com/smanders/bzip2/compare/v1.0.6...xp1.0.6 'patch/diff')|
@@ -75,15 +76,18 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_0b203d17e82c04023ab682fc9ae82372?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_80c7395f9d01196e6fed158ee8678af6?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_0b203d17e82c04023ab682fc9ae82372
+depgraph_80c7395f9d01196e6fed158ee8678af6
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_0 [label="activemqcpp_3.9.0" shape=diamond];
   activemqcpp_3_9_0 -> apr;
   activemqcpp_3_9_0 -> openssl_1_0_2a;
+  activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
+  activemqcpp_3_9_5 -> apr;
+  activemqcpp_3_9_5 -> openssl_1_1_1d;
   apr [shape=diamond];
   boost [shape=diamond];
   boost -> zlib;
@@ -149,5 +153,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_0b203d17e82c04023ab682fc9ae82372
+depgraph_80c7395f9d01196e6fed158ee8678af6
 </details>
