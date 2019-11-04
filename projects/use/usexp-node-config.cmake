@@ -10,7 +10,7 @@ get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative part
 string(TOUPPER ${prj} PRJ)
 @USE_SCRIPT_INSERT@
 if(NOT DEFINED XP_USE_LATEST_NODE)
-  option(XP_USE_LATEST_NODE "build with node @NODE_NEWVER@ instead of @NODE_OLDVER@" OFF)
+  option(XP_USE_LATEST_NODE "build with node @NODE_NEWVER@ instead of @NODE_OLDVER@" ON)
 endif()
 if(XP_USE_LATEST_NODE)
   set(ver @NODE_NEWVER@)

@@ -13,16 +13,16 @@ if(NOT DEFINED XP_USE_LATEST_ACTIVEMQCPP)
 endif()
 if(XP_USE_LATEST_ACTIVEMQCPP)
   set(ver @AMQ_NEWVER@)
+  set(XP_USE_LATEST_OPENSSL ON) # 1.1.1d
 else()
   set(ver @AMQ_OLDVER@)
+  set(XP_USE_LATEST_OPENSSL OFF) # 1.0.2a
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 set(verDir /${prj}_${ver})
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR activemq/library/ActiveMQCPP.h PATHS ${XP_ROOTDIR}/include${verDir}/${prj} NO_DEFAULT_PATH)
-if(COMMAND xpFindPkg)
-  xpFindPkg(PKGS APR OpenSSL) # dependencies
-endif()
+xpFindPkg(PKGS APR OpenSSL) # dependencies
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}_${ver}-targets.cmake)
 set(${PRJ}_LIBRARIES activemqcpp)

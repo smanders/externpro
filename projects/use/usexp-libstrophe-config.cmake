@@ -2,9 +2,6 @@
 # LIBSTROPHE_VER - libstrophe version
 # LIBSTROPHE_INCLUDE_DIR - the libstrophe include directory
 # LIBSTROPHE_LIBRARIES - the libstrophe libraries
-if(COMMAND xpFindPkg)
-  xpFindPkg(PKGS expat OpenSSL) # dependencies
-endif()
 set(prj libstrophe)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -16,6 +13,7 @@ set(ver _@VER@${VER_MOD})
 set(verDir /${prj}${ver})
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR libstrophe/strophe.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
+xpFindPkg(PKGS expat OpenSSL) # dependencies
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}${ver}-targets.cmake)
 set(${PRJ}_LIBRARIES libstrophe)

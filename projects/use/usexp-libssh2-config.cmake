@@ -3,9 +3,6 @@
 # LIBSSH2_INCLUDE_DIRS - the libssh2 include directory (used by libgit2, curl)
 # LIBSSH2_LIBRARIES - the libssh2 libraries
 # LIBSSH2_LIBRARY - the libssh2 library (used by curl)
-if(COMMAND xpFindPkg)
-  xpFindPkg(PKGS zlib OpenSSL) # dependencies
-endif()
 set(prj libssh2)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -17,11 +14,14 @@ if(NOT DEFINED XP_USE_LATEST_LIBSSH2)
 endif()
 if(XP_USE_LATEST_LIBSSH2)
   set(ver @LIBSSH2_NEWVER@)
+  set(XP_USE_LATEST_OPENSSL ON) # 1.1.1d
 else()
   set(ver @LIBSSH2_OLDVER@)
+  set(XP_USE_LATEST_OPENSSL OFF) # 1.0.2a
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 set(${PRJ}_INCLUDE_DIRS ${XP_ROOTDIR}/include/${prj}_${ver}/libssh2)
+xpFindPkg(PKGS zlib OpenSSL) # dependencies
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}_${ver}/Libssh2Config.cmake)
 set(${PRJ}_LIBRARIES Libssh2::libssh2)

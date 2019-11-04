@@ -4,9 +4,6 @@
 # CURL_LIBRARIES - the curl libraries
 # CURL_EXE - the curl executable
 # CURL_DEFINITIONS - curl compile definitions
-if(COMMAND xpFindPkg)
-  xpFindPkg(PKGS libssh2 cares) # dependencies
-endif()
 set(prj curl)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -18,12 +15,17 @@ if(NOT DEFINED XP_USE_LATEST_CURL)
 endif()
 if(XP_USE_LATEST_CURL)
   set(ver @CURL_NEWVER@)
+  set(XP_USE_LATEST_OPENSSL ON) # 1.1.1d
+  set(XP_USE_LATEST_LIBSSH2 ON) # 1.9.0
 else()
   set(ver @CURL_OLDVER@)
+  set(XP_USE_LATEST_OPENSSL OFF) # 1.0.2a
+  set(XP_USE_LATEST_LIBSSH2 OFF) # 1.5.0
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 unset(${PRJ}_INCLUDE_DIR CACHE)
 find_path(${PRJ}_INCLUDE_DIR curl/curl.h PATHS ${XP_ROOTDIR}/include/${prj}_${ver} NO_DEFAULT_PATH)
+xpFindPkg(PKGS libssh2 cares) # dependencies
 # targets file installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${PRJ}_${ver}/${PRJ}Targets.cmake)
 set(${PRJ}_LIBRARIES ${PRJ}::libcurl)
