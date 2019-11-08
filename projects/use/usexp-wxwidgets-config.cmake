@@ -146,6 +146,16 @@ if(UNIX)
           IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C;CXX"
           IMPORTED_LOCATION_RELEASE "${${lib}_RELEASE}"
           )
+        if(${PRJ}_INCLUDE_DIR)
+          set_target_properties(wx::${lib} PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${${PRJ}_INCLUDE_DIR}"
+            )
+        endif()
+        if(${PRJ}_DEFINITIONS)
+          set_target_properties(wx::${lib} PROPERTIES
+            INTERFACE_COMPILE_DEFINITIONS "${${PRJ}_DEFINITIONS}"
+            )
+        endif()
         if(_wx_${lib}_deps OR _wx_${lib}_link OR _wx_${lib}_libs)
           unset(linkLibs)
           foreach(dep ${_wx_${lib}_deps})
