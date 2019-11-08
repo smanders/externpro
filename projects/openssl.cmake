@@ -35,7 +35,7 @@ function(build_openssl)
     )
   foreach(ver ${OPENSSL_VERSIONS})
     set(XP_CONFIGURE
-      -DXP_NAMESPACE:STRING=${PROJECT_NAME}
+      -DXP_NAMESPACE:STRING=xpro
       -DOPENSSL_VER:STRING=${ver}
       )
     xpCmakeBuild(openssl_${ver} "" "${XP_CONFIGURE}" opensslTargets_${ver})

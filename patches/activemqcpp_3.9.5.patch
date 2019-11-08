@@ -766,7 +766,7 @@ index 0000000..7a229f2
 +endforeach()
 diff --git a/activemq-cpp/src/main/CMakeLists.txt b/activemq-cpp/src/main/CMakeLists.txt
 new file mode 100644
-index 0000000..bc5f3a4
+index 0000000..8ec7a1a
 --- /dev/null
 +++ b/activemq-cpp/src/main/CMakeLists.txt
 @@ -0,0 +1,1716 @@
@@ -2466,10 +2466,10 @@ index 0000000..bc5f3a4
 +  $<BUILD_INTERFACE:${APR_INCLUDE_DIRS}>
 +  $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>
 +  )
-+if(TARGET externpro::crypto)
-+  get_target_property(defs externpro::crypto INTERFACE_COMPILE_DEFINITIONS)
++if(TARGET xpro::crypto)
++  get_target_property(defs xpro::crypto INTERFACE_COMPILE_DEFINITIONS)
 +  string(REPLACE "OPENSSL_API_COMPAT=0x10100000L" "OPENSSL_API_COMPAT=0x00908000L" newDefs "${defs}")
-+  set_target_properties(externpro::crypto PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${newDefs}")
++  set_target_properties(xpro::crypto PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${newDefs}")
 +endif()
 +if(DEFINED APR_DEFINITIONS)
 +  target_compile_definitions(${lib_name} PUBLIC ${APR_DEFINITIONS})

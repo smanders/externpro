@@ -20,7 +20,7 @@ set(THREAD_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED) # crypto depends on Threads::Threads
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}_${ver}-targets.cmake)
-set(${PRJ}_LIBRARIES @PROJECT_NAME@::crypto @PROJECT_NAME@::ssl)
+set(${PRJ}_LIBRARIES xpro::crypto xpro::ssl)
 set(reqVars ${PRJ}_VER ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
