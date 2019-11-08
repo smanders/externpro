@@ -59,9 +59,65 @@ foreach(lib ${Boost_LIBS})
   unset(Boost_${UPPERLIB}_LIBRARY_RELEASE CACHE)
 endforeach()
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1.\\2" BOOST_VER2 ${BOOST_VER})
+# see FindBoost.cmake for details on the following variables
+set(Boost_ADDITIONAL_VERSIONS ${BOOST_VER} ${BOOST_VER2})
+set(Boost_FIND_QUIETLY TRUE)
+set(Boost_NO_SYSTEM_PATHS TRUE)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME ON)
+#set(Boost_DEBUG TRUE) # enable debugging output of FindBoost.cmake
+#set(Boost_DETAILED_FAILURE_MSG) # output detailed information
+set(BOOST_ROOT ${XP_ROOTDIR})
+# TODO: remove the following once FindBoost.cmake: uses -dumpfullversion, detects clang
+if(UNIX AND TRUE) #"${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+  include(${CMAKE_CURRENT_LIST_DIR}/xpfunmac.cmake)
+  xpGetCompilerPrefix(Boost_COMPILER GCC_TWO_VER)
+  set(Boost_COMPILER "-${Boost_COMPILER}")
+endif()
+# TODO: remove the following once CMAKE_CXX_COMPILER_ARCHITECTURE_ID is defined for all supported compilers
+#   https://gitlab.kitware.com/cmake/cmake/issues/17702
+# boost versions >= 1.66.0 add an additional modifier to the library name and some compilers don't set the
+# cmake variable used in FindBoost.cmake that's used to set _boost_ARCHITECTURE_TAG
+#   https://gitlab.kitware.com/cmake/cmake/issues/17701
+if(BOOST_VER VERSION_GREATER_EQUAL "1.66.0" AND "x${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}" STREQUAL "x")
+  execute_process(COMMAND uname --machine
+    OUTPUT_VARIABLE unameMachine
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_VARIABLE unameErr
+    )
+  if(DEFINED unameMachine AND NOT unameErr)
+    if(unameMachine STREQUAL x86_64)
+      set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID x64)
+    elseif(unameMachine MATCHES "^armv")
+      set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID "ARM")
+    endif()
+  endif()
+endif()
+find_package(Boost ${BOOST_VER} REQUIRED COMPONENTS ${Boost_LIBS})
+set(${PRJ}_FOUND ${Boost_FOUND})
+set(${PRJ}_INCLUDE_DIR ${Boost_INCLUDE_DIRS})
+function(listPrependToAll var prefix)
+  set(listVar)
+  foreach(f ${ARGN})
+    list(APPEND listVar "${prefix}${f}")
+  endforeach()
+  set(${var} "${listVar}" PARENT_SCOPE)
+endfunction()
+listPrependToAll(boostLibs "Boost::" ${Boost_LIBS})
+# TRICKY: Boost_LIBRARIES returned from find_package() introduces hard-coded absolute
+# paths and wrecks havoc on cmake-generated targets files, hence boostLibs
+set(${PRJ}_LIBRARIES ${boostLibs})
+set(reqVars ${PRJ}_VERSION ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
 if(UNIX)
-  set(Boost_ADDITIONAL_VERSIONS ${BOOST_VER} ${BOOST_VER2})
   if(DEFINED ZLIB_LIBRARIES AND DEFINED BZIP2_LIBRARIES)
+    get_target_property(libs Boost::iostreams INTERFACE_LINK_LIBRARIES)
+    if(libs)
+      list(APPEND libs ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})
+    else()
+      set(libs ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})
+    endif()
+    set_target_properties(Boost::iostreams PROPERTIES INTERFACE_LINK_LIBRARIES "${libs}")
     set(syslibs $<TARGET_FILE:${ZLIB_LIBRARIES}> $<TARGET_FILE:${BZIP2_LIBRARIES}>)
   endif()
   include(CheckLibraryExists)
@@ -76,66 +132,20 @@ if(UNIX)
   checkLibraryConcat(m pow syslibs)
   checkLibraryConcat(pthread pthread_create syslibs)
   checkLibraryConcat(rt shm_open syslibs)
-  # see FindBoost.cmake for details on the following variables
-  set(Boost_FIND_QUIETLY TRUE)
-  set(Boost_NO_SYSTEM_PATHS TRUE)
-  set(Boost_USE_STATIC_LIBS ON)
-  set(Boost_USE_MULTITHREADED ON)
-  set(Boost_USE_STATIC_RUNTIME ON)
-  #set(Boost_DEBUG TRUE) # enable debugging output of FindBoost.cmake
-  #set(Boost_DETAILED_FAILURE_MSG) # output detailed information
-  set(BOOST_ROOT ${XP_ROOTDIR})
-  # TODO: remove the following once FindBoost.cmake: uses -dumpfullversion, detects clang
-  if(TRUE) #"${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-    include(${CMAKE_CURRENT_LIST_DIR}/xpfunmac.cmake)
-    xpGetCompilerPrefix(Boost_COMPILER GCC_TWO_VER)
-    set(Boost_COMPILER "-${Boost_COMPILER}")
-  endif()
-  # TODO: remove the following once CMAKE_CXX_COMPILER_ARCHITECTURE_ID is defined for all supported compilers
-  #   https://gitlab.kitware.com/cmake/cmake/issues/17702
-  # boost versions >= 1.66.0 add an additional modifier to the library name and some compilers don't set the
-  # cmake variable used in FindBoost.cmake that's used to set _boost_ARCHITECTURE_TAG
-  #   https://gitlab.kitware.com/cmake/cmake/issues/17701
-  if(BOOST_VER VERSION_GREATER_EQUAL "1.66.0" AND "x${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}" STREQUAL "x")
-    execute_process(COMMAND uname --machine
-      OUTPUT_VARIABLE unameMachine
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_VARIABLE unameErr
-      )
-    if(DEFINED unameMachine AND NOT unameErr)
-      if(unameMachine STREQUAL x86_64)
-        set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID x64)
-      elseif(unameMachine MATCHES "^armv")
-        set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID "ARM")
-      endif()
-    endif()
-  endif()
-  find_package(Boost ${BOOST_VER} REQUIRED COMPONENTS ${Boost_LIBS})
-  set(${PRJ}_FOUND ${Boost_FOUND})
-  set(${PRJ}_INCLUDE_DIR ${Boost_INCLUDE_DIRS})
-  function(listPrependToAll var prefix)
-    set(listVar)
-    foreach(f ${ARGN})
-      list(APPEND listVar "${prefix}${f}")
-    endforeach()
-    set(${var} "${listVar}" PARENT_SCOPE)
-  endfunction()
-  listPrependToAll(boostLibs "Boost::" ${Boost_LIBS})
-  # TRICKY: Boost_LIBRARIES returned from find_package() introduces hard-coded absolute
-  # paths and wrecks havoc on cmake-generated targets files, hence boostLibs
-  set(${PRJ}_LIBRARIES ${boostLibs} ${syslibs})
-  set(reqVars ${PRJ}_VERSION ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
+  list(APPEND ${PRJ}_LIBRARIES ${syslibs})
 else()
-  string(REPLACE "." "_" VER_ ${BOOST_VER2})
-  set(${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include/boost-${VER_})
-  if(EXISTS ${${PRJ}_INCLUDE_DIR} AND IS_DIRECTORY ${${PRJ}_INCLUDE_DIR})
-    set(${PRJ}_FOUND TRUE)
-  else()
-    set(${PRJ}_FOUND FALSE)
-  endif()
-  link_directories(${XP_ROOTDIR}/lib)
-  set(reqVars ${PRJ}_VERSION ${PRJ}_INCLUDE_DIR)
   if(DEFINED ZLIB_LIBRARIES AND DEFINED BZIP2_LIBRARIES)
+    set(iodefs
+      BOOST_ZLIB_BINARY=$<TARGET_FILE:${ZLIB_LIBRARIES}>
+      BOOST_BZIP2_BINARY=$<TARGET_FILE:${BZIP2_LIBRARIES}>
+      )
+    get_target_property(defs Boost::iostreams INTERFACE_COMPILE_DEFINITIONS)
+    if(defs)
+      list(APPEND defs ${iodefs})
+    else()
+      set(defs ${iodefs})
+    endif()
+    set_target_properties(Boost::iostreams PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${defs}")
     set(${PRJ}_DEFINITIONS
       -DBOOST_ZLIB_BINARY=$<TARGET_FILE:${ZLIB_LIBRARIES}>
       -DBOOST_BZIP2_BINARY=$<TARGET_FILE:${BZIP2_LIBRARIES}>
