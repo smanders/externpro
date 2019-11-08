@@ -9,7 +9,7 @@ string(TOUPPER ${prj} PRJ)
 set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}_@VER@-targets.cmake)
-set(${PRJ}_LIBRARIES @PROJECT_NAME@::cares)
+set(${PRJ}_LIBRARIES xpro::cares)
 set(reqVars ${PRJ}_VER ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})

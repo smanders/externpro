@@ -32,7 +32,7 @@ function(build_cares)
     )
   set(XP_CONFIGURE
     -DXP_INSTALL_DIRS:BOOL=ON
-    -DXP_NAMESPACE:STRING=${PROJECT_NAME}
+    -DXP_NAMESPACE:STRING=xpro
     -DCARES_VER:STRING=${VER}
     )
   xpCmakeBuild(cares "" "${XP_CONFIGURE}" caresTargets)
