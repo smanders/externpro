@@ -633,10 +633,10 @@ index 0000000..d07a6ef
 +set_wxtarget_properties(${lib_name})
 diff --git a/core.cmake b/core.cmake
 new file mode 100644
-index 0000000..eef1dc9
+index 0000000..49148ff
 --- /dev/null
 +++ b/core.cmake
-@@ -0,0 +1,690 @@
+@@ -0,0 +1,696 @@
 +set(lib_name core)
 +#######################################
 +# library sources
@@ -1326,6 +1326,12 @@ index 0000000..eef1dc9
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
 +target_compile_definitions(${lib_name} PRIVATE wxUSE_BASE=0)
 +target_link_libraries(${lib_name} PUBLIC base PRIVATE wxjpeg wxpng wxtiff)
++if(MSVC)
++  target_link_libraries(${lib_name} INTERFACE
++    rpcrt4 comctl32 # system libraries required by wxCore
++    gdiplus # wxUSE_GRAPHICS_CONTEXT set to 1 in setup.h
++    )
++endif()
 +set_wxtarget_properties(${lib_name})
 diff --git a/gl.cmake b/gl.cmake
 new file mode 100644
