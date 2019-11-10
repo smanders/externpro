@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..66c8fef
+index 0000000..93b20a7
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,179 @@
+@@ -0,0 +1,183 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(geotrans)
 +include(flags OPTIONAL)
@@ -168,6 +168,7 @@ index 0000000..66c8fef
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>)
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +#######################################
 +# install
@@ -182,7 +183,10 @@ index 0000000..66c8fef
 +  file(GLOB csvFiles ${CSV_DIR}/*.csv ${CSV_DIR}/README)
 +endif()
 +install(FILES ${${lib_name}_data} ${csvFiles} DESTINATION include${verDir}/${PROJECT_NAME}/data)
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake)
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
 diff --git a/geotrans2/src/strtoval.c b/geotrans2/src/strtoval.c
 index 79cecf1..e88418f 100755
 --- a/geotrans2/src/strtoval.c

@@ -55,6 +55,6 @@ function(build_geotranz)
   configure_file(${PRO_DIR}/use/usexp-geotrans-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  set(XP_CONFIGURE -DGEOTRANS_VER=${VER} -DCSV_DIR=${DWNLD_DIR}/data)
+  set(XP_CONFIGURE -DGEOTRANS_VER=${VER} -DXP_NAMESPACE:STRING=xpro -DCSV_DIR=${DWNLD_DIR}/data)
   xpCmakeBuild(geotranz "" "${XP_CONFIGURE}")
 endfunction()
