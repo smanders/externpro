@@ -11,6 +11,21 @@ set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}_@VER@-targets.cmake)
 set(${PRJ}_LIBRARIES xpro::geotrans)
+if(NOT TARGET geotrans)
+  add_library(geotrans STATIC IMPORTED)
+  foreach(prop
+    INTERFACE_INCLUDE_DIRECTORIES
+    IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE
+    IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG
+    IMPORTED_LOCATION_RELEASE
+    IMPORTED_LOCATION_DEBUG
+    )
+    get_target_property(tmp xpro::geotrans ${prop})
+    if(tmp)
+      set_target_properties(geotrans PROPERTIES ${prop} "${tmp}")
+    endif()
+  endforeach()
+endif()
 set(${PRJ}_DATA_DIR ${XP_ROOTDIR}/include/${prj}_@VER@/${prj}/data)
 set(reqVars ${PRJ}_VER ${PRJ}_LIBRARIES ${PRJ}_DATA_DIR)
 include(FindPackageHandleStandardArgs)
