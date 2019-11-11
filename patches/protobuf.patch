@@ -69,19 +69,29 @@ index 33e069f..6a32734 100644
  include(libprotobuf.cmake)
  include(libprotoc.cmake)
 diff --git a/cmake/install.cmake b/cmake/install.cmake
-index dbb4265..e1826c5 100644
+index dbb4265..38c2c56 100644
 --- a/cmake/install.cmake
 +++ b/cmake/install.cmake
-@@ -85,7 +85,7 @@ endforeach()
+@@ -82,10 +82,17 @@ foreach(_file ${nobase_dist_proto_DATA})
+   endif()
+ endforeach()
+ 
++# Optional NAMESPACE
++if(DEFINED XP_NAMESPACE)
++  set(nsPrefix ${XP_NAMESPACE}::)
++  set(nameSpace NAMESPACE ${nsPrefix})
++endif()
++
  # Export configuration
  
  install(EXPORT protobuf-targets
 -  DESTINATION "lib/cmake/protobuf"
 +  DESTINATION "lib/cmake/protobuf${ver}"
++  ${nameSpace}
    COMPONENT protobuf-export)
  
  configure_file(protobuf-config.cmake.in
-@@ -99,5 +99,5 @@ install(FILES
+@@ -99,5 +106,5 @@ install(FILES
    "${protobuf_BINARY_DIR}/protobuf-config.cmake"
    "${protobuf_BINARY_DIR}/protobuf-config-version.cmake"
    "${protobuf_BINARY_DIR}/protobuf-module.cmake"
@@ -129,7 +139,7 @@ index 7aa92ee..675faf5 100644
 -    OUTPUT_NAME ${LIB_PREFIX}protoc)
 +    OUTPUT_NAME ${LIB_PREFIX}protoc${ver})
 diff --git a/cmake/protobuf-module.cmake.in b/cmake/protobuf-module.cmake.in
-index d81dc45..5627d1f 100644
+index d81dc45..9c5792f 100644
 --- a/cmake/protobuf-module.cmake.in
 +++ b/cmake/protobuf-module.cmake.in
 @@ -25,7 +25,7 @@ function(PROTOBUF_GENERATE_CPP SRCS HDRS)
@@ -141,6 +151,32 @@ index d81dc45..5627d1f 100644
  
    if(DEFINED PROTOBUF_IMPORT_DIRS)
      foreach(DIR ${PROTOBUF_IMPORT_DIRS})
+@@ -65,10 +65,10 @@ endfunction()
+ #    if the debug one is specified also include debug/optimized keywords
+ #    in *_LIBRARIES variable
+ function(_protobuf_find_libraries name filename)
+-   get_target_property(${name}_LIBRARY lib${filename}
++   get_target_property(${name}_LIBRARY ${nsPrefix}lib${filename}
+      IMPORTED_LOCATION_RELEASE)
+    set(${name}_LIBRARY "${${name}_LIBRARY}" PARENT_SCOPE)
+-   get_target_property(${name}_LIBRARY_DEBUG lib${filename}
++   get_target_property(${name}_LIBRARY_DEBUG ${nsPrefix}lib${filename}
+      IMPORTED_LOCATION_DEBUG)
+    set(${name}_LIBRARY_DEBUG "${${name}_LIBRARY_DEBUG}" PARENT_SCOPE)
+ 
+@@ -123,10 +123,10 @@ endif()
+ set(PROTOBUF_INCLUDE_DIR "${_PROTOBUF_IMPORT_PREFIX}/@CMAKE_INSTALL_INCLUDEDIR@")
+ 
+ # Set the protoc Executable
+-get_target_property(PROTOBUF_PROTOC_EXECUTABLE protoc
++get_target_property(PROTOBUF_PROTOC_EXECUTABLE ${nsPrefix}protoc
+   IMPORTED_LOCATION_RELEASE)
+ if(NOT PROTOBUF_PROTOC_EXECUTABLE)
+-  get_target_property(PROTOBUF_PROTOC_EXECUTABLE protoc
++  get_target_property(PROTOBUF_PROTOC_EXECUTABLE ${nsPrefix}protoc
+     IMPORTED_LOCATION_DEBUG)
+ endif()
+ 
 diff --git a/cmake/protoc.cmake b/cmake/protoc.cmake
 index 4f07c38..b3617ed 100644
 --- a/cmake/protoc.cmake
