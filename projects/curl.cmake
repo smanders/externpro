@@ -54,6 +54,7 @@ function(build_curl)
     list(APPEND depTgts ${cmTgts})
     set(XP_CONFIGURE
       -DCURL_VER=${ver}
+      -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
       -DBUILD_CURL_EXE=ON
       -DINSTALL_CURL_CONFIG=OFF
       -DENABLE_ARES=ON

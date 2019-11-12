@@ -33,6 +33,7 @@ function(build_cares)
   set(XP_CONFIGURE
     -DXP_INSTALL_DIRS:BOOL=ON
     -DXP_NAMESPACE:STRING=xpro
+    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
     -DCARES_VER:STRING=${VER}
     )
   xpCmakeBuild(cares "" "${XP_CONFIGURE}" caresTargets)
