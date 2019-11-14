@@ -1,5 +1,5 @@
 # libgit2
-set(LIBGIT2_OLDVER 0.22.2)
+set(LIBGIT2_OLDVER 0.28.3)
 set(LIBGIT2_NEWVER 0.28.3)
 ########################################
 function(build_libgit2)
@@ -50,13 +50,8 @@ function(build_libgit2)
     )
   if(NOT WIN32)
     set(XP_CONFIGURE_${LIBGIT2_OLDVER}
-      -DXP_USE_LATEST_OPENSSL:BOOL=OFF
-      -DXP_USE_LATEST_LIBSSH2:BOOL=OFF
       )
     set(XP_CONFIGURE_${LIBGIT2_NEWVER}
-      -DXP_USE_LATEST_OPENSSL:BOOL=ON
-      -DXP_USE_LATEST_LIBSSH2:BOOL=ON
-      -DBUILD_CLAR:BOOL=OFF
       )
     set(${MOD_OLD}
       -DXP_USE_LATEST_OPENSSL:BOOL=OFF
@@ -76,6 +71,7 @@ function(build_libgit2)
       xpBuildDeps(depTgts ${PRO_LIBGIT2_${ver}})
     endif()
     set(xpConfigBase
+      -DBUILD_CLAR:BOOL=OFF
       -DBUILD_SHARED_LIBS=OFF
       -DTHREADSAFE=ON
       -DINSTALL_LIBGIT2_CONFIG=OFF

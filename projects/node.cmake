@@ -1,5 +1,5 @@
 # node
-set(NODE_OLDVER 8.12.0)
+set(NODE_OLDVER 10.17.0)
 set(NODE_NEWVER 10.17.0)
 ####################
 function(build_node)
@@ -31,10 +31,15 @@ function(build_node)
   list(REMOVE_DUPLICATES NODE_VERSIONS)
   list(LENGTH NODE_VERSIONS NUM_VER)
   if(NUM_VER EQUAL 1)
-    set(USE_SCRIPT_INSERT "set(XP_USE_LATEST_NODE ON) # currently only one version supported")
-  else()
-    set(USE_SCRIPT_INSERT "#set(XP_USE_LATEST_NODE ON) # currently multiple versions supported")
+    if(NODE_VERSIONS EQUAL NODE_OLDVER)
+      set(boolean OFF)
+    else() # NODE_VERSIONS EQUAL NODE_NEWVER
+      set(boolean ON)
+    endif()
+    set(ONE_VER "set(XP_USE_LATEST_NODE ${boolean}) # currently only one version supported\n")
   endif()
+  set(MOD_OPT "set(VER_MOD)")
+  set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
   configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )

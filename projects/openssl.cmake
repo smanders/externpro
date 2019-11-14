@@ -1,5 +1,5 @@
 # openssl
-set(OPENSSL_OLDVER 1.0.2a)
+set(OPENSSL_OLDVER 1.1.1d)
 set(OPENSSL_NEWVER 1.1.1d)
 ########################################
 function(build_openssl)

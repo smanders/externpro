@@ -15,12 +15,8 @@ if(NOT DEFINED XP_USE_LATEST_CURL)
 endif()
 if(XP_USE_LATEST_CURL)
   set(ver @CURL_NEWVER@)
-  set(XP_USE_LATEST_OPENSSL ON) # 1.1.1d
-  set(XP_USE_LATEST_LIBSSH2 ON) # 1.9.0
 else()
   set(ver @CURL_OLDVER@)
-  set(XP_USE_LATEST_OPENSSL OFF) # 1.0.2a
-  set(XP_USE_LATEST_LIBSSH2 OFF) # 1.5.0
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 unset(${PRJ}_INCLUDE_DIR CACHE)

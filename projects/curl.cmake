@@ -1,5 +1,5 @@
 # curl
-set(CURL_OLDVER 7.42.1)
+set(CURL_OLDVER 7.66.0)
 set(CURL_NEWVER 7.66.0)
 ########################################
 function(build_curl)
@@ -37,17 +37,8 @@ function(build_curl)
     build_cmakexp(cmTgts)
   endif()
   set(XP_CONFIGURE_${CURL_OLDVER}
-    -DXP_USE_LATEST_OPENSSL=OFF
-    -DXP_USE_LATEST_LIBSSH2=OFF
-    -DBUILD_CURL_TESTS=OFF
-    -DCURL_STATICLIB=ON
     )
   set(XP_CONFIGURE_${CURL_NEWVER}
-    -DCMAKE_USE_OPENSSL=ON
-    -DXP_USE_LATEST_OPENSSL=ON
-    -DXP_USE_LATEST_LIBSSH2=ON
-    -DBUILD_TESTING=OFF
-    -DBUILD_SHARED_LIBS=OFF
     )
   foreach(ver ${CURL_VERSIONS})
     xpBuildDeps(depTgts ${PRO_CURL_${ver}})
@@ -56,10 +47,13 @@ function(build_curl)
       -DCURL_VER=${ver}
       -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
       -DBUILD_CURL_EXE=ON
+      -DBUILD_SHARED_LIBS=OFF
+      -DBUILD_TESTING=OFF
       -DINSTALL_CURL_CONFIG=OFF
       -DENABLE_ARES=ON
       -DFIND_ARES_MODULE_PATH=ON
       -DCURL_ZLIB_MODULE_PATH=ON
+      -DCMAKE_USE_OPENSSL=ON
       -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
       -DCMAKE_USE_LIBSSH2_MODULE_PATH=ON
       -DCURL_DISABLE_LDAP=ON

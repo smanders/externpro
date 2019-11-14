@@ -13,12 +13,8 @@ if(NOT DEFINED XP_USE_LATEST_LIBGIT2)
 endif()
 if(XP_USE_LATEST_LIBGIT2)
   set(ver @LIBGIT2_NEWVER@)
-  set(XP_USE_LATEST_OPENSSL ON) # 1.1.1d
-  set(XP_USE_LATEST_LIBSSH2 ON) # 1.9.0
 else()
   set(ver @LIBGIT2_OLDVER@)
-  set(XP_USE_LATEST_OPENSSL OFF) # 1.0.2a
-  set(XP_USE_LATEST_LIBSSH2 OFF) # 1.5.0
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 set(${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include/${prj}_${ver}${VER_MOD})

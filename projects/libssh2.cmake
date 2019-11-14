@@ -1,5 +1,5 @@
 # libssh2
-set(LIBSSH2_OLDVER 1.5.0)
+set(LIBSSH2_OLDVER 1.9.0)
 set(LIBSSH2_NEWVER 1.9.0)
 ########################################
 function(build_libssh2)
@@ -32,18 +32,15 @@ function(build_libssh2)
     @ONLY NEWLINE_STYLE LF
     )
   set(XP_CONFIGURE_${LIBSSH2_OLDVER}
-    -DCMAKE_USE_ZLIB_MODULE_PATH=ON
-    -DXP_USE_LATEST_OPENSSL:BOOL=OFF
     )
   set(XP_CONFIGURE_${LIBSSH2_NEWVER}
-    -DENABLE_ZLIB_COMPRESSION=ON
-    -DFIND_ZLIB_MODULE_PATH=ON
-    -DXP_USE_LATEST_OPENSSL:BOOL=ON
     )
   foreach(ver ${LIBSSH2_VERSIONS})
     xpBuildDeps(depTgts ${PRO_LIBSSH2_${ver}})
     set(XP_CONFIGURE
       ${XP_CONFIGURE_${ver}}
+      -DENABLE_ZLIB_COMPRESSION=ON
+      -DFIND_ZLIB_MODULE_PATH=ON
       -DCRYPTO_BACKEND:STRING=OpenSSL
       -DFIND_OPENSSL_MODULE_PATH=ON
       -DXP_INSTALL_DIRS:BOOL=ON

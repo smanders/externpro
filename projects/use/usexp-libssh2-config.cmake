@@ -14,10 +14,8 @@ if(NOT DEFINED XP_USE_LATEST_LIBSSH2)
 endif()
 if(XP_USE_LATEST_LIBSSH2)
   set(ver @LIBSSH2_NEWVER@)
-  set(XP_USE_LATEST_OPENSSL ON) # 1.1.1d
 else()
   set(ver @LIBSSH2_OLDVER@)
-  set(XP_USE_LATEST_OPENSSL OFF) # 1.0.2a
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 set(${PRJ}_INCLUDE_DIRS ${XP_ROOTDIR}/include/${prj}_${ver}/libssh2)

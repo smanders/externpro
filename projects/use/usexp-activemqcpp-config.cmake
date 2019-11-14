@@ -13,10 +13,8 @@ if(NOT DEFINED XP_USE_LATEST_ACTIVEMQCPP)
 endif()
 if(XP_USE_LATEST_ACTIVEMQCPP)
   set(ver @AMQ_NEWVER@)
-  set(XP_USE_LATEST_OPENSSL ON) # 1.1.1d
 else()
   set(ver @AMQ_OLDVER@)
-  set(XP_USE_LATEST_OPENSSL OFF) # 1.0.2a
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
 set(verDir /${prj}_${ver})
