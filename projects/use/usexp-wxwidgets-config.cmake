@@ -33,8 +33,6 @@ foreach(lib ${wx_libs})
   list(APPEND wxLibs "wx::${lib}") # prepend NAMESPACE from install(EXPORT
 endforeach()
 set(${PRJ}_LIBRARIES ${wxLibs})
-# NOTE: geotiff needs to find tiff, and we use the tiff bundled with wx
-set(${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include/wx-${wxVersion}/wx/tiff)
 if(UNIX)
   unset(_filename CACHE) # temp variable in FindwxWidgets.cmake script
   unset(wxWidgets_CONFIG_EXECUTABLE CACHE)
@@ -56,7 +54,7 @@ if(UNIX)
   #  xpListAppendIfDne(CMAKE_CXX_FLAGS ${wxWidgets_CXX_FLAGS})
   #endif()
   set(${PRJ}_DEFINITIONS ${wxWidgets_DEFINITIONS})
-  list(APPEND ${PRJ}_INCLUDE_DIR ${wxWidgets_INCLUDE_DIRS})
+  set(${PRJ}_INCLUDE_DIR ${wxWidgets_INCLUDE_DIRS})
   ##################
   include(CheckLibraryExists)
   function(checkLibraryConcat lib symbol liblist)
@@ -184,7 +182,7 @@ if(UNIX)
   endif()
 elseif(MSVC)
   set(${PRJ}_DEFINITIONS -DwxUSE_NO_MANIFEST)
-  list(APPEND ${PRJ}_INCLUDE_DIR
+  set(${PRJ}_INCLUDE_DIR
     ${XP_ROOTDIR}/include/wx-${wxVersion}
     ${XP_ROOTDIR}/include/wx-${wxVersion}/wx/msvc
     )

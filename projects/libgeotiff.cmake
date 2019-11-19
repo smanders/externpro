@@ -39,7 +39,7 @@ function(build_libgeotiff)
   endif()
   build_wxv(VER ${wxver} TARGETS wxTgts INCDIR wxInc)
   xpGetArgValue(${PRO_LIBGEOTIFF} ARG VER VALUE VER)
-  set(XP_CONFIGURE -DWX_INCLUDE:PATH=${wxInc} -DGEOTIFF_VER=${VER})
+  set(XP_CONFIGURE -DWX_INCLUDE:PATH=${wxInc} -DXP_NAMESPACE:STRING=xpro -DGEOTIFF_VER=${VER})
   configure_file(${PRO_DIR}/use/usexp-geotiff-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
