@@ -27,8 +27,9 @@ function(build_shapelib)
     return()
   endif()
   xpGetArgValue(${PRO_SHAPELIB} ARG VER VALUE VER)
+  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro -DSHAPELIB_VER=${VER})
   configure_file(${PRO_DIR}/use/usexp-shapelib-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(shapelib "" "-DSHAPELIB_VER=${VER}")
+  xpCmakeBuild(shapelib "" "${XP_CONFIGURE}")
 endfunction()
