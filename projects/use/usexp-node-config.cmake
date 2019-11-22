@@ -25,6 +25,23 @@ set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR)
 if(MSVC)
   set(${PRJ}_LIBRARIES ${XP_ROOTDIR}/node_${ver}/lib/node.lib)
   list(APPEND reqVars ${PRJ}_LIBRARIES)
+  if(NOT TARGET xpro::node)
+    add_library(xpro::node STATIC IMPORTED)
+    set_property(TARGET xpro::node APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_target_properties(xpro::node PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C;CXX"
+      IMPORTED_LOCATION_RELEASE "${${PRJ}_LIBRARIES}"
+      )
+  endif()
+else()
+  if(NOT TARGET xpro::node)
+    add_library(xpro::node INTERFACE IMPORTED)
+  endif()
+endif()
+if(${PRJ}_INCLUDE_DIR)
+  set_target_properties(xpro::node PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${${PRJ}_INCLUDE_DIR}"
+    )
 endif()
 set(${PRJ}_EXE ${XP_ROOTDIR}/node_${ver}/bin/node${CMAKE_EXECUTABLE_SUFFIX})
 list(APPEND reqVars ${PRJ}_EXE)
