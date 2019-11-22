@@ -24,8 +24,9 @@ function(build_gsoap)
     return()
   endif()
   xpGetArgValue(${PRO_GSOAP} ARG VER VALUE VER)
+  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro -DGSOAP_VER=${VER})
   configure_file(${PRO_DIR}/use/usexp-gsoap-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(gsoap "" "-DGSOAP_VER=${VER}")
+  xpCmakeBuild(gsoap "" "${XP_CONFIGURE}")
 endfunction()
