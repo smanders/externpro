@@ -1,17 +1,18 @@
 # apr
 xpProOption(apr DBG)
 set(VER 1.5.2)
-set(REPO https://github.com/smanders/apr)
+set(REPO github.com/apache/apr)
+set(FORK github.com/smanders/apr)
 set(PRO_APR
   NAME apr
   WEB "APR" http://apr.apache.org/ "Apache Portable Runtime Project website"
   LICENSE "open" http://www.apache.org/licenses/LICENSE-2.0.html "Apache 2.0"
   DESC "Apache Portable Runtime project"
-  REPO "repo" ${REPO} "forked apr repo on github"
+  REPO "repo" https://${REPO} "apr repo on github"
   GRAPH
   VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/apr.git
-  GIT_UPSTREAM git://github.com/apache/apr.git
+  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM git://${REPO}.git
   GIT_TRACKING_BRANCH trunk
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
@@ -20,11 +21,11 @@ set(PRO_APR
   #DLMD5 d41d8cd98f00b204e9800998ecf8427e
   # TODO: version 1.5.2 no longer appears to be available from apache mirrors,
   #  so until we move to a new version that is available, download from the repo
-  DLURL ${REPO}/archive/${VER}.tar.gz
+  DLURL https://${REPO}/archive/${VER}.tar.gz
   DLMD5 5b0bb763245c7d10b7c03214cc8756ec
   DLNAME apr-tag-${VER}.tar.gz
   PATCH ${PATCH_DIR}/apr.patch
-  DIFF ${REPO}/compare/apache:
+  DIFF https://${FORK}/compare/apache:
   DEPS_FUNC build_apr
   )
 ########################################

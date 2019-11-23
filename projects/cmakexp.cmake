@@ -2,23 +2,24 @@
 xpProOption(cmakexp)
 set(VER 3.12.0)
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1.\\2" VER2 ${VER})
-set(REPO https://github.com/smanders/CMake)
+set(REPO github.com/Kitware/CMake)
+set(FORK github.com/smanders/CMake)
 set(PRO_CMAKEXP
   NAME cmakexp
   WEB "CMake" http://cmake.org/ "CMake website"
   LICENSE "open" http://www.cmake.org/cmake/project/license.html "CMake License"
   DESC "the cross-platform, open-source build system"
-  REPO "repo" ${REPO} "forked CMake repo on github"
+  REPO "repo" https://${REPO} "CMake repo on github"
   GRAPH GRAPH_SHAPE box BUILD_DEPS openssl_1.1.1d
   VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/CMake.git
-  GIT_UPSTREAM git://github.com/Kitware/CMake.git
+  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM git://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://www.cmake.org/files/v${VER2}/cmake-${VER}.tar.gz
   DLMD5 ab4aa7df9301c94cdd6f8ee4fe66458b
   PATCH ${PATCH_DIR}/cmakexp.patch
-  DIFF ${REPO}/compare/Kitware:
+  DIFF https://${FORK}/compare/Kitware:
   )
 ########################################
 function(build_cmakexp)

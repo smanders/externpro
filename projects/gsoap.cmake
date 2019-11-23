@@ -1,22 +1,23 @@
 # gsoap
 xpProOption(gsoap DBG)
 set(VER 2.7.17)
-set(REPO https://github.com/smanders/gSOAP)
+set(REPO github.com/stoneyrh/gSOAP)
+set(FORK github.com/smanders/gSOAP)
 set(PRO_GSOAP
   NAME gsoap
   WEB "gSOAP" http://www.cs.fsu.edu/~engelen/soap.html "gSOAP website"
   LICENSE "??" http://www.cs.fsu.edu/~engelen/soaplicense.html "gSOAP Public License 1.3, based on Mozilla public license 1.1 -- some components are GPL v2"
   DESC "toolkit for SOAP/XML Web services"
-  REPO "repo" ${REPO} "forked gSOAP repo on github"
+  REPO "repo" https://${FORK} "forked gSOAP repo on github"
   VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/gSOAP.git
-  GIT_UPSTREAM git://github.com/stoneyrh/gSOAP.git
+  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM git://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL https://github.com/smanders/externpro/releases/download/17.05.1/gsoap_${VER}.zip
   DLMD5 6f58cabfc67b4d5eafd1a30057fc4343
   PATCH ${PATCH_DIR}/gsoap.patch
-  DIFF ${REPO}/compare/smanders:
+  DIFF https://${FORK}/compare/
   )
 ########################################
 function(build_gsoap)

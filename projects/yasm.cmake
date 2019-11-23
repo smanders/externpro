@@ -1,23 +1,24 @@
 # yasm
 xpProOption(yasm)
 set(VER 1.3.0)
-set(REPO https://github.com/smanders/yasm)
+set(REPO github.com/yasm/yasm)
+set(FORK github.com/smanders/yasm)
 set(PRO_YASM
   NAME yasm
   WEB "yasm" http://yasm.tortall.net/ "yasm website"
-  LICENSE "open" ${REPO}/blob/v${VER}/COPYING "new BSD license"
+  LICENSE "open" https://${REPO}/blob/v${VER}/COPYING "new BSD license"
   DESC "assembler and disassembler for the Intel x86 architecture"
-  REPO "repo" ${REPO} "forked yasm repo on github"
+  REPO "repo" https://${REPO} "yasm repo on github"
   GRAPH GRAPH_SHAPE box
   VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/yasm.git
-  GIT_UPSTREAM git://github.com/yasm/yasm.git
+  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM git://${REPO}.git
   GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL http://www.tortall.net/projects/yasm/releases/yasm-${VER}.tar.gz
   DLMD5 fc9e586751ff789b34b1f21d572d96af
   PATCH ${PATCH_DIR}/yasm.patch
-  DIFF ${REPO}/compare/yasm:
+  DIFF https://${FORK}/compare/yasm:
   DEPS_FUNC build_yasm
   DEPS_VARS YASM_EXE
   )

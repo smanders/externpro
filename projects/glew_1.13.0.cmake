@@ -3,22 +3,23 @@ set(VER ${GLEW_BLDVER})
 xpProOption(glew_${VER} DBG)
 set(GLLN http://glew.sourceforge.net)
 set(GLDL https://downloads.sourceforge.net/project/glew/glew/${VER})
-set(REPO https://github.com/smanders/glew)
+set(REPO github.com/nigels-com/glew)
+set(FORK github.com/smanders/glew)
 set(PRO_GLEW_${VER}
   NAME glew_${VER}
   WEB "GLEW" ${GLLN} "GLEW on sourceforge.net"
   LICENSE "open" ${GLLN}/credits.html "Modified BSD, Mesa 3-D (MIT), and Khronos (MIT)"
   DESC "The OpenGL Extension Wrangler Library"
-  REPO "repo" ${REPO} "forked GLEW repo on github"
+  REPO "repo" https://${REPO} "GLEW repo on github"
   VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/glew.git
-  GIT_UPSTREAM git://github.com/nigels-com/glew.git
+  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM git://${REPO}.git
   GIT_TAG xp-${VER}
   GIT_REF glew-${VER}
   DLURL ${GLDL}/glew-${VER}.tgz
   DLMD5 7cbada3166d2aadfc4169c4283701066
   PATCH ${PATCH_DIR}/glew_${VER}.patch
-  DIFF ${REPO}/compare/nigels-com:
+  DIFF https://${FORK}/compare/nigels-com:
   BUILD_FUNC build_glew_bldver
   )
 ########################################

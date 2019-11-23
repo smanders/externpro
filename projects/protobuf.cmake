@@ -1,25 +1,25 @@
 # protobuf
 xpProOption(protobuf DBG)
 set(VER 3.0.0-beta-1)
-set(REPO https://github.com/smanders/protobuf)
-set(REPO_UPSTREAM https://github.com/protocolbuffers/protobuf)
+set(REPO github.com/protocolbuffers/protobuf)
+set(FORK github.com/smanders/protobuf)
 set(PRO_PROTOBUF
   NAME protobuf
   WEB "protobuf" https://developers.google.com/protocol-buffers/ "Protocol Buffers website"
-  LICENSE "open" ${REPO_UPSTREAM}/blob/v${VER}/LICENSE "3-clause BSD license"
+  LICENSE "open" https://${REPO}/blob/v${VER}/LICENSE "3-clause BSD license"
   DESC "language-neutral, platform-neutral extensible mechanism for serializing structured data"
-  REPO "repo" ${REPO} "forked protobuf repo on github"
+  REPO "repo" https://${REPO} "protobuf repo on github"
   GRAPH BUILD_DEPS zlib
   VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/protobuf.git
-  GIT_UPSTREAM git://github.com/protocolbuffers/protobuf.git
+  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM git://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL ${REPO_UPSTREAM}/archive/v${VER}.tar.gz
+  DLURL https://${REPO}/archive/v${VER}.tar.gz
   DLMD5 63aad3f1814b5c6cd06c7712cd5ba9db
   DLNAME protobuf-${VER}.tar.gz
   PATCH ${PATCH_DIR}/protobuf.patch
-  DIFF ${REPO}/compare/protocolbuffers:
+  DIFF https://${FORK}/compare/protocolbuffers:
   )
 ########################################
 function(build_protobuf)
