@@ -1,17 +1,17 @@
 # RapidJSON
 xpProOption(rapidjson)
 set(VER 1.1.0)
-set(REPO https://github.com/miloyip/rapidjson)
+set(REPO github.com/miloyip/rapidjson)
 set(PRO_RAPIDJSON
   NAME rapidjson
   WEB "RapidJSON" http://miloyip.github.io/rapidjson/ "RapidJSON on githubio"
   LICENSE "open" https://raw.githubusercontent.com/miloyip/rapidjson/master/license.txt "The MIT License - http://opensource.org/licenses/mit-license.php"
   DESC "C++ library for parsing and generating JSON"
-  REPO "repo" ${REPO} "rapidjson repo on github"
+  REPO "repo" https://${REPO} "rapidjson repo on github"
   VER ${VER}
-  GIT_ORIGIN git://github.com/miloyip/rapidjson.git
+  GIT_ORIGIN git://${REPO}.git
   GIT_TAG v${VER}
-  DLURL ${REPO}/archive/v${VER}.tar.gz
+  DLURL https://${REPO}/archive/v${VER}.tar.gz
   DLMD5 badd12c511e081fec6c89c43a7027bce
   DLNAME rapidjson-${VER}.tar.gz
   )

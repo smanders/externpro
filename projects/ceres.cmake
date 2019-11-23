@@ -1,23 +1,23 @@
 # ceres
 xpProOption(ceres DBG)
 set(VER 1.14.0)
-set(REPO https://github.com/ceres-solver/ceres-solver)
-set(FORK https://github.com/smanders/ceres-solver)
+set(REPO github.com/ceres-solver/ceres-solver)
+set(FORK github.com/smanders/ceres-solver)
 set(PRO_CERES
   NAME ceres
   WEB "ceres-solver" http://ceres-solver.org "Ceres Solver website"
   LICENSE "open" "http://ceres-solver.org/license.html" "New BSD License"
   DESC "C++ library for modeling and solving large, complicated optimization problems"
-  REPO "repo" ${REPO} "ceres-solver repo on github"
+  REPO "repo" https://${REPO} "ceres-solver repo on github"
   GRAPH BUILD_DEPS eigen
   VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/ceres-solver.git
-  GIT_UPSTREAM git://github.com/ceres-solver/ceres-solver.git
+  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM git://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/ceres.patch
-  DIFF ${FORK}/compare/ceres-solver:
-  DLURL ${REPO}/archive/${VER}.tar.gz
+  DIFF https://${FORK}/compare/ceres-solver:
+  DLURL https://${REPO}/archive/${VER}.tar.gz
   DLMD5 c3a63fa496468cbe65536f1f34c5609b
   DLNAME ceres-solver-${VER}.tar.gz
   )

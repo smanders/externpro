@@ -1,23 +1,23 @@
 # libstrophe
 xpProOption(libstrophe DBG)
 set(VER 0.9.1)
-set(REPO https://github.com/strophe/libstrophe)
-set(FORK https://github.com/smanders/libstrophe)
+set(REPO github.com/strophe/libstrophe)
+set(FORK github.com/smanders/libstrophe)
 set(PRO_LIBSTROPHE
   NAME libstrophe
   WEB "libstrophe" http://strophe.im/libstrophe/ "libstrophe website"
-  LICENSE "open" "${REPO}/blob/${VER}/LICENSE.txt" "dual licensed under MIT and GPLv3"
+  LICENSE "open" "https://${REPO}/blob/${VER}/LICENSE.txt" "dual licensed under MIT and GPLv3"
   DESC "A simple, lightweight C library for writing XMPP client"
-  REPO "repo" ${REPO} "libstrophe repo on github"
+  REPO "repo" https://${REPO} "libstrophe repo on github"
   GRAPH BUILD_DEPS expat openssl_1.1.1d
   VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/libstrophe.git
-  GIT_UPSTREAM git://github.com/strophe/libstrophe.git
+  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM git://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/libstrophe_${VER}.patch
-  DIFF ${FORK}/compare/strophe:
-  DLURL ${REPO}/releases/download/${VER}/libstrophe-${VER}.tar.bz2
+  DIFF https://${FORK}/compare/strophe:
+  DLURL https://${REPO}/releases/download/${VER}/libstrophe-${VER}.tar.bz2
   DLMD5 f5475547891fc0697c46ecc004bdfd95
   )
 ########################################

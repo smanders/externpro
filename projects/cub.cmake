@@ -1,18 +1,18 @@
 # cub
 xpProOption(cub)
 set(VER 1.8.0)
-set(REPO https://github.com/NVlabs/cub)
+set(REPO github.com/NVlabs/cub)
 set(PRO_CUB
   NAME cub
   WEB "CUB" http://nvlabs.github.io/cub/ "CUB Project Website"
-  LICENSE "open" "${REPO}/tree/v${VER}#open-source-license" "BSD 3-Clause"
+  LICENSE "open" "https://${REPO}/tree/v${VER}#open-source-license" "BSD 3-Clause"
   DESC "flexible library of cooperative threadblock primitives and other utilites for CUDA kernel programming"
-  REPO "repo" ${REPO} "CUB repo on github"
+  REPO "repo" https://${REPO} "CUB repo on github"
   VER ${VER}
-  GIT_ORIGIN git://github.com/NVlabs/cub.git
+  GIT_ORIGIN git://${REPO}.git
   GIT_TAG v${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL ${REPO}/archive/v${VER}.tar.gz
+  DLURL https://${REPO}/archive/v${VER}.tar.gz
   DLMD5 9203ea2499b56782601fddf8a12e9b08
   DLNAME cub-v${VER}.tar.gz
   )

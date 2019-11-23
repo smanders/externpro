@@ -3,7 +3,7 @@
 # dwnl http://sourceforge.net/projects/wxcode/files/Components/wxThings/
 set(VER 2006.04.28)
 string(REPLACE "." "_" VER_ ${VER})
-set(REPO https://github.com/smanders/wxthings)
+set(REPO github.com/smanders/wxthings)
 set(PRO_WXXTHINGS
   NAME wxxthings
   SUPERPRO wxx
@@ -11,13 +11,13 @@ set(PRO_WXXTHINGS
   WEB "wxThings" http://wxcode.sourceforge.net/showcomp.php?name=wxThings "wxthings on sourceforge"
   LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
   DESC "a variety of data containers and controls"
-  REPO "repo" ${REPO} "wxthings repo on github"
+  REPO "repo" https://${REPO} "wxthings repo on github"
   VER ${VER}
-  GIT_ORIGIN git://github.com/smanders/wxthings.git
+  GIT_ORIGIN git://${REPO}.git
   GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL http://downloads.sourceforge.net/project/wxcode/Components/wxThings/wxthings_${VER_}.tar.gz
   DLMD5 1d769a677c0f3f10d51de579873c2613
   PATCH ${PATCH_DIR}/wxx.things.patch
-  DIFF ${REPO}/compare/
+  DIFF https://${REPO}/compare/
   )

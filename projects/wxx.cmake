@@ -1,20 +1,20 @@
 # wxx
 xpProOption(wxx DBG) # include wx extras
-set(REPO https://github.com/smanders/wxx)
+set(REPO github.com/smanders/wxx)
 set(WXX_TARGETS wxxplotctrl wxxthings wxxtlc)
 set(PRO_WXX
   NAME wxx
-  WEB "wxx" ${REPO} "wxx project on github"
+  WEB "wxx" https://${REPO} "wxx project on github"
   LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
   DESC "wxWidget-based extra components"
-  REPO "repo" ${REPO} "wxx repo on github"
+  REPO "repo" https://${REPO} "wxx repo on github"
   GRAPH BUILD_DEPS wx
   VER 2015.10.02 # latest xpro branch commit date
-  GIT_ORIGIN git://github.com/smanders/wxx.git
+  GIT_ORIGIN git://${REPO}.git
   GIT_TAG xpro # what to 'git checkout'
   GIT_REF wxx.01 # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/wxx.xpro.patch
-  DIFF ${REPO}/compare/
+  DIFF https://${REPO}/compare/
   SUBPRO ${WXX_TARGETS}
   )
 ########################################
