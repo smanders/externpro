@@ -6,7 +6,7 @@ set(REPO github.com/llvm-mirror/llvm)
 set(PRO_LLVM
   NAME llvm
   WEB "LLVM" http://llvm.org/ "LLVM website"
-  LICENSE "open" http://llvm.org/svn/llvm-project/llvm/trunk/LICENSE.TXT "LLVM Release License"
+  LICENSE "Apache 2.0" https://${REPO}/blob/${LLVM_BRANCH}/LICENSE.TXT "Apache License 2.0 with LLVM Exceptions"
   DESC "The LLVM Compiler Infrastructure"
   REPO "repo" https://${REPO} "llvm repo on github"
   GRAPH GRAPH_SHAPE box

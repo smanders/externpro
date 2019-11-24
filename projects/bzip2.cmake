@@ -5,8 +5,9 @@ set(REPO github.com/LuaDist/bzip2)
 set(FORK github.com/smanders/bzip2)
 set(PRO_BZIP2
   NAME bzip2
-  WEB "bzip2" https://en.wikipedia.org/wiki/Bzip2 "bzip2 on wikipedia"
-  LICENSE "open" https://spdx.org/licenses/bzip2-1.0.6.html "bzip2 BSD-style license"
+  WEB "bzip2" http://www.bzip.org "bzip2 website" # wikipedia https://en.wikipedia.org/wiki/Bzip2
+  # NOTE: bzip.org mentions "available as a BSD-like license"
+  LICENSE "bzip2 License" https://spdx.org/licenses/bzip2-1.0.6.html "bzip2 and libbzip2 License v1.0.6 (BSD-like)"
   DESC "lossless block-sorting data compression library"
   REPO "repo" https://${FORK} "forked bzip2 repo on github"
   GRAPH

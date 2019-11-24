@@ -6,7 +6,7 @@ set(FORK github.com/smanders/gSOAP)
 set(PRO_GSOAP
   NAME gsoap
   WEB "gSOAP" http://www.cs.fsu.edu/~engelen/soap.html "gSOAP website"
-  LICENSE "??" http://www.cs.fsu.edu/~engelen/soaplicense.html "gSOAP Public License 1.3, based on Mozilla public license 1.1 -- some components are GPL v2"
+  LICENSE "GPL, gSOAP (based on MPL1.1)" http://www.cs.fsu.edu/~engelen/soaplicense.html "GNU Public License 2.0, older parts covered by gSOAP Public License 1.3 (based on Mozilla Public License 1.1) -- a commerical-use license can be purchased"
   DESC "toolkit for SOAP/XML Web services"
   REPO "repo" https://${FORK} "forked gSOAP repo on github"
   VER ${VER}

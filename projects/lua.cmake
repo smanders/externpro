@@ -6,7 +6,7 @@ set(FORK github.com/smanders/lua)
 set(PRO_LUA
   NAME lua
   WEB "Lua" http://www.lua.org/ "Lua website"
-  LICENSE "open" http://www.lua.org/license.html "MIT license"
+  LICENSE "MIT" http://www.lua.org/license.html "MIT license"
   DESC "a powerful, fast, lightweight, embeddable scripting language"
   REPO "repo" https://${REPO} "lua repo on github"
   VER ${VER}

@@ -6,7 +6,7 @@ set(FORK github.com/smanders/apr)
 set(PRO_APR
   NAME apr
   WEB "APR" http://apr.apache.org/ "Apache Portable Runtime Project website"
-  LICENSE "open" http://www.apache.org/licenses/LICENSE-2.0.html "Apache 2.0"
+  LICENSE "Apache 2.0" https://${REPO}/blob/${VER}/LICENSE "Apache License 2.0"
   DESC "Apache Portable Runtime project"
   REPO "repo" https://${REPO} "apr repo on github"
   GRAPH

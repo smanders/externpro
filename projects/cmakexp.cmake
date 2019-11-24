@@ -7,7 +7,8 @@ set(FORK github.com/smanders/CMake)
 set(PRO_CMAKEXP
   NAME cmakexp
   WEB "CMake" http://cmake.org/ "CMake website"
-  LICENSE "open" http://www.cmake.org/cmake/project/license.html "CMake License"
+  # https://choosealicense.com/licenses/bsd-3-clause/
+  LICENSE "BSD 3-Clause" http://www.cmake.org/cmake/project/license.html "BSD 3-Clause New or Revised License"
   DESC "the cross-platform, open-source build system"
   REPO "repo" https://${REPO} "CMake repo on github"
   GRAPH GRAPH_SHAPE box BUILD_DEPS openssl_1.1.1d

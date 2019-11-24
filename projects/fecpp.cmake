@@ -6,7 +6,9 @@ set(VER 0.9)
 set(PRO_FECPP
   NAME fecpp
   WEB "fecpp" http://www.randombit.net/code/fecpp/ "C++ forward error correction with SIMD optimizations"
-  LICENSE "open" http://www.randombit.net/code/fecpp/ "BSD License"
+  # https://choosealicense.com/licenses/bsd-2-clause/
+  # http://www.randombit.net/code/fecpp/ "FECpp is a BSD-licensed C++ forward error correction library"
+  LICENSE "BSD 2-Clause" https://${FORK}/blob/v${VER}/license.txt "BSD 2-Clause Simplified License"
   DESC "fecpp is a Forward Error Correction Library"
   REPO "repo" https://${REPO} "fecpp repo on github"
   GRAPH BUILD_DEPS boost

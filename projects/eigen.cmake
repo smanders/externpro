@@ -4,7 +4,7 @@ set(VER 3.2.7)
 set(PRO_EIGEN
   NAME eigen
   WEB "Eigen" http://eigen.tuxfamily.org/ "Eigen website"
-  LICENSE "open" "http://eigen.tuxfamily.org/index.php?title=Main_Page#License" "Eigen license: MPL2 (aka Mozilla Public License)"
+  LICENSE "MPL2" "http://eigen.tuxfamily.org/index.php?title=Main_Page#License" "Mozilla Public License Version 2.0"
   DESC "C++ template library for linear algebra"
   REPO "repo" https://bitbucket.org/eigen/eigen "eigen hg repo on bitbucket"
   GRAPH

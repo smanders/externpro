@@ -6,7 +6,8 @@ set(FORK github.com/smanders/ceres-solver)
 set(PRO_CERES
   NAME ceres
   WEB "ceres-solver" http://ceres-solver.org "Ceres Solver website"
-  LICENSE "open" "http://ceres-solver.org/license.html" "New BSD License"
+  # https://choosealicense.com/licenses/bsd-3-clause/
+  LICENSE "BSD 3-Clause" "http://ceres-solver.org/license.html" "BSD 3-Clause New or Revised License"
   DESC "C++ library for modeling and solving large, complicated optimization problems"
   REPO "repo" https://${REPO} "ceres-solver repo on github"
   GRAPH BUILD_DEPS eigen

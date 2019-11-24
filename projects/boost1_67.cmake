@@ -7,7 +7,8 @@ set(REPO github.com/boostorg/boost)
 set(PRO_BOOST${VER2_}
   NAME boost${VER2_}
   WEB "boost" http://www.boost.org/ "Boost website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
+  # license website https://www.boost.org/users/license.html
+  LICENSE "Boost Software License" https://${REPO}/blob/boost-${VER}/LICENSE_1_0.txt "Boost Software License 1.0"
   DESC "libraries that give C++ a boost"
   REPO "repo" https://${REPO} "boost repo on github"
   GRAPH GRAPH_NODE boost BUILD_DEPS zlib bzip2

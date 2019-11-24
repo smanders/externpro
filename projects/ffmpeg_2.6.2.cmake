@@ -6,7 +6,7 @@ set(FORK github.com/ndrasmussen/FFmpeg)
 set(PRO_FFMPEG_${VER}
   NAME ffmpeg_${VER}
   WEB "ffmpeg" https://www.ffmpeg.org/ "ffmpeg website"
-  LICENSE "LGPL" https://www.ffmpeg.org/legal.html "Lesser GPL v2.1"
+  LICENSE "LGPL" https://www.ffmpeg.org/legal.html "GNU Lesser General Public License version 2.1+"
   DESC "complete, cross-platform solution to record, convert and stream audio and video"
   REPO "repo" https://${REPO} "ffmpeg repo on github"
   GRAPH GRAPH_NODE ffmpeg BUILD_DEPS openh264 yasm

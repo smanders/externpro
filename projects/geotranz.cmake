@@ -9,7 +9,7 @@ set(DLDIR data)
 set(PRO_GEOTRANZ
   NAME geotranz
   WEB "GEOTRANS" http://earth-info.nga.mil/GandG/geotrans/ "GEOTRANS website"
-  LICENSE "open" http://earth-info.nga.mil/GandG/geotrans/docs/MSP_GeoTrans_Terms_of_Use.pdf "GEOTRANS Terms of Use (no specific license mentioned)"
+  LICENSE "GEOTRANS Terms of Use" http://earth-info.nga.mil/GandG/geotrans/docs/MSP_GeoTrans_Terms_of_Use.pdf "GEOTRANS Terms of Use (no specific license mentioned)"
   DESC "geographic translator (convert coordinates)"
   REPO "repo" https://${REPO} "geotranz repo on github"
   VER ${VER}

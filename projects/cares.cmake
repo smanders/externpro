@@ -7,7 +7,7 @@ set(FORK github.com/smanders/c-ares)
 set(PRO_CARES
   NAME cares
   WEB "c-ares" http://c-ares.haxx.se/ "c-ares website"
-  LICENSE "open" http://c-ares.haxx.se/license.html "c-ares license: MIT license"
+  LICENSE "c-ares license" http://c-ares.haxx.se/license.html "c-ares license"
   DESC "C library for asynchronous DNS requests (including name resolves)"
   REPO "repo" https://${REPO} "c-ares repo on github"
   GRAPH GRAPH_LABEL "c-ares"

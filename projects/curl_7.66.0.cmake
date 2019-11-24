@@ -7,7 +7,8 @@ set(FORK github.com/smanders/curl)
 set(PRO_CURL_${VER}
   NAME curl_${VER}
   WEB "cURL" http://curl.haxx.se/libcurl/ "libcurl website"
-  LICENSE "open" http://curl.haxx.se/docs/copyright.html "curl license: MIT/X derivate license"
+  # License Mixing https://curl.haxx.se/legal/licmix.html
+  LICENSE "curl license" http://curl.haxx.se/docs/copyright.html "inspired by MIT/X, but not identical"
   DESC "the multiprotocol file transfer library"
   REPO "repo" https://${REPO} "curl repo on github"
   GRAPH BUILD_DEPS libssh2_1.9.0 cares

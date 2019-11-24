@@ -7,7 +7,9 @@ set(DLBIN https://${REPO}/releases/download/v${VER})
 set(PRO_OPENH264
   NAME openh264
   WEB "OpenH264" http://www.openh264.org/ "OpenH264 website"
-  LICENSE "open" http://www.openh264.org/faq.html "Two-Clause BSD license"
+  # https://choosealicense.com/licenses/bsd-2-clause/
+  # http://www.openh264.org/faq.html "Q.What source code license is used? A:Two-Clause BSD license."
+  LICENSE "BSD 2-Clause" https://${REPO}/blob/v${VER}/LICENSE "BSD 2-Clause Simplified License"
   DESC "a codec library which supports H.264 encoding and decoding"
   REPO "repo" https://${REPO} "openh264 repo on github"
   GRAPH BUILD_DEPS yasm

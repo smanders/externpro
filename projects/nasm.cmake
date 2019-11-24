@@ -5,7 +5,8 @@ set(URL https://www.nasm.us/)
 set(PRO_NASM
   NAME nasm
   WEB "nasm" ${URL} "nasm website"
-  LICENSE "BSD" ${URL} "Simplified (2-clause) BSD license"
+  # https://choosealicense.com/licenses/bsd-2-clause/
+  LICENSE "BSD 2-Clause" ${URL} "BSD 2-Clause Simplified License"
   DESC "The Netwide Assembler - an 80x86 and x86-64 assembler"
   GRAPH GRAPH_SHAPE box
   VER ${VER}

@@ -8,7 +8,8 @@ set(FORK github.com/smanders/libexpat)
 set(PRO_EXPAT
   NAME expat
   WEB "Expat" https://libexpat.github.io "Expat website"
-  LICENSE "open" https://${REPO}/blob/${TAG}/expat/COPYING "Expat License (MIT/X Consortium license)"
+  # https://en.wikipedia.org/wiki/MIT_License#Variants
+  LICENSE "MIT" https://${REPO}/blob/${TAG}/expat/COPYING "Expat License, same as the MIT/X Consortium license"
   DESC "a stream-oriented XML parser library written in C"
   REPO "repo" https://${REPO} "libexpat repo on github"
   GRAPH

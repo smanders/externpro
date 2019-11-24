@@ -7,7 +7,8 @@ set(REPO github.com/nigels-com/glew)
 set(PRO_GLEW_${VER}
   NAME glew_${VER}
   WEB "GLEW" ${GLLN} "GLEW on sourceforge.net"
-  LICENSE "open" ${GLLN}/credits.html "Modified BSD, Mesa 3-D (MIT), and Khronos (MIT)"
+  # see also https://github.com/nigels-com/glew#copyright-and-licensing
+  LICENSE "BSD 3-Clause, MIT" https://${REPO}/blob/glew-${VER}/LICENSE.txt "BSD 3-Clause New or Revised (Modified) License, Mesa 3-D (MIT), Khronos (MIT)"
   DESC "pre-built (MSW-only) The OpenGL Extension Wrangler Library"
   REPO "repo" https://${REPO} "GLEW repo on github"
   VER ${VER}

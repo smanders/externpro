@@ -5,7 +5,7 @@ set(REPO github.com/NVlabs/cub)
 set(PRO_CUB
   NAME cub
   WEB "CUB" http://nvlabs.github.io/cub/ "CUB Project Website"
-  LICENSE "open" "https://${REPO}/tree/v${VER}#open-source-license" "BSD 3-Clause"
+  LICENSE "BSD 3-Clause" https://${REPO}/blob/v${VER}/LICENSE.TXT "BSD 3-Clause New or Revised License"
   DESC "flexible library of cooperative threadblock primitives and other utilites for CUDA kernel programming"
   REPO "repo" https://${REPO} "CUB repo on github"
   VER ${VER}

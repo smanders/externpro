@@ -7,7 +7,7 @@ set(FORK github.com/smanders/${PROJ})
 set(PRO_ACTIVEMQCPP_${VER}
   NAME activemqcpp_${VER}
   WEB "ActiveMQ-CPP" http://activemq.apache.org/cms/ "ActiveMQ CMS website"
-  LICENSE "open" http://www.apache.org/licenses/LICENSE-2.0.html "Apache 2.0"
+  LICENSE "Apache 2.0" https://${REPO}/blob/${PROJ}-${VER}/LICENSE.txt "Apache License 2.0"
   DESC "ActiveMQ C++ Messaging Service (CMS) client library"
   REPO "repo" https://${REPO} "${PROJ} repo on github"
   GRAPH BUILD_DEPS apr openssl_1.1.1d
