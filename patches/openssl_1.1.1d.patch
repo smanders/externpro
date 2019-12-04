@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..e7f07cb
+index 0000000..d5907c8
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,56 @@
 +cmake_minimum_required(VERSION 3.12)
 +project(openssl)
 +include(flags OPTIONAL)
@@ -17,6 +17,7 @@ index 0000000..e7f07cb
 +if(WIN32)
 +  add_definitions(
 +    -DOPENSSL_SYS_WIN32
++    -DOPENSSL_NO_AFALGENG
 +    -DWIN32_LEAN_AND_MEAN
 +    -DUNICODE -D_UNICODE
 +    -D_CRT_SECURE_NO_DEPRECATE
@@ -58,20 +59,13 @@ index 0000000..e7f07cb
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+if(FALSE)
-+# TODO EXPORT of STATIC library with PRIVATE non-target dependencies broken
-+# https://gitlab.kitware.com/cmake/cmake/issues/17357
-+# I'm seeing the same error reported in this issue, even with EXPORT_LINK_INTERFACE_LIBRARIES
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace} EXPORT_LINK_INTERFACE_LIBRARIES)
-+else()
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
-+endif()
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..24602e2
+index 0000000..35e6f63
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1713 @@
+@@ -0,0 +1,1718 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file include/buildinf.h)
@@ -1770,6 +1764,11 @@ index 0000000..24602e2
 +set(THREADS_PREFER_PTHREAD_FLAG ON)
 +find_package(Threads REQUIRED)
 +target_link_libraries(${lib_name} PUBLIC $<BUILD_INTERFACE:include> PRIVATE Threads::Threads ${CMAKE_DL_LIBS})
++include(CheckLibraryExists)
++check_library_exists(ws2_32 getch "" CRYPTO_HAS_WS2_32)
++if(CRYPTO_HAS_WS2_32)
++  target_link_libraries(${lib_name} PRIVATE ws2_32)
++endif()
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +########################################
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
@@ -2361,10 +2360,11 @@ index 0000000..dcdfb8c
 +compareCmakeFilesys("${${lib_name}_all}")
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
 new file mode 100644
-index 0000000..0c807f8
+index 0000000..702f0ee
 --- /dev/null
 +++ b/test/CMakeLists.txt
-@@ -0,0 +1,326 @@
+@@ -0,0 +1,337 @@
++set(folder test)
 +########################################
 +# tests that depend on include
 +foreach(t
@@ -2373,6 +2373,7 @@ index 0000000..0c807f8
 +  )
 +  add_executable(${t} ${t}.c)
 +  target_link_libraries(${t} PRIVATE include)
++  set_property(TARGET ${t} PROPERTY FOLDER ${folder})
 +  list(APPEND test_srcs ${t}.c)
 +endforeach()
 +target_include_directories(shlibloadtest PRIVATE ${CMAKE_BINARY_DIR}/crypto/include)
@@ -2386,6 +2387,7 @@ index 0000000..0c807f8
 +  )
 +  add_executable(${t} ${t}.c)
 +  target_link_libraries(${t} PRIVATE crypto)
++  set_property(TARGET ${t} PROPERTY FOLDER ${folder})
 +  list(APPEND test_srcs ${t}.c)
 +endforeach()
 +########################################
@@ -2395,6 +2397,7 @@ index 0000000..0c807f8
 +  )
 +  add_executable(${t} ${t}.c)
 +  target_link_libraries(${t} PRIVATE ssl)
++  set_property(TARGET ${t} PROPERTY FOLDER ${folder})
 +  list(APPEND test_srcs ${t}.c)
 +endforeach()
 +########################################
@@ -2418,6 +2421,7 @@ index 0000000..0c807f8
 +  )
 +add_library(testutil STATIC ${testutil_srcs})
 +target_link_libraries(testutil PUBLIC crypto)
++set_property(TARGET testutil PROPERTY FOLDER ${folder})
 +list(APPEND test_srcs ${testutil_srcs})
 +########################################
 +# tests that depend on testutil
@@ -2491,6 +2495,7 @@ index 0000000..0c807f8
 +  )
 +  add_executable(${t} ${t}.c)
 +  target_link_libraries(${t} PRIVATE testutil)
++  set_property(TARGET ${t} PROPERTY FOLDER ${folder})
 +  list(APPEND test_srcs ${t}.c)
 +endforeach()
 +########################################
@@ -2510,6 +2515,7 @@ index 0000000..0c807f8
 +  )
 +  add_executable(${t} ${t}.c)
 +  target_link_libraries(${t} PRIVATE testutil ssl)
++  set_property(TARGET ${t} PROPERTY FOLDER ${folder})
 +  list(APPEND test_srcs ${t}.c)
 +endforeach()
 +########################################
@@ -2520,6 +2526,7 @@ index 0000000..0c807f8
 +  )
 +add_library(ssltestlib STATIC ${ssltestlib_srcs})
 +target_link_libraries(ssltestlib PUBLIC testutil ssl)
++set_property(TARGET ssltestlib PROPERTY FOLDER ${folder})
 +list(APPEND test_srcs ${ssltestlib_srcs})
 +####################
 +# tests that depend on ssltestlib
@@ -2538,6 +2545,7 @@ index 0000000..0c807f8
 +  )
 +  add_executable(${t} ${t}.c)
 +  target_link_libraries(${t} PRIVATE ssltestlib)
++  set_property(TARGET ${t} PROPERTY FOLDER ${folder})
 +  list(APPEND test_srcs ${t}.c)
 +endforeach()
 +########################################
@@ -2557,6 +2565,7 @@ index 0000000..0c807f8
 +  add_executable(${t} ${t}.c)
 +  target_link_libraries(${t} PRIVATE testutil)
 +  target_include_directories(${t} PRIVATE ${CMAKE_SOURCE_DIR}/crypto/include)
++  set_property(TARGET ${t} PROPERTY FOLDER ${folder})
 +  list(APPEND test_srcs ${t}.c)
 +endforeach()
 +target_include_directories(curve448_internal_test PRIVATE ${CMAKE_SOURCE_DIR}/crypto/ec/curve448)
@@ -2615,6 +2624,7 @@ index 0000000..0c807f8
 +  )
 +  add_executable(${t} ${${t}_srcs})
 +  target_link_libraries(${t} PRIVATE ${${t}_libs})
++  set_property(TARGET ${t} PROPERTY FOLDER ${folder})
 +  list(APPEND test_srcs ${${t}_srcs})
 +endforeach()
 +########################################
