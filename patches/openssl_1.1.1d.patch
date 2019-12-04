@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..97dcc17
+index 0000000..e7f07cb
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,62 @@
 +cmake_minimum_required(VERSION 3.12)
 +project(openssl)
 +include(flags OPTIONAL)
@@ -54,6 +54,7 @@ index 0000000..97dcc17
 +add_subdirectory(include)
 +add_subdirectory(crypto)
 +add_subdirectory(ssl)
++add_subdirectory(test)
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
@@ -67,15 +68,19 @@ index 0000000..97dcc17
 +endif()
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..98f68e9
+index 0000000..24602e2
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1720 @@
+@@ -0,0 +1,1713 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file include/buildinf.h)
 +set(BUILDINF_PLATFORM ${CMAKE_SYSTEM_NAME})
-+string(TIMESTAMP BUILDINF_DATE "%a %b %d %H:%M:%S %Y UTC" UTC)
++if(DEFINED OPENSSL_VER) # passed in via externpro
++  string(TIMESTAMP BUILDINF_DATE "%a %b %d %H:%M:%S %Y UTC" UTC)
++else()
++  string(TIMESTAMP BUILDINF_DATE "%a %b %d %Y UTC" UTC)
++endif()
 +set(compilerFlags "compiler: ") #"${CMAKE_C_COMPILER} ${CMAKE_CXX_FLAGS}"
 +string(LENGTH ${compilerFlags} lenFlags)
 +math(EXPR maxPos ${lenFlags}-1)
@@ -1764,18 +1769,7 @@ index 0000000..98f68e9
 +target_compile_definitions(${lib_name} PUBLIC $<INSTALL_INTERFACE:OPENSSL_API_COMPAT=0x10100000L>)
 +set(THREADS_PREFER_PTHREAD_FLAG ON)
 +find_package(Threads REQUIRED)
-+target_link_libraries(${lib_name} Threads::Threads ${CMAKE_DL_LIBS})
-+if(FALSE)
-+# TODO: EXPORT of STATIC library with PRIVATE non-target dependencies broken
-+# https://gitlab.kitware.com/cmake/cmake/issues/17357
-+# I'm seeing the same error reported in this issue
-+target_link_libraries(${lib_name} PRIVATE include)
-+else()
-+target_include_directories(${lib_name} PRIVATE
-+  ${CMAKE_SOURCE_DIR}/include
-+  ${CMAKE_BINARY_DIR}/include # e_os.h, openssl/opensslconf.h
-+  )
-+endif()
++target_link_libraries(${lib_name} PUBLIC $<BUILD_INTERFACE:include> PRIVATE Threads::Threads ${CMAKE_DL_LIBS})
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +########################################
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
@@ -1875,7 +1869,7 @@ index 0000000..cf6f04f
 +#endif
 diff --git a/include/CMakeLists.txt b/include/CMakeLists.txt
 new file mode 100644
-index 0000000..ca3759f
+index 0000000..03abe8c
 --- /dev/null
 +++ b/include/CMakeLists.txt
 @@ -0,0 +1,237 @@
@@ -2089,18 +2083,18 @@ index 0000000..ca3759f
 +source_group(openssl FILES ${openssl_srcs})
 +list(APPEND ${lib_name}_libsrcs ${openssl_srcs})
 +########################################
-+if(FALSE)
 +add_library(${lib_name} INTERFACE)
++if(FALSE)
 +# TODO: it appears cmake 3.13 has a fix for the target_sources() call to work
 +# https://cmake.org/pipermail/cmake/2016-July/063896.html
 +target_sources(${lib_name} INTERFACE ${${lib_name}_libsrcs})
++else()
++add_custom_target(${lib_name}Sources SOURCES ${${lib_name}_libsrcs})
++endif()
 +target_include_directories(${lib_name} INTERFACE
 +  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 +  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # e_os.h, openssl/opensslconf.h
 +  )
-+else()
-+add_custom_target(${lib_name} SOURCES ${${lib_name}_libsrcs})
-+endif()
 +# don't install the following...
 +list(REMOVE_ITEM openssl_srcs
 +  openssl/__DECC_INCLUDE_EPILOGUE.H
@@ -2264,10 +2258,10 @@ index 0000000..1782ddd
 +#endif
 diff --git a/ssl/CMakeLists.txt b/ssl/CMakeLists.txt
 new file mode 100644
-index 0000000..b41753c
+index 0000000..dcdfb8c
 --- /dev/null
 +++ b/ssl/CMakeLists.txt
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,97 @@
 +set(lib_name ssl)
 +########################################
 +# root
@@ -2354,17 +2348,6 @@ index 0000000..b41753c
 +list(APPEND ${lib_name}_libsrcs ${statem_srcs})
 +########################################
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+if(FALSE) # cmake bugs with INTERFACE library
-+# TODO: EXPORT of STATIC library with PRIVATE non-target dependencies broken
-+# https://gitlab.kitware.com/cmake/cmake/issues/17357
-+# I'm seeing the same error reported in this issue
-+target_link_libraries(${lib_name} PRIVATE include)
-+else()
-+target_include_directories(${lib_name} PRIVATE
-+  ${CMAKE_SOURCE_DIR}/include
-+  ${CMAKE_BINARY_DIR}/include # e_os.h, openssl/opensslconf.h
-+  )
-+endif()
 +target_link_libraries(${lib_name} PUBLIC crypto)
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +########################################
@@ -2376,3 +2359,335 @@ index 0000000..b41753c
 +########################################
 +list(APPEND ${lib_name}_all ${${lib_name}_libsrcs})
 +compareCmakeFilesys("${${lib_name}_all}")
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+new file mode 100644
+index 0000000..0c807f8
+--- /dev/null
++++ b/test/CMakeLists.txt
+@@ -0,0 +1,326 @@
++########################################
++# tests that depend on include
++foreach(t
++  rsa_complex
++  shlibloadtest
++  )
++  add_executable(${t} ${t}.c)
++  target_link_libraries(${t} PRIVATE include)
++  list(APPEND test_srcs ${t}.c)
++endforeach()
++target_include_directories(shlibloadtest PRIVATE ${CMAKE_BINARY_DIR}/crypto/include)
++target_link_libraries(shlibloadtest PRIVATE ${CMAKE_DL_LIBS})
++########################################
++# tests that depend on crypto
++foreach(t
++  aborttest
++  asynctest
++  versions
++  )
++  add_executable(${t} ${t}.c)
++  target_link_libraries(${t} PRIVATE crypto)
++  list(APPEND test_srcs ${t}.c)
++endforeach()
++########################################
++# tests that depend on ssl
++foreach(t
++  ssltest_old
++  )
++  add_executable(${t} ${t}.c)
++  target_link_libraries(${t} PRIVATE ssl)
++  list(APPEND test_srcs ${t}.c)
++endforeach()
++########################################
++# testutil library
++set(testutil_srcs
++  testutil/basic_output.c
++  testutil/cb.c
++  testutil/driver.c
++  testutil/format_output.c
++  testutil/init.c
++  testutil/main.c
++  testutil/output.h
++  testutil/output_helpers.c
++  testutil/random.c
++  testutil/stanza.c
++  testutil/tap_bio.c
++  testutil/test_cleanup.c
++  testutil/tests.c
++  testutil/tu_local.h
++  testutil.h
++  )
++add_library(testutil STATIC ${testutil_srcs})
++target_link_libraries(testutil PUBLIC crypto)
++list(APPEND test_srcs ${testutil_srcs})
++########################################
++# tests that depend on testutil
++foreach(t
++  afalgtest
++  asn1_decode_test
++  asn1_encode_test
++  asn1_string_table_test
++  asn1_time_test
++  bftest
++  bio_callback_test
++  bio_enc_test
++  bio_memleak_test
++  bioprinttest
++  bntest
++  casttest
++  cmsapitest
++  conf_include_test
++  constant_time_test
++  crltest
++  ct_test
++  d2i_test
++  destest
++  dhtest
++  dsa_no_digest_size_test
++  dsatest
++  ecstresstest
++  ectest
++  enginetest
++  errtest
++  exdatatest
++  exptest
++  gmdifftest
++  hmactest
++  ideatest
++  igetest
++  lhash_test
++  md2test
++  mdc2_internal_test
++  mdc2test
++  memleaktest
++  modes_internal_test
++  ocspapitest
++  packettest
++  pbelutest
++  pemtest
++  pkey_meth_kdf_test
++  pkey_meth_test
++  rc2test
++  rc4test
++  rc5test
++  rdrand_sanitytest
++  rsa_mp_test
++  rsa_test
++  sanitytest
++  secmemtest
++  srptest
++  ssl_cert_table_internal_test
++  stack_test
++  test_test
++  threadstest
++  time_offset_test
++  v3ext
++  v3nametest
++  verify_extra_test
++  x509aux
++  x509_check_cert_pkey_test
++  x509_dup_cert_test
++  x509_internal_test
++  x509_time_test
++  )
++  add_executable(${t} ${t}.c)
++  target_link_libraries(${t} PRIVATE testutil)
++  list(APPEND test_srcs ${t}.c)
++endforeach()
++########################################
++# tests that depend on testutil/ssl
++foreach(t
++  bad_dtls_test
++  cipherbytes_test
++  cipherlist_test
++  ciphername_test
++  cipher_overhead_test
++  clienthellotest
++  danetest
++  dtlsv1listentest
++  sysdefaulttest
++  tls13encryptiontest
++  wpackettest
++  )
++  add_executable(${t} ${t}.c)
++  target_link_libraries(${t} PRIVATE testutil ssl)
++  list(APPEND test_srcs ${t}.c)
++endforeach()
++########################################
++# sshtestlib library
++set(ssltestlib_srcs
++  ssltestlib.c
++  ssltestlib.h
++  )
++add_library(ssltestlib STATIC ${ssltestlib_srcs})
++target_link_libraries(ssltestlib PUBLIC testutil ssl)
++list(APPEND test_srcs ${ssltestlib_srcs})
++####################
++# tests that depend on ssltestlib
++foreach(t
++  asynciotest
++  dtls_mtu_test
++  dtlstest
++  fatalerrtest
++  gosttest
++  recordlentest
++  servername_test
++  sslapitest
++  sslbuffertest
++  sslcorrupttest
++  tls13ccstest
++  )
++  add_executable(${t} ${t}.c)
++  target_link_libraries(${t} PRIVATE ssltestlib)
++  list(APPEND test_srcs ${t}.c)
++endforeach()
++########################################
++# tests that depend on testutil and internal headers
++foreach(t
++  asn1_internal_test
++  chacha_internal_test
++  ctype_internal_test
++  curve448_internal_test
++  ec_internal_test
++  evp_extra_test
++  poly1305_internal_test
++  siphash_internal_test
++  sm2_internal_test
++  sm4_internal_test
++  )
++  add_executable(${t} ${t}.c)
++  target_link_libraries(${t} PRIVATE testutil)
++  target_include_directories(${t} PRIVATE ${CMAKE_SOURCE_DIR}/crypto/include)
++  list(APPEND test_srcs ${t}.c)
++endforeach()
++target_include_directories(curve448_internal_test PRIVATE ${CMAKE_SOURCE_DIR}/crypto/ec/curve448)
++target_include_directories(ec_internal_test PRIVATE ${CMAKE_SOURCE_DIR}/crypto/ec)
++########################################
++# tests with multiple sources
++set(drbgtest_srcs
++  drbgtest.c
++  drbgtest.h
++  )
++set(drbgtest_libs testutil)
++##########
++set(drbg_cavs_test_srcs
++  drbg_cavs_data.c
++  drbg_cavs_data.h
++  drbg_cavs_test.c
++  )
++set(drbg_cavs_test_libs testutil)
++##########
++set(ecdsatest_srcs
++  ecdsatest.c
++  ecdsatest.h
++  )
++set(ecdsatest_libs testutil)
++##########
++set(evp_test_srcs
++  evp_test.c
++  evp_test.h
++  )
++set(evp_test_libs testutil)
++##########
++set(ssl_test_srcs
++  handshake_helper.c
++  handshake_helper.h
++  ssl_test.c
++  ssl_test_ctx.c
++  ssl_test_ctx.h
++  )
++set(ssl_test_libs testutil ssl)
++##########
++set(ssl_test_ctx_test_srcs
++  ssl_test_ctx.c
++  ssl_test_ctx.h
++  ssl_test_ctx_test.c
++  ssl_test_ctx_test.conf
++  )
++set(ssl_test_ctx_test_libs testutil ssl)
++##########
++foreach(t
++  drbgtest
++  drbg_cavs_test
++  ecdsatest
++  evp_test
++  ssl_test
++  ssl_test_ctx_test
++  )
++  add_executable(${t} ${${t}_srcs})
++  target_link_libraries(${t} PRIVATE ${${t}_libs})
++  list(APPEND test_srcs ${${t}_srcs})
++endforeach()
++########################################
++# extra sources (not part of build)
++list(APPEND test_srcs
++  bntests.pl
++  build.info
++  CAss.cnf
++  CAssdh.cnf
++  CAssdsa.cnf
++  CAssrsa.cnf
++  CAtsa.cnf
++  CMakeLists.txt
++  cms-examples.pl
++  danetest.in
++  danetest.pem
++  generate_buildtest.pl
++  generate_ssl_tests.pl
++  P1ss.cnf
++  P2ss.cnf
++  pkcs7-1.pem
++  pkcs7.pem
++  pkits-test.pl
++  README
++  README.external
++  README.ssltest.md
++  run_tests.pl
++  serverinfo2.pem
++  serverinfo.pem
++  session.pem
++  shibboleth.pfx
++  smcont.txt
++  ssl_test.tmpl
++  Sssdsa.cnf
++  Sssrsa.cnf
++  sysdefault.cnf
++  test.cnf
++  testcrl.pem
++  testdsa.pem
++  testdsapub.pem
++  testec-p256.pem
++  testecpub-p256.pem
++  testp7.pem
++  testreq2.pem
++  testrsa.pem
++  testrsapub.pem
++  testsid.pem
++  testx509.pem
++  Uss.cnf
++  v3-cert1.pem
++  v3-cert2.pem
++  )
++########################################
++# directories (ignore -- add to cmake)
++foreach(d
++  certs
++  ct
++  d2i-tests
++  ocsp-tests
++  ossl_shim
++  recipes
++  smime-certs
++  ssl-tests
++  )
++  file(GLOB_RECURSE dir RELATIVE ${CMAKE_CURRENT_LIST_DIR} ${d}/*)
++  list(APPEND test_srcs ${dir})
++endforeach()
++########################################
++set(TODO # build.info shows instructions
++  tls13secretstest.c
++  uitest.c
++  )
++list(APPEND test_srcs ${TODO})
++########################################
++list(REMOVE_DUPLICATES test_srcs)
++compareCmakeFilesys("${test_srcs}")
