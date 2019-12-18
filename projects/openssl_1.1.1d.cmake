@@ -12,7 +12,7 @@ set(PRO_OPENSSL_${VER_UC}
   LICENSE "open" http://www.openssl.org/source/license.html "OpenSSL, SSLeay License: BSD-style"
   DESC "Cryptography and SSL/TLS Toolkit"
   REPO "repo" https://${REPO} "openssl repo on github"
-  GRAPH
+  GRAPH BUILD_DEPS opensslasm
   VER ${VER}
   GIT_ORIGIN git://${FORK}.git
   GIT_UPSTREAM git://${REPO}.git
@@ -24,4 +24,5 @@ set(PRO_OPENSSL_${VER_UC}
   PATCH ${PATCH_DIR}/openssl_${VER}.patch
   DIFF https://${FORK}/compare/openssl:
   DEPS_FUNC build_openssl
+  SUBPRO opensslasm
   )

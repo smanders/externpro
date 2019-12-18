@@ -62,6 +62,7 @@
 |jpegxp|[jpeglossy12](http://libjpeg.sourceforge.net/ 'libjpeg on sourceforge')|lossy 12-bit encode and decode|6b|[repo](https://github.com/smanders/libjpeg 'forked libjpeg repo on github')|[diff](https://github.com/smanders/libjpeg/compare/09a4003...lossy12.6b 'patch/diff')|
 |jpegxp|[jpeglossy8](http://libjpeg.sourceforge.net/ 'libjpeg on sourceforge')|lossy 8-bit encode and decode|6b|[repo](https://github.com/smanders/libjpeg 'forked libjpeg repo on github')|[diff](https://github.com/smanders/libjpeg/compare/09a4003...lossy8.6b 'patch/diff')|
 |lua|[LuaBridge](http://vinniefalco.github.io/LuaBridge/Manual.html 'LuaBridge Reference Manual')|a lightweight, dependency-free library for binding Lua to C++|2.0|[repo](https://github.com/vinniefalco/LuaBridge 'LuaBridge repo on github')|none|
+|openssl|[opensslasm](https://github.com/smanders/opensslasm 'opensslasm project on github')|openssl assembly|10.17.0|[repo](https://github.com/smanders/opensslasm 'opensslasm repo on github')|none|
 |wxWidgets31|[wxcmake](https://github.com/smanders/wxcmake 'wxcmake project on github')|build wxWidgets via cmake|2019.11.08|[repo](https://github.com/smanders/wxcmake 'wxcmake repo on github')|[diff](https://github.com/smanders/wxcmake/compare/wx0...wx31 'patch/diff')|
 |wxx|[wxPlotCtrl](http://wxcode.sourceforge.net/showcomp.php?name=wxPlotCtrl 'wxplotctrl on sourceforge')|interactive xy data plotting widgets|2006.04.28|[repo](https://github.com/smanders/wxplotctrl 'wxplotctrl repo on github')|[diff](https://github.com/smanders/wxplotctrl/compare/v2006.04.28...xp2006.04.28 'patch/diff')|
 |wxx|[wxThings](http://wxcode.sourceforge.net/showcomp.php?name=wxThings 'wxthings on sourceforge')|a variety of data containers and controls|2006.04.28|[repo](https://github.com/smanders/wxthings 'wxthings repo on github')|[diff](https://github.com/smanders/wxthings/compare/v2006.04.28...xp2006.04.28 'patch/diff')|
@@ -70,10 +71,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_9b420e622c4ed1ef44d2f04ae727b345?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_9995a477d863e02ff7bca2ea0b8f6f36?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_9b420e622c4ed1ef44d2f04ae727b345
+depgraph_9995a477d863e02ff7bca2ea0b8f6f36
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
@@ -124,6 +125,8 @@ digraph GG {
   openh264 [shape=diamond];
   openh264 -> yasm;
   openssl_1_1_1d [label="openssl_1.1.1d" shape=diamond];
+  openssl_1_1_1d -> opensslasm;
+  opensslasm [shape=diamond];
   protobuf [shape=diamond];
   protobuf -> zlib;
   wx [shape=diamond];
@@ -134,5 +137,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_9b420e622c4ed1ef44d2f04ae727b345
+depgraph_9995a477d863e02ff7bca2ea0b8f6f36
 </details>
