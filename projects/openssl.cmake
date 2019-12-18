@@ -8,6 +8,15 @@ function(build_openssl)
   if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL_${OLDVER} OR XP_PRO_OPENSSL_${NEWVER}))
     return()
   endif()
+  if(WIN32)
+    if(NOT (XP_DEFAULT OR XP_PRO_NASM))
+      message(STATUS "openssl.cmake: requires nasm")
+      set(XP_PRO_NASM ON CACHE BOOL "include nasm" FORCE)
+      xpPatchProject(${PRO_NASM})
+    endif()
+    ExternalProject_Get_Property(nasm SOURCE_DIR)
+    set(NASM_EXE "-DCMAKE_ASM_NASM_COMPILER=${SOURCE_DIR}/nasm.exe")
+  endif()
   if(XP_DEFAULT)
     set(OPENSSL_VERSIONS ${OPENSSL_OLDVER} ${OPENSSL_NEWVER})
   else()
@@ -37,6 +46,7 @@ function(build_openssl)
     set(XP_CONFIGURE
       -DXP_NAMESPACE:STRING=xpro
       -DOPENSSL_VER:STRING=${ver}
+      ${NASM_EXE}
       )
     xpCmakeBuild(openssl_${ver} "" "${XP_CONFIGURE}" opensslTargets_${ver})
     list(APPEND opensslTargets ${opensslTargets_${ver}})
