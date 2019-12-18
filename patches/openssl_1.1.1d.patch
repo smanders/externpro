@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..4518ae0
+index 0000000..e9ebd73
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,110 @@
 +cmake_minimum_required(VERSION 3.12)
 +project(openssl)
 +include(flags OPTIONAL)
@@ -13,6 +13,8 @@ index 0000000..4518ae0
 +  -D_REENTRANT
 +  -DL_ENDIAN
 +  -DOPENSSL_PIC
++  -DOPENSSLDIR=\"/etc/ssl\"
++  -DENGINESDIR=\"/dev/null\"
 +  )
 +if(WIN32)
 +  list(APPEND OPENSSL_DEFS
@@ -2617,24 +2619,6 @@ index 0000000..90d4ddd
 +  ${CMAKE_CURRENT_BINARY_DIR}/openssl/opensslconf.h
 +  )
 +compareCmakeFilesys("${${lib_name}_libsrcs}")
-diff --git a/include/internal/cryptlib.h b/include/internal/cryptlib.h
-index 23e17e5..b425b81 100644
---- a/include/internal/cryptlib.h
-+++ b/include/internal/cryptlib.h
-@@ -53,6 +53,13 @@ DEFINE_LHASH_OF(MEM);
- 
- # define OPENSSL_CONF             "openssl.cnf"
- 
-+# if !(defined(VMS) || defined(__VMS)) /* VMS uses logical names instead */
-+#  if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
-+#   define ENGINESDIR "/usr/local/ssl/lib/engines"
-+#   define OPENSSLDIR "/usr/local/ssl"
-+#  endif
-+# endif
-+
- # ifndef OPENSSL_SYS_VMS
- #  define X509_CERT_AREA          OPENSSLDIR
- #  define X509_CERT_DIR           OPENSSLDIR "/certs"
 diff --git a/include/openssl/opensslconf.h.cmake b/include/openssl/opensslconf.h.cmake
 new file mode 100644
 index 0000000..1782ddd
