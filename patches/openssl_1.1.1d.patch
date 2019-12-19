@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..e9ebd73
+index 0000000..6325b74
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,110 @@
+@@ -0,0 +1,112 @@
 +cmake_minimum_required(VERSION 3.12)
 +project(openssl)
 +include(flags OPTIONAL)
@@ -31,6 +31,9 @@ index 0000000..e9ebd73
 +    )
 +  set(asmDir asmfromnode/archs/linux-x86_64/asm)
 +endif()
++if((CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64") AND WIN32)
++  enable_language(ASM_NASM) # -DCMAKE_ASM_NASM_COMPILER=/path/to/nasm.exe
++endif()
 +if(EXISTS ${CMAKE_SOURCE_DIR}/${asmDir} AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/${asmDir})
 +  set(ASM_BUILD TRUE)
 +  list(APPEND OPENSSL_DEFS
@@ -50,7 +53,6 @@ index 0000000..e9ebd73
 +    )
 +  if(WIN32)
 +    list(APPEND OPENSSL_DEFS
-+      -DOPENSSL_BN_ASM_PART_WORDS
 +      -DRMD160_ASM
 +      -DAES_ASM
 +      -DWHIRLPOOL_ASM
@@ -429,10 +431,10 @@ index 0000000..bd4643d
 +DEFINE_LHASH_OF(FUNCTION);
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..9016c70
+index 0000000..6234cf4
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1854 @@
+@@ -0,0 +1,1849 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file include/buildinf.h)
@@ -588,14 +590,12 @@ index 0000000..9016c70
 +  aes/aes_locl.h
 +  aes/aes_core.c # aes_asm_src DEFAULT (Configurations/00-base-templates.conf)
 +  aes/aes_cbc.c # aes_asm_src DEFAULT (Configurations/00-base-templates.conf)
++  aes/aes_x86core.c
 +  )
 +source_group(aes FILES ${aes_srcs})
 +list(APPEND ${lib_name}_libsrcs ${aes_srcs})
 +##########
-+set(aes_extra
-+  aes/aes_x86core.c # TODO libsrcs?
-+  )
-+list(APPEND aes_extra # TODO asm
++set(aes_extra # TODO asm
 +  aes/asm/aes-armv4.pl
 +  aes/asm/aes-c64xplus.pl
 +  aes/asm/aesfx-sparcv9.pl
@@ -2147,110 +2147,107 @@ index 0000000..9016c70
 +list(APPEND ${lib_name}_libsrcs ${x509v3_srcs})
 +########################################
 +set(asmDir ../${asmDir}/crypto)
-+if(ASM_BUILD AND UNIX)
++if(MSVC)
++  set(asmExt asm)
++elseif(UNIX)
++  set(asmExt s)
++endif()
++if(ASM_BUILD)
 +  set(root_asm_srcs
-+    ${asmDir}/x86_64cpuid.s # cpuid_asm_src
++    ${asmDir}/x86_64cpuid.${asmExt} # cpuid_asm_src
 +    )
-+  # gcc can compile .s files with the C compiler
-+  set_property(SOURCE ${root_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(asm FILES ${root_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${root_asm_srcs})
++  set(asm_srcs ${root_asm_srcs})
 +  ##########
 +  set(aes_asm_srcs
-+    ${asmDir}/aes/aesni-mb-x86_64.s
-+    ${asmDir}/aes/aesni-sha1-x86_64.s
-+    ${asmDir}/aes/aesni-sha256-x86_64.s
-+    ${asmDir}/aes/aesni-x86_64.s
-+    #${asmDir}/aes/aes-x86_64.s # multiple definition of AES_encrypt (first defined in aes_core.c)
-+    #${asmDir}/aes/bsaes-x86_64.s # not in aes_asm_src (Configurations/00-base-templates.conf)
-+    ${asmDir}/aes/vpaes-x86_64.s
++    ${asmDir}/aes/aesni-mb-x86_64.${asmExt}
++    ${asmDir}/aes/aesni-sha1-x86_64.${asmExt}
++    ${asmDir}/aes/aesni-sha256-x86_64.${asmExt}
++    ${asmDir}/aes/aesni-x86_64.${asmExt}
++    #${asmDir}/aes/aes-x86_64.${asmExt} # multiple definition of AES_encrypt (first defined in aes_core.c)
++    #${asmDir}/aes/bsaes-x86_64.${asmExt} # not in aes_asm_src (Configurations/00-base-templates.conf)
++    ${asmDir}/aes/vpaes-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${aes_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(aes\\asm FILES ${aes_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${aes_asm_srcs})
++  list(APPEND asm_srcs ${aes_asm_srcs})
 +  ##########
 +  set(bn_asm_srcs
 +    bn/asm/x86_64-gcc.c
-+    ${asmDir}/bn/rsaz-avx2.s
-+    ${asmDir}/bn/rsaz-x86_64.s
-+    ${asmDir}/bn/x86_64-gf2m.s
-+    ${asmDir}/bn/x86_64-mont5.s
-+    ${asmDir}/bn/x86_64-mont.s
++    ${asmDir}/bn/rsaz-avx2.${asmExt}
++    ${asmDir}/bn/rsaz-x86_64.${asmExt}
++    ${asmDir}/bn/x86_64-gf2m.${asmExt}
++    ${asmDir}/bn/x86_64-mont5.${asmExt}
++    ${asmDir}/bn/x86_64-mont.${asmExt}
 +    )
-+  set_property(SOURCE ${bn_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(bn\\asm FILES ${bn_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${bn_asm_srcs})
++  list(APPEND asm_srcs ${bn_asm_srcs})
 +  ##########
 +  set(camellia_asm_srcs
-+    ${asmDir}/camellia/cmll-x86_64.s
++    ${asmDir}/camellia/cmll-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${camellia_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(camellia\\asm FILES ${camellia_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${camellia_asm_srcs})
++  list(APPEND asm_srcs ${camellia_asm_srcs})
 +  ##########
 +  set(chacha_asm_srcs
-+    ${asmDir}/chacha/chacha-x86_64.s
++    ${asmDir}/chacha/chacha-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${chacha_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(chacha\\asm FILES ${chacha_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${chacha_asm_srcs})
++  list(APPEND asm_srcs ${chacha_asm_srcs})
 +  ##########
 +  set(ec_asm_srcs
-+    ${asmDir}/ec/ecp_nistz256-x86_64.s
-+    ${asmDir}/ec/x25519-x86_64.s
++    ${asmDir}/ec/ecp_nistz256-x86_64.${asmExt}
++    ${asmDir}/ec/x25519-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${ec_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(ec\\asm FILES ${ec_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${ec_asm_srcs})
++  list(APPEND asm_srcs ${ec_asm_srcs})
 +  ##########
 +  set(md5_asm_srcs
-+    ${asmDir}/md5/md5-x86_64.s
++    ${asmDir}/md5/md5-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${md5_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(md5\\asm FILES ${md5_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${md5_asm_srcs})
++  list(APPEND asm_srcs ${md5_asm_srcs})
 +  ##########
 +  set(modes_asm_srcs
-+    ${asmDir}/modes/aesni-gcm-x86_64.s
-+    ${asmDir}/modes/ghash-x86_64.s
++    ${asmDir}/modes/aesni-gcm-x86_64.${asmExt}
++    ${asmDir}/modes/ghash-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${modes_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(modes\\asm FILES ${modes_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${modes_asm_srcs})
++  list(APPEND asm_srcs ${modes_asm_srcs})
 +  ##########
 +  set(poly1305_asm_srcs
-+    ${asmDir}/poly1305/poly1305-x86_64.s
++    ${asmDir}/poly1305/poly1305-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${poly1305_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(poly1305\\asm FILES ${poly1305_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${poly1305_asm_srcs})
++  list(APPEND asm_srcs ${poly1305_asm_srcs})
 +  ##########
 +  set(rc4_asm_srcs
-+    ${asmDir}/rc4/rc4-md5-x86_64.s
-+    ${asmDir}/rc4/rc4-x86_64.s
++    ${asmDir}/rc4/rc4-md5-x86_64.${asmExt}
++    ${asmDir}/rc4/rc4-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${rc4_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(rc4\\asm FILES ${rc4_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${rc4_asm_srcs})
++  list(APPEND asm_srcs ${rc4_asm_srcs})
 +  ##########
 +  set(sha_asm_srcs
-+    ${asmDir}/sha/keccak1600-x86_64.s
-+    ${asmDir}/sha/sha1-mb-x86_64.s
-+    ${asmDir}/sha/sha1-x86_64.s
-+    ${asmDir}/sha/sha256-mb-x86_64.s
-+    ${asmDir}/sha/sha256-x86_64.s
-+    ${asmDir}/sha/sha512-x86_64.s
++    ${asmDir}/sha/keccak1600-x86_64.${asmExt}
++    ${asmDir}/sha/sha1-mb-x86_64.${asmExt}
++    ${asmDir}/sha/sha1-x86_64.${asmExt}
++    ${asmDir}/sha/sha256-mb-x86_64.${asmExt}
++    ${asmDir}/sha/sha256-x86_64.${asmExt}
++    ${asmDir}/sha/sha512-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${sha_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(sha\\asm FILES ${sha_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${sha_asm_srcs})
++  list(APPEND asm_srcs ${sha_asm_srcs})
 +  ##########
 +  set(whrlpool_asm_srcs
-+    ${asmDir}/whrlpool/wp-x86_64.s
++    ${asmDir}/whrlpool/wp-x86_64.${asmExt}
 +    )
-+  set_property(SOURCE ${whrlpool_asm_srcs} PROPERTY LANGUAGE C)
 +  source_group(whrlpool\\asm FILES ${whrlpool_asm_srcs})
-+  list(APPEND ${lib_name}_libsrcs ${whrlpool_asm_srcs})
++  list(APPEND asm_srcs ${whrlpool_asm_srcs})
++  ##########
++  if(UNIX) # gcc can compile .s files with the C compiler
++    set_property(SOURCE ${asm_srcs} PROPERTY LANGUAGE C)
++  endif()
++  list(APPEND ${lib_name}_libsrcs ${asm_srcs})
 +endif()
 +########################################
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
