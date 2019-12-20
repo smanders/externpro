@@ -1,5 +1,7 @@
 # opensslasm
-set(VER 10.17.0) # NOTE: matches node version assembly came from
+set(VER 1.1.1d) # openssl version of assembly from node
+# NOTE: node version where assembly came from:
+# https://github.com/nodejs/node/tree/v10.17.0/deps/openssl/config
 set(REPO github.com/smanders/opensslasm)
 set(PRO_OPENSSLASM
   NAME opensslasm
@@ -14,6 +16,6 @@ set(PRO_OPENSSLASM
   GIT_ORIGIN git://${REPO}.git
   GIT_TAG asm_${VER} # what to 'git checkout'
   DLURL https://${REPO}/archive/asm_${VER}.tar.gz
-  DLMD5 ef6694b85edd07ec20125b662f197e7d
+  DLMD5 5cda0efee96b2fb78343e23db034a37b
   DLNAME opensslasm-${VER}.tar.gz
   )
