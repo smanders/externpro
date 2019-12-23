@@ -67,19 +67,18 @@ find_path(@CMAKE_PROJECT_NAME@_DIR
   NAMES
     @CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}.txt
   PATHS
-    # build versions
-    C:/src/@CMAKE_PROJECT_NAME@/_bld/@CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}
-    ~/src/@CMAKE_PROJECT_NAME@/_bld/@CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}
-    # environment variable - build versions
+    # environment variable - build/developer versions
+    # set(ENV{@CMAKE_PROJECT_NAME@_BUILD_DIR} ~/src/@CMAKE_PROJECT_NAME@/_bld)
+    # set(@CMAKE_PROJECT_NAME@_REV `git describe --tags`)
     "$ENV{@CMAKE_PROJECT_NAME@_BUILD_DIR}/@CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}"
     # environment variable - installed versions
-    "$ENV{extern_DIR}/@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG}"
+    # set(ENV{extern_DIR} ~/extern)
     "$ENV{extern_DIR}/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${CMAKE_SYSTEM_NAME}"
     # installed versions
-    "$ENV{ProgramW6432}/@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG}"
-    "$ENV{${PFX86}}/@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG}"
     "~/extern/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${CMAKE_SYSTEM_NAME}"
     "/opt/extern/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${CMAKE_SYSTEM_NAME}"
+    "C:/opt/extern/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${CMAKE_SYSTEM_NAME}"
+    "C:/dev/extern/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${CMAKE_SYSTEM_NAME}"
   DOC "@CMAKE_PROJECT_NAME@ directory"
   )
 if(NOT @CMAKE_PROJECT_NAME@_DIR)
