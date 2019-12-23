@@ -310,7 +310,9 @@ macro(proSetCpackOpts) # NOTE: called by proExecuteStep
   if(NOT DEFINED CPACK_PACKAGE_VENDOR)
     set(CPACK_PACKAGE_VENDOR "smanders")
   endif()
-  if(UNIX AND NOT DEFINED CPACK_GENERATOR)
+  if(WIN32 AND NOT DEFINED CPACK_GENERATOR)
+    set(CPACK_GENERATOR ZIP)
+  elseif(UNIX AND NOT DEFINED CPACK_GENERATOR)
     set(CPACK_GENERATOR STGZ) # STGZ = Self extracting Tar GZip compression
   endif()
 endmacro()
