@@ -61,6 +61,7 @@ unset(@CMAKE_PROJECT_NAME@_DIR CACHE)
 # find the path to the @CMAKE_PROJECT_NAME@ directory
 getCompilerPrefix(COMPILER)
 getNumBits(BITS)
+# projects using @CMAKE_PROJECT_NAME@: set(@CMAKE_PROJECT_NAME@_REV `git describe --tags`)
 set(@CMAKE_PROJECT_NAME@_SIG ${@CMAKE_PROJECT_NAME@_REV}-${COMPILER}-${BITS})
 # TRICKY: match what is done in cmake's Modules/CPack.cmake, setting CPACK_SYSTEM_NAME
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -68,29 +69,31 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 else()
   set(XP_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
 endif()
+set(XP_DEV_BUILD_NAME "@CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}")
+set(XP_INSTALLED_NAME "@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${XP_SYSTEM_NAME}")
+# NOTE: environment variable setting examples:
+# set(ENV{@CMAKE_PROJECT_NAME@_BUILD_DIR} ~/src/@CMAKE_PROJECT_NAME@/_bld)
+# set(ENV{extern_DIR} ~/extern)
 find_path(@CMAKE_PROJECT_NAME@_DIR
   NAMES
     @CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}.txt
   PATHS
-    # environment variable - build/developer versions
-    # set(ENV{@CMAKE_PROJECT_NAME@_BUILD_DIR} ~/src/@CMAKE_PROJECT_NAME@/_bld)
-    # set(@CMAKE_PROJECT_NAME@_REV `git describe --tags`)
-    "$ENV{@CMAKE_PROJECT_NAME@_BUILD_DIR}/@CMAKE_PROJECT_NAME@_${@CMAKE_PROJECT_NAME@_SIG}"
-    # environment variable - installed versions
-    # set(ENV{extern_DIR} ~/extern)
-    "$ENV{extern_DIR}/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${XP_SYSTEM_NAME}"
+    # developer/build versions
+    "$ENV{@CMAKE_PROJECT_NAME@_BUILD_DIR}/${XP_DEV_BUILD_NAME}"
     # installed versions
-    "~/extern/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${XP_SYSTEM_NAME}"
-    "/opt/extern/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${XP_SYSTEM_NAME}"
-    "C:/opt/extern/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${XP_SYSTEM_NAME}"
-    "C:/dev/extern/@CMAKE_PROJECT_NAME@-${@CMAKE_PROJECT_NAME@_SIG}-${XP_SYSTEM_NAME}"
+    "$ENV{extern_DIR}/${XP_INSTALLED_NAME}"
+    "~/extern/${XP_INSTALLED_NAME}"
+    "/opt/extern/${XP_INSTALLED_NAME}"
+    "C:/opt/extern/${XP_INSTALLED_NAME}"
+    "C:/dev/extern/${XP_INSTALLED_NAME}"
   DOC "@CMAKE_PROJECT_NAME@ directory"
   )
 if(NOT @CMAKE_PROJECT_NAME@_DIR)
-  if(DEFINED @CMAKE_PROJECT_NAME@_INSTALLER_LOCATION)
+  set(@CMAKE_PROJECT_NAME@_INSTALL_INFO @XP_INSTALL_INFO@) # @CMAKE_PROJECT_NAME@ can set(XP_INSTALL_INFO) to define this
+  if(DEFINED @CMAKE_PROJECT_NAME@_INSTALLER_LOCATION) # defined by project using @CMAKE_PROJECT_NAME@
     message(FATAL_ERROR "@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG} not found.\n${@CMAKE_PROJECT_NAME@_INSTALLER_LOCATION}")
   else()
-    message(FATAL_ERROR "@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG} not found")
+    message(FATAL_ERROR "@CMAKE_PROJECT_NAME@ ${@CMAKE_PROJECT_NAME@_SIG} not found${@CMAKE_PROJECT_NAME@_INSTALL_INFO}")
   endif()
 else()
   set(moduleDir ${@CMAKE_PROJECT_NAME@_DIR}/share/cmake)

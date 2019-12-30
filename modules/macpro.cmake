@@ -195,7 +195,6 @@ macro(proExecuteStep) # NOTE: called by top-level CMakeLists.txt
     include(${CMAKE_BINARY_DIR}/xpbase/pro/patch.cmake)
     include(${CMAKE_BINARY_DIR}/xpbase/pro/build.cmake)
     install(DIRECTORY ${STAGE_DIR}/ DESTINATION . USE_SOURCE_PERMISSIONS)
-    proSetCpackOpts()
     include(CPack)
   else()
     message(AUTHOR_WARNING "Invalid XP_STEP specified.")
@@ -227,7 +226,7 @@ macro(proGetBuildLists) # NOTE: called by cmake-generated xpbase/pro/[patch|buil
   endif()
 endmacro()
 
-macro(proSetStageDir) # NOTE: called by cmake-generated xpbase/pro/build.cmake file
+macro(proSetStageDir) # NOTE: called by cmake-generated xpbase/pro/build.cmake file and xpInstallPro
   if(NOT DEFINED INSTALL_NAME)
     set(INSTALL_NAME ${PROJECT_NAME})
   endif()
@@ -281,6 +280,29 @@ macro(proSetStageDir) # NOTE: called by cmake-generated xpbase/pro/build.cmake f
       endif()
     endif()
   endif()
+  if(GIT_REV)
+    set(CPACK_PACKAGE_VERSION ${GIT_REV})
+  else()
+    set(CPACK_PACKAGE_VERSION "unknown-version")
+  endif()
+  if(NOT DEFINED CPACK_PACKAGE_VENDOR)
+    if(DEFINED PACKAGE_VENDOR)
+      set(CPACK_PACKAGE_VENDOR "${PACKAGE_VENDOR}")
+    else()
+      set(CPACK_PACKAGE_VENDOR "smanders")
+    endif()
+  endif()
+  if(NOT DEFINED CPACK_GENERATOR)
+    set(CPACK_GENERATOR TXZ)
+    if(DEFINED XP_INSTALL_INFO)
+      set(XP_INSTALL_INFO
+        "${XP_INSTALL_INFO}\\n tar -xf /path/to/${CMAKE_PROJECT_NAME}*.tar.xz --directory=/path/to/install/"
+        )
+    endif()
+  endif()
+  if(DEFINED XP_INSTALL_INFO)
+    set(XP_INSTALL_INFO "\".\\n ${XP_INSTALL_INFO}\"")
+  endif()
   # copy modules to stage
   configure_file(${MODULES_DIR}/Findscript.cmake.in
     ${STAGE_DIR}/share/cmake/Find${CMAKE_PROJECT_NAME}.cmake
@@ -298,19 +320,5 @@ macro(proSetStageDir) # NOTE: called by cmake-generated xpbase/pro/build.cmake f
       -Ddst:PATH=${STAGE_DIR}/share/cmake -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
     set(MODULES_DIR ${STAGE_DIR}/share/cmake) # use the out-of-source modules now
-  endif()
-endmacro()
-
-macro(proSetCpackOpts) # NOTE: called by proExecuteStep
-  if(GIT_REV)
-    set(CPACK_PACKAGE_VERSION ${GIT_REV})
-  else()
-    set(CPACK_PACKAGE_VERSION "unknown-version")
-  endif()
-  if(NOT DEFINED CPACK_PACKAGE_VENDOR)
-    set(CPACK_PACKAGE_VENDOR "smanders")
-  endif()
-  if(NOT DEFINED CPACK_GENERATOR)
-    set(CPACK_GENERATOR TXZ)
   endif()
 endmacro()
