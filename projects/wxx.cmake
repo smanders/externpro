@@ -9,7 +9,7 @@ set(PRO_WXX
   DESC "wxWidget-based extra components"
   REPO "repo" https://${REPO} "wxx repo on github"
   GRAPH BUILD_DEPS wx
-  VER 2015.10.02 # latest xpro branch commit date
+  VER 2020.01.02 # latest xpro branch commit date
   GIT_ORIGIN git://${REPO}.git
   GIT_TAG xpro # what to 'git checkout'
   GIT_REF wxx.01 # create patch from this tag to 'git checkout'
@@ -22,7 +22,7 @@ function(build_wxx)
   if(NOT (XP_DEFAULT OR XP_PRO_WXX))
     return()
   endif()
-  build_wx() # determine WX_VERSIONS, GTK_VER
+  build_wx() # determine WX_VERSIONS
   foreach(ver ${WX_VERSIONS})
     build_wxxv(${ver})
   endforeach()
@@ -36,16 +36,15 @@ function(build_wxxv ver)
   configure_file(${PRO_DIR}/use/usexp-wxx-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  build_wxv(VER ${ver} TARGETS wxTgts INCDIR wxInc SRCDIR wxSrc)
+  build_wxv(VER ${ver} TARGETS wxTgts SRCDIR wxSrc)
   set(XP_DEPS ${wxTgts})
   xpGetArgValue(${PRO_WXX} ARG SUBPRO VALUES subs)
   foreach(sub ${subs})
     list(APPEND XP_DEPS wxx_${sub})
   endforeach()
   set(XP_CONFIGURE
-    -DWX_INCLUDE:PATH=${wxInc}
     -DWX_SOURCE:PATH=${wxSrc}
-    -DGTK_VER:STRING=${GTK_VER}
+    -DXP_NAMESPACE:STRING=wxx
     )
   xpCmakeBuild(wxx "${XP_DEPS}" "${XP_CONFIGURE}" "" TGT ${ver})
 endfunction()
