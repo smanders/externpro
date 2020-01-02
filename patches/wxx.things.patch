@@ -1,6 +1,6 @@
 diff --git a/build/CMakeLists.txt b/build/CMakeLists.txt
 new file mode 100644
-index 0000000..a44150e
+index 0000000..a4c26d7
 --- /dev/null
 +++ b/build/CMakeLists.txt
 @@ -0,0 +1,68 @@
@@ -69,7 +69,7 @@ index 0000000..a44150e
 +  samples_filebrws
 +  samples_things
 +  )
-+  add_executable(${sample} ${${sample}_srcs})
++  add_executable(${sample} WIN32 ${${sample}_srcs})
 +  target_link_libraries(${sample} PRIVATE ${lib_name})
 +endforeach()
 diff --git a/include/wx/things/bmpcombo.h b/include/wx/things/bmpcombo.h

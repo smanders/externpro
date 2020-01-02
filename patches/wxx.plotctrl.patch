@@ -22,7 +22,7 @@ index f0c3c2c..42469fc 100644
  ".# c #000000",
 diff --git a/build/CMakeLists.txt b/build/CMakeLists.txt
 new file mode 100644
-index 0000000..7b63eea
+index 0000000..67df5c2
 --- /dev/null
 +++ b/build/CMakeLists.txt
 @@ -0,0 +1,68 @@
@@ -91,7 +91,7 @@ index 0000000..7b63eea
 +foreach(sample
 +  samples_plotctrl
 +  )
-+  add_executable(${sample} ${${sample}_srcs})
++  add_executable(${sample} WIN32 ${${sample}_srcs})
 +  target_link_libraries(${sample} PRIVATE ${lib_name})
 +endforeach()
 diff --git a/include/wx/plotctrl/plotctrl.h b/include/wx/plotctrl/plotctrl.h
