@@ -37,6 +37,7 @@ function(build_expat)
     -DBUILD_shared=OFF
     -DBUILD_doc=OFF
     -DINSTALL_extra=OFF
+    -DXP_NAMESPACE:STRING=xpro
     )
   xpCmakeBuild(expat "" "${XP_CONFIGURE}" expatTargets)
   if(ARGN)

@@ -50,6 +50,7 @@ function(build_libstrophe)
     -DLIBSTROPHE_VER=${VER}
     -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
     -DCMAKE_USE_EXPAT_MODULE_PATH=ON
+    -DXP_NAMESPACE:STRING=xpro
     )
   set(${MOD_OLD} ${xpConfigBase}
     -DVER_MOD:STRING=${MOD_OLD}

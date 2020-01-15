@@ -1,5 +1,5 @@
 diff --git a/expat/CMakeLists.txt b/expat/CMakeLists.txt
-index 504d087..4d976a9 100644
+index 504d087..8b3d9f6 100644
 --- a/expat/CMakeLists.txt
 +++ b/expat/CMakeLists.txt
 @@ -4,12 +4,17 @@
@@ -40,17 +40,21 @@ index 504d087..4d976a9 100644
  
  set(expat_SRCS
      lib/loadlibrary.c
-@@ -111,6 +117,9 @@ add_library(expat ${_SHARED} ${expat_SRCS})
+@@ -111,6 +117,13 @@ add_library(expat ${_SHARED} ${expat_SRCS})
  if(USE_libbsd)
      target_link_libraries(expat ${LIB_BSD})
  endif()
 +if(NOT BUILD_shared)
 +  set_target_properties(expat PROPERTIES OUTPUT_NAME expat${ver})
++  if(WIN32)
++    target_compile_definitions(expat PUBLIC $<INSTALL_INTERFACE:XML_STATIC>)
++  endif()
 +endif()
++target_include_directories(expat PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>)
  
  set(LIBCURRENT 7)   # sync
  set(LIBREVISION 7)  # with
-@@ -129,9 +138,16 @@ macro(expat_install)
+@@ -129,9 +142,19 @@ macro(expat_install)
      endif()
  endmacro()
  
@@ -64,11 +68,14 @@ index 504d087..4d976a9 100644
 +expat_install(TARGETS expat EXPORT ${targetsFile} RUNTIME DESTINATION bin
                        LIBRARY DESTINATION lib
                        ARCHIVE DESTINATION lib)
-+expat_install(EXPORT ${targetsFile} DESTINATION lib/cmake)
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++expat_install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
  
  set(prefix ${CMAKE_INSTALL_PREFIX})
  set(exec_prefix "\${prefix}/bin")
-@@ -139,8 +155,8 @@ set(libdir "\${prefix}/lib")
+@@ -139,8 +162,8 @@ set(libdir "\${prefix}/lib")
  set(includedir "\${prefix}/include")
  configure_file(expat.pc.in ${CMAKE_CURRENT_BINARY_DIR}/expat.pc)
  
@@ -79,7 +86,7 @@ index 504d087..4d976a9 100644
  
  if(BUILD_tools)
      set(xmlwf_SRCS
-@@ -153,10 +169,10 @@ if(BUILD_tools)
+@@ -153,10 +176,10 @@ if(BUILD_tools)
      add_executable(xmlwf ${xmlwf_SRCS})
      set_property(TARGET xmlwf PROPERTY RUNTIME_OUTPUT_DIRECTORY xmlwf)
      target_link_libraries(xmlwf expat)
