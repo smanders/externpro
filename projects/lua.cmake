@@ -39,6 +39,8 @@ function(build_lua)
     -DLUA_USE_READLINE=OFF
     -DLUA_USE_CURSES=OFF
     -DLUA_VER=${VER}
+    -DXP_NAMESPACE:STRING=xpro
+    -DLUABRIDGE_INCDIR:STRING=luabridge_${VERB}
     )
   xpCmakeBuild(lua "" "${XP_CONFIGURE}")
   if(NOT TARGET luabridge_bld)

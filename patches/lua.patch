@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cc303f5..d184749 100644
+index cc303f5..0a506dc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -6,6 +6,7 @@
@@ -19,7 +19,7 @@ index cc303f5..d184749 100644
  	endif ( )
  endif ( )
  
-@@ -125,11 +126,21 @@ else ( )
+@@ -125,11 +126,25 @@ else ( )
    list ( APPEND SRC_LIB src/loadlib.c )
  endif ( )
  
@@ -36,13 +36,17 @@ index cc303f5..d184749 100644
  ## BUILD
  # Create lua library
  add_library ( liblua ${SRC_CORE} ${SRC_LIB} ${LUA_DLL_RC} ${LUA_DEF} )
++target_include_directories ( liblua PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INC}${verDir}> )
++if ( DEFINED LUABRIDGE_INCDIR )
++  target_include_directories ( liblua PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INC}/${LUABRIDGE_INCDIR}> )
++endif ()
  target_link_libraries ( liblua ${LIBS} )
 -set_target_properties ( liblua PROPERTIES OUTPUT_NAME lua CLEAN_DIRECT_OUTPUT 1 )
 +set_target_properties ( liblua PROPERTIES OUTPUT_NAME lua${ver} CLEAN_DIRECT_OUTPUT 1 )
  if ( LUA_BUILD_AS_DLL )
    set_target_properties ( liblua PROPERTIES COMPILE_DEFINITIONS LUA_BUILD_AS_DLL )
  endif ()
-@@ -151,7 +162,7 @@ install_executable ( lua luac )
+@@ -151,7 +166,7 @@ install_executable ( lua luac )
  install_library ( liblua )
  install_data ( README.md )
  #install_lua_module ( strict etc/strict.lua )
@@ -52,7 +56,7 @@ index cc303f5..d184749 100644
  install_foo ( etc/ )
  #install_test ( test/ )
 diff --git a/cmake/dist.cmake b/cmake/dist.cmake
-index 310ef94..1ee7f6a 100644
+index 310ef94..017fdd0 100644
 --- a/cmake/dist.cmake
 +++ b/cmake/dist.cmake
 @@ -59,7 +59,7 @@ set ( INSTALL_SHARE share CACHE PATH "Directory for shared data." )
@@ -77,7 +81,7 @@ index 310ef94..1ee7f6a 100644
    endforeach()
  endmacro ()
  
-@@ -159,11 +161,12 @@ macro ( install_library )
+@@ -159,11 +161,15 @@ macro ( install_library )
        set_target_properties ( ${_file} PROPERTIES VERSION ${DIST_VERSION}
                                SOVERSION ${DIST_VERSION} )
      endif ()
@@ -87,7 +91,10 @@ index 310ef94..1ee7f6a 100644
                LIBRARY DESTINATION ${INSTALL_LIB} COMPONENT Runtime 
                ARCHIVE DESTINATION ${INSTALL_LIB} COMPONENT Library )
    endforeach()
-+  install ( EXPORT ${targetsFile} DESTINATION ${INSTALL_LIB}/cmake )
++  if ( DEFINED XP_NAMESPACE )
++    set ( nameSpace NAMESPACE ${XP_NAMESPACE}:: )
++  endif ()
++  install ( EXPORT ${targetsFile} DESTINATION ${INSTALL_LIB}/cmake ${nameSpace} )
  endmacro ()
  
  # helper function for various install_* functions, for PATTERN/REGEX args.
