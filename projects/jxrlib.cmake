@@ -29,8 +29,9 @@ function(build_jxrlib)
     return()
   endif()
   xpGetArgValue(${PRO_JXRLIB} ARG VER VALUE VER)
+  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro -DJXR_VER=${VER})
   configure_file(${PRO_DIR}/use/usexp-jxrlib-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(jxrlib "" "-DJXR_VER=${VER}")
+  xpCmakeBuild(jxrlib "" "${XP_CONFIGURE}")
 endfunction()
