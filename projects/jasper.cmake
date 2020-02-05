@@ -25,8 +25,9 @@ function(build_jasper)
     return()
   endif()
   xpGetArgValue(${PRO_JASPER} ARG VER VALUE VER)
+  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro -DJASPER_VER=${VER})
   configure_file(${PRO_DIR}/use/usexp-jasper-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(jasper "" "-DJASPER_VER=${VER}")
+  xpCmakeBuild(jasper "" "${XP_CONFIGURE}")
 endfunction()
