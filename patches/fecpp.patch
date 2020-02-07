@@ -1,15 +1,14 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..29e64cb
+index 0000000..9ac49e0
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,35 @@
-+cmake_minimum_required(VERSION 3.0)
++cmake_minimum_required(VERSION 3.12)
 +project(fecpp)
 +include(flags)
 +set(lib_name ${PROJECT_NAME})
 +#######################################
-+# library sources
 +set(${lib_name}_libsrcs
 +  fecpp.cpp
 +  fecpp.h
@@ -17,18 +16,16 @@ index 0000000..29e64cb
 +  )
 +source_group("" FILES ${${lib_name}_libsrcs})
 +#######################################
-+# version
 +if(DEFINED FECPP_VER)
 +  set(ver _${FECPP_VER})
 +  set(verDir /${PROJECT_NAME}${ver})
 +endif()
 +#######################################
-+# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>)
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +add_subdirectory(test)
 +#######################################
-+# install
 +set(targetsFile ${PROJECT_NAME}${ver}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  RUNTIME DESTINATION bin
@@ -36,7 +33,10 @@ index 0000000..29e64cb
 +  ARCHIVE DESTINATION lib
 +  )
 +install(FILES fecpp.h DESTINATION include${verDir}/${PROJECT_NAME})
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake)
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
 +set(txtFiles format.txt license.txt news.txt readme.txt)
 +install(FILES ${txtFiles} DESTINATION share${verDir}/${PROJECT_NAME})
 diff --git a/fecpp.cpp b/fecpp.cpp
@@ -94,14 +94,15 @@ index aa68bbe..b9888a4 100644
     private:
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
 new file mode 100644
-index 0000000..fd37425
+index 0000000..40fe06a
 --- /dev/null
 +++ b/test/CMakeLists.txt
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,18 @@
 +include_directories(${PROJECT_SOURCE_DIR})
 +set(externpro_DIR ${CMAKE_INSTALL_PREFIX})
 +set(XP_MODULE_PATH ${externpro_DIR}/share/cmake)
 +include(${XP_MODULE_PATH}/xpfunmac.cmake)
++xpFindPkg(PKGS boost)
 +set(${PROJECT_NAME}_exes
 +  benchmark
 +  gen_test_vec
@@ -109,11 +110,11 @@ index 0000000..fd37425
 +  test_recovery
 +  zfec
 +  )
++set(test_recovery_deps Boost::boost)
 +foreach(exe ${${PROJECT_NAME}_exes})
 +  source_group("" FILES ${exe}.cpp)
 +  add_executable(${exe} ${exe}.cpp)
-+  target_link_libraries(${exe} PRIVATE ${lib_name})
-+  xpTargetExtern(${exe} PRIVATE boost)
++  target_link_libraries(${exe} PRIVATE ${lib_name} ${${exe}_deps})
 +endforeach()
 diff --git a/test/benchmark.cpp b/test/benchmark.cpp
 index b690cef..462658a 100644

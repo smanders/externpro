@@ -32,8 +32,9 @@ function(build_fecpp)
   endif()
   build_boost(TARGETS boostTgts)
   xpGetArgValue(${PRO_FECPP} ARG VER VALUE VER)
+  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro -DFECPP_VER=${VER})
   configure_file(${PRO_DIR}/use/usexp-fecpp-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(fecpp "${boostTgts}" "-DFECPP_VER=${VER}")
+  xpCmakeBuild(fecpp "${boostTgts}" "${XP_CONFIGURE}")
 endfunction()
