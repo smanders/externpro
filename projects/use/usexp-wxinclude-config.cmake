@@ -7,7 +7,7 @@ get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative part
 # targets file (-targets) installed to bin/cmake
 include(${XP_ROOTDIR}/bin/cmake/wxinclude-targets.cmake)
 set(WXINCLUDE_VER "@VER@ [@PROJECT_NAME@]")
-set(WXINCLUDE_EXE wxInclude)
+set(WXINCLUDE_EXE xpro::wxInclude)
 set(reqVars WXINCLUDE_VER WXINCLUDE_EXE)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(wxinclude REQUIRED_VARS ${reqVars})
