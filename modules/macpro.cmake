@@ -155,7 +155,7 @@ macro(proAddProjectDir proDir) # NOTE: called by top-level CMakeLists.txt
     xpMarkdownReadmeAppend(${pro})
   endforeach()
   file(GLOB xpfiles
-    ${PROJECT_SOURCE_DIR}/README* ${PROJECT_SOURCE_DIR}/LICENSE*
+    ${PROJECT_SOURCE_DIR}/README* ${PROJECT_SOURCE_DIR}/LICENSE* ${PROJECT_SOURCE_DIR}/*.cmake
     ${PRO_DIR}/README*
     ${CMAKE_BINARY_DIR}/xpbase/pro/*.cmake
     ${MODULES_DIR}/*.cmake ${MODULES_DIR}/*.in
