@@ -57,10 +57,10 @@ function(build_ffmpegv)
   if(NOT (XP_DEFAULT OR XP_PRO_FFMPEG_${ff_VER}))
     return()
   endif()
-  if(${ff_VER} STREQUAL ${FFMPEG_MSWVER})
+  if(ff_VER VERSION_EQUAL FFMPEG_MSWVER)
     set(BUILD_CONFIGS Release) # we only need a release version
     xpCmakeBuild(ffmpeg_${ff_VER} "" "-DFFMPEG_VER=${ff_VER}")
-  elseif(${ff_VER} STREQUAL ${FFMPEG_CFGVER})
+  elseif(ff_VER VERSION_EQUAL FFMPEG_CFGVER)
     xpBuildDeps(depTgts ${PRO_FFMPEG_${FFMPEG_CFGVER}})
     set(XP_CONFIGURE_BASE ${CMAKE_COMMAND} -E env PKG_CONFIG_PATH=${STAGE_DIR}/share/cmake
       PATH=${STAGE_DIR}/bin:$ENV{PATH} # prepend path to yasm

@@ -30,9 +30,9 @@ function(build_openssl)
   list(REMOVE_DUPLICATES OPENSSL_VERSIONS)
   list(LENGTH OPENSSL_VERSIONS NUM_VER)
   if(NUM_VER EQUAL 1)
-    if(OPENSSL_VERSIONS EQUAL OPENSSL_OLDVER)
+    if(OPENSSL_VERSIONS VERSION_EQUAL OPENSSL_OLDVER)
       set(boolean OFF)
-    else() # OPENSSL_VERSIONS EQUAL OPENSSL_NEWVER
+    else() # OPENSSL_VERSIONS VERSION_EQUAL OPENSSL_NEWVER
       set(boolean ON)
     endif()
     set(ONE_VER "set(XP_USE_LATEST_OPENSSL ${boolean}) # currently only one version supported\n")

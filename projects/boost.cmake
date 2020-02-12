@@ -56,9 +56,14 @@ function(build_boost)
     )
   list(LENGTH BOOST_VERSIONS NUM_VER)
   if(NUM_VER EQUAL 1)
-    set(USE_SCRIPT_INSERT "set(XP_USE_LATEST_BOOST ON) # currently only one version supported")
+    if(BOOST_VERSIONS VERSION_EQUAL BOOST_OLDVER)
+      set(boolean OFF)
+    else() # BOOST_VERSIONS VERSION_EQUAL BOOST_NEWVER
+      set(boolean ON)
+    endif()
+    set(USE_SCRIPT_INSERT "set(XP_USE_LATEST_BOOST ${boolean}) # currently only one version supported")
   else()
-    set(USE_SCRIPT_INSERT "#set(XP_USE_LATEST_BOOST ON) # currently multiple versions supported")
+    set(USE_SCRIPT_INSERT "#set(XP_USE_LATEST_BOOST) # currently multiple versions supported")
   endif()
   configure_file(${PRO_DIR}/use/usexp-boost-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF

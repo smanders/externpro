@@ -19,9 +19,9 @@ function(build_activemqcpp)
   list(REMOVE_DUPLICATES AMQ_VERSIONS)
   list(LENGTH AMQ_VERSIONS NUM_VER)
   if(NUM_VER EQUAL 1)
-    if(AMQ_VERSIONS EQUAL AMQ_OLDVER)
+    if(AMQ_VERSIONS VERSION_EQUAL AMQ_OLDVER)
       set(boolean OFF)
-    else() # AMQ_VERSIONS EQUAL AMQ_NEWVER
+    else() # AMQ_VERSIONS VERSION_EQUAL AMQ_NEWVER
       set(boolean ON)
     endif()
     set(ONE_VER "set(XP_USE_LATEST_ACTIVEMQCPP ${boolean}) # currently only one version supported\n")

@@ -19,9 +19,9 @@ function(build_libgit2)
   list(REMOVE_DUPLICATES LIBGIT2_VERSIONS)
   list(LENGTH LIBGIT2_VERSIONS NUM_VER)
   if(NUM_VER EQUAL 1)
-    if(LIBGIT2_VERSIONS EQUAL LIBGIT2_OLDVER)
+    if(LIBGIT2_VERSIONS VERSION_EQUAL LIBGIT2_OLDVER)
       set(boolean OFF)
-    else() # LIBGIT2_VERSIONS EQUAL LIBGIT2_NEWVER
+    else() # LIBGIT2_VERSIONS VERSION_EQUAL LIBGIT2_NEWVER
       set(boolean ON)
     endif()
     set(ONE_VER "set(XP_USE_LATEST_LIBGIT2 ${boolean}) # currently only one version supported\n")

@@ -19,9 +19,9 @@ function(build_libssh2)
   list(REMOVE_DUPLICATES LIBSSH2_VERSIONS)
   list(LENGTH LIBSSH2_VERSIONS NUM_VER)
   if(NUM_VER EQUAL 1)
-    if(LIBSSH2_VERSIONS EQUAL LIBSSH2_OLDVER)
+    if(LIBSSH2_VERSIONS VERSION_EQUAL LIBSSH2_OLDVER)
       set(boolean OFF)
-    else() # LIBSSH2_VERSIONS EQUAL LIBSSH2_NEWVER
+    else() # LIBSSH2_VERSIONS VERSION_EQUAL LIBSSH2_NEWVER
       set(boolean ON)
     endif()
     set(ONE_VER "set(XP_USE_LATEST_LIBSSH2 ${boolean}) # currently only one version supported\n")

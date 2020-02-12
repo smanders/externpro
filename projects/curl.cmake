@@ -19,9 +19,9 @@ function(build_curl)
   list(REMOVE_DUPLICATES CURL_VERSIONS)
   list(LENGTH CURL_VERSIONS NUM_VER)
   if(NUM_VER EQUAL 1)
-    if(CURL_VERSIONS EQUAL CURL_OLDVER)
+    if(CURL_VERSIONS VERSION_EQUAL CURL_OLDVER)
       set(boolean OFF)
-    else() # CURL_VERSIONS EQUAL CURL_NEWVER
+    else() # CURL_VERSIONS VERSION_EQUAL CURL_NEWVER
       set(boolean ON)
     endif()
     set(ONE_VER "set(XP_USE_LATEST_CURL ${boolean}) # currently only one version supported\n")

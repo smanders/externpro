@@ -31,9 +31,9 @@ function(build_node)
   list(REMOVE_DUPLICATES NODE_VERSIONS)
   list(LENGTH NODE_VERSIONS NUM_VER)
   if(NUM_VER EQUAL 1)
-    if(NODE_VERSIONS EQUAL NODE_OLDVER)
+    if(NODE_VERSIONS VERSION_EQUAL NODE_OLDVER)
       set(boolean OFF)
-    else() # NODE_VERSIONS EQUAL NODE_NEWVER
+    else() # NODE_VERSIONS VERSION_EQUAL NODE_NEWVER
       set(boolean ON)
     endif()
     set(ONE_VER "set(XP_USE_LATEST_NODE ${boolean}) # currently only one version supported\n")
