@@ -1,6 +1,5 @@
 # LIBGIT2_FOUND - libgit2 was found
 # LIBGIT2_VER - libgit2 version
-# LIBGIT2_INCLUDE_DIR - the libgit2 include directory
 # LIBGIT2_LIBRARIES - the libgit2 libraries
 set(prj libgit2)
 # this file (-config) installed to share/cmake
@@ -17,12 +16,11 @@ else()
   set(ver @LIBGIT2_OLDVER@)
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
-set(${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include/${prj}_${ver}${VER_MOD})
 xpFindPkg(PKGS libssh2) # dependency
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}_${ver}${VER_MOD}-targets.cmake)
-set(${PRJ}_LIBRARIES git2)
-set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
+set(${PRJ}_LIBRARIES xpro::git2)
+set(reqVars ${PRJ}_VER ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})

@@ -75,6 +75,7 @@ function(build_libgit2)
       -DBUILD_SHARED_LIBS=OFF
       -DTHREADSAFE=ON
       -DINSTALL_LIBGIT2_CONFIG=OFF
+      -DXP_NAMESPACE:STRING=xpro
       -DLIBGIT2_VER=${ver}
       )
     if(WIN32)
