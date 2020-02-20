@@ -16,23 +16,6 @@ set(nsPrefix xpro::) # TRICKY: nsPrefix also used in protobuf-module.cmake
 # protobuf installs a config file which includes -targets.cmake and -module.cmake
 include(${XP_ROOTDIR}/lib/cmake/protobuf_@VER@/${prj}-config.cmake)
 set(${PRJ}_LIBRARIES ${nsPrefix}libprotobuf)
-if(NOT TARGET libprotobuf)
-  add_library(libprotobuf STATIC IMPORTED)
-  foreach(prop
-    INTERFACE_INCLUDE_DIRECTORIES
-    IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE
-    IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG
-    IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE
-    IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG
-    IMPORTED_LOCATION_RELEASE
-    IMPORTED_LOCATION_DEBUG
-    )
-    get_target_property(tmp ${nsPrefix}libprotobuf ${prop})
-    if(tmp)
-      set_target_properties(libprotobuf PROPERTIES ${prop} "${tmp}")
-    endif()
-  endforeach()
-endif()
 set(${PRJ}_PROTOC_EXECUTABLE ${nsPrefix}protoc) # TRICKY: must be named to match what's used in -module.cmake
 get_target_property(PROTOBUF_INCLUDE_DIR ${nsPrefix}libprotobuf INTERFACE_INCLUDE_DIRECTORIES)
 set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_PROTOC_EXECUTABLE)
