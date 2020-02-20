@@ -2104,8 +2104,11 @@ macro(xpSetFlagsGcc)
 endmacro()
 
 macro(xpSetFlags) # preprocessor, compiler, linker flags
+  xpEnforceOutOfSourceBuilds()
+  xpSetUnitTestTools()
   enable_testing()
   set_property(GLOBAL PROPERTY USE_FOLDERS ON) # enables Solution Folders
+  set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_NO_CYCLES ON)
   xpCommonFlags()
   xpEnableWarnings()
   if(NOT DEFINED XP_CMAKE_REPO_INSYNC)
