@@ -2,6 +2,7 @@
 # CERES_VER - ceres version
 # CERES_INCLUDE_DIR - the ceres include directory
 # CERES_LIBRARIES - the ceres libraries
+xpFindPkg(PKGS eigen) # dependencies
 set(prj ceres)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)

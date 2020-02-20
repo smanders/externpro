@@ -48,6 +48,7 @@ endif()
 list(FIND Boost_LIBS iostreams idx)
 if(NOT ${idx} EQUAL -1)
   # iostreams depends on zlib bzip2
+  xpFindPkg(PKGS bzip2 zlib) # dependencies
   xpGetPkgVar(zlib LIBRARIES) # sets ZLIB_LIBRARIES
   xpGetPkgVar(bzip2 LIBRARIES) # sets BZIP2_LIBRARIES
 endif()

@@ -3,9 +3,7 @@
 # PROTOBUF_INCLUDE_DIR - the protobuf include directory
 # PROTOBUF_LIBRARIES - the protobuf libraries
 # PROTOBUF_PROTOC_EXECUTABLE - the protobuf compiler (protoc) executable
-if(COMMAND xpFindPkg)
-  xpFindPkg(PKGS zlib) # dependencies
-endif()
+xpFindPkg(PKGS zlib) # dependencies
 set(prj protobuf)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)

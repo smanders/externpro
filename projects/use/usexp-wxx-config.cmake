@@ -1,9 +1,7 @@
 # WXX_FOUND - wxx was found
 # WXX_VER - wxx version
 # WXX_LIBRARIES - the wxx libraries
-if(COMMAND xpFindPkg)
-  xpFindPkg(PKGS wxWidgets) # dependencies
-endif()
+xpFindPkg(PKGS wxwidgets) # dependencies
 set(prj wxx)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)

@@ -3,6 +3,7 @@
 # FFMPEG_INCLUDE_DIR - the FFmpeg include directories
 # FFMPEG_LIBRARIES - the FFmpeg libraries
 # FFMPEG_DLLS - the FFmpeg shared objects (dll, so)
+xpFindPkg(PKGS openh264) # dependencies
 xpGetPkgVar(openh264 LIBRARIES) # sets OPENH264_LIBRARIES
 set(prj ffmpeg)
 # this file (-config) installed to share/cmake
