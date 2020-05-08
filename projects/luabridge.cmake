@@ -1,6 +1,5 @@
 # luabridge
-set(VER 2.0) # repo isn't tagged with version 2.0 - 1.0.2 was the last tag
-set(TAG 244f9b35498feab3039a58ffb258367d7bc054ac) # 2017.03.31 commit, head of master branch on 2017.09.28
+set(VER 2.5)
 set(REPO github.com/vinniefalco/LuaBridge)
 set(PRO_LUABRIDGE
   NAME luabridge
@@ -11,8 +10,8 @@ set(PRO_LUABRIDGE
   REPO "repo" https://${REPO} "LuaBridge repo on github"
   VER ${VER}
   GIT_ORIGIN git://${REPO}.git
-  GIT_TAG ${TAG}
-  DLURL https://${REPO}/archive/${TAG}.tar.gz
-  DLMD5 0ac0ac198ec37ad5782dd5269ebbbe23
-  DLNAME LuaBridge-${VER}p.tar.gz
+  GIT_TAG ${VER}
+  DLURL https://${REPO}/archive/${VER}.tar.gz
+  DLMD5 3fda2f8e635cf0263cd9e4a696b4bfa2
+  DLNAME LuaBridge-${VER}.tar.gz
   )
