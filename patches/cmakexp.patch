@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e20d770..b1bde41 100644
+index fb7b9b7..da773f8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -84,6 +84,7 @@ endif()
+@@ -99,6 +99,7 @@ endif()
  if(NOT CMake_TEST_EXTERNAL_CMAKE)
    # include special compile flags for some compilers
    include(CompileFlags.cmake)
@@ -10,7 +10,7 @@ index e20d770..b1bde41 100644
  
    # check for available C++ features
    include(${CMake_SOURCE_DIR}/Source/Checks/cm_cxx_features.cmake)
-@@ -429,6 +430,8 @@ macro (CMAKE_BUILD_UTILITIES)
+@@ -464,6 +465,8 @@ macro (CMAKE_BUILD_UTILITIES)
        set(CURL_CA_BUNDLE "" CACHE FILEPATH "Path to SSL CA Certificate Bundle")
        set(CURL_CA_PATH "" CACHE PATH "Path to SSL CA Certificate Directory")
        mark_as_advanced(CURL_CA_BUNDLE CURL_CA_PATH)
@@ -20,27 +20,35 @@ index e20d770..b1bde41 100644
      add_subdirectory(Utilities/cmcurl)
      CMAKE_SET_TARGET_FOLDER(cmcurl "Utilities/3rdParty")
 diff --git a/Utilities/cmcurl/CMakeLists.txt b/Utilities/cmcurl/CMakeLists.txt
-index 0128214..65725d7 100644
+index bc8a7dc..0138b0a 100644
 --- a/Utilities/cmcurl/CMakeLists.txt
 +++ b/Utilities/cmcurl/CMakeLists.txt
-@@ -447,7 +447,11 @@ if(CMAKE_USE_DARWINSSL)
+@@ -449,11 +449,15 @@ if(CMAKE_USE_SECTRANSP)
  endif()
  
  if(CMAKE_USE_OPENSSL)
--  find_package(OpenSSL REQUIRED)
+-  find_package(OpenSSL)
+-  if(NOT OpenSSL_FOUND)
+-    message(FATAL_ERROR
+-      "Could not find OpenSSL. Install an OpenSSL development package or "
+-      "configure CMake with -DCMAKE_USE_OPENSSL=OFF to build without OpenSSL.")
 +  if(CMAKE_USE_OPENSSL_MODULE_PATH)
 +    find_package(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
 +  else()
-+    find_package(OpenSSL REQUIRED)
-+  endif()
++    find_package(OpenSSL)
++    if(NOT OpenSSL_FOUND)
++      message(FATAL_ERROR
++        "Could not find OpenSSL. Install an OpenSSL development package or "
++        "configure CMake with -DCMAKE_USE_OPENSSL=OFF to build without OpenSSL.")
++    endif()
+   endif()
    set(SSL_ENABLED ON)
    set(USE_OPENSSL ON)
-   set(HAVE_LIBCRYPTO ON)
 diff --git a/Utilities/cmlibarchive/CMakeLists.txt b/Utilities/cmlibarchive/CMakeLists.txt
-index 206f3c6..67be408 100644
+index 26a9aa9..1254d60 100644
 --- a/Utilities/cmlibarchive/CMakeLists.txt
 +++ b/Utilities/cmlibarchive/CMakeLists.txt
-@@ -518,7 +518,11 @@ ENDIF(ENABLE_NETTLE)
+@@ -546,7 +546,11 @@ ENDIF(ENABLE_NETTLE)
  # (Except on Mac, where OpenSSL is deprecated.)
  #
  IF(ENABLE_OPENSSL AND NOT CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -53,7 +61,7 @@ index 206f3c6..67be408 100644
    IF(OPENSSL_FOUND)
      SET(HAVE_LIBCRYPTO 1)
      INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR})
-@@ -564,16 +568,13 @@ MACRO(CHECK_CRYPTO ALGORITHMS IMPLEMENTATION)
+@@ -592,16 +596,13 @@ MACRO(CHECK_CRYPTO ALGORITHMS IMPLEMENTATION)
  	IF ("${IMPLEMENTATION}" MATCHES "^OPENSSL$" AND OPENSSL_FOUND)
  	    SET(TRY_CRYPTO_REQUIRED_INCLUDES
  	      "${TRY_CRYPTO_REQUIRED_INCLUDES};${OPENSSL_INCLUDE_DIR}")
@@ -73,7 +81,7 @@ index 206f3c6..67be408 100644
  	ENDIF("${IMPLEMENTATION}" MATCHES "^OPENSSL$" AND OPENSSL_FOUND)
  
      CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.in
-@@ -610,8 +611,9 @@ main(int argc, char **argv)
+@@ -638,8 +639,9 @@ main(int argc, char **argv)
  	  ${CMAKE_BINARY_DIR}
  	  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/check_crypto_md.c
  	  CMAKE_FLAGS
@@ -85,7 +93,7 @@ index 206f3c6..67be408 100644
  
  	# Inform user whether or not we found it; if not, log why we didn't.
 diff --git a/Utilities/cmlibarchive/libarchive/archive_cryptor.c b/Utilities/cmlibarchive/libarchive/archive_cryptor.c
-index ced52fd..871456f 100644
+index 71967c9..775c9de 100644
 --- a/Utilities/cmlibarchive/libarchive/archive_cryptor.c
 +++ b/Utilities/cmlibarchive/libarchive/archive_cryptor.c
 @@ -316,7 +316,11 @@ aes_ctr_init(archive_crypto_ctx *ctx, const uint8_t *key, size_t key_len)
