@@ -1078,8 +1078,8 @@ macro(xpSourceListAppend)
         xpGlobFiles(ignoreFiles ${item} *)
       endforeach()
       list(REMOVE_ITEM repoFiles ${masterSrcList} ${ignoreFiles})
-      if(DEFINED XP_CMAKE_REPO_INSYNC)
-        option(XP_CMAKE_REPO_INSYNC "cmake error if repo and cmake are not in sync" ${XP_CMAKE_REPO_INSYNC})
+      if(DEFINED NV_CMAKE_REPO_INSYNC)
+        option(XP_CMAKE_REPO_INSYNC "cmake error if repo and cmake are not in sync" ${NV_CMAKE_REPO_INSYNC})
       else()
         option(XP_CMAKE_REPO_INSYNC "cmake error if repo and cmake are not in sync" OFF)
       endif()
@@ -2112,7 +2112,8 @@ macro(xpSetFlags) # preprocessor, compiler, linker flags
   xpCommonFlags()
   xpEnableWarnings()
   if(NOT DEFINED XP_CMAKE_REPO_INSYNC)
-    set(XP_CMAKE_REPO_INSYNC ON) # cmake error if repo and cmake are not in sync
+    # cmake error if repo and cmake are not in sync
+    set(NV_CMAKE_REPO_INSYNC ON) # (NV: normal variable) 'cmake --help-policy CMP0077'
   endif()
   if(MSVC)
     xpSetFlagsMsvc()
