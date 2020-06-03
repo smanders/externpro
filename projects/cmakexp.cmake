@@ -1,6 +1,6 @@
 # cmakexp
 xpProOption(cmakexp)
-set(VER 3.17.2)
+set(VER 3.17.3)
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1.\\2" VER2 ${VER})
 set(REPO github.com/Kitware/CMake)
 set(FORK github.com/smanders/CMake)
@@ -17,7 +17,7 @@ set(PRO_CMAKEXP
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://www.cmake.org/files/v${VER2}/cmake-${VER}.tar.gz
-  DLMD5 fa62a3e1a736213f1d38dbe723550484
+  DLMD5 d47f23a9781b68014e77717f8e291bb7
   PATCH ${PATCH_DIR}/cmakexp.patch
   DIFF https://${FORK}/compare/Kitware:
   )
