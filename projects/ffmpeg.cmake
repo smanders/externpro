@@ -65,7 +65,7 @@ function(build_ffmpegv)
     set(XP_CONFIGURE_BASE ${CMAKE_COMMAND} -E env PKG_CONFIG_PATH=${STAGE_DIR}/share/cmake
       PATH=${STAGE_DIR}/bin:$ENV{PATH} # prepend path to yasm
       <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> #--enable-shared --disable-static
-      --enable-libopenh264 --disable-bzlib --disable-iconv
+      --enable-pic --enable-libopenh264 --disable-bzlib --disable-iconv
       --disable-libxcb --disable-libxcb-shm --disable-libxcb-xfixes --disable-libxcb-shape
       --disable-lzma --disable-sdl --disable-xlib --disable-zlib
       )
