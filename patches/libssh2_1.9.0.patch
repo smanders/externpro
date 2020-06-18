@@ -39,7 +39,7 @@ index ae55942..7afcb00 100644
  install(
    FILES docs/AUTHORS COPYING docs/HACKING README RELEASE-NOTES NEWS
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 2eaf4cc..6d652a8 100644
+index 2eaf4cc..25f3e6e 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -60,7 +60,14 @@ endif()
@@ -76,7 +76,7 @@ index 2eaf4cc..6d652a8 100644
  
  ## Options
  
-@@ -239,7 +247,14 @@ option(ENABLE_ZLIB_COMPRESSION "Use zlib for compression")
+@@ -239,9 +247,16 @@ option(ENABLE_ZLIB_COMPRESSION "Use zlib for compression")
  add_feature_info(Compression ENABLE_ZLIB_COMPRESSION
    "using zlib for compression")
  if(ENABLE_ZLIB_COMPRESSION)
@@ -88,10 +88,13 @@ index 2eaf4cc..6d652a8 100644
 +    find_package(usexp-ZLIB REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
 +  else()
 +    find_package(ZLIB REQUIRED)
++    target_include_directories(libssh2 PRIVATE ${ZLIB_INCLUDE_DIRS})
 +  endif()
  
-   target_include_directories(libssh2 PRIVATE ${ZLIB_INCLUDE_DIRS})
+-  target_include_directories(libssh2 PRIVATE ${ZLIB_INCLUDE_DIRS})
    list(APPEND LIBRARIES ${ZLIB_LIBRARIES})
+   list(APPEND PC_REQUIRES_PRIVATE zlib)
+   if(ZLIB_FOUND)
 @@ -392,7 +407,7 @@ set(RUNTIME_DEPENDENCIES ${_RUNTIME_DEPENDENCIES} CACHE INTERNAL
  ## During package installation, install Libssh2Config.cmake
  install(EXPORT Libssh2Config

@@ -34,6 +34,7 @@ function(build_zlib)
     -DSKIP_INSTALL_SHARED_LIBRARIES=ON # only need static library
     -DSKIP_INSTALL_FILES=ON # no need for share/man and share/pkgconfig
     -DZLIB_VER=${VER}
+    -DXP_NAMESPACE:STRING=xpro
     )
   xpCmakeBuild(zlib "" "${XP_CONFIGURE}" zlibTargets)
   if(ARGN)

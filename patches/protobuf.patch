@@ -8,7 +8,7 @@ index 0000000..3eb6f89
 +include(flags OPTIONAL)
 +add_subdirectory(cmake)
 diff --git a/cmake/CMakeLists.txt b/cmake/CMakeLists.txt
-index 33e069f..6a32734 100644
+index 33e069f..84cdd16 100644
 --- a/cmake/CMakeLists.txt
 +++ b/cmake/CMakeLists.txt
 @@ -44,7 +44,21 @@ if (CMAKE_USE_PTHREADS_INIT)
@@ -28,7 +28,7 @@ index 33e069f..6a32734 100644
 +  find_package(usexp-ZLIB REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
 +  if (ZLIB_FOUND)
 +    set(HAVE_ZLIB 1)
-+    set(ZLIB_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS})
++    set(ZLIB_INCLUDE_DIRECTORIES) # NOTE: bundled with library (INTERFACE_INCLUDE_DIRECTORIES)
 +  endif (ZLIB_FOUND)
 +elseif (MSVC)
    if (ZLIB)
@@ -58,7 +58,7 @@ index 33e069f..6a32734 100644
  
 +if(NOT DEFINED PROTOBUF_VER)
 +  set(PROTOBUF_VER ${protobuf_VERSION})
-+elseif(NOT ${PROTOBUF_VER} STREQUAL ${protobuf_VERSION})
++elseif(NOT PROTOBUF_VER STREQUAL protobuf_VERSION)
 +  message(AUTHOR_WARNING "version passed in (${PROTOBUF_VER}) doesn't match internal version (${protobuf_VERSION})")
 +endif()
 +set(ver _${PROTOBUF_VER})
@@ -189,20 +189,6 @@ index 4f07c38..b3617ed 100644
 +  DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}"
 +  OUTPUT_NAME protoc${ver}
 +)
-diff --git a/src/google/protobuf/compiler/command_line_interface.cc b/src/google/protobuf/compiler/command_line_interface.cc
-index 26a4f0b..175a398 100644
---- a/src/google/protobuf/compiler/command_line_interface.cc
-+++ b/src/google/protobuf/compiler/command_line_interface.cc
-@@ -47,6 +47,9 @@
- #include <errno.h>
- #include <iostream>
- #include <ctype.h>
-+#ifdef __sun
-+#include <limits.h>
-+#endif
- 
- #include <memory>
- #ifndef _SHARED_PTR_H
 diff --git a/src/google/protobuf/compiler/java/java_file.cc b/src/google/protobuf/compiler/java/java_file.cc
 index 68b47ee..6b8e02e 100644
 --- a/src/google/protobuf/compiler/java/java_file.cc
