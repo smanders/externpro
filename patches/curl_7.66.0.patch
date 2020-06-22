@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0772d6e..f416ddc 100644
+index 0772d6e..2518941 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -46,6 +46,7 @@ include(CMakeDependentOption)
@@ -101,7 +101,7 @@ index 0772d6e..f416ddc 100644
      else()
        list(APPEND CURL_LIBS ${ZLIB_LIBRARIES})
        include_directories(${ZLIB_INCLUDE_DIRS})
-@@ -547,7 +581,14 @@ set(HAVE_LIBSSH2 OFF)
+@@ -547,7 +581,16 @@ set(HAVE_LIBSSH2 OFF)
  set(HAVE_LIBSSH2_H OFF)
  
  if(CMAKE_USE_LIBSSH2)
@@ -110,14 +110,16 @@ index 0772d6e..f416ddc 100644
 +  mark_as_advanced(CMAKE_USE_LIBSSH2_MODULE_PATH)
 +  if(CMAKE_USE_LIBSSH2_MODULE_PATH)
 +    find_package(usexp-LibSSH2 REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
-+    set(LIBSSH2_INCLUDE_DIR ${LIBSSH2_INCLUDE_DIRS})
++    get_target_property(LIBSSH2_INCLUDE_DIR ${LIBSSH2_LIBRARIES} INTERFACE_INCLUDE_DIRECTORIES)
++    list(FILTER LIBSSH2_INCLUDE_DIR INCLUDE REGEX "/libssh2$") # include dir ending with /libssh2
++    set(LIBSSH2_LIBRARY ${LIBSSH2_LIBRARIES})
 +  else()
 +    find_package(LibSSH2)
 +  endif()
    if(LIBSSH2_FOUND)
      list(APPEND CURL_LIBS ${LIBSSH2_LIBRARY})
      set(CMAKE_REQUIRED_LIBRARIES ${LIBSSH2_LIBRARY})
-@@ -1150,9 +1191,19 @@ function(transform_makefile_inc INPUT_FILE OUTPUT_FILE)
+@@ -1150,9 +1193,19 @@ function(transform_makefile_inc INPUT_FILE OUTPUT_FILE)
  
  endfunction()
  
@@ -138,7 +140,7 @@ index 0772d6e..f416ddc 100644
  set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
  set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
  set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
-@@ -1294,24 +1345,31 @@ set(REQUIRE_LIB_DEPS        "no")
+@@ -1294,24 +1347,31 @@ set(REQUIRE_LIB_DEPS        "no")
  # SUPPORT_PROTOCOLS
  set(VERSIONNUM              "${CURL_VERSION_NUM}")
  
@@ -170,7 +172,7 @@ index 0772d6e..f416ddc 100644
  
  # install headers
  install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/curl"
-@@ -1339,10 +1397,12 @@ install(
+@@ -1339,10 +1399,12 @@ install(
          DESTINATION ${CURL_INSTALL_CMAKE_DIR}
  )
  

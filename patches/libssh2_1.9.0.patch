@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ae55942..7afcb00 100644
+index ae55942..9f58758 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -35,11 +35,16 @@
@@ -20,7 +20,7 @@ index ae55942..7afcb00 100644
  
  if (CMAKE_VERSION VERSION_LESS "3.1")
    if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-@@ -77,6 +82,17 @@ if(NOT LIBSSH2_VERSION OR
+@@ -77,6 +82,18 @@ if(NOT LIBSSH2_VERSION OR
      "${CMAKE_CURRENT_SOURCE_DIR}/include/libssh2.h")
  endif()
  
@@ -33,13 +33,24 @@ index ae55942..7afcb00 100644
 +  set(_ver _${LIBSSH2_VER})
 +  set(CMAKE_INSTALL_DOCDIR share/doc/${PROJECT_NAME}${_ver})
 +  set(CMAKE_INSTALL_INCLUDEDIR include/${PROJECT_NAME}${_ver}/${PROJECT_NAME})
++  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
 +endif()
 +
  include(GNUInstallDirs)
  install(
    FILES docs/AUTHORS COPYING docs/HACKING README RELEASE-NOTES NEWS
+diff --git a/docs/CMakeLists.txt b/docs/CMakeLists.txt
+index 6abf0e4..5002089 100644
+--- a/docs/CMakeLists.txt
++++ b/docs/CMakeLists.txt
+@@ -207,4 +207,4 @@ set(MAN_PAGES
+   libssh2_version.3)
+ 
+ include(GNUInstallDirs)
+-install(FILES ${MAN_PAGES} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
++install(FILES ${MAN_PAGES} ${XP_OPT_INSTALL} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 2eaf4cc..25f3e6e 100644
+index 2eaf4cc..3b4a809 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -60,7 +60,14 @@ endif()
@@ -95,24 +106,39 @@ index 2eaf4cc..25f3e6e 100644
    list(APPEND LIBRARIES ${ZLIB_LIBRARIES})
    list(APPEND PC_REQUIRES_PRIVATE zlib)
    if(ZLIB_FOUND)
-@@ -392,7 +407,7 @@ set(RUNTIME_DEPENDENCIES ${_RUNTIME_DEPENDENCIES} CACHE INTERNAL
+@@ -389,14 +404,20 @@ set(RUNTIME_DEPENDENCIES ${_RUNTIME_DEPENDENCIES} CACHE INTERNAL
+ 
+ # Package config
+ 
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace ${XP_NAMESPACE}::)
++else()
++  set(nameSpace Libssh2::)
++endif()
++
  ## During package installation, install Libssh2Config.cmake
  install(EXPORT Libssh2Config
-   NAMESPACE Libssh2::
+-  NAMESPACE Libssh2::
 -  DESTINATION lib/cmake/libssh2)
++  NAMESPACE ${nameSpace}
 +  DESTINATION lib/cmake/libssh2${_ver})
  
  ## During build, register directly from build tree
  # create Libssh2Config.cmake
-@@ -409,6 +424,7 @@ endif()
+-export(TARGETS libssh2 NAMESPACE Libssh2:: FILE Libssh2Config.cmake)
++export(TARGETS libssh2 NAMESPACE ${nameSpace} FILE Libssh2Config.cmake)
+ export(PACKAGE Libssh2) # register it
+ 
+ ## Export a .pc file for client projects not using CMaek
+@@ -409,6 +430,7 @@ endif()
  configure_file(libssh2.pc.in libssh2.pc @ONLY)
  install(
    FILES ${CMAKE_CURRENT_BINARY_DIR}/libssh2.pc
-+  RENAME libssh2${_ver}.pc
++  RENAME libssh2${_ver}.pc ${XP_OPT_INSTALL}
    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
  
  ## Versioning
-@@ -424,4 +440,4 @@ write_basic_package_version_file(
+@@ -424,4 +446,4 @@ write_basic_package_version_file(
    COMPATIBILITY SameMajorVersion)
  install(
    FILES ${CMAKE_CURRENT_BINARY_DIR}/Libssh2ConfigVersion.cmake

@@ -44,6 +44,7 @@ function(build_libssh2)
       -DCRYPTO_BACKEND:STRING=OpenSSL
       -DFIND_OPENSSL_MODULE_PATH=ON
       -DXP_INSTALL_DIRS:BOOL=ON
+      -DXP_NAMESPACE:STRING=xpro
       -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
       -DLIBSSH2_VER=${ver}
       )
