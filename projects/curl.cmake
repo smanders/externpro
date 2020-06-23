@@ -59,6 +59,7 @@ function(build_curl)
       -DCURL_DISABLE_LDAP=ON
       -DENABLE_LIBIDN=OFF
       -DXP_INSTALL_DIRS=ON
+      -DXP_NAMESPACE:STRING=xpro
       ${XP_CONFIGURE_${ver}}
       )
     xpCmakeBuild(curl_${ver} "${depTgts}" "${XP_CONFIGURE}")

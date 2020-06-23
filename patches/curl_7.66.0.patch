@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0772d6e..2518941 100644
+index 0772d6e..e325d85 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -46,6 +46,7 @@ include(CMakeDependentOption)
@@ -119,7 +119,7 @@ index 0772d6e..2518941 100644
    if(LIBSSH2_FOUND)
      list(APPEND CURL_LIBS ${LIBSSH2_LIBRARY})
      set(CMAKE_REQUIRED_LIBRARIES ${LIBSSH2_LIBRARY})
-@@ -1150,9 +1193,19 @@ function(transform_makefile_inc INPUT_FILE OUTPUT_FILE)
+@@ -1150,9 +1193,24 @@ function(transform_makefile_inc INPUT_FILE OUTPUT_FILE)
  
  endfunction()
  
@@ -132,6 +132,11 @@ index 0772d6e..2518941 100644
 +  set(_ver _${CURL_VER})
 +  set(CMAKE_INSTALL_INCLUDEDIR include/curl${_ver})
 +endif()
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace ${XP_NAMESPACE}::)
++else()
++  set(nameSpace ${PROJECT_NAME}::)
++endif()
 +
  include(GNUInstallDirs)
  
@@ -140,7 +145,7 @@ index 0772d6e..2518941 100644
  set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
  set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
  set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
-@@ -1294,24 +1347,31 @@ set(REQUIRE_LIB_DEPS        "no")
+@@ -1294,24 +1352,31 @@ set(REQUIRE_LIB_DEPS        "no")
  # SUPPORT_PROTOCOLS
  set(VERSIONNUM              "${CURL_VERSION_NUM}")
  
@@ -172,7 +177,12 @@ index 0772d6e..2518941 100644
  
  # install headers
  install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/curl"
-@@ -1339,10 +1399,12 @@ install(
+@@ -1335,14 +1400,16 @@ configure_package_config_file(CMake/curl-config.cmake.in
+ 
+ install(
+         EXPORT "${TARGETS_EXPORT_NAME}"
+-        NAMESPACE "${PROJECT_NAME}::"
++        NAMESPACE "${nameSpace}"
          DESTINATION ${CURL_INSTALL_CMAKE_DIR}
  )
  
@@ -199,7 +209,7 @@ index ff0c774..b0c281b 100644
  
  #ifndef CURL_MAX_HTTP_HEADER
 diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
-index eca9a8a..eeaf3e8 100644
+index eca9a8a..c6d803f 100644
 --- a/lib/CMakeLists.txt
 +++ b/lib/CMakeLists.txt
 @@ -97,6 +97,9 @@ endif()
@@ -212,11 +222,27 @@ index eca9a8a..eeaf3e8 100644
  if(WIN32)
    if(BUILD_SHARED_LIBS)
      # Add "_imp" as a suffix before the extension to avoid conflicting with the statically linked "libcurl.lib"
+@@ -105,7 +108,7 @@ if(WIN32)
+ endif()
+ 
+ target_include_directories(${LIB_NAME} INTERFACE
+-  $<INSTALL_INTERFACE:include>
++  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+   $<BUILD_INTERFACE:${CURL_SOURCE_DIR}/include>)
+ 
+ install(TARGETS ${LIB_NAME}
+@@ -117,5 +120,5 @@ install(TARGETS ${LIB_NAME}
+ 
+ export(TARGETS ${LIB_NAME}
+        APPEND FILE ${PROJECT_BINARY_DIR}/libcurl-target.cmake
+-       NAMESPACE CURL::
++       NAMESPACE ${nameSpace}
+ )
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 63e2b94..f1a9a1c 100644
+index 63e2b94..cd689c8 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -67,9 +67,12 @@ target_link_libraries(${EXE_NAME} libcurl ${CURL_LIBS})
+@@ -67,10 +67,13 @@ target_link_libraries(${EXE_NAME} libcurl ${CURL_LIBS})
  #SET_TARGET_PROPERTIES(${EXE_NAME} RUNTIME_OUTPUT_DIRECTORY "blah blah blah")
  #SET_TARGET_PROPERTIES(${EXE_NAME} LIBRARY_OUTPUT_DIRECTORY "blah blah blah")
  
@@ -229,4 +255,6 @@ index 63e2b94..f1a9a1c 100644
 +install(TARGETS ${EXE_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR} CONFIGURATIONS Release)
  export(TARGETS ${EXE_NAME}
         APPEND FILE ${PROJECT_BINARY_DIR}/curl-target.cmake
-        NAMESPACE CURL::
+-       NAMESPACE CURL::
++       NAMESPACE ${nameSpace}
+ )
