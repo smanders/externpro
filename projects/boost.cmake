@@ -254,7 +254,7 @@ function(build_boostlibs)
     xpSetPostfix()
     # TRICKY: BINARY (zlibstatic, bz2) needs to be the name of the binary,
     # not including the file extension, or the "lib" prefix on UNIX
-    list(APPEND boost_BUILD -s ZLIB_BINARY=zlibstatic_${zlibVer}${CMAKE_RELEASE_POSTFIX})
+    list(APPEND boost_BUILD -s ZLIB_BINARY=libz_${zlibVer}${CMAKE_RELEASE_POSTFIX})
     list(APPEND boost_BUILD -s BZIP2_BINARY=bz2_${bzip2Ver}${CMAKE_RELEASE_POSTFIX})
   endif()
   set(boost_INSTALL install --libdir=${STAGE_DIR}/lib --includedir=${STAGE_DIR}/include)
