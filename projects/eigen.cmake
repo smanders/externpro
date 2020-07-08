@@ -1,17 +1,19 @@
 # eigen
 xpProOption(eigen)
 set(VER 3.2.7)
+set(REPO https://gitlab.com/libeigen/eigen)
 set(PRO_EIGEN
   NAME eigen
   WEB "Eigen" http://eigen.tuxfamily.org/ "Eigen website"
   LICENSE "open" "http://eigen.tuxfamily.org/index.php?title=Main_Page#License" "Eigen license: MPL2 (aka Mozilla Public License)"
   DESC "C++ template library for linear algebra"
-  REPO "repo" https://bitbucket.org/eigen/eigen "eigen hg repo on bitbucket"
+  REPO "repo" ${REPO} "eigen repo on gitlab"
   GRAPH
   VER ${VER}
-  DLURL http://bitbucket.org/eigen/eigen/get/${VER}.tar.bz2
-  DLMD5 cc1bacbad97558b97da6b77c9644f184
-  DLNAME eigen-${VER}.tar.bz2
+  GIT_ORIGIN ${REPO}.git
+  GIT_TAG ${VER}
+  DLURL ${REPO}/-/archive/${VER}/eigen-${VER}.tar.bz2
+  DLMD5 efad2bd915ca85c8de5b7e095c64ca2b
   DEPS_FUNC build_eigen
   DEPS_VARS EIGEN_INCDIR
   )
