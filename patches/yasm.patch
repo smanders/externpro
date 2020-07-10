@@ -1,12 +1,17 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8df871c..a18ef76 100644
+index 8df871c..4fe9da9 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -35,13 +35,27 @@ INCLUDE_DIRECTORIES(AFTER ${CMAKE_BINARY_DIR} ${yasm_SOURCE_DIR})
+@@ -35,13 +35,28 @@ INCLUDE_DIRECTORIES(AFTER ${CMAKE_BINARY_DIR} ${yasm_SOURCE_DIR})
  
  INCLUDE(ConfigureChecks.cmake)
  
 +OPTION(INSTALL_YASM_ONLY "Only install the yasm executable" OFF)
++IF(INSTALL_YASM_ONLY)
++  SET(OPT_INSTALL EXCLUDE_FROM_ALL)
++ELSE()
++  SET(OPT_INSTALL)
++ENDIF()
 +
 +IF(DEFINED YASM_VER)
 +  SET(ver _${YASM_VER})
@@ -19,23 +24,61 @@ index 8df871c..a18ef76 100644
  ADD_SUBDIRECTORY(modules)
  ADD_SUBDIRECTORY(frontends)
  
-+IF(NOT INSTALL_YASM_ONLY)
-+
-+INSTALL(EXPORT ${targetsFile} DESTINATION bin/cmake)
++INSTALL(EXPORT ${targetsFile} DESTINATION bin/cmake ${OPT_INSTALL})
 +
  INSTALL(FILES
      libyasm.h
      ${CMAKE_BINARY_DIR}/libyasm-stdint.h
 -    DESTINATION include
-+    DESTINATION include${verDir}
++    DESTINATION include${verDir} ${OPT_INSTALL}
      )
-+
-+ENDIF(INSTALL_YASM_ONLY)
+diff --git a/cmake/modules/YasmMacros.cmake b/cmake/modules/YasmMacros.cmake
+index ab1be00..db61eea 100644
+--- a/cmake/modules/YasmMacros.cmake
++++ b/cmake/modules/YasmMacros.cmake
+@@ -58,31 +58,28 @@ macro (YASM_ADD_MODULE _module_NAME)
+ endmacro (YASM_ADD_MODULE)
+ 
+ macro (YASM_GENPERF _in_NAME _out_NAME)
+-    get_target_property(_tmp_GENPERF_EXE genperf LOCATION)
+     add_custom_command(
+         OUTPUT ${_out_NAME}
+-        COMMAND ${_tmp_GENPERF_EXE} ${_in_NAME} ${_out_NAME}
+-        DEPENDS ${_tmp_GENPERF_EXE}
++        COMMAND genperf ${_in_NAME} ${_out_NAME}
++        DEPENDS genperf
+         MAIN_DEPENDENCY ${_in_NAME}
+         )
+ endmacro (YASM_GENPERF)
+ 
+ macro (YASM_RE2C _in_NAME _out_NAME)
+-    get_target_property(_tmp_RE2C_EXE re2c LOCATION)
+     add_custom_command(
+         OUTPUT ${_out_NAME}
+-        COMMAND ${_tmp_RE2C_EXE} ${ARGN} -o ${_out_NAME} ${_in_NAME}
+-        DEPENDS ${_tmp_RE2C_EXE}
++        COMMAND re2c ${ARGN} -o ${_out_NAME} ${_in_NAME}
++        DEPENDS re2c
+         MAIN_DEPENDENCY ${_in_NAME}
+         )
+ endmacro (YASM_RE2C)
+ 
+ macro (YASM_GENMACRO _in_NAME _out_NAME _var_NAME)
+-    get_target_property(_tmp_GENMACRO_EXE genmacro LOCATION)
+     add_custom_command(
+         OUTPUT ${_out_NAME}
+-        COMMAND ${_tmp_GENMACRO_EXE} ${_out_NAME} ${_var_NAME} ${_in_NAME}
+-        DEPENDS ${_tmp_GENMACRO_EXE}
++        COMMAND genmacro ${_out_NAME} ${_var_NAME} ${_in_NAME}
++        DEPENDS genmacro
+         MAIN_DEPENDENCY ${_in_NAME}
+         )
+ endmacro (YASM_GENMACRO)
 diff --git a/frontends/tasm/CMakeLists.txt b/frontends/tasm/CMakeLists.txt
-index e275ab8..7d27511 100644
+index e275ab8..03e9c8a 100644
 --- a/frontends/tasm/CMakeLists.txt
 +++ b/frontends/tasm/CMakeLists.txt
-@@ -30,8 +30,12 @@ ELSE(BUILD_SHARED_LIBS)
+@@ -30,8 +30,10 @@ ELSE(BUILD_SHARED_LIBS)
      TARGET_LINK_LIBRARIES(ytasm yasmstd libyasm)
  ENDIF(BUILD_SHARED_LIBS)
  
@@ -46,23 +89,19 @@ index e275ab8..7d27511 100644
      )
  
 -INSTALL(TARGETS ytasm RUNTIME DESTINATION bin)
-+IF(NOT INSTALL_YASM_ONLY)
-+INSTALL(TARGETS ytasm EXPORT ${targetsFile} RUNTIME DESTINATION bin)
-+ENDIF(INSTALL_YASM_ONLY)
++INSTALL(TARGETS ytasm EXPORT ${targetsFile} RUNTIME DESTINATION bin ${OPT_INSTALL})
 diff --git a/frontends/vsyasm/CMakeLists.txt b/frontends/vsyasm/CMakeLists.txt
-index 6815b18..46f9edf 100644
+index 6815b18..351554c 100644
 --- a/frontends/vsyasm/CMakeLists.txt
 +++ b/frontends/vsyasm/CMakeLists.txt
-@@ -34,4 +34,8 @@ SET_SOURCE_FILES_PROPERTIES(vsyasm.c PROPERTIES
+@@ -34,4 +34,6 @@ SET_SOURCE_FILES_PROPERTIES(vsyasm.c PROPERTIES
      OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/license.c
      )
  
 -INSTALL(TARGETS vsyasm RUNTIME DESTINATION bin)
 +SET_TARGET_PROPERTIES(vsyasm PROPERTIES OUTPUT_NAME vsyasm${ver})
 +
-+IF(NOT INSTALL_YASM_ONLY)
-+INSTALL(TARGETS vsyasm EXPORT ${targetsFile} RUNTIME DESTINATION bin)
-+ENDIF(INSTALL_YASM_ONLY)
++INSTALL(TARGETS vsyasm EXPORT ${targetsFile} RUNTIME DESTINATION bin ${OPT_INSTALL})
 diff --git a/frontends/yasm/CMakeLists.txt b/frontends/yasm/CMakeLists.txt
 index b11d7f8..cf51fea 100644
 --- a/frontends/yasm/CMakeLists.txt
@@ -76,10 +115,10 @@ index b11d7f8..cf51fea 100644
 +
 +INSTALL(TARGETS yasm EXPORT ${targetsFile} RUNTIME DESTINATION bin)
 diff --git a/libyasm/CMakeLists.txt b/libyasm/CMakeLists.txt
-index bd9b7b2..8cfae97 100644
+index bd9b7b2..979e8c0 100644
 --- a/libyasm/CMakeLists.txt
 +++ b/libyasm/CMakeLists.txt
-@@ -38,11 +38,14 @@ IF(BUILD_SHARED_LIBS)
+@@ -38,14 +38,16 @@ IF(BUILD_SHARED_LIBS)
          )
  ELSE(BUILD_SHARED_LIBS)
      SET_TARGET_PROPERTIES(libyasm PROPERTIES
@@ -89,18 +128,35 @@ index bd9b7b2..8cfae97 100644
  ENDIF(BUILD_SHARED_LIBS)
  
 -INSTALL(TARGETS libyasm
-+IF(NOT INSTALL_YASM_ONLY)
-+
 +INSTALL(TARGETS libyasm EXPORT ${targetsFile}
      RUNTIME DESTINATION bin
      LIBRARY DESTINATION lib
      ARCHIVE DESTINATION lib
-@@ -76,5 +79,7 @@ INSTALL(FILES
++    ${OPT_INSTALL}
+     )
+ 
+ INSTALL(FILES
+@@ -76,5 +78,6 @@ INSTALL(FILES
      symrec.h
      valparam.h
      value.h
 -    DESTINATION include/libyasm
 +    DESTINATION include${verDir}/libyasm
++    ${OPT_INSTALL}
      )
-+
-+ENDIF(INSTALL_YASM_ONLY)
+diff --git a/modules/preprocs/nasm/CMakeLists.txt b/modules/preprocs/nasm/CMakeLists.txt
+index e10a9dd..28bbce6 100644
+--- a/modules/preprocs/nasm/CMakeLists.txt
++++ b/modules/preprocs/nasm/CMakeLists.txt
+@@ -1,9 +1,8 @@
+ add_executable(genversion preprocs/nasm/genversion.c)
+-get_target_property(_tmp_GENVERSION_EXE genversion LOCATION)
+ add_custom_command(
+     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/version.mac
+-    COMMAND ${_tmp_GENVERSION_EXE} ${CMAKE_CURRENT_BINARY_DIR}/version.mac
+-    DEPENDS ${_tmp_GENVERSION_EXE}
++    COMMAND genversion ${CMAKE_CURRENT_BINARY_DIR}/version.mac
++    DEPENDS genversion
+     )
+ 
+ YASM_GENMACRO(
