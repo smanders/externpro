@@ -37,6 +37,7 @@ function(build_protobuf)
     -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
     -DXP_NAMESPACE:STRING=xpro
     -DPROTOBUF_VER=${VER}
+    -DFPHSA_NAME_MISMATCHED:BOOL=TRUE # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
     )
   xpCmakeBuild(protobuf "${depTgts}" "${XP_CONFIGURE}")
 endfunction()

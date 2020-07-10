@@ -38,7 +38,10 @@ function(build_wxinclude)
   cmake_parse_arguments(wxinc "" "${oneValueArgs}" "" ${ARGN})
   build_boost(TARGETS boostTgts)
   xpGetArgValue(${PRO_WXINCLUDE} ARG VER VALUE VER)
-  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro)
+  set(XP_CONFIGURE
+    -DFPHSA_NAME_MISMATCHED:BOOL=TRUE # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
+    -DXP_NAMESPACE:STRING=xpro
+    )
   configure_file(${PRO_DIR}/use/usexp-wxinclude-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )

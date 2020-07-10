@@ -77,6 +77,7 @@ function(build_libgit2)
       -DINSTALL_LIBGIT2_CONFIG=OFF
       -DXP_NAMESPACE:STRING=xpro
       -DLIBGIT2_VER=${ver}
+      -DFPHSA_NAME_MISMATCHED:BOOL=TRUE # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
       )
     if(WIN32)
       list(APPEND xpConfigBase

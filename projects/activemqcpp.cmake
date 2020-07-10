@@ -41,6 +41,7 @@ function(build_activemqcpp)
       -DFIND_APR_MODULE_PATH=ON
       -DFIND_OPENSSL_MODULE_PATH=ON
       -DACTIVEMQCPP_VER=${ver}
+      -DFPHSA_NAME_MISMATCHED:BOOL=TRUE # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
       ${XP_CONFIGURE_${ver}}
       )
     xpCmakeBuild(activemqcpp_${ver} "${depTgts}" "${XP_CONFIGURE}")
