@@ -145,10 +145,18 @@ index 2eaf4cc..3b4a809 100644
 -  DESTINATION lib/cmake/libssh2)
 +  DESTINATION lib/cmake/libssh2${_ver})
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
-index c8c5253..67e7f45 100644
+index c8c5253..525f4c7 100644
 --- a/tests/CMakeLists.txt
 +++ b/tests/CMakeLists.txt
-@@ -72,7 +72,11 @@ endif()
+@@ -36,7 +36,6 @@
+ include(CheckIncludeFiles)
+ include(CheckFunctionExists)
+ include(CheckSymbolExists)
+-include(BundleUtilities)
+ include(CopyRuntimeDependencies)
+ include(SocketLibraries)
+ 
+@@ -72,7 +71,11 @@ endif()
  
  if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
  
@@ -161,7 +169,7 @@ index c8c5253..67e7f45 100644
  
    if(OPENSSL_FOUND)
      set(CRYPTO_BACKEND "OpenSSL")
-@@ -124,8 +128,8 @@ if(CRYPTO_BACKEND STREQUAL "OpenSSL")
+@@ -124,8 +127,8 @@ if(CRYPTO_BACKEND STREQUAL "OpenSSL")
      list(APPEND TESTS
        public_key_auth_succeeds_with_correct_rsa_openssh_key
      )
