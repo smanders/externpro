@@ -27,16 +27,18 @@ function(build_yasm)
   if(NOT (XP_DEFAULT OR XP_PRO_YASM))
     return()
   endif()
-  set(XP_CONFIGURE
-    -DBUILD_SHARED_LIBS=OFF
-    -DINSTALL_YASM_ONLY=ON
-    )
-  if(DEFINED XP_YASM_COMPLETE_PKG)
+  set(XP_CONFIGURE -DBUILD_SHARED_LIBS=OFF)
+  option(XP_BUILD_YASM_COMPLETE_PKG "build complete package of yasm" OFF)
+  mark_as_advanced(XP_BUILD_YASM_COMPLETE_PKG)
+  if(XP_BUILD_YASM_COMPLETE_PKG)
+    list(APPEND XP_CONFIGURE -DINSTALL_YASM_ONLY:BOOL=OFF)
     xpGetArgValue(${PRO_YASM} ARG VER VALUE VER)
     list(APPEND XP_CONFIGURE -DYASM_VER=${VER})
     configure_file(${PRO_DIR}/use/usexp-yasm-config.cmake ${STAGE_DIR}/share/cmake/
       @ONLY NEWLINE_STYLE LF
       )
+  else()
+    list(APPEND XP_CONFIGURE -DINSTALL_YASM_ONLY:BOOL=ON)
   endif()
   set(BUILD_CONFIGS Release) # we only need a release executable
   xpCmakeBuild(yasm "" "${XP_CONFIGURE}" yasmTargets)
