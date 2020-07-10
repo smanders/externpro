@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cc303f5..0a506dc 100644
+index cc303f5..12f1aae 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -6,6 +6,7 @@
@@ -10,6 +10,15 @@ index cc303f5..0a506dc 100644
  include ( cmake/dist.cmake )
  
  ## CONFIGURATION
+@@ -17,7 +18,7 @@ set ( LUA_INIT "LUA_INIT" CACHE STRING "Environment variable for initial script.
+ option ( LUA_ANSI "Use only ansi features." OFF )
+ option ( LUA_USE_RELATIVE_LOADLIB "Use modified loadlib.c with support for relative paths on posix systems." ON )
+ option ( LUA_COMPAT_ALL "Enable backwards compatibility options." ON )
+-set ( LUA_IDSIZE 60 CACHE NUMBER "gives the maximum size for the description of the source." )
++set ( LUA_IDSIZE 60 CACHE STRING "gives the maximum size for the description of the source." )
+ 
+ #2DO: LUAI_* and LUAL_* settings, for now defaults are used.
+ set ( LUA_DIRSEP "/" )
 @@ -88,7 +89,7 @@ if ( LUA_USE_DLOPEN )
    # Link to dynamic linker library "dl"
  	find_library ( DL_LIBRARY NAMES dl )
@@ -55,6 +64,16 @@ index cc303f5..0a506dc 100644
  install_doc ( doc/ )
  install_foo ( etc/ )
  #install_test ( test/ )
+diff --git a/cmake/FindReadline.cmake b/cmake/FindReadline.cmake
+index 5401a9b..a063240 100644
+--- a/cmake/FindReadline.cmake
++++ b/cmake/FindReadline.cmake
+@@ -22,4 +22,4 @@ set ( READLINE_INCLUDE_DIRS ${READLINE_INCLUDE_DIR} )
+ include ( FindPackageHandleStandardArgs )
+ # handle the QUIETLY and REQUIRED arguments and set READLINE_FOUND to TRUE
+ # if all listed variables are TRUE
+-find_package_handle_standard_args ( readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )
++find_package_handle_standard_args ( Readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )
 diff --git a/cmake/dist.cmake b/cmake/dist.cmake
 index 310ef94..017fdd0 100644
 --- a/cmake/dist.cmake
