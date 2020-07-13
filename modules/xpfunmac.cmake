@@ -1994,16 +1994,22 @@ endmacro()
 
 macro(xpSetFlagsGccDebug)
   if(NOT DEFINED XP_USE_ASAN)
-    set(XP_USE_ASAN OFF)
+    set(NV_USE_ASAN OFF) # (NV: normal variable) 'cmake --help-policy CMP0077'
+  else()
+    set(NV_USE_ASAN ${XP_USE_ASAN})
+    unset(XP_USE_ASAN)
   endif()
-  cmake_dependent_option(XP_USE_ASAN "use address sanitizer" ${XP_USE_ASAN}
-    "CMAKE_BUILD_TYPE STREQUAL Debug" ${XP_USE_ASAN}
+  cmake_dependent_option(XP_USE_ASAN "use address sanitizer" ${NV_USE_ASAN}
+    "CMAKE_BUILD_TYPE STREQUAL Debug" ${NV_USE_ASAN}
     )
   if(NOT DEFINED XP_COVERAGE)
-    set(XP_COVERAGE OFF)
+    set(NV_COVERAGE OFF) # (NV: normal variable) 'cmake --help-policy CMP0077'
+  else()
+    set(NV_COVERAGE ${XP_COVERAGE})
+    unset(XP_COVERAGE)
   endif()
-  cmake_dependent_option(XP_COVERAGE "generate coverage information" ${XP_COVERAGE}
-    "CMAKE_BUILD_TYPE STREQUAL Debug" ${XP_COVERAGE}
+  cmake_dependent_option(XP_COVERAGE "generate coverage information" ${NV_COVERAGE}
+    "CMAKE_BUILD_TYPE STREQUAL Debug" ${NV_COVERAGE}
     )
   if(XP_USE_ASAN)
     include(CMakePushCheckState)
