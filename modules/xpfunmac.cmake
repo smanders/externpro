@@ -1832,7 +1832,15 @@ macro(xpCommonFlags)
     # Remove /Zm1000 - breaks optimizing compiler w/ IncrediBuild
     string(REPLACE "/Zm1000" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
     string(REPLACE "/Zm1000" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-    if(CMAKE_CONFIGURATION_TYPES)
+    # https://cmake.org/cmake/help/v3.15/policy/CMP0091.html
+    cmake_policy(GET CMP0091 msvcRuntime)
+    if(msvcRuntime STREQUAL NEW)
+      if(XP_BUILD_STATIC_RT)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+      else()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+      endif()
+    else()
       # by default we'll modify the following list of flag variables,
       # but you can call xpModifyRuntime with your own list
       xpModifyRuntime(
