@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 75f35c7..ba6de6a 100644
+index 75f35c7..c81a223 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -19,13 +19,20 @@ PROJECT(APR C)
@@ -174,7 +174,7 @@ index 75f35c7..ba6de6a 100644
  
  SET(APR_TEST_SOURCES
    test/abts.c
-@@ -251,31 +352,52 @@ SET(APR_TEST_SOURCES
+@@ -251,31 +352,57 @@ SET(APR_TEST_SOURCES
    test/testvsn.c
  )
  
@@ -202,8 +202,13 @@ index 75f35c7..ba6de6a 100644
  
  ADD_LIBRARY(apr-1 STATIC ${APR_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
  SET(install_targets ${install_targets} apr-1)
++TARGET_INCLUDE_DIRECTORIES(apr-1 PUBLIC
++  $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}> #include <apr/apr_version.h>
++  $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}/apr> #include <apr_version.h>
++  )
  TARGET_LINK_LIBRARIES(apr-1 ${APR_SYSTEM_LIBS})
 +if(WIN32)
++TARGET_COMPILE_DEFINITIONS(apr-1 PUBLIC $<INSTALL_INTERFACE:APR_DECLARE_STATIC>)
  SET_TARGET_PROPERTIES(apr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC;WINNT")
 +elseif(UNIX)
 +SET_TARGET_PROPERTIES(apr-1 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC")
@@ -227,7 +232,7 @@ index 75f35c7..ba6de6a 100644
  
  IF(APR_BUILD_TESTAPR)
    ENABLE_TESTING()
-@@ -303,8 +425,12 @@ IF(APR_BUILD_TESTAPR)
+@@ -303,8 +430,12 @@ IF(APR_BUILD_TESTAPR)
    ENDIF()
  
    ADD_EXECUTABLE(testapp test/testapp.c)
@@ -240,7 +245,7 @@ index 75f35c7..ba6de6a 100644
    IF(apiflag)
      SET_TARGET_PROPERTIES(testapp PROPERTIES COMPILE_FLAGS ${apiflag})
    ENDIF()
-@@ -319,12 +445,14 @@ IF(APR_BUILD_TESTAPR)
+@@ -319,12 +450,14 @@ IF(APR_BUILD_TESTAPR)
  
    ADD_LIBRARY(mod_test MODULE test/mod_test.c)
    TARGET_LINK_LIBRARIES(mod_test ${whichapr} ${APR_SYSTEM_LIBS})
@@ -255,7 +260,7 @@ index 75f35c7..ba6de6a 100644
    IF(apiflag)
      SET_TARGET_PROPERTIES(mod_test PROPERTIES COMPILE_FLAGS ${apiflag})
    ENDIF()
-@@ -333,7 +461,7 @@ IF(APR_BUILD_TESTAPR)
+@@ -333,7 +466,7 @@ IF(APR_BUILD_TESTAPR)
    # requirements.
    SET(single_source_programs
      test/echod.c
@@ -264,7 +269,7 @@ index 75f35c7..ba6de6a 100644
      test/sockperf.c
      test/testlockperf.c
      test/testmutexscope.c
-@@ -345,8 +473,10 @@ IF(APR_BUILD_TESTAPR)
+@@ -345,8 +478,10 @@ IF(APR_BUILD_TESTAPR)
      test/testshmproducer.c
      test/testshmconsumer.c
      test/tryread.c
@@ -276,7 +281,7 @@ index 75f35c7..ba6de6a 100644
  
    FOREACH(sourcefile ${single_source_programs})
      STRING(REGEX REPLACE ".*/([^\\]+)\\.c" "\\1" proggie ${sourcefile})
-@@ -362,6 +492,9 @@ IF(APR_BUILD_TESTAPR)
+@@ -362,6 +497,9 @@ IF(APR_BUILD_TESTAPR)
      testmutexscope
      testucs
    )
@@ -286,7 +291,7 @@ index 75f35c7..ba6de6a 100644
  
    FOREACH(simple ${simple_tests})
      ADD_TEST(NAME ${simple} COMMAND ${simple})
-@@ -370,9 +503,9 @@ IF(APR_BUILD_TESTAPR)
+@@ -370,9 +508,9 @@ IF(APR_BUILD_TESTAPR)
    # testlockperf takes forever on Windows with default counter limit
    ADD_TEST(NAME testlockperf COMMAND testlockperf -c 50000)
  
@@ -298,7 +303,7 @@ index 75f35c7..ba6de6a 100644
    ENDFOREACH()
  
    # No test is added for echod+sockperf.  Those will have to be run manually.
-@@ -381,11 +514,13 @@ ENDIF (APR_BUILD_TESTAPR)
+@@ -381,11 +519,16 @@ ENDIF (APR_BUILD_TESTAPR)
  
  # Installation
  
@@ -309,11 +314,14 @@ index 75f35c7..ba6de6a 100644
          LIBRARY DESTINATION lib
          ARCHIVE DESTINATION lib
         )
-+INSTALL(EXPORT ${targetsFile} DESTINATION lib/cmake)
++IF(DEFINED XP_NAMESPACE)
++  SET(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++ENDIF()
++INSTALL(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
  
  IF(INSTALL_PDB)
    INSTALL(FILES ${install_bin_pdb}
-@@ -393,7 +528,8 @@ IF(INSTALL_PDB)
+@@ -393,7 +536,8 @@ IF(INSTALL_PDB)
            CONFIGURATIONS RelWithDebInfo Debug)
  ENDIF()
  
@@ -323,7 +331,7 @@ index 75f35c7..ba6de6a 100644
  IF(APR_INSTALL_PRIVATE_H)
    # Kludges for unexpected dependencies of httpd 2.x, not installed by default
    SET(APR_PRIVATE_H_FOR_HTTPD
-@@ -402,8 +538,8 @@ IF(APR_INSTALL_PRIVATE_H)
+@@ -402,8 +546,8 @@ IF(APR_INSTALL_PRIVATE_H)
      include/arch/win32/apr_arch_utf8.h
      include/arch/win32/apr_private.h
      )
@@ -334,7 +342,7 @@ index 75f35c7..ba6de6a 100644
  ENDIF()
  
  STRING(TOUPPER "${CMAKE_BUILD_TYPE}" buildtype)
-@@ -417,7 +553,9 @@ MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
+@@ -417,7 +561,9 @@ MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
  MESSAGE(STATUS "  Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
  MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
  MESSAGE(STATUS "  IPv6 ............................ : ${APR_HAVE_IPV6}")

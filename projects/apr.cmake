@@ -38,6 +38,7 @@ function(build_apr)
     -DAPR_BUILD_TESTAPR=ON
     -DTEST_STATIC_LIBS=ON
     -DAPR_VER=${VER}
+    -DXP_NAMESPACE:STRING=xpro
     )
   configure_file(${PRO_DIR}/use/usexp-apr-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
