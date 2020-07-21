@@ -769,10 +769,10 @@ index 0000000..7a229f2
 +endforeach()
 diff --git a/activemq-cpp/src/main/CMakeLists.txt b/activemq-cpp/src/main/CMakeLists.txt
 new file mode 100644
-index 0000000..487fba5
+index 0000000..bdec527
 --- /dev/null
 +++ b/activemq-cpp/src/main/CMakeLists.txt
-@@ -0,0 +1,1709 @@
+@@ -0,0 +1,1714 @@
 +set(lib_name activemqcpp)
 +#######################################
 +# library sources
@@ -2464,7 +2464,9 @@ index 0000000..487fba5
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
 +target_link_libraries(${lib_name} PUBLIC ${APR_LIBRARIES} ${OPENSSL_LIBRARIES})
-+target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
++target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
++  $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}/${lib_name}>
++  )
 +if(TARGET xpro::crypto)
 +  get_target_property(defs xpro::crypto INTERFACE_COMPILE_DEFINITIONS)
 +  string(REPLACE "OPENSSL_API_COMPAT=0x10100000L" "OPENSSL_API_COMPAT=0x00908000L" newDefs "${defs}")
@@ -2481,4 +2483,7 @@ index 0000000..487fba5
 +  LIBRARY DESTINATION lib
 +  RUNTIME DESTINATION bin
 +  )
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake)
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})

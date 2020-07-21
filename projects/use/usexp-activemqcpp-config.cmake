@@ -1,6 +1,5 @@
 # ACTIVEMQCPP_FOUND - ActiveMqCpp was found
 # ACTIVEMQCPP_VER - ActiveMqCpp version
-# ACTIVEMQCPP_INCLUDE_DIR - the ActiveMqCpp include directory
 # ACTIVEMQCPP_LIBRARIES - the ActiveMqCpp libraries
 set(prj activemqcpp)
 # this file (-config) installed to share/cmake
@@ -17,14 +16,11 @@ else()
   set(ver @AMQ_OLDVER@)
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
-set(verDir /${prj}_${ver})
-unset(${PRJ}_INCLUDE_DIR CACHE)
-find_path(${PRJ}_INCLUDE_DIR activemq/library/ActiveMQCPP.h PATHS ${XP_ROOTDIR}/include${verDir}/${prj} NO_DEFAULT_PATH)
 xpFindPkg(PKGS APR OpenSSL) # dependencies
 # targets file (-targets) installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/${prj}_${ver}-targets.cmake)
-set(${PRJ}_LIBRARIES activemqcpp)
-set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
+set(${PRJ}_LIBRARIES xpro::activemqcpp)
+set(reqVars ${PRJ}_VER ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})
