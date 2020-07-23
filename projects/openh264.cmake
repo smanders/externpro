@@ -33,6 +33,7 @@ function(build_openh264)
   set(XP_CONFIGURE
     -DOPENH264_VER=${VER}
     -DCMAKE_ASM_NASM_COMPILER=${YASM_EXE}
+    -DXP_NAMESPACE:STRING=xpro
     )
   configure_file(${PRO_DIR}/use/usexp-openh264-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF

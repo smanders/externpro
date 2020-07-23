@@ -1,10 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..8d43af2
+index 0000000..2e1d458
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,14 @@
-+cmake_minimum_required(VERSION 3.7.2)
++cmake_minimum_required(VERSION 3.12)
 +project(openh264)
 +include(flags OPTIONAL)
 +if(DEFINED OPENH264_VER)
@@ -20,10 +20,10 @@ index 0000000..8d43af2
 +add_subdirectory(codec)
 diff --git a/codec/CMakeLists.txt b/codec/CMakeLists.txt
 new file mode 100644
-index 0000000..2e65b21
+index 0000000..31a0411
 --- /dev/null
 +++ b/codec/CMakeLists.txt
-@@ -0,0 +1,51 @@
+@@ -0,0 +1,55 @@
 +project(codec)
 +if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64")
 +  enable_language(ASM_NASM)
@@ -65,6 +65,7 @@ index 0000000..2e65b21
 +  list(APPEND obj_libs $<TARGET_OBJECTS:${lib}_obj>)
 +endforeach()
 +add_library(${lib_name} STATIC ${lib_srcs} ${obj_libs})
++target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>)
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +##########
 +set(targetsFile ${lib_name}${ver}-targets)
@@ -74,7 +75,10 @@ index 0000000..2e65b21
 +  ARCHIVE DESTINATION lib
 +  )
 +install(FILES ${lib_srcs} DESTINATION include${verDir}/wels)
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake)
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
 diff --git a/codec/common/CMakeLists.txt b/codec/common/CMakeLists.txt
 new file mode 100644
 index 0000000..4df5e77
