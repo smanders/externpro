@@ -1,6 +1,5 @@
 # NODE_FOUND - Node.js was found
 # NODE_VER - Node.js version
-# NODE_INCLUDE_DIR - the Node.js include directory
 # NODE_LIBRARIES - the Node.js libraries (MSW-only)
 # NODE_EXE - the Node.js executable
 set(prj node)
@@ -18,10 +17,7 @@ else()
   set(ver @NODE_OLDVER@)
 endif()
 set(${PRJ}_VER "${ver} [@PROJECT_NAME@]")
-unset(${PRJ}_INCLUDE_DIR CACHE)
-find_path(${PRJ}_INCLUDE_DIR node/node.h PATHS ${XP_ROOTDIR}/include/node_${ver} NO_DEFAULT_PATH)
-list(APPEND ${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include/node_${ver}/node) # for internal header includes
-set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR)
+set(reqVars ${PRJ}_VER)
 if(MSVC)
   set(${PRJ}_LIBRARIES ${XP_ROOTDIR}/node_${ver}/lib/node.lib)
   list(APPEND reqVars ${PRJ}_LIBRARIES)
@@ -38,11 +34,10 @@ else()
     add_library(xpro::node INTERFACE IMPORTED)
   endif()
 endif()
-if(${PRJ}_INCLUDE_DIR)
-  set_target_properties(xpro::node PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${${PRJ}_INCLUDE_DIR}"
-    )
-endif()
+set(includeDirs ${XP_ROOTDIR}/include/node_${ver} ${XP_ROOTDIR}/include/node_${ver}/node)
+set_target_properties(xpro::node PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${includeDirs}"
+  )
 set(${PRJ}_EXE ${XP_ROOTDIR}/node_${ver}/bin/node${CMAKE_EXECUTABLE_SUFFIX})
 list(APPEND reqVars ${PRJ}_EXE)
 include(FindPackageHandleStandardArgs)
