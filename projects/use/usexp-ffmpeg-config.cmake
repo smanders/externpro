@@ -33,8 +33,8 @@ xpFindPkg(PKGS openh264)
 xpGetPkgVar(openh264 LIBRARIES) # sets OPENH264_LIBRARIES
 set(_ffmpeg_avcodec_libs ${OPENH264_LIBRARIES})
 # _ffmpeg_*_deps
-set(_ffmpeg_avdevice_deps avformat)
-set(_ffmpeg_avfilter_deps swresample swscale) # libavfilter code calls swr_*, sws_* functions
+set(_ffmpeg_avdevice_deps avfilter avformat)
+set(_ffmpeg_avfilter_deps avcodec swresample swscale) # libavfilter code calls swr_*, sws_* functions
 set(_ffmpeg_avformat_deps avcodec)
 set(_ffmpeg_avcodec_deps swresample) # libavcodec code calls swr_* functions
 set(_ffmpeg_swresample_deps avutil)
