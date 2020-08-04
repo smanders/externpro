@@ -1,6 +1,5 @@
 # GLEW_FOUND - GLEW was found
 # GLEW_VER - GLEW version
-# GLEW_INCLUDE_DIR - the GLEW include directory
 # GLEW_LIBRARIES - the GLEW libraries
 # GLEW_DLLS - the GLEW DLLs
 set(prj glew)
@@ -19,17 +18,27 @@ else()
   set(glewVer @GLEW_MSWVER@)
 endif()
 set(${PRJ}_VER "${glewVer} [@PROJECT_NAME@]")
-set(ver _${glewVer})
-set(verDir /${prj}${ver})
-unset(${PRJ}_INCLUDE_DIR CACHE)
-find_path(${PRJ}_INCLUDE_DIR GL/glew.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
-set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR)
-if(EXISTS ${XP_ROOTDIR}/lib/cmake/${prj}${ver}/${prj}-targets.cmake) # built via cmake
-  include(${XP_ROOTDIR}/lib/cmake/${prj}${ver}/${prj}-targets.cmake)
-  set(${PRJ}_LIBRARIES GLEW::glew_s) # GLEW::glewmx_s TODO determine if glewmx is needed
+set(reqVars ${PRJ}_VER)
+if(EXISTS ${XP_ROOTDIR}/lib/cmake/${prj}_${glewVer}/${prj}-targets.cmake) # built via cmake
+  include(${XP_ROOTDIR}/lib/cmake/${prj}_${glewVer}/${prj}-targets.cmake)
+  set(${PRJ}_LIBRARIES GLEW::glew_s) # GLEW::glewmx_s also exists
   list(APPEND reqVars ${PRJ}_LIBRARIES)
 elseif(WIN32) # pre-built
-  set(${PRJ}_LIBRARIES glew32) # TODO opengl32 glu32 system libraries?
+  if(NOT TARGET GLEW::glew_s)
+    add_library(GLEW::glew_s STATIC IMPORTED)
+    set(glewRelease ${XP_ROOTDIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glew32${CMAKE_STATIC_LIBRARY_SUFFIX})
+    if(EXISTS "${glewRelease}")
+      set_property(TARGET GLEW::glew_s APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+      set_target_properties(GLEW::glew_s PROPERTIES
+        IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
+        IMPORTED_LOCATION_RELEASE "${glewRelease}"
+        )
+    endif()
+    set_target_properties(GLEW::glew_s PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES ${XP_ROOTDIR}/include${verDir}
+      )
+  endif()
+  set(${PRJ}_LIBRARIES GLEW::glew_s)
   set(${PRJ}_DLLS
     ${XP_ROOTDIR}/lib/glew32.dll
     ${XP_ROOTDIR}/lib/glew32mx.dll # TODO determine if this is needed
