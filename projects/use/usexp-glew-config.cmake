@@ -35,7 +35,7 @@ elseif(WIN32) # pre-built
         )
     endif()
     set_target_properties(GLEW::glew_s PROPERTIES
-      INTERFACE_INCLUDE_DIRECTORIES ${XP_ROOTDIR}/include${verDir}
+      INTERFACE_INCLUDE_DIRECTORIES ${XP_ROOTDIR}/include/${prj}_${glewVer}
       )
   endif()
   set(${PRJ}_LIBRARIES GLEW::glew_s)
