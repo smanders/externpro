@@ -46,5 +46,6 @@ elseif(WIN32) # pre-built
   list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DLLS)
 endif()
 include(FindPackageHandleStandardArgs)
+set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})

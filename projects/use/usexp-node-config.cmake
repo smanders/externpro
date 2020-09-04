@@ -41,5 +41,6 @@ set_target_properties(xpro::node PROPERTIES
 set(${PRJ}_EXE ${XP_ROOTDIR}/node_${ver}/bin/node${CMAKE_EXECUTABLE_SUFFIX})
 list(APPEND reqVars ${PRJ}_EXE)
 include(FindPackageHandleStandardArgs)
+set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})

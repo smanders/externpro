@@ -18,5 +18,6 @@ set(${PRJ}_PROTOC_EXECUTABLE ${nsPrefix}protoc) # TRICKY: must be named to match
 get_target_property(PROTOBUF_INCLUDE_DIR ${nsPrefix}libprotobuf INTERFACE_INCLUDE_DIRECTORIES)
 set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_PROTOC_EXECUTABLE)
 include(FindPackageHandleStandardArgs)
+set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})
