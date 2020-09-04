@@ -52,7 +52,6 @@ function(build_cmakexp)
     -DCMAKE_USE_OPENSSL=ON
     -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
     -Dusexp-OpenSSL_DIR=${STAGE_DIR}/share/cmake
-    -DFPHSA_NAME_MISMATCHED:BOOL=TRUE # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
     )
   set(BUILD_CONFIGS Release) # we only need a release version
   xpCmakeBuild(cmakexp "${depTgts}" "${XP_CONFIGURE}" cmakexpTgts NO_INSTALL)

@@ -60,7 +60,6 @@ function(build_curl)
       -DENABLE_LIBIDN=OFF
       -DXP_INSTALL_DIRS=ON
       -DXP_NAMESPACE:STRING=xpro
-      -DFPHSA_NAME_MISMATCHED:BOOL=TRUE # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
       ${XP_CONFIGURE_${ver}}
       )
     xpCmakeBuild(curl_${ver} "${depTgts}" "${XP_CONFIGURE}")

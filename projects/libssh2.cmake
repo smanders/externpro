@@ -47,7 +47,6 @@ function(build_libssh2)
       -DXP_NAMESPACE:STRING=xpro
       -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
       -DLIBSSH2_VER=${ver}
-      -DFPHSA_NAME_MISMATCHED:BOOL=TRUE # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
       )
     xpCmakeBuild(libssh2_${ver} "${depTgts}" "${XP_CONFIGURE}" libssh2Targets_${ver})
     list(APPEND libssh2Targets ${libssh2Targets_${ver}})

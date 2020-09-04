@@ -42,10 +42,6 @@ function(build_wxxv ver)
   foreach(sub ${subs})
     list(APPEND XP_DEPS wxx_${sub})
   endforeach()
-  set(XP_CONFIGURE
-    -DFPHSA_NAME_MISMATCHED:BOOL=TRUE # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
-    -DWX_SOURCE:PATH=${wxSrc}
-    -DXP_NAMESPACE:STRING=wxx
-    )
+  set(XP_CONFIGURE -DWX_SOURCE:PATH=${wxSrc} -DXP_NAMESPACE:STRING=wxx)
   xpCmakeBuild(wxx "${XP_DEPS}" "${XP_CONFIGURE}" "" TGT ${ver})
 endfunction()

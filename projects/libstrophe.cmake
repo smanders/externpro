@@ -50,7 +50,6 @@ function(build_libstrophe)
     -DLIBSTROPHE_VER=${VER}
     -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
     -DCMAKE_USE_EXPAT_MODULE_PATH=ON
-    -DFPHSA_NAME_MISMATCHED:BOOL=TRUE # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
     -DXP_NAMESPACE:STRING=xpro
     )
   set(${MOD_OLD} ${xpConfigBase}
