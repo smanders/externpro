@@ -11,6 +11,7 @@ get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative part
 string(TOUPPER ${prj} PRJ)
 set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
 set(nsPrefix xpro::) # TRICKY: nsPrefix also used in protobuf-module.cmake
+set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
 # protobuf installs a config file which includes -targets.cmake and -module.cmake
 include(${XP_ROOTDIR}/lib/cmake/protobuf_@VER@/${prj}-config.cmake)
 set(${PRJ}_LIBRARIES ${nsPrefix}libprotobuf)
@@ -18,6 +19,5 @@ set(${PRJ}_PROTOC_EXECUTABLE ${nsPrefix}protoc) # TRICKY: must be named to match
 get_target_property(PROTOBUF_INCLUDE_DIR ${nsPrefix}libprotobuf INTERFACE_INCLUDE_DIRECTORIES)
 set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_PROTOC_EXECUTABLE)
 include(FindPackageHandleStandardArgs)
-set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})
