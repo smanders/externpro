@@ -31,11 +31,6 @@ function(build_curl)
   configure_file(${PRO_DIR}/use/usexp-curl-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  if(XP_DEFAULT OR XP_PRO_CMAKEXP)
-    # if we're building cmake, we want it built before curl
-    # otherwise cmake finds externpro curl and not it's own internal cmcurl
-    build_cmakexp(cmTgts)
-  endif()
   set(XP_CONFIGURE_${CURL_OLDVER}
     )
   set(XP_CONFIGURE_${CURL_NEWVER}

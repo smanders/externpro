@@ -8,7 +8,6 @@
 |[bzip2](https://en.wikipedia.org/wiki/Bzip2 'bzip2 on wikipedia')|[open](https://spdx.org/licenses/bzip2-1.0.6.html 'bzip2 BSD-style license')|lossless block-sorting data compression library|1.0.6|[repo](https://github.com/smanders/bzip2 'forked bzip2 repo on github')|[diff](https://github.com/smanders/bzip2/compare/v1.0.6...xp1.0.6 'patch/diff')|
 |[c-ares](http://c-ares.haxx.se/ 'c-ares website')|[open](http://c-ares.haxx.se/license.html 'c-ares license: MIT license')|C library for asynchronous DNS requests (including name resolves)|1.10.0|[repo](https://github.com/c-ares/c-ares 'c-ares repo on github')|[diff](https://github.com/smanders/c-ares/compare/c-ares:cares-1_10_0...xp-1_10_0 'patch/diff')|
 |[ceres-solver](http://ceres-solver.org 'Ceres Solver website')|[open](http://ceres-solver.org/license.html 'New BSD License')|C++ library for modeling and solving large, complicated optimization problems|1.14.0|[repo](https://github.com/ceres-solver/ceres-solver 'ceres-solver repo on github')|[diff](https://github.com/smanders/ceres-solver/compare/ceres-solver:1.14.0...xp1.14.0 'patch/diff')|
-|[CMake](http://cmake.org/ 'CMake website')|[open](http://www.cmake.org/cmake/project/license.html 'CMake License')|the cross-platform, open-source build system|3.17.3|[repo](https://github.com/Kitware/CMake 'CMake repo on github')|[diff](https://github.com/smanders/CMake/compare/Kitware:v3.17.3...xp3.17.3 'patch/diff')|
 |[CUB](http://nvlabs.github.io/cub/ 'CUB Project Website')|[open](https://github.com/NVlabs/cub/tree/v1.8.0#open-source-license 'BSD 3-Clause')|flexible library of cooperative threadblock primitives and other utilites for CUDA kernel programming|1.8.0|[repo](https://github.com/NVlabs/cub 'CUB repo on github')|none|
 |[cURL](http://curl.haxx.se/libcurl/ 'libcurl website')|[open](http://curl.haxx.se/docs/copyright.html 'curl license: MIT/X derivate license')|the multiprotocol file transfer library|7.66.0|[repo](https://github.com/curl/curl 'curl repo on github')|[diff](https://github.com/smanders/curl/compare/curl:curl-7_66_0...xp-7_66_0 'patch/diff')|
 |[Eigen](http://eigen.tuxfamily.org/ 'Eigen website')|[open](http://eigen.tuxfamily.org/index.php?title=Main_Page#License 'Eigen license: MPL2 (aka Mozilla Public License)')|C++ template library for linear algebra|3.2.7|[repo](https://gitlab.com/libeigen/eigen 'eigen repo on gitlab')|[diff](https://github.com/smanders/eigen/compare/3.2.7...xp3.2.7 'patch/diff')|
@@ -68,10 +67,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_d6d589f00f0a88105a95478bf3dfff88?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_14b4895da7cb8c4ca96cb172ca4f0c1d?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_d6d589f00f0a88105a95478bf3dfff88
+depgraph_14b4895da7cb8c4ca96cb172ca4f0c1d
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
@@ -93,8 +92,6 @@ digraph GG {
   clangtidy -> clangtoolsextra;
   clangtoolsextra [shape=box];
   clangtoolsextra -> llvm;
-  cmakexp [shape=box];
-  cmakexp -> openssl_1_1_1d;
   curl_7_66_0 [label="curl_7.66.0" shape=diamond];
   curl_7_66_0 -> libssh2_1_9_0;
   curl_7_66_0 -> cares;
@@ -135,5 +132,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_d6d589f00f0a88105a95478bf3dfff88
+depgraph_14b4895da7cb8c4ca96cb172ca4f0c1d
 </details>
