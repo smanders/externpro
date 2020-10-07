@@ -1391,8 +1391,6 @@ endmacro()
 
 # cmake-generates Version.hpp, resource.rc, resource.h in CMAKE_CURRENT_BINARY_DIR
 function(xpGenerateResources iconPath generatedFiles)
-  include(${CMAKE_BINARY_DIR}/version.cmake OPTIONAL)
-  # in case there wasn't a version.cmake in CMAKE_BINARY_DIR
   include(${xpThisDir}/version.cmake)
   string(TIMESTAMP PACKAGE_CURRENT_YEAR %Y)
   # Creates PACKAGE_VERSION_NUM and PACKAGE_STR
