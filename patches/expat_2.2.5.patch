@@ -1,5 +1,5 @@
 diff --git a/expat/CMakeLists.txt b/expat/CMakeLists.txt
-index 504d087..8b3d9f6 100644
+index 504d087a..8b3d9f66 100644
 --- a/expat/CMakeLists.txt
 +++ b/expat/CMakeLists.txt
 @@ -4,12 +4,17 @@

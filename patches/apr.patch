@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 75f35c7..c81a223 100644
+index 75f35c7cd..c81a223ce 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -19,13 +19,20 @@ PROJECT(APR C)
@@ -354,7 +354,7 @@ index 75f35c7..c81a223 100644
  MESSAGE(STATUS "    (testing static libraries)")
 diff --git a/configure.cmake b/configure.cmake
 new file mode 100644
-index 0000000..efb4ee7
+index 000000000..efb4ee7e9
 --- /dev/null
 +++ b/configure.cmake
 @@ -0,0 +1,1210 @@
@@ -1569,7 +1569,7 @@ index 0000000..efb4ee7
 +  add_definitions(-DSOLARIS2=${SOL_VER})
 +endif()
 diff --git a/include/apr_general.h b/include/apr_general.h
-index c7389ec..0b32945 100644
+index c7389ec92..0b32945ff 100644
 --- a/include/apr_general.h
 +++ b/include/apr_general.h
 @@ -76,7 +76,7 @@ typedef int               apr_signum_t;
@@ -1583,7 +1583,7 @@ index c7389ec..0b32945 100644
  #else
 diff --git a/include/arch/unix/apr_private.cmake.in b/include/arch/unix/apr_private.cmake.in
 new file mode 100644
-index 0000000..abd7f30
+index 000000000..abd7f30d4
 --- /dev/null
 +++ b/include/arch/unix/apr_private.cmake.in
 @@ -0,0 +1,999 @@
@@ -4139,7 +4139,7 @@ index 0000000..6653b72
 +
 +#endif /* !APR_HAS_SENDFILE */
 diff --git a/test/testapp.c b/test/testapp.c
-index 77607aa..83e3fe8 100644
+index 77607aa38..83e3fe8d1 100644
 --- a/test/testapp.c
 +++ b/test/testapp.c
 @@ -7,4 +7,5 @@ int main(int argc, const char * const * argv, const char * const *env)
@@ -4149,7 +4149,7 @@ index 77607aa..83e3fe8 100644
 +    return 0;
  }
 diff --git a/test/testdso.c b/test/testdso.c
-index 0d9f27b..4611680 100644
+index 0d9f27bb2..4611680dd 100644
 --- a/test/testdso.c
 +++ b/test/testdso.c
 @@ -35,6 +35,9 @@
@@ -4163,7 +4163,7 @@ index 0d9f27b..4611680 100644
  # define MOD_NAME ".libs/mod_test.so" 
  # define LIB_NAME ".libs/libmod_test.dylib" 
 diff --git a/test/testsockets.c b/test/testsockets.c
-index 2a7499a..78c796d 100644
+index 2a7499aa7..78c796d45 100644
 --- a/test/testsockets.c
 +++ b/test/testsockets.c
 @@ -228,8 +228,10 @@ abts_suite *testsockets(abts_suite *suite)

@@ -1,5 +1,5 @@
 diff --git a/cmake/FindAdolc.cmake b/cmake/FindAdolc.cmake
-index 1a7ff36..1c95380 100644
+index 1a7ff3628..1c9538076 100644
 --- a/cmake/FindAdolc.cmake
 +++ b/cmake/FindAdolc.cmake
 @@ -14,7 +14,7 @@ find_path(ADOLC_INCLUDES
@@ -12,7 +12,7 @@ index 1a7ff36..1c95380 100644
  
  mark_as_advanced(ADOLC_INCLUDES ADOLC_LIBRARIES)
 diff --git a/cmake/FindCholmod.cmake b/cmake/FindCholmod.cmake
-index 23239c3..45d4799 100644
+index 23239c300..45d47995d 100644
 --- a/cmake/FindCholmod.cmake
 +++ b/cmake/FindCholmod.cmake
 @@ -83,7 +83,7 @@ if(CHOLMOD_LIBRARIES)
@@ -25,7 +25,7 @@ index 23239c3..45d4799 100644
  
  mark_as_advanced(CHOLMOD_INCLUDES CHOLMOD_LIBRARIES AMD_LIBRARY COLAMD_LIBRARY SUITESPARSE_LIBRARY CAMD_LIBRARY CCOLAMD_LIBRARY CHOLMOD_METIS_LIBRARY)
 diff --git a/cmake/FindGoogleHash.cmake b/cmake/FindGoogleHash.cmake
-index f6a81a0..99c7bcb 100644
+index f6a81a02c..99c7bcbd2 100644
 --- a/cmake/FindGoogleHash.cmake
 +++ b/cmake/FindGoogleHash.cmake
 @@ -18,6 +18,6 @@ if(GOOGLEHASH_INCLUDES)
@@ -37,7 +37,7 @@ index f6a81a0..99c7bcb 100644
  
  mark_as_advanced(GOOGLEHASH_INCLUDES)
 diff --git a/cmake/FindMetis.cmake b/cmake/FindMetis.cmake
-index 6a0ce79..27903a5 100644
+index 6a0ce790c..27903a58f 100644
 --- a/cmake/FindMetis.cmake
 +++ b/cmake/FindMetis.cmake
 @@ -53,7 +53,7 @@ endmacro(_metis_check_version)
@@ -50,7 +50,7 @@ index 6a0ce79..27903a5 100644
  
  mark_as_advanced(METIS_INCLUDES METIS_LIBRARIES)
 diff --git a/cmake/FindPastix.cmake b/cmake/FindPastix.cmake
-index e2e6c81..2f3f225 100644
+index e2e6c810d..2f3f225b1 100644
 --- a/cmake/FindPastix.cmake
 +++ b/cmake/FindPastix.cmake
 @@ -19,7 +19,7 @@ find_library(PASTIX_LIBRARIES pastix PATHS $ENV{PASTIXDIR} ${LIB_INSTALL_DIR})
@@ -63,7 +63,7 @@ index e2e6c81..2f3f225 100644
  
  mark_as_advanced(PASTIX_INCLUDES PASTIX_LIBRARIES)
 diff --git a/cmake/FindScotch.cmake b/cmake/FindScotch.cmake
-index 530340b..a82d3c3 100644
+index 530340b16..a82d3c323 100644
 --- a/cmake/FindScotch.cmake
 +++ b/cmake/FindScotch.cmake
 @@ -18,7 +18,7 @@ find_path(SCOTCH_INCLUDES
@@ -76,7 +76,7 @@ index 530340b..a82d3c3 100644
  
  mark_as_advanced(SCOTCH_INCLUDES SCOTCH_LIBRARIES)
 diff --git a/cmake/FindSuperLU.cmake b/cmake/FindSuperLU.cmake
-index 8a3df36..fc71c2b 100644
+index 8a3df3666..fc71c2b2b 100644
 --- a/cmake/FindSuperLU.cmake
 +++ b/cmake/FindSuperLU.cmake
 @@ -20,7 +20,7 @@ find_path(SUPERLU_INCLUDES
@@ -89,7 +89,7 @@ index 8a3df36..fc71c2b 100644
  
  mark_as_advanced(SUPERLU_INCLUDES SUPERLU_LIBRARIES)
 diff --git a/cmake/FindUmfpack.cmake b/cmake/FindUmfpack.cmake
-index 53cf0b4..d8d25b8 100644
+index 53cf0b49b..d8d25b896 100644
 --- a/cmake/FindUmfpack.cmake
 +++ b/cmake/FindUmfpack.cmake
 @@ -47,7 +47,7 @@ if(UMFPACK_LIBRARIES)
@@ -102,7 +102,7 @@ index 53cf0b4..d8d25b8 100644
  
  mark_as_advanced(UMFPACK_INCLUDES UMFPACK_LIBRARIES AMD_LIBRARY COLAMD_LIBRARY CHOLMOD_LIBRARY SUITESPARSE_LIBRARY)
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
-index 3739268..bb35b1e 100644
+index 3739268d2..bb35b1e86 100644
 --- a/test/CMakeLists.txt
 +++ b/test/CMakeLists.txt
 @@ -66,7 +66,7 @@ endif()

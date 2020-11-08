@@ -1,5 +1,5 @@
 diff --git a/tools/msvs/find_nasm.cmd b/tools/msvs/find_nasm.cmd
-index d30d213..5763c27 100644
+index d30d213116..5763c275c8 100644
 --- a/tools/msvs/find_nasm.cmd
 +++ b/tools/msvs/find_nasm.cmd
 @@ -16,4 +16,10 @@ IF EXIST "%ProgramFiles(x86)%\NASM\nasm.exe" (

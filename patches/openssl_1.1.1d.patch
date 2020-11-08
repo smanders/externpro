@@ -1,6 +1,6 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..f47315f
+index 0000000000..f47315f30e
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,113 @@
@@ -119,7 +119,7 @@ index 0000000..f47315f
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
 diff --git a/apps/CMakeLists.txt b/apps/CMakeLists.txt
 new file mode 100644
-index 0000000..5cf5fd0
+index 0000000000..5cf5fd01cc
 --- /dev/null
 +++ b/apps/CMakeLists.txt
 @@ -0,0 +1,277 @@
@@ -402,7 +402,7 @@ index 0000000..5cf5fd0
 +compareCmakeFilesys("${apps_srcs}")
 diff --git a/apps/progs.h.cmake.in b/apps/progs.h.cmake.in
 new file mode 100644
-index 0000000..bd4643d
+index 0000000000..bd4643da6a
 --- /dev/null
 +++ b/apps/progs.h.cmake.in
 @@ -0,0 +1,24 @@
@@ -432,7 +432,7 @@ index 0000000..bd4643d
 +DEFINE_LHASH_OF(FUNCTION);
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000..e6dbe26
+index 0000000000..e6dbe2658f
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
 @@ -0,0 +1,1891 @@
@@ -2329,7 +2329,7 @@ index 0000000..e6dbe26
 +compareCmakeFilesys("${${lib_name}_all}")
 diff --git a/crypto/include/buildinf.h.cmake.in b/crypto/include/buildinf.h.cmake.in
 new file mode 100644
-index 0000000..68075a2
+index 0000000000..68075a2bd1
 --- /dev/null
 +++ b/crypto/include/buildinf.h.cmake.in
 @@ -0,0 +1,23 @@
@@ -2358,7 +2358,7 @@ index 0000000..68075a2
 +};
 diff --git a/crypto/include/internal/bn_conf.h.cmake.in b/crypto/include/internal/bn_conf.h.cmake.in
 new file mode 100644
-index 0000000..6faeca9
+index 0000000000..6faeca9b52
 --- /dev/null
 +++ b/crypto/include/internal/bn_conf.h.cmake.in
 @@ -0,0 +1,27 @@
@@ -2391,7 +2391,7 @@ index 0000000..6faeca9
 +#endif
 diff --git a/crypto/include/internal/dso_conf.h.cmake.in b/crypto/include/internal/dso_conf.h.cmake.in
 new file mode 100644
-index 0000000..cf6f04f
+index 0000000000..cf6f04faa7
 --- /dev/null
 +++ b/crypto/include/internal/dso_conf.h.cmake.in
 @@ -0,0 +1,14 @@
@@ -2411,7 +2411,7 @@ index 0000000..cf6f04f
 +#endif
 diff --git a/include/CMakeLists.txt b/include/CMakeLists.txt
 new file mode 100644
-index 0000000..e31f5d7
+index 0000000000..e31f5d7ad0
 --- /dev/null
 +++ b/include/CMakeLists.txt
 @@ -0,0 +1,246 @@
@@ -2663,7 +2663,7 @@ index 0000000..e31f5d7
 +compareCmakeFilesys("${${lib_name}_libsrcs}")
 diff --git a/include/openssl/opensslconf.h.cmake.in b/include/openssl/opensslconf.h.cmake.in
 new file mode 100644
-index 0000000..1782ddd
+index 0000000000..1782ddd7e2
 --- /dev/null
 +++ b/include/openssl/opensslconf.h.cmake.in
 @@ -0,0 +1,122 @@
@@ -2791,7 +2791,7 @@ index 0000000..1782ddd
 +#endif
 diff --git a/ssl/CMakeLists.txt b/ssl/CMakeLists.txt
 new file mode 100644
-index 0000000..dcdfb8c
+index 0000000000..dcdfb8c464
 --- /dev/null
 +++ b/ssl/CMakeLists.txt
 @@ -0,0 +1,97 @@
@@ -2894,7 +2894,7 @@ index 0000000..dcdfb8c
 +compareCmakeFilesys("${${lib_name}_all}")
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
 new file mode 100644
-index 0000000..702f0ee
+index 0000000000..702f0ee9dd
 --- /dev/null
 +++ b/test/CMakeLists.txt
 @@ -0,0 +1,337 @@

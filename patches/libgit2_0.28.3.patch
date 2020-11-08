@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 88eb9ec..3d8b499 100644
+index 88eb9ec10..3d8b4995f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -39,6 +39,7 @@ INCLUDE(FindStatNsec)
@@ -55,7 +55,7 @@ index 88eb9ec..3d8b499 100644
  	IF (ENABLE_REPRODUCIBLE_BUILDS)
  		SET(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> Dqc <TARGET> <LINK_FLAGS> <OBJECTS>")
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 213dd79..be20f49 100644
+index 213dd795c..be20f4919 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -19,11 +19,21 @@ SET(LIBGIT2_INCLUDES

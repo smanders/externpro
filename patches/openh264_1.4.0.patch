@@ -1,6 +1,6 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..2e1d458
+index 00000000..2e1d4580
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,14 @@
@@ -20,7 +20,7 @@ index 0000000..2e1d458
 +add_subdirectory(codec)
 diff --git a/codec/CMakeLists.txt b/codec/CMakeLists.txt
 new file mode 100644
-index 0000000..31a0411
+index 00000000..31a0411f
 --- /dev/null
 +++ b/codec/CMakeLists.txt
 @@ -0,0 +1,55 @@
@@ -81,7 +81,7 @@ index 0000000..31a0411
 +install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
 diff --git a/codec/common/CMakeLists.txt b/codec/common/CMakeLists.txt
 new file mode 100644
-index 0000000..4df5e77
+index 00000000..4df5e77f
 --- /dev/null
 +++ b/codec/common/CMakeLists.txt
 @@ -0,0 +1,103 @@
@@ -190,7 +190,7 @@ index 0000000..4df5e77
 +target_link_libraries(${lib_name} Threads::Threads)
 diff --git a/codec/console/CMakeLists.txt b/codec/console/CMakeLists.txt
 new file mode 100644
-index 0000000..a23d76f
+index 00000000..a23d76f3
 --- /dev/null
 +++ b/codec/console/CMakeLists.txt
 @@ -0,0 +1,3 @@
@@ -199,7 +199,7 @@ index 0000000..a23d76f
 +add_subdirectory(enc)
 diff --git a/codec/console/common/CMakeLists.txt b/codec/console/common/CMakeLists.txt
 new file mode 100644
-index 0000000..7baf023
+index 00000000..7baf0235
 --- /dev/null
 +++ b/codec/console/common/CMakeLists.txt
 @@ -0,0 +1,11 @@
@@ -216,7 +216,7 @@ index 0000000..7baf023
 +target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>)
 diff --git a/codec/console/dec/CMakeLists.txt b/codec/console/dec/CMakeLists.txt
 new file mode 100644
-index 0000000..35a2068
+index 00000000..35a20682
 --- /dev/null
 +++ b/codec/console/dec/CMakeLists.txt
 @@ -0,0 +1,14 @@
@@ -236,7 +236,7 @@ index 0000000..35a2068
 +target_link_libraries(${exe_name} ${exe_deps})
 diff --git a/codec/console/enc/CMakeLists.txt b/codec/console/enc/CMakeLists.txt
 new file mode 100644
-index 0000000..6610582
+index 00000000..66105820
 --- /dev/null
 +++ b/codec/console/enc/CMakeLists.txt
 @@ -0,0 +1,11 @@
@@ -253,7 +253,7 @@ index 0000000..6610582
 +target_link_libraries(${exe_name} ${exe_deps})
 diff --git a/codec/decoder/CMakeLists.txt b/codec/decoder/CMakeLists.txt
 new file mode 100644
-index 0000000..4b94c31
+index 00000000..4b94c31f
 --- /dev/null
 +++ b/codec/decoder/CMakeLists.txt
 @@ -0,0 +1,119 @@
@@ -377,7 +377,7 @@ index 0000000..4b94c31
 +target_include_directories(${lib_name} PUBLIC ${incDirs})
 +target_link_libraries(${lib_name} ${lib_deps})
 diff --git a/codec/decoder/core/src/decode_slice.cpp b/codec/decoder/core/src/decode_slice.cpp
-index 01b3b68..989c090 100644
+index 01b3b682..989c090d 100644
 --- a/codec/decoder/core/src/decode_slice.cpp
 +++ b/codec/decoder/core/src/decode_slice.cpp
 @@ -1341,7 +1341,7 @@ int32_t WelsDecodeMbCavlcISlice (PWelsDecoderContext pCtx, PNalUnit pNalCur, uin
@@ -400,7 +400,7 @@ index 01b3b68..989c090 100644
    }
 diff --git a/codec/encoder/CMakeLists.txt b/codec/encoder/CMakeLists.txt
 new file mode 100644
-index 0000000..fb3a9e1
+index 00000000..fb3a9e19
 --- /dev/null
 +++ b/codec/encoder/CMakeLists.txt
 @@ -0,0 +1,159 @@
@@ -564,7 +564,7 @@ index 0000000..fb3a9e1
 +target_include_directories(${lib_name} PUBLIC ${incDirs})
 +target_link_libraries(${lib_name} ${lib_deps})
 diff --git a/codec/encoder/core/src/encoder_ext.cpp b/codec/encoder/core/src/encoder_ext.cpp
-index cd30423..49a829e 100644
+index cd30423e..49a829e8 100644
 --- a/codec/encoder/core/src/encoder_ext.cpp
 +++ b/codec/encoder/core/src/encoder_ext.cpp
 @@ -3958,7 +3958,7 @@ int32_t WelsEncoderEncodeExt (sWelsEncCtx* pCtx, SFrameBSInfo* pFbi, const SSour
@@ -577,7 +577,7 @@ index cd30423..49a829e 100644
            }
  #endif//MT_DEBUG
 diff --git a/codec/encoder/core/src/ratectl.cpp b/codec/encoder/core/src/ratectl.cpp
-index 03bab72..a3e4bf9 100644
+index 03bab723..a3e4bf98 100644
 --- a/codec/encoder/core/src/ratectl.cpp
 +++ b/codec/encoder/core/src/ratectl.cpp
 @@ -694,7 +694,7 @@ void   RcVBufferCalculationSkip (sWelsEncCtx* pEncCtx) {
@@ -672,7 +672,7 @@ index 03bab72..a3e4bf9 100644
    }
 diff --git a/codec/processing/CMakeLists.txt b/codec/processing/CMakeLists.txt
 new file mode 100644
-index 0000000..c0d359c
+index 00000000..c0d359c8
 --- /dev/null
 +++ b/codec/processing/CMakeLists.txt
 @@ -0,0 +1,144 @@
@@ -821,7 +821,7 @@ index 0000000..c0d359c
 +target_include_directories(${lib_name} PUBLIC ${incDirs})
 +target_link_libraries(${lib_name} ${lib_deps})
 diff --git a/openh264.pc.in b/openh264.pc.in
-index 7fb5d0c..1a6b39b 100644
+index 7fb5d0c1..1a6b39b3 100644
 --- a/openh264.pc.in
 +++ b/openh264.pc.in
 @@ -1,10 +1,10 @@

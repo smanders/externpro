@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0772d6e..e325d85 100644
+index 0772d6e51..e325d850b 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -46,6 +46,7 @@ include(CMakeDependentOption)
@@ -196,7 +196,7 @@ index 0772d6e..e325d85 100644
  # Workaround for MSVS10 to avoid the Dialog Hell
  # FIXME: This could be removed with future version of CMake.
 diff --git a/include/curl/curl.h b/include/curl/curl.h
-index ff0c774..b0c281b 100644
+index ff0c77496..b0c281b35 100644
 --- a/include/curl/curl.h
 +++ b/include/curl/curl.h
 @@ -238,7 +238,7 @@ typedef int (*curl_xferinfo_callback)(void *clientp,
@@ -209,7 +209,7 @@ index ff0c774..b0c281b 100644
  
  #ifndef CURL_MAX_HTTP_HEADER
 diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
-index eca9a8a..c6d803f 100644
+index eca9a8af9..c6d803f3d 100644
 --- a/lib/CMakeLists.txt
 +++ b/lib/CMakeLists.txt
 @@ -97,6 +97,9 @@ endif()
@@ -239,7 +239,7 @@ index eca9a8a..c6d803f 100644
 +       NAMESPACE ${nameSpace}
  )
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 63e2b94..cd689c8 100644
+index 63e2b943d..cd689c808 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -67,10 +67,13 @@ target_link_libraries(${EXE_NAME} libcurl ${CURL_LIBS})

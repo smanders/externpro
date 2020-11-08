@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8df871c..4fe9da9 100644
+index 8df871cf..4fe9da9c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -35,13 +35,28 @@ INCLUDE_DIRECTORIES(AFTER ${CMAKE_BINARY_DIR} ${yasm_SOURCE_DIR})
@@ -33,7 +33,7 @@ index 8df871c..4fe9da9 100644
 +    DESTINATION include${verDir} ${OPT_INSTALL}
      )
 diff --git a/cmake/modules/YasmMacros.cmake b/cmake/modules/YasmMacros.cmake
-index ab1be00..db61eea 100644
+index ab1be00e..db61eeae 100644
 --- a/cmake/modules/YasmMacros.cmake
 +++ b/cmake/modules/YasmMacros.cmake
 @@ -58,31 +58,28 @@ macro (YASM_ADD_MODULE _module_NAME)
@@ -75,7 +75,7 @@ index ab1be00..db61eea 100644
          )
  endmacro (YASM_GENMACRO)
 diff --git a/frontends/tasm/CMakeLists.txt b/frontends/tasm/CMakeLists.txt
-index e275ab8..03e9c8a 100644
+index e275ab84..03e9c8a3 100644
 --- a/frontends/tasm/CMakeLists.txt
 +++ b/frontends/tasm/CMakeLists.txt
 @@ -30,8 +30,10 @@ ELSE(BUILD_SHARED_LIBS)
@@ -91,7 +91,7 @@ index e275ab8..03e9c8a 100644
 -INSTALL(TARGETS ytasm RUNTIME DESTINATION bin)
 +INSTALL(TARGETS ytasm EXPORT ${targetsFile} RUNTIME DESTINATION bin ${OPT_INSTALL})
 diff --git a/frontends/vsyasm/CMakeLists.txt b/frontends/vsyasm/CMakeLists.txt
-index 6815b18..351554c 100644
+index 6815b18d..351554c7 100644
 --- a/frontends/vsyasm/CMakeLists.txt
 +++ b/frontends/vsyasm/CMakeLists.txt
 @@ -34,4 +34,6 @@ SET_SOURCE_FILES_PROPERTIES(vsyasm.c PROPERTIES
@@ -103,7 +103,7 @@ index 6815b18..351554c 100644
 +
 +INSTALL(TARGETS vsyasm EXPORT ${targetsFile} RUNTIME DESTINATION bin ${OPT_INSTALL})
 diff --git a/frontends/yasm/CMakeLists.txt b/frontends/yasm/CMakeLists.txt
-index b11d7f8..cf51fea 100644
+index b11d7f82..cf51fea3 100644
 --- a/frontends/yasm/CMakeLists.txt
 +++ b/frontends/yasm/CMakeLists.txt
 @@ -31,4 +31,6 @@ SET_SOURCE_FILES_PROPERTIES(yasm.c PROPERTIES
@@ -115,7 +115,7 @@ index b11d7f8..cf51fea 100644
 +
 +INSTALL(TARGETS yasm EXPORT ${targetsFile} RUNTIME DESTINATION bin)
 diff --git a/libyasm/CMakeLists.txt b/libyasm/CMakeLists.txt
-index bd9b7b2..979e8c0 100644
+index bd9b7b28..979e8c0b 100644
 --- a/libyasm/CMakeLists.txt
 +++ b/libyasm/CMakeLists.txt
 @@ -38,14 +38,16 @@ IF(BUILD_SHARED_LIBS)
@@ -145,7 +145,7 @@ index bd9b7b2..979e8c0 100644
 +    ${OPT_INSTALL}
      )
 diff --git a/modules/preprocs/nasm/CMakeLists.txt b/modules/preprocs/nasm/CMakeLists.txt
-index e10a9dd..28bbce6 100644
+index e10a9dd1..28bbce65 100644
 --- a/modules/preprocs/nasm/CMakeLists.txt
 +++ b/modules/preprocs/nasm/CMakeLists.txt
 @@ -1,9 +1,8 @@

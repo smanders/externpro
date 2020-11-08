@@ -1,5 +1,5 @@
 diff --git a/doc/texi2pod.pl b/doc/texi2pod.pl
-index 6127dd8..1235f9c 100644
+index 6127dd838a..1235f9c3d0 100644
 --- a/doc/texi2pod.pl
 +++ b/doc/texi2pod.pl
 @@ -384,7 +384,7 @@ sub postprocess
@@ -12,7 +12,7 @@ index 6127dd8..1235f9c 100644
      s/\s+\(\@pxref\{(?:[^\}]*)\}\)//g;
      s/;\s+\@pxref\{(?:[^\}]*)\}//g;
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
-index 575dae1..826dc71 100644
+index 575dae13e4..826dc71f74 100644
 --- a/libavcodec/avcodec.h
 +++ b/libavcodec/avcodec.h
 @@ -532,6 +532,7 @@ enum AVCodecID {
@@ -24,7 +24,7 @@ index 575dae1..826dc71 100644
      AV_CODEC_ID_TIMED_ID3  = MKBETAG('T','I','D','3'),
      AV_CODEC_ID_BIN_DATA   = MKBETAG('D','A','T','A'),
 diff --git a/libavcodec/codec_desc.c b/libavcodec/codec_desc.c
-index 32dc1fc..faea5c8 100644
+index 32dc1fc372..faea5c8954 100644
 --- a/libavcodec/codec_desc.c
 +++ b/libavcodec/codec_desc.c
 @@ -2735,6 +2735,12 @@ static const AVCodecDescriptor codec_descriptors[] = {
@@ -41,7 +41,7 @@ index 32dc1fc..faea5c8 100644
          .type      = AVMEDIA_TYPE_DATA,
          .name      = "dvd_nav_packet",
 diff --git a/libavformat/mpegts.c b/libavformat/mpegts.c
-index 9e9ad47..992aed9 100644
+index 9e9ad4765e..992aed97dc 100644
 --- a/libavformat/mpegts.c
 +++ b/libavformat/mpegts.c
 @@ -712,14 +712,14 @@ static const StreamType REGD_types[] = {
@@ -83,7 +83,7 @@ index 9e9ad47..992aed9 100644
                      AVProgram *p = NULL;
                      while ((p = av_find_program_from_stream(pes->stream, p, pes->st->index))) {
 diff --git a/libavformat/mpegts.h b/libavformat/mpegts.h
-index 84f3098..5efb1cd 100644
+index 84f30983c1..5efb1cd62f 100644
 --- a/libavformat/mpegts.h
 +++ b/libavformat/mpegts.h
 @@ -51,6 +51,7 @@
@@ -95,7 +95,7 @@ index 84f3098..5efb1cd 100644
  #define STREAM_TYPE_VIDEO_HEVC      0x24
  #define STREAM_TYPE_VIDEO_CAVS      0x42
 diff --git a/libavformat/mpegtsenc.c b/libavformat/mpegtsenc.c
-index cc650bb..c55cc1a 100644
+index cc650bbd29..c55cc1a103 100644
 --- a/libavformat/mpegtsenc.c
 +++ b/libavformat/mpegtsenc.c
 @@ -309,6 +309,9 @@ static int mpegts_write_pmt(AVFormatContext *s, MpegTSService *service)

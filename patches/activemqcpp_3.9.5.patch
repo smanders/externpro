@@ -1,6 +1,6 @@
 diff --git a/activemq-cpp/CMakeLists.txt b/activemq-cpp/CMakeLists.txt
 new file mode 100644
-index 0000000..e747394
+index 00000000..e7473941
 --- /dev/null
 +++ b/activemq-cpp/CMakeLists.txt
 @@ -0,0 +1,27 @@
@@ -33,7 +33,7 @@ index 0000000..e747394
 +add_subdirectory(src/examples)
 diff --git a/activemq-cpp/config.h.cmake.in b/activemq-cpp/config.h.cmake.in
 new file mode 100644
-index 0000000..b8ee1ab
+index 00000000..b8ee1abe
 --- /dev/null
 +++ b/activemq-cpp/config.h.cmake.in
 @@ -0,0 +1,236 @@
@@ -275,7 +275,7 @@ index 0000000..b8ee1ab
 +#cmakedefine size_t @size_t@
 diff --git a/activemq-cpp/configure.cmake b/activemq-cpp/configure.cmake
 new file mode 100644
-index 0000000..8657ec1
+index 00000000..8657ec12
 --- /dev/null
 +++ b/activemq-cpp/configure.cmake
 @@ -0,0 +1,399 @@
@@ -680,7 +680,7 @@ index 0000000..8657ec1
 +set(CMAKE_REQUIRED_DEFINITIONS)
 diff --git a/activemq-cpp/src/examples/CMakeLists.txt b/activemq-cpp/src/examples/CMakeLists.txt
 new file mode 100644
-index 0000000..7a229f2
+index 00000000..7a229f29
 --- /dev/null
 +++ b/activemq-cpp/src/examples/CMakeLists.txt
 @@ -0,0 +1,83 @@
@@ -769,7 +769,7 @@ index 0000000..7a229f2
 +endforeach()
 diff --git a/activemq-cpp/src/main/CMakeLists.txt b/activemq-cpp/src/main/CMakeLists.txt
 new file mode 100644
-index 0000000..bdec527
+index 00000000..bdec5275
 --- /dev/null
 +++ b/activemq-cpp/src/main/CMakeLists.txt
 @@ -0,0 +1,1714 @@

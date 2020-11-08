@@ -1,5 +1,5 @@
 diff --git a/include/boost/gil/channel.hpp b/include/boost/gil/channel.hpp
-index 823691b..1cb6b18 100644
+index 823691b35..1cb6b18b9 100644
 --- a/include/boost/gil/channel.hpp
 +++ b/include/boost/gil/channel.hpp
 @@ -27,6 +27,7 @@
@@ -68,7 +68,7 @@ index 823691b..1cb6b18 100644
 +
  #endif
 diff --git a/include/boost/gil/channel_algorithm.hpp b/include/boost/gil/channel_algorithm.hpp
-index 1361219..98fa96a 100644
+index 1361219a3..98fa96a70 100644
 --- a/include/boost/gil/channel_algorithm.hpp
 +++ b/include/boost/gil/channel_algorithm.hpp
 @@ -227,7 +227,9 @@ template <typename SrcChannelV, typename DstChannelV>
@@ -135,7 +135,7 @@ index 1361219..98fa96a 100644
  };
  
 diff --git a/include/boost/gil/color_convert.hpp b/include/boost/gil/color_convert.hpp
-index 5d1da3f..eb240f8 100644
+index 5d1da3fcb..eb240f811 100644
 --- a/include/boost/gil/color_convert.hpp
 +++ b/include/boost/gil/color_convert.hpp
 @@ -223,36 +223,35 @@ struct default_color_converter_impl<cmyk_t,gray_t> {
@@ -190,7 +190,7 @@ index 5d1da3f..eb240f8 100644
  
 diff --git a/include/boost/gil/extension/numeric/affine.hpp b/include/boost/gil/extension/numeric/affine.hpp
 new file mode 100644
-index 0000000..a658c09
+index 000000000..a658c097c
 --- /dev/null
 +++ b/include/boost/gil/extension/numeric/affine.hpp
 @@ -0,0 +1,91 @@
@@ -287,7 +287,7 @@ index 0000000..a658c09
 +#endif
 diff --git a/include/boost/gil/extension/numeric/algorithm.hpp b/include/boost/gil/extension/numeric/algorithm.hpp
 new file mode 100644
-index 0000000..d847167
+index 000000000..d84716704
 --- /dev/null
 +++ b/include/boost/gil/extension/numeric/algorithm.hpp
 @@ -0,0 +1,156 @@
@@ -449,7 +449,7 @@ index 0000000..d847167
 +#endif
 diff --git a/include/boost/gil/extension/numeric/channel_numeric_operations.hpp b/include/boost/gil/extension/numeric/channel_numeric_operations.hpp
 new file mode 100644
-index 0000000..e823575
+index 000000000..e8235753c
 --- /dev/null
 +++ b/include/boost/gil/extension/numeric/channel_numeric_operations.hpp
 @@ -0,0 +1,156 @@
@@ -611,7 +611,7 @@ index 0000000..e823575
 +#endif
 diff --git a/include/boost/gil/extension/numeric/convolve.hpp b/include/boost/gil/extension/numeric/convolve.hpp
 new file mode 100644
-index 0000000..24276c7
+index 000000000..24276c74a
 --- /dev/null
 +++ b/include/boost/gil/extension/numeric/convolve.hpp
 @@ -0,0 +1,219 @@
@@ -836,7 +836,7 @@ index 0000000..24276c7
 +#endif
 diff --git a/include/boost/gil/extension/numeric/kernel.hpp b/include/boost/gil/extension/numeric/kernel.hpp
 new file mode 100644
-index 0000000..f451b9b
+index 000000000..f451b9be4
 --- /dev/null
 +++ b/include/boost/gil/extension/numeric/kernel.hpp
 @@ -0,0 +1,101 @@
@@ -943,7 +943,7 @@ index 0000000..f451b9b
 +#endif
 diff --git a/include/boost/gil/extension/numeric/pixel_numeric_operations.hpp b/include/boost/gil/extension/numeric/pixel_numeric_operations.hpp
 new file mode 100644
-index 0000000..c2829cf
+index 000000000..c2829cfa5
 --- /dev/null
 +++ b/include/boost/gil/extension/numeric/pixel_numeric_operations.hpp
 @@ -0,0 +1,144 @@
@@ -1093,7 +1093,7 @@ index 0000000..c2829cf
 +#endif
 diff --git a/include/boost/gil/extension/numeric/resample.hpp b/include/boost/gil/extension/numeric/resample.hpp
 new file mode 100644
-index 0000000..89a3099
+index 000000000..89a309940
 --- /dev/null
 +++ b/include/boost/gil/extension/numeric/resample.hpp
 @@ -0,0 +1,141 @@
@@ -1240,7 +1240,7 @@ index 0000000..89a3099
 +#endif
 diff --git a/include/boost/gil/extension/numeric/sampler.hpp b/include/boost/gil/extension/numeric/sampler.hpp
 new file mode 100644
-index 0000000..841b470
+index 000000000..841b470af
 --- /dev/null
 +++ b/include/boost/gil/extension/numeric/sampler.hpp
 @@ -0,0 +1,146 @@

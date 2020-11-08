@@ -1,6 +1,6 @@
 diff --git a/include/boost/mpl/vector/vector100.hpp b/include/boost/mpl/vector/vector100.hpp
 new file mode 100644
-index 0000000..3343624
+index 00000000..33436244
 --- /dev/null
 +++ b/include/boost/mpl/vector/vector100.hpp
 @@ -0,0 +1,18 @@
@@ -24,7 +24,7 @@ index 0000000..3343624
 +#endif // BOOST_MPL_VECTOR_VECTOR100_HPP_INCLUDED
 diff --git a/include/boost/mpl/vector/vector100_c.hpp b/include/boost/mpl/vector/vector100_c.hpp
 new file mode 100644
-index 0000000..541c548
+index 00000000..541c5482
 --- /dev/null
 +++ b/include/boost/mpl/vector/vector100_c.hpp
 @@ -0,0 +1,19 @@
