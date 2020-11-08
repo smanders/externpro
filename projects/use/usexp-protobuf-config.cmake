@@ -13,6 +13,7 @@ set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
 set(nsPrefix xpro::) # TRICKY: nsPrefix also used in protobuf-module.cmake
 set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
 # protobuf installs a config file which includes -targets.cmake and -module.cmake
+set(protobuf_MODULE_COMPATIBLE ON) # necessary for GENERATE_PROTOBUF_CPP
 include(${XP_ROOTDIR}/lib/cmake/protobuf_@VER@/${prj}-config.cmake)
 set(${PRJ}_LIBRARIES ${nsPrefix}libprotobuf)
 set(${PRJ}_PROTOC_EXECUTABLE ${nsPrefix}protoc) # TRICKY: must be named to match what's used in -module.cmake
