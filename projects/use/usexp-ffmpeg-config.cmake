@@ -1,7 +1,8 @@
 # FFMPEG_FOUND - FFmpeg was found
 # FFMPEG_VER - FFmpeg version
 # FFMPEG_LIBRARIES - the FFmpeg libraries
-# FFMPEG_DLLS - the FFmpeg shared objects (dll, so)
+# FFMPEG_DLLNAMES - the FFmpeg shared object names (dll, so)
+# FFMPEG_DLLS - the full path to FFmpeg shared objects (dll, so)
 set(prj ffmpeg)
 # this file (-config) installed to share/cmake
 get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
@@ -75,16 +76,18 @@ endforeach()
 set(${PRJ}_LIBRARIES ${ffmpegLibs})
 set(reqVars ${PRJ}_VER ${PRJ}_LIBRARIES)
 if(WIN32)
-  set(${PRJ}_DLLS
-    ${XP_ROOTDIR}/bin${verDir}/avcodec-56.dll
-    ${XP_ROOTDIR}/bin${verDir}/avdevice-56.dll
-    ${XP_ROOTDIR}/bin${verDir}/avfilter-5.dll
-    ${XP_ROOTDIR}/bin${verDir}/avformat-56.dll
-    ${XP_ROOTDIR}/bin${verDir}/avutil-54.dll
-    ${XP_ROOTDIR}/bin${verDir}/swresample-1.dll
-    ${XP_ROOTDIR}/bin${verDir}/swscale-3.dll
+  set(${PRJ}_DLLNAMES
+    avcodec-56.dll
+    avdevice-56.dll
+    avfilter-5.dll
+    avformat-56.dll
+    avutil-54.dll
+    swresample-1.dll
+    swscale-3.dll
     )
-  list(APPEND reqVars ${PRJ}_DLLS)
+  set(${PRJ}_DLLS ${${PRJ}_DLLNAMES})
+  list(TRANSFORM ${PRJ}_DLLS PREPEND ${XP_ROOTDIR}/bin${verDir}/)
+  list(APPEND reqVars ${PRJ}_DLLNAMES ${PRJ}_DLLS)
 endif()
 include(FindPackageHandleStandardArgs)
 set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
