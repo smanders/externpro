@@ -72,7 +72,7 @@ index 9529caa..69832e0 100644
  #include "jlossls.h"
  
  
- /*
+-/*
 - * Initialize the compression codec.
 - * This is called only once, during master selection.
 - */
@@ -91,7 +91,7 @@ index 9529caa..69832e0 100644
 -}
 -
 -
--/*
+ /*
   * Initialize the decompression codec.
   * This is called only once, during master selection.
   */
