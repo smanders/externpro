@@ -1,20 +1,18 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 000000000..d73089c43
+index 000000000..1ecf27eea
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,10 @@
 +cmake_minimum_required(VERSION 3.1.3)
 +project(protobuf_root)
 +include(flags OPTIONAL)
-+
 +if(DEFINED XP_NAMESPACE)
 +  set(nsPrefix ${XP_NAMESPACE}::)
 +  set(nameSpace ${nsPrefix})
 +else ()
 +  set(nameSpace protobuf::)
 +endif()
-+
 +add_subdirectory(cmake)
 diff --git a/cmake/CMakeLists.txt b/cmake/CMakeLists.txt
 index 9ca31ac0b..60acd67b5 100644
