@@ -27,19 +27,19 @@ diff --git a/libavcodec/codec_desc.c b/libavcodec/codec_desc.c
 index 32dc1fc372..faea5c8954 100644
 --- a/libavcodec/codec_desc.c
 +++ b/libavcodec/codec_desc.c
-@@ -2735,6 +2735,12 @@ static const AVCodecDescriptor codec_descriptors[] = {
+@@ -2734,6 +2734,12 @@ static const AVCodecDescriptor codec_descriptors[] = {
+         .name      = "klv",
          .long_name = NULL_IF_CONFIG_SMALL("SMPTE 336M Key-Length-Value (KLV) metadata"),
      },
-     {
++    {
 +        .id        = AV_CODEC_ID_SMPTE_KLV_SYNC,
 +        .type      = AVMEDIA_TYPE_DATA,
 +        .name      = "klvSync",
 +        .long_name = NULL_IF_CONFIG_SMALL("SMPTE 336M Key-Length-Value (KLV) synchronous metadata"),
 +    },
-+    {
+     {
          .id        = AV_CODEC_ID_DVD_NAV,
          .type      = AVMEDIA_TYPE_DATA,
-         .name      = "dvd_nav_packet",
 diff --git a/libavformat/mpegts.c b/libavformat/mpegts.c
 index 9e9ad4765e..992aed97dc 100644
 --- a/libavformat/mpegts.c
