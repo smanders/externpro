@@ -2,6 +2,20 @@
 set(NODE_OLDVER 10.17.0)
 set(NODE_NEWVER 10.17.0)
 ####################
+xpProOption(node)
+set(PRO_NODE
+  NAME node
+  NO_README
+  DEPS_FUNC build_node_all
+  BUILD_DEPS node_${NODE_OLDVER} node_${NODE_NEWVER}
+  )
+function(build_node_all)
+  xpBuildDeps(depTgts ${PRO_NODE})
+  if(ARGN)
+    set(${ARGN} "${depsTgts}" PARENT_SCOPE)
+  endif()
+endfunction()
+####################
 function(build_node)
   if(NOT (XP_DEFAULT OR XP_PRO_NODE_${NODE_OLDVER} OR XP_PRO_NODE_${NODE_NEWVER}))
     return()

@@ -18,4 +18,5 @@ set(PRO_NODE_${VER}
   DIFF https://${FORK}/compare/nodejs:
   DLURL http://nodejs.org/dist/v${VER}/node-v${VER}.tar.gz
   DLMD5 66e52d87bdaf00187588baa790ab18de
+  DEPS_FUNC build_node
   )
