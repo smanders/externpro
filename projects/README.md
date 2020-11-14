@@ -28,6 +28,7 @@
 |[LLVM](http://llvm.org/ 'LLVM website')|[open](http://llvm.org/svn/llvm-project/llvm/trunk/LICENSE.TXT 'LLVM Release License')|The LLVM Compiler Infrastructure|3.9.0|[repo](https://github.com/llvm-mirror/llvm 'llvm repo on github')|none|
 |[Lua](http://www.lua.org/ 'Lua website')|[open](http://www.lua.org/license.html 'MIT license')|a powerful, fast, lightweight, embeddable scripting language|5.2.3|[repo](https://github.com/LuaDist/lua 'lua repo on github')|[diff](https://github.com/smanders/lua/compare/LuaDist:5.2.3...xp5.2.3 'patch/diff')|
 |[nasm](https://www.nasm.us/ 'nasm website')|[BSD](https://www.nasm.us/ 'Simplified (2-clause) BSD license')|The Netwide Assembler - an 80x86 and x86-64 assembler|2.14.02|none|none|
+|[node-addon-api](https://github.com/nodejs/node-addon-api 'node-addon-api on github')|[open](https://github.com/nodejs/node-addon-api/blob/3.0.2/LICENSE.md 'The MIT License - http://opensource.org/licenses/mit-license.php')|Module for using N-API from C++|3.0.2|[repo](https://github.com/nodejs/node-addon-api 'node-addon-api repo on github')|none|
 |[Node.js](http://nodejs.org 'Node.js website')|[open](https://raw.githubusercontent.com/nodejs/node/v10.17.0/LICENSE 'MIT license')|platform to build scalable network applications|10.17.0|[repo](https://github.com/nodejs/node 'node repo on github')|[diff](https://github.com/smanders/node/compare/nodejs:v10.17.0...xp10.17.0 'patch/diff')|
 |[OpenH264](http://www.openh264.org/ 'OpenH264 website')|[open](http://www.openh264.org/faq.html 'Two-Clause BSD license')|a codec library which supports H.264 encoding and decoding|1.4.0|[repo](https://github.com/cisco/openh264 'openh264 repo on github')|[diff](https://github.com/smanders/openh264/compare/cisco:v1.4.0...xp1.4.0 'patch/diff')|
 |[OpenSSL](http://www.openssl.org/ 'OpenSSL website')|[open](http://www.openssl.org/source/license.html 'OpenSSL, SSLeay License: BSD-style')|Cryptography and SSL/TLS Toolkit|1.1.1d|[repo](https://github.com/openssl/openssl 'openssl repo on github')|[diff](https://github.com/smanders/openssl/compare/openssl:OpenSSL_1_1_1d...xp_1_1_1d 'patch/diff')|
@@ -67,10 +68,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_14b4895da7cb8c4ca96cb172ca4f0c1d?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_3b8f3d7ea62b22a1634115606a899f50?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_14b4895da7cb8c4ca96cb172ca4f0c1d
+depgraph_3b8f3d7ea62b22a1634115606a899f50
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
@@ -114,6 +115,8 @@ digraph GG {
   libstrophe -> openssl_1_1_1d;
   llvm [shape=box];
   nasm [shape=box];
+  node_addon_api [label="node-addon-api" shape=diamond];
+  node_addon_api -> node;
   nodejs [shape=diamond];
   nodejs -> nasm;
   openh264 [shape=diamond];
@@ -132,5 +135,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_14b4895da7cb8c4ca96cb172ca4f0c1d
+depgraph_3b8f3d7ea62b22a1634115606a899f50
 </details>
