@@ -8,7 +8,7 @@ set(PRO_NODE-ADDON-API
   LICENSE "open" https://${REPO}/blob/${VER}/LICENSE.md "The MIT License - http://opensource.org/licenses/mit-license.php"
   DESC "Module for using N-API from C++"
   REPO "repo" https://${REPO} "node-addon-api repo on github"
-  GRAPH BUILD_DEPS node
+  BUILD_DEPS node
   VER ${VER}
   GIT_ORIGIN git://${REPO}.git
   GIT_TAG ${VER}
