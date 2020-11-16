@@ -1,53 +1,53 @@
-# node
-set(NODE_OLDVER 10.17.0)
-set(NODE_NEWVER 10.17.0)
+# nodejs
+set(NODEJS_OLDVER 10.17.0)
+set(NODEJS_NEWVER 10.17.0)
 ####################
-xpProOption(node)
-set(PRO_NODE
-  NAME node
+xpProOption(nodejs)
+set(PRO_NODEJS
+  NAME nodejs
   NO_README
-  DEPS_FUNC build_node_all
-  BUILD_DEPS node_${NODE_OLDVER} node_${NODE_NEWVER}
+  DEPS_FUNC build_nodejs_all
+  BUILD_DEPS nodejs_${NODEJS_OLDVER} nodejs_${NODEJS_NEWVER}
   )
-function(build_node_all)
-  xpBuildDeps(depTgts ${PRO_NODE})
+function(build_nodejs_all)
+  xpBuildDeps(depTgts ${PRO_NODEJS})
   if(ARGN)
     set(${ARGN} "${depsTgts}" PARENT_SCOPE)
   endif()
 endfunction()
 ####################
-function(build_node)
-  if(NOT (XP_DEFAULT OR XP_PRO_NODE_${NODE_OLDVER} OR XP_PRO_NODE_${NODE_NEWVER}))
+function(build_nodejs)
+  if(NOT (XP_DEFAULT OR XP_PRO_NODEJS_${NODEJS_OLDVER} OR XP_PRO_NODEJS_${NODEJS_NEWVER}))
     return()
   endif()
   find_package(PythonInterp)
   if(NOT PYTHONINTERP_FOUND)
-    message(AUTHOR_WARNING "Unable to build node, required python not found")
+    message(AUTHOR_WARNING "Unable to build nodejs, required python not found")
     return()
   endif()
   if(WIN32)
     if(NOT (XP_DEFAULT OR XP_PRO_NASM))
-      message(STATUS "node.cmake: requires nasm")
+      message(STATUS "nodejs.cmake: requires nasm")
       set(XP_PRO_NASM ON CACHE BOOL "include nasm" FORCE)
       xpPatchProject(${PRO_NASM})
     endif()
   endif()
   if(XP_DEFAULT)
-    set(NODE_VERSIONS ${NODE_OLDVER} ${NODE_NEWVER})
+    set(NODEJS_VERSIONS ${NODEJS_OLDVER} ${NODEJS_NEWVER})
   else()
-    if(XP_PRO_NODE_${NODE_OLDVER})
-      set(NODE_VERSIONS ${NODE_OLDVER})
+    if(XP_PRO_NODEJS_${NODEJS_OLDVER})
+      set(NODEJS_VERSIONS ${NODEJS_OLDVER})
     endif()
-    if(XP_PRO_NODE_${NODE_NEWVER})
-      list(APPEND NODE_VERSIONS ${NODE_NEWVER})
+    if(XP_PRO_NODEJS_${NODEJS_NEWVER})
+      list(APPEND NODEJS_VERSIONS ${NODEJS_NEWVER})
     endif()
   endif()
-  list(REMOVE_DUPLICATES NODE_VERSIONS)
-  list(LENGTH NODE_VERSIONS NUM_VER)
+  list(REMOVE_DUPLICATES NODEJS_VERSIONS)
+  list(LENGTH NODEJS_VERSIONS NUM_VER)
   if(NUM_VER EQUAL 1)
-    if(NODE_VERSIONS VERSION_EQUAL NODE_OLDVER)
+    if(NODEJS_VERSIONS VERSION_EQUAL NODEJS_OLDVER)
       set(boolean OFF)
-    else() # NODE_VERSIONS VERSION_EQUAL NODE_NEWVER
+    else() # NODEJS_VERSIONS VERSION_EQUAL NODEJS_NEWVER
       set(boolean ON)
     endif()
     set(ONE_VER "set(XP_USE_LATEST_NODE ${boolean}) # currently only one version supported\n")
@@ -57,15 +57,15 @@ function(build_node)
   configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  foreach(ver ${NODE_VERSIONS})
-    build_node_ver(${ver})
+  foreach(ver ${NODEJS_VERSIONS})
+    build_nodejs_ver(${ver})
   endforeach()
 endfunction()
 ####################
-function(build_node_ver ver)
+function(build_nodejs_ver ver)
   # TODO: support Debug by renaming files going into STAGE_DIR?
   set(BUILD_CONFIGS Release)
-  set(node_${ver}_DEPS node_${ver})
+  set(nodejs_${ver}_DEPS nodejs_${ver})
   if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
     if(${BUILD_PLATFORM} STREQUAL "64")
       set(destcpu arm64)
@@ -78,7 +78,7 @@ function(build_node_ver ver)
     elseif(${BUILD_PLATFORM} STREQUAL "32")
       set(destcpu ia32)
     else()
-      message(FATAL_ERROR "node.cmake: cpu")
+      message(FATAL_ERROR "nodejs.cmake: cpu")
     endif()
   endif()
   if(MSVC)
@@ -91,7 +91,7 @@ function(build_node_ver ver)
     elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
       set(destos mac)
     else()
-      message(FATAL_ERROR "node.cmake: os")
+      message(FATAL_ERROR "nodejs.cmake: os")
     endif()
     list(APPEND XP_CONFIGURE_BASE <SOURCE_DIR>/configure
       --prefix=<INSTALL_DIR>
@@ -103,24 +103,24 @@ function(build_node_ver ver)
     set(XP_CONFIGURE_Release ${XP_CONFIGURE_BASE})
     set(XP_CONFIGURE_Debug ${XP_CONFIGURE_BASE} --debug --gdb)
   else()
-    message(FATAL_ERROR "node.cmake: unsupported OS platform")
+    message(FATAL_ERROR "nodejs.cmake: unsupported OS platform")
   endif()
   foreach(cfg ${BUILD_CONFIGS})
     set(XP_CONFIGURE_CMD ${XP_CONFIGURE_${cfg}})
-    addproject_node(node_${ver} ${cfg})
+    addproject_nodejs(nodejs_${ver} ${cfg})
   endforeach() # cfg
   # copy headers to STAGE_DIR
-  ExternalProject_Get_Property(node_${ver} SOURCE_DIR)
-  set(nodeHdrs ${SOURCE_DIR}/src/*.h)
+  ExternalProject_Get_Property(nodejs_${ver} SOURCE_DIR)
+  set(nodejsHdrs ${SOURCE_DIR}/src/*.h)
   set(uvDir ${SOURCE_DIR}/deps/uv/include)
   set(v8Hdrs ${SOURCE_DIR}/deps/v8/include/*.h)
-  set(XP_TARGET node_${ver}_stage)
+  set(XP_TARGET nodejs_${ver}_stage)
   if(NOT TARGET ${XP_TARGET})
-    ExternalProject_Add(${XP_TARGET} DEPENDS ${node_${ver}_DEPS}
+    ExternalProject_Add(${XP_TARGET} DEPENDS ${nodejs_${ver}_DEPS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
       SOURCE_DIR ${NULL_DIR} INSTALL_DIR ${STAGE_DIR}/include/node_${ver}/node
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy_directory ${uvDir} <INSTALL_DIR>
-      BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${nodeHdrs}
+      BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${nodejsHdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
       INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${v8Hdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
@@ -129,10 +129,10 @@ function(build_node_ver ver)
   endif()
 endfunction()
 ####################
-macro(addproject_node basename cfg)
+macro(addproject_nodejs basename cfg)
   set(XP_TARGET ${basename}_${cfg})
   ExternalProject_Get_Property(${basename} SOURCE_DIR)
-  set(nodeSrcDir ${SOURCE_DIR})
+  set(nodejsSrcDir ${SOURCE_DIR})
   if(NOT TARGET ${XP_TARGET})
     if(XP_BUILD_VERBOSE)
       message(STATUS "target ${XP_TARGET}")
@@ -145,14 +145,14 @@ macro(addproject_node basename cfg)
       #   MSVC thinks it always needs to build this (after what appears to be a
       #   successful build) -- and there can't be any external project steps
       #   after the step with vcbuild or they won't execute
-      ExternalProject_Add(${XP_TARGET}vcbuild DEPENDS ${node_${ver}_DEPS}
+      ExternalProject_Add(${XP_TARGET}vcbuild DEPENDS ${nodejs_${ver}_DEPS}
         DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
-        SOURCE_DIR ${nodeSrcDir} INSTALL_DIR ${NULL_DIR}
+        SOURCE_DIR ${nodejsSrcDir} INSTALL_DIR ${NULL_DIR}
         CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
         BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
         )
       set_property(TARGET ${XP_TARGET}vcbuild PROPERTY FOLDER ${bld_folder})
-      list(APPEND node_${ver}_DEPS ${XP_TARGET}vcbuild) # serialize the build
+      list(APPEND nodejs_${ver}_DEPS ${XP_TARGET}vcbuild) # serialize the build
       set(binNode <SOURCE_DIR>/${cfg}/node.exe)
       set(libNode <SOURCE_DIR>/${cfg}/node.lib)
       set(XP_CONFIGURE_CMD ${CMAKE_COMMAND} -E echo "Configure MSVC...")
@@ -163,9 +163,9 @@ macro(addproject_node basename cfg)
       set(XP_BUILD_CMD)   # use default
       set(XP_INSTALL_CMD) # use default
     endif()
-    ExternalProject_Add(${XP_TARGET} DEPENDS ${node_${ver}_DEPS}
+    ExternalProject_Add(${XP_TARGET} DEPENDS ${nodejs_${ver}_DEPS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
-      SOURCE_DIR ${nodeSrcDir} INSTALL_DIR ${NULL_DIR}
+      SOURCE_DIR ${nodejsSrcDir} INSTALL_DIR ${NULL_DIR}
       CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
       BUILD_COMMAND ${XP_BUILD_CMD}
       BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
@@ -178,5 +178,5 @@ macro(addproject_node basename cfg)
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
-  list(APPEND node_${ver}_DEPS ${XP_TARGET}) # serialize the build
+  list(APPEND nodejs_${ver}_DEPS ${XP_TARGET}) # serialize the build
 endmacro()
