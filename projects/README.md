@@ -48,6 +48,7 @@
 
 |project|sub|description|version|repository|patch/diff|
 |-------|---|-----------|-------|----------|----------|
+|boost|[asio](http://boost.org/libs/asio 'boost asio website')|cross-platform C++ library for network and low-level I/O programming that provides developers with a consistent asynchronous model using a modern C++ approach|1.67.0|[repo](https://github.com/boostorg/asio 'asio repo on github')|[diff](https://github.com/smanders/asio/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|
 |boost|[gil](http://boost.org/libs/gil 'boost gil website')|gil (generic image library)|1.67.0|[repo](https://github.com/boostorg/gil 'gil repo on github')|[diff](https://github.com/smanders/gil/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|
 |boost|[mpl](http://boost.org/libs/mpl 'boost mpl website')|mpl (metaprogramming library)|1.67.0|[repo](https://github.com/boostorg/mpl 'mpl repo on github')|[diff](https://github.com/smanders/mpl/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|
 |boost|[units](http://boost.org/libs/units 'boost units website')|zero-overhead dimensional analysis and unit/quantity manipulation and conversion|1.67.0|[repo](https://github.com/boostorg/units 'units repo on github')|[diff](https://github.com/smanders/units/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|

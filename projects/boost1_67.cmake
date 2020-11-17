@@ -16,5 +16,5 @@ set(PRO_BOOST${VER2_}
   GIT_TAG boost-${VER} # what to 'git checkout'
   DLURL https://dl.bintray.com/boostorg/release/${VER}/source/boost_${VER_}.tar.bz2
   DLMD5 ced776cb19428ab8488774e1415535ab
-  SUBPRO boostgil${VER2_} boostmpl${VER2_} boostunits${VER2_}
+  SUBPRO boostasio${VER2_} boostgil${VER2_} boostmpl${VER2_} boostunits${VER2_}
   )
