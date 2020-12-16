@@ -1,0 +1,128 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e92141d0..5843d470 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,6 +20,7 @@ include(FindThreads)
+ include(GNUInstallDirs)
+ include(CheckTypeSize)
+ include(CMakePackageConfigHelpers)
++include(flags OPTIONAL)
+ 
+ list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}")
+ set(ZMQ_CMAKE_MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/builds/cmake/Modules)
+@@ -1223,7 +1224,23 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
+ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/libzmq.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc @ONLY)
+ set(zmq-pkgconfig ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc)
+ 
+-if(NOT ZMQ_BUILD_FRAMEWORK)
++if(DEFINED LIBZMQ_VER)
++  if(NOT LIBZMQ_VER STREQUAL ZMQ_VERSION)
++    message(AUTHOR_WARNING "version passed in (${LIBZMQ_VER}) doesn't match internal version (${ZMQ_VERSION})")
++  endif()
++  set(_ver _${ZMQ_VERSION})
++  if(NOT MSVC)
++    set(ZMQ_OUTPUT_BASENAME ${ZMQ_OUTPUT_BASENAME}${_ver})
++  endif()
++endif()
++if(DEFINED XP_NAMESPACE)
++  set(optionalInstall EXCLUDE_FROM_ALL)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++
++option(INSTALL_PKGCONFIG "pkgconfig install" ON)
++mark_as_advanced(INSTALL_PKGCONFIG)
++if(NOT ZMQ_BUILD_FRAMEWORK AND INSTALL_PKGCONFIG)
+   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ endif()
+ 
+@@ -1349,7 +1366,8 @@ else()
+     set_property(TARGET objects PROPERTY POSITION_INDEPENDENT_CODE ON)
+     target_include_directories(
+       objects PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+-                     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:include>)
++                     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
++                     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+   endif()
+ 
+   if(BUILD_SHARED)
+@@ -1410,7 +1428,8 @@ endif()
+ foreach(target ${target_outputs})
+   target_include_directories(
+     ${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+-                     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:include>)
++                     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
++                     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+ endforeach()
+ 
+ if(BUILD_SHARED)
+@@ -1603,7 +1622,7 @@ if(MSVC AND (BUILD_SHARED OR BUILD_STATIC))
+     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT SDK)
++    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libzmq COMPONENT SDK)
+   if(MSVC_IDE)
+     install(
+       FILES ${PDB_OUTPUT_DIRECTORY}/\${CMAKE_INSTALL_CONFIG_NAME}/${PDB_NAME}.pdb
+@@ -1621,7 +1640,7 @@ if(MSVC AND (BUILD_SHARED OR BUILD_STATIC))
+     install(
+       TARGETS libzmq
+       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+-      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Runtime)
++      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libzmq COMPONENT Runtime)
+   endif()
+ elseif(BUILD_SHARED OR BUILD_STATIC)
+   install(
+@@ -1631,7 +1650,7 @@ elseif(BUILD_SHARED OR BUILD_STATIC)
+     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+     FRAMEWORK DESTINATION "Library/Frameworks"
+-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libzmq)
+ endif()
+ 
+ foreach(readme ${readme-docs})
+@@ -1651,7 +1670,7 @@ if(WITH_DOC)
+   endif()
+ endif()
+ 
+-if(WIN32)
++if(WIN32 AND FALSE)
+   set(ZEROMQ_CMAKECONFIG_INSTALL_DIR
+       "CMake"
+       CACHE STRING "install path for ZeroMQConfig.cmake")
+@@ -1659,7 +1678,7 @@ else()
+   # CMake search path wants either "share" (AKA GNUInstallDirs DATAROOTDIR) for arch-independent, or LIBDIR for arch-
+   # dependent, plus "cmake" as prefix
+   set(ZEROMQ_CMAKECONFIG_INSTALL_DIR
+-      "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
++      "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}${_ver}"
+       CACHE STRING "install path for ZeroMQConfig.cmake")
+ endif()
+ 
+@@ -1676,10 +1695,11 @@ write_basic_package_version_file(
+ if(BUILD_SHARED OR BUILD_STATIC)
+   install(
+     EXPORT ${PROJECT_NAME}-targets
+-    FILE ${PROJECT_NAME}Targets.cmake
++    FILE ${PROJECT_NAME}Targets.cmake ${nameSpace}
+     DESTINATION ${ZEROMQ_CMAKECONFIG_INSTALL_DIR})
+   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+                 ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
++          ${optionalInstall}
+           DESTINATION ${ZEROMQ_CMAKECONFIG_INSTALL_DIR})
+ endif()
+ 
+diff --git a/builds/cmake/Modules/FindSodium.cmake b/builds/cmake/Modules/FindSodium.cmake
+index 9ec36d1d..88f41315 100644
+--- a/builds/cmake/Modules/FindSodium.cmake
++++ b/builds/cmake/Modules/FindSodium.cmake
+@@ -39,7 +39,7 @@ find_library(
+ )
+ 
+ include(FindPackageHandleStandardArgs)
+-find_package_handle_standard_args(sodium DEFAULT_MSG SODIUM_LIBRARIES SODIUM_INCLUDE_DIRS)
++find_package_handle_standard_args(Sodium DEFAULT_MSG SODIUM_LIBRARIES SODIUM_INCLUDE_DIRS)
+ mark_as_advanced(SODIUM_FOUND SODIUM_LIBRARIES SODIUM_INCLUDE_DIRS)
+ 
+ ################################################################################
