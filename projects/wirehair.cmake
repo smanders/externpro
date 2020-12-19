@@ -7,7 +7,7 @@ set(FORK github.com/smanders/wirehair)
 set(PRO_WIREHAIR
   NAME wirehair
   WEB "wirehair" https://${REPO} "wirehair repo on github"
-  LICENSE "open" https://${REPO}/blob/master/LICENSE.txt "BSD 3-Clause 'New' or 'Revised' License"
+  LICENSE "open" https://${REPO}/blob/master/LICENSE.txt "BSD 3-Clause New or Revised License"
   DESC "fast and portable fountain codes in C"
   REPO "repo" https://${REPO} "wirehair repo on github"
   VER ${VER}
