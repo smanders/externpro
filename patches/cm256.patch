@@ -1,0 +1,49 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..d3144c3
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,43 @@
++cmake_minimum_required(VERSION 3.17)
++project(cm256)
++include(flags OPTIONAL)
++set(lib_name ${PROJECT_NAME})
++########################################
++set(${lib_name}_libsrcs
++  cm256.cpp
++  cm256.h
++  gf256.cpp
++  gf256.h
++  )
++########################################
++if(DEFINED CM256_VER)
++  set(_ver _${CM256_VER})
++endif()
++include(GNUInstallDirs)
++########################################
++include(CheckCXXCompilerFlag)
++foreach(flag -mssse3)
++  check_cxx_compiler_flag("${flag}" has_cm${flag})
++  if(has_cm${flag})
++    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
++  endif()
++endforeach()
++if(XP_BUILD_VERBOSE)
++  message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
++endif()
++########################################
++add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
++target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
++set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${_ver})
++########################################
++set(targetsFile ${PROJECT_NAME}${_ver}-targets)
++install(TARGETS ${lib_name} EXPORT ${targetsFile}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  )
++install(FILES cm256.h gf256.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
