@@ -19,6 +19,7 @@ set(PRO_LIBZMQ
   DLNAME libzmq-${VER}.tar.gz
   PATCH ${PATCH_DIR}/libzmq.patch
   DIFF https://${FORK}/compare/zeromq:
+  DEPS_FUNC build_libzmq
   )
 ########################################
 function(build_libzmq)
@@ -38,5 +39,8 @@ function(build_libzmq)
     -DLIBZMQ_VER=${VER}
     -DXP_NAMESPACE:STRING=xpro
     )
-  xpCmakeBuild(libzmq "" "${XP_CONFIGURE}")
+  xpCmakeBuild(libzmq "" "${XP_CONFIGURE}" zmqTargets)
+  if(ARGN)
+    set(${ARGN} "${zmqTargets}" PARENT_SCOPE)
+  endif()
 endfunction()
