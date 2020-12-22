@@ -73,10 +73,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_f44fcde77ed79837dc329971d82c477f?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_b2c0c30c44bc3af48cdab40f491de26f?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_f44fcde77ed79837dc329971d82c477f
+depgraph_b2c0c30c44bc3af48cdab40f491de26f
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
@@ -120,6 +120,7 @@ digraph GG {
   libstrophe [shape=diamond];
   libstrophe -> expat;
   libstrophe -> openssl_1_1_1d;
+  libzmq [shape=diamond];
   llvm [shape=box];
   nasm [shape=box];
   node_addon_api [label="node-addon-api" shape=diamond];
@@ -142,5 +143,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_f44fcde77ed79837dc329971d82c477f
+depgraph_b2c0c30c44bc3af48cdab40f491de26f
 </details>

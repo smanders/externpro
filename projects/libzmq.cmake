@@ -9,6 +9,7 @@ set(PRO_LIBZMQ
   LICENSE "open" http://wiki.zeromq.org/area:licensing "GNU LGPL plus static linking exception"
   DESC "high-performance asynchronous messaging library"
   REPO "repo" https://${REPO} "zeromq/libzmq repo on github"
+  GRAPH
   VER ${VER}
   GIT_ORIGIN git://${FORK}.git
   GIT_UPSTREAM git://${REPO}.git
