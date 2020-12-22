@@ -33,6 +33,7 @@ function(build_libzmq)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
     -DCMAKE_INSTALL_INCLUDEDIR=include/libzmq_${VER}
+    -DZEROMQ_CMAKECONFIG_INSTALL_DIR=lib/cmake/ZeroMQ_${VER}
     -DBUILD_SHARED:BOOL=OFF
     -DENABLE_CPACK:BOOL=OFF
     -DINSTALL_PKGCONFIG:BOOL=OFF

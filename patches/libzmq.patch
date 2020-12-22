@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e92141d0..5843d470 100644
+index e92141d0..550fe401 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,6 +20,7 @@ include(FindThreads)
@@ -10,7 +10,7 @@ index e92141d0..5843d470 100644
  
  list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}")
  set(ZMQ_CMAKE_MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/builds/cmake/Modules)
-@@ -1223,7 +1224,23 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
+@@ -1223,7 +1224,22 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/libzmq.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc @ONLY)
  set(zmq-pkgconfig ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc)
  
@@ -19,14 +19,13 @@ index e92141d0..5843d470 100644
 +  if(NOT LIBZMQ_VER STREQUAL ZMQ_VERSION)
 +    message(AUTHOR_WARNING "version passed in (${LIBZMQ_VER}) doesn't match internal version (${ZMQ_VERSION})")
 +  endif()
-+  set(_ver _${ZMQ_VERSION})
 +  if(NOT MSVC)
-+    set(ZMQ_OUTPUT_BASENAME ${ZMQ_OUTPUT_BASENAME}${_ver})
++    set(ZMQ_OUTPUT_BASENAME ${ZMQ_OUTPUT_BASENAME}_${ZMQ_VERSION})
 +  endif()
 +endif()
 +if(DEFINED XP_NAMESPACE)
-+  set(optionalInstall EXCLUDE_FROM_ALL)
-+  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++  set(nSpace ${XP_NAMESPACE}::)
++  set(nameSpace NAMESPACE ${nSpace})
 +endif()
 +
 +option(INSTALL_PKGCONFIG "pkgconfig install" ON)
@@ -35,7 +34,7 @@ index e92141d0..5843d470 100644
    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
  endif()
  
-@@ -1349,7 +1366,8 @@ else()
+@@ -1349,7 +1365,8 @@ else()
      set_property(TARGET objects PROPERTY POSITION_INDEPENDENT_CODE ON)
      target_include_directories(
        objects PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -45,7 +44,7 @@ index e92141d0..5843d470 100644
    endif()
  
    if(BUILD_SHARED)
-@@ -1410,7 +1428,8 @@ endif()
+@@ -1410,7 +1427,8 @@ endif()
  foreach(target ${target_outputs})
    target_include_directories(
      ${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -55,52 +54,7 @@ index e92141d0..5843d470 100644
  endforeach()
  
  if(BUILD_SHARED)
-@@ -1603,7 +1622,7 @@ if(MSVC AND (BUILD_SHARED OR BUILD_STATIC))
-     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
--    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT SDK)
-+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libzmq COMPONENT SDK)
-   if(MSVC_IDE)
-     install(
-       FILES ${PDB_OUTPUT_DIRECTORY}/\${CMAKE_INSTALL_CONFIG_NAME}/${PDB_NAME}.pdb
-@@ -1621,7 +1640,7 @@ if(MSVC AND (BUILD_SHARED OR BUILD_STATIC))
-     install(
-       TARGETS libzmq
-       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
--      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Runtime)
-+      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libzmq COMPONENT Runtime)
-   endif()
- elseif(BUILD_SHARED OR BUILD_STATIC)
-   install(
-@@ -1631,7 +1650,7 @@ elseif(BUILD_SHARED OR BUILD_STATIC)
-     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-     FRAMEWORK DESTINATION "Library/Frameworks"
--    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libzmq)
- endif()
- 
- foreach(readme ${readme-docs})
-@@ -1651,7 +1670,7 @@ if(WITH_DOC)
-   endif()
- endif()
- 
--if(WIN32)
-+if(WIN32 AND FALSE)
-   set(ZEROMQ_CMAKECONFIG_INSTALL_DIR
-       "CMake"
-       CACHE STRING "install path for ZeroMQConfig.cmake")
-@@ -1659,7 +1678,7 @@ else()
-   # CMake search path wants either "share" (AKA GNUInstallDirs DATAROOTDIR) for arch-independent, or LIBDIR for arch-
-   # dependent, plus "cmake" as prefix
-   set(ZEROMQ_CMAKECONFIG_INSTALL_DIR
--      "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
-+      "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}${_ver}"
-       CACHE STRING "install path for ZeroMQConfig.cmake")
- endif()
- 
-@@ -1676,10 +1695,11 @@ write_basic_package_version_file(
+@@ -1676,7 +1694,7 @@ write_basic_package_version_file(
  if(BUILD_SHARED OR BUILD_STATIC)
    install(
      EXPORT ${PROJECT_NAME}-targets
@@ -109,10 +63,6 @@ index e92141d0..5843d470 100644
      DESTINATION ${ZEROMQ_CMAKECONFIG_INSTALL_DIR})
    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
                  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-+          ${optionalInstall}
-           DESTINATION ${ZEROMQ_CMAKECONFIG_INSTALL_DIR})
- endif()
- 
 diff --git a/builds/cmake/Modules/FindSodium.cmake b/builds/cmake/Modules/FindSodium.cmake
 index 9ec36d1d..88f41315 100644
 --- a/builds/cmake/Modules/FindSodium.cmake
@@ -126,3 +76,46 @@ index 9ec36d1d..88f41315 100644
  mark_as_advanced(SODIUM_FOUND SODIUM_LIBRARIES SODIUM_INCLUDE_DIRS)
  
  ################################################################################
+diff --git a/builds/cmake/ZeroMQConfig.cmake.in b/builds/cmake/ZeroMQConfig.cmake.in
+index 3f16e595..bae7e24f 100644
+--- a/builds/cmake/ZeroMQConfig.cmake.in
++++ b/builds/cmake/ZeroMQConfig.cmake.in
+@@ -4,8 +4,8 @@
+ #
+ # ::
+ #
+-#   libzmq-static
+-#   libzmq
++#   @nSpace@libzmq-static
++#   @nSpace@libzmq
+ #
+ # This module sets the following variables in your project::
+ #
+@@ -16,19 +16,19 @@
+ 
+ @PACKAGE_INIT@
+ 
+-if(NOT TARGET libzmq AND NOT TARGET libzmq-static)
++if(NOT TARGET @nSpace@libzmq AND NOT TARGET @nSpace@libzmq-static)
+   include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+ 
+-  if (TARGET libzmq)
+-    get_target_property(@PROJECT_NAME@_INCLUDE_DIR libzmq INTERFACE_INCLUDE_DIRECTORIES)
++  if (TARGET @nSpace@libzmq)
++    get_target_property(@PROJECT_NAME@_INCLUDE_DIR @nSpace@libzmq INTERFACE_INCLUDE_DIRECTORIES)
+   else ()
+-    get_target_property(@PROJECT_NAME@_INCLUDE_DIR libzmq-static INTERFACE_INCLUDE_DIRECTORIES)
++    get_target_property(@PROJECT_NAME@_INCLUDE_DIR @nSpace@libzmq-static INTERFACE_INCLUDE_DIRECTORIES)
+   endif()
+ 
+-  if (TARGET libzmq)
+-    get_target_property(@PROJECT_NAME@_LIBRARY libzmq LOCATION)
++  if (TARGET @nSpace@libzmq)
++    get_target_property(@PROJECT_NAME@_LIBRARY @nSpace@libzmq LOCATION)
+   endif()
+-  if (TARGET libzmq-static)
+-    get_target_property(@PROJECT_NAME@_STATIC_LIBRARY libzmq-static LOCATION)
++  if (TARGET @nSpace@libzmq-static)
++    get_target_property(@PROJECT_NAME@_STATIC_LIBRARY @nSpace@libzmq-static LOCATION)
+   endif()
+ endif()
