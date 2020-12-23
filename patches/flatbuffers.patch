@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3987eac9..bf194d11 100644
+index 3987eac9..dc331a3f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -4,6 +4,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -10,14 +10,13 @@ index 3987eac9..bf194d11 100644
  
  # NOTE: Code coverage only works on Linux & OSX.
  option(FLATBUFFERS_CODE_COVERAGE "Enable the code coverage build option." OFF)
-@@ -67,6 +68,18 @@ if(NOT DEFINED FLATBUFFERS_LOCALE_INDEPENDENT)
+@@ -67,6 +68,17 @@ if(NOT DEFINED FLATBUFFERS_LOCALE_INDEPENDENT)
  endif()
  add_definitions(-DFLATBUFFERS_LOCALE_INDEPENDENT=$<BOOL:${FLATBUFFERS_LOCALE_INDEPENDENT}>)
  
 +# version
 +if(DEFINED FLATBUFFERS_VER)
 +  set(_ver _${FLATBUFFERS_VER})
-+  set(CMAKE_INSTALL_INCLUDEDIR include/flatbuffers${_ver})
 +endif()
 +# NAMESPACE
 +if(DEFINED XP_NAMESPACE)
@@ -29,7 +28,7 @@ index 3987eac9..bf194d11 100644
  set(FlatBuffers_Library_SRCS
    include/flatbuffers/base.h
    include/flatbuffers/flatbuffers.h
-@@ -316,6 +329,7 @@ if(FLATBUFFERS_BUILD_FLATLIB)
+@@ -316,6 +328,7 @@ if(FLATBUFFERS_BUILD_FLATLIB)
    target_include_directories(flatbuffers INTERFACE
      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
    target_compile_options(flatbuffers PRIVATE "${FLATBUFFERS_PRIVATE_CXX_FLAGS}")
@@ -37,7 +36,7 @@ index 3987eac9..bf194d11 100644
  endif()
  
  if(FLATBUFFERS_BUILD_FLATC)
-@@ -334,6 +348,9 @@ if(FLATBUFFERS_BUILD_FLATC)
+@@ -334,6 +347,9 @@ if(FLATBUFFERS_BUILD_FLATC)
    if(FLATBUFFERS_STATIC_FLATC AND NOT MSVC)
      target_link_libraries(flatc PRIVATE -static)
    endif()
@@ -47,7 +46,7 @@ index 3987eac9..bf194d11 100644
  endif()
  
  if(FLATBUFFERS_BUILD_FLATHASH)
-@@ -521,7 +538,7 @@ if(FLATBUFFERS_INSTALL)
+@@ -521,11 +537,12 @@ if(FLATBUFFERS_INSTALL)
  
    install(DIRECTORY include/flatbuffers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
  
@@ -56,6 +55,11 @@ index 3987eac9..bf194d11 100644
  
    configure_file(CMake/FlatbuffersConfigVersion.cmake.in FlatbuffersConfigVersion.cmake @ONLY)
    install(
+       FILES "CMake/FlatbuffersConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/FlatbuffersConfigVersion.cmake"
++        "CMake/BuildFlatBuffers.cmake" "CMake/FindFlatBuffers.cmake"
+       DESTINATION ${FB_CMAKE_DIR}
+   )
+ 
 @@ -545,7 +562,7 @@ if(FLATBUFFERS_INSTALL)
  
      install(EXPORT FlatbuffersTargets
