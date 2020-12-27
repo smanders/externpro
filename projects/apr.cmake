@@ -22,7 +22,7 @@ set(PRO_APR
   # TODO: version 1.5.2 no longer appears to be available from apache mirrors,
   #  so until we move to a new version that is available, download from the repo
   DLURL https://${REPO}/archive/${VER}.tar.gz
-  DLMD5 5b0bb763245c7d10b7c03214cc8756ec
+  DLMD5 4a6bdfe8aba67891aead7f7ed11e3361
   DLNAME apr-tag-${VER}.tar.gz
   PATCH ${PATCH_DIR}/apr.patch
   DIFF https://${FORK}/compare/apache:
