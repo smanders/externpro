@@ -1,0 +1,25 @@
+version: '3.4'
+services:
+  bpro:
+    build:
+      context: .devcontainer
+      dockerfile: Dockerfile
+      network: host
+      args:
+        USERNAME: ${USER}
+        USERID: ${USERID}
+        GROUPID: ${GROUPID}
+    hostname: ${HNAME}
+    networks:
+      - bpnet
+    volumes:
+      - .:/bpvol/${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
+networks:
+  bpnet:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "9000"
+# docker-compose build
+# docker-compose run --rm bpro
