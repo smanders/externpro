@@ -47,7 +47,6 @@
 |[yasm](http://yasm.tortall.net/ 'yasm website')|[open](https://github.com/yasm/yasm/blob/v1.3.0/COPYING 'new BSD license')|assembler and disassembler for the Intel x86 architecture|1.3.0|[repo](https://github.com/yasm/yasm 'yasm repo on github')|[diff](https://github.com/smanders/yasm/compare/yasm:v1.3.0...xp1.3.0 'patch/diff')|
 |[zlib](http://zlib.net/ 'zlib website')|[open](http://zlib.net/zlib_license.html 'zlib license')|compression library|1.2.8|[repo](https://github.com/madler/zlib 'zlib repo on github')|[diff](https://github.com/smanders/zlib/compare/madler:v1.2.8...xp1.2.8 'patch/diff')|
 
-
 ## subprojects
 
 |project|sub|description|version|repository|patch/diff|
@@ -69,7 +68,6 @@
 |wxx|[wxPlotCtrl](http://wxcode.sourceforge.net/showcomp.php?name=wxPlotCtrl 'wxplotctrl on sourceforge')|interactive xy data plotting widgets|2006.04.28|[repo](https://github.com/smanders/wxplotctrl 'wxplotctrl repo on github')|[diff](https://github.com/smanders/wxplotctrl/compare/v2006.04.28...xp2006.04.28 'patch/diff')|
 |wxx|[wxThings](http://wxcode.sourceforge.net/showcomp.php?name=wxThings 'wxthings on sourceforge')|a variety of data containers and controls|2006.04.28|[repo](https://github.com/smanders/wxthings 'wxthings repo on github')|[diff](https://github.com/smanders/wxthings/compare/v2006.04.28...xp2006.04.28 'patch/diff')|
 |wxx|[wxTLC](http://wxcode.sourceforge.net/components/treelistctrl/ 'wxTLC (treelistctrl) on sourceforge')|a multi column tree control|1208|[repo](https://github.com/smanders/wxTLC 'wxTLC repo on github')|[diff](https://github.com/smanders/wxTLC/compare/v1208...xp1208 'patch/diff')|
-
 
 ## dependency graph
 

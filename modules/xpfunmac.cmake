@@ -632,7 +632,7 @@ function(ipMarkdownPro)
   if(DEFINED P_SUPERPRO)
     if(NOT EXISTS ${g_READMEsub})
       file(WRITE ${g_READMEsub}
-        "\n\n## subprojects\n\n"
+        "\n## subprojects\n\n"
         "|project|sub|description|version|repository|patch/diff|\n"
         "|-------|---|-----------|-------|----------|----------|\n"
         )
@@ -697,7 +697,7 @@ function(xpMarkdownReadmeFinalize)
     string(REPLACE "/" "%2F" url ${url})
     string(REPLACE ":" "%3A" url ${url})
     file(APPEND ${g_README}
-      "\n\n## dependency graph\n\n"
+      "\n## dependency graph\n\n"
       "![deps.dot graph](https://g.gravizo.com/source/${mark}?${url})\n"
       "<details>\n"
       "<summary></summary>\n"
