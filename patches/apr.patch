@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 75f35c7cd..c81a223ce 100644
+index 75f35c7cd..b074a65ce 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -19,13 +19,20 @@ PROJECT(APR C)
@@ -260,15 +260,6 @@ index 75f35c7cd..c81a223ce 100644
    IF(apiflag)
      SET_TARGET_PROPERTIES(mod_test PROPERTIES COMPILE_FLAGS ${apiflag})
    ENDIF()
-@@ -333,7 +466,7 @@ IF(APR_BUILD_TESTAPR)
-   # requirements.
-   SET(single_source_programs
-     test/echod.c
--    test/sendfile.c
-+    test/sendfiletest.c
-     test/sockperf.c
-     test/testlockperf.c
-     test/testmutexscope.c
 @@ -345,8 +478,10 @@ IF(APR_BUILD_TESTAPR)
      test/testshmproducer.c
      test/testshmconsumer.c
@@ -291,18 +282,6 @@ index 75f35c7cd..c81a223ce 100644
  
    FOREACH(simple ${simple_tests})
      ADD_TEST(NAME ${simple} COMMAND ${simple})
-@@ -370,9 +508,9 @@ IF(APR_BUILD_TESTAPR)
-   # testlockperf takes forever on Windows with default counter limit
-   ADD_TEST(NAME testlockperf COMMAND testlockperf -c 50000)
- 
--  # sendfile runs multiple times with different parameters.
-+  # sendfiletest runs multiple times with different parameters.
-   FOREACH(sendfile_mode blocking nonblocking timeout)
--    ADD_TEST(NAME sendfile-${sendfile_mode} COMMAND sendfile client ${sendfile_mode} startserver)
-+    ADD_TEST(NAME sendfiletest-${sendfile_mode} COMMAND sendfiletest client ${sendfile_mode} startserver)
-   ENDFOREACH()
- 
-   # No test is added for echod+sockperf.  Those will have to be run manually.
 @@ -381,11 +519,16 @@ ENDIF (APR_BUILD_TESTAPR)
  
  # Installation
@@ -2586,35 +2565,6 @@ index 000000000..abd7f30d4
 +#include "../apr_private_common.h"
 +#endif /* APR_PRIVATE_H */
 +
-diff --git a/test/sendfile.c b/test/sendfiletest.c
-similarity index 99%
-rename from test/sendfile.c
-rename to test/sendfiletest.c
-index f92b305f0..6653b72b3 100644
---- a/test/sendfile.c
-+++ b/test/sendfiletest.c
-@@ -169,10 +169,10 @@ static void spawn_server(apr_pool_t *p, apr_proc_t *out_proc)
-         aprerr("apr_procattr_error_check_set()", rv);
-     }
- 
--    args[0] = "sendfile" EXTENSION;
-+    args[0] = "sendfiletest" EXTENSION;
-     args[1] = "server";
-     args[2] = NULL;
--    rv = apr_proc_create(&proc, TESTBINPATH "sendfile" EXTENSION, args, NULL, procattr, p);
-+    rv = apr_proc_create(&proc, TESTBINPATH "sendfiletest" EXTENSION, args, NULL, procattr, p);
-     if (rv != APR_SUCCESS) {
-         aprerr("apr_proc_create()", rv);
-     }
-@@ -508,7 +508,7 @@ static int client(apr_pool_t *p, client_socket_mode_t socket_mode,
-             aprerr("apr_proc_wait() (expected APR_CHILD_DONE)", rv);
-         }
-         if (exitcode != 0) {
--            fprintf(stderr, "sendfile server returned %d\n", exitcode);
-+            fprintf(stderr, "sendfiletest server returned %d\n", exitcode);
-             exit(1);
-         }
-     }
 diff --git a/test/testapp.c b/test/testapp.c
 index 77607aa38..83e3fe8d1 100644
 --- a/test/testapp.c
