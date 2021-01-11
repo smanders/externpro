@@ -30,8 +30,6 @@ executing this step produces the source code in a patched state, suitable for de
 
 if a developer already has externpro installed (using the installer produced by the build step below), they can simply run the patch step (on an externpro revision that matches their installed revision) and are now able to debug and step into third party code
 
-if you are debugging and stepping into third party code, please note the instructions for building debug version(s) of all or selected projects below (in the usage > debug section)
-
 ### build
 
 for each project in the [projects directory](projects) which implements a build_*project-name*() cmake function, the build step: executes the patch step then builds the project with the compiler (aka cmake generator) detected or specified at cmake-time of externpro
@@ -94,11 +92,3 @@ make package
 ```
 
 the first `make` gives you a build version of externpro, and the additional `make package` for an installed version
-
-### debug
-
-building Debug versions of projects that support Debug is not `ON` by default (see [option](https://github.com/smanders/externpro/blob/9d023a5263b27d434001eaca0c4b57c28ad66be3/modules/macpro.cmake#L75))
-
-to build Debug versions first turn `ON` the `XP_BUILD_DEBUG` cmake option (with ccmake on Unix platforms, or cmake-gui on Windows, or via commandline in the build directory: `cmake -DXP_BUILD_DEBUG=ON .`
-
-if you want to build Debug versions of *all* projects that support Debug, you must also turn `ON` the `XP_BUILD_DEBUG_ALL` cmake option, otherwise you can choose selected projects to build Debug (most easily chosen with ccmake or cmake-gui) by selecting the cmake option specific for the given project -- of the form `XP_PRO_${PRJ}_BUILD_DBG` where `${PRJ}` specifies the project (see [option](https://github.com/smanders/externpro/blob/9d023a5263b27d434001eaca0c4b57c28ad66be3/modules/xpfunmac.cmake#L21))
