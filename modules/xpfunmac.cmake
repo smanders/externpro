@@ -1034,9 +1034,10 @@ macro(xpSourceListAppend)
     endforeach()
   endif()
   file(GLOB miscFiles LIST_DIRECTORIES false
-    ${_dir}/.git ${_dir}/.gitattributes ${_dir}/.gitmodules
+    ${_dir}/.git*
     ${_dir}/*clang-format
     ${_dir}/.crtoolrc
+    ${_dir}/docker-compose.*
     ${_dir}/README.md
     ${_dir}/version.cmake
     )
@@ -1045,17 +1046,17 @@ macro(xpSourceListAppend)
     file(RELATIVE_PATH relPath ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
     string(REPLACE "/" "" custTgt .CMake${relPath})
     if(NOT TARGET ${custTgt})
-      add_custom_target(${custTgt} SOURCES ${miscFiles}) # creates utility project in MSVC
-      set_property(TARGET ${custTgt} PROPERTY FOLDER ${folder})
-    endif()
-  endif()
-  if(EXISTS ${_dir}/.codereview)
-    file(RELATIVE_PATH relPath ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-    string(REPLACE "/" "" custTgt .codereview${relPath})
-    if(NOT TARGET ${custTgt})
-      file(GLOB crFiles "${_dir}/.codereview/*")
-      list(APPEND masterSrcList ${crFiles})
-      add_custom_target(${custTgt} SOURCES ${crFiles}) # creates utility project in MSVC
+      if(EXISTS ${_dir}/.codereview)
+        file(GLOB crFiles "${_dir}/.codereview/*")
+        source_group(".codereview" FILES ${crFiles})
+        list(APPEND masterSrcList ${crFiles})
+      endif()
+      if(EXISTS ${_dir}/.devcontainer)
+        file(GLOB dcFiles "${_dir}/.devcontainer/*")
+        source_group(".devcontainer" FILES ${dcFiles})
+        list(APPEND masterSrcList ${dcFiles})
+      endif()
+      add_custom_target(${custTgt} SOURCES ${miscFiles} ${crFiles} ${dcFiles})
       set_property(TARGET ${custTgt} PROPERTY FOLDER ${folder})
     endif()
   endif()
