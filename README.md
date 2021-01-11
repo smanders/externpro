@@ -60,8 +60,6 @@ one difference between a build version and an installed version is where the fin
 
 if you always plan to use an installed version the path to the source and build directories doesn't matter -- only the path where it is installed matters, unless you use an environment variable (examine the find script for suitable install locations)
 
-**NOTE**: if your build directory (`_bld` below) is a subdirectory of the repo, you'll need to have git ignore the build directory or the staging directory will be marked with `dirtyrepo` from [this cmake](https://github.com/smanders/externpro/blob/18.04.1/modules/macpro.cmake#L270-L279) -- and since I'm not a fan of a .gitignore file committed to the repo, I recommend adding `_bld*/` to the `.git/info/exclude` file
-
 because the find script looks for a build version of externpro in `C:/src` on Windows and `~/src/` on Unix, if you have any intention of using a build version directly from another project: perform the following commands in the appropriate `src` directory
 
 ```bash
