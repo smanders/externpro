@@ -54,27 +54,25 @@ to build and use externpro from another project you can either create a *build v
 
 a build version is created by simply building externpro and an installed version involves building, making the package (aka installer), and installing
 
-one difference between a build version and an installed version is where the find script looks to find externpro - you can see the PATHS searched, in order, in the [find script](https://github.com/smanders/externpro/blob/18.04.1/modules/Findscript.cmake.in#L89-L100)
+one difference between a build version and an installed version is where the find script looks to find externpro - you can see the PATHS searched, in order, in the [find script](https://github.com/smanders/externpro/blob/20.10.1/modules/Findscript.cmake.in#L80-L88)
 
 if you always plan to use an installed version the path to the source and build directories doesn't matter -- only the path where it is installed matters, unless you use an environment variable (examine the find script for suitable install locations)
 
-because the find script looks for a build version of externpro in `C:/src` on Windows and `~/src/` on Unix, if you have any intention of using a build version directly from another project: perform the following commands in the appropriate `src` directory
+unless you have a reason to use an old release (`git checkout <tag>`) or have a reason to use a development version (`git checkout -b dev origin/dev` -- where development == not ready for release), you should be using the master branch (which is always the latest release)
 
 ```bash
 git clone git://github.com/smanders/externpro.git
 cd externpro
-git checkout <tag>               # where tag is, for example, 18.04.1
-git checkout -b dev origin/dev   # --or-- if you want the latest dev branch instead of a tagged version
 mkdir _bld
 cd _bld
 ```
 
 ### windows
 
-choose the cmake generator you want all of the externpro projects to be built with (Visual Studio 2015, 64-bit in example below)
+choose the cmake generator you want all of the externpro projects to be built with (Visual Studio 2017, 64-bit in example below)
 
 ```bash
-cmake -G "Visual Studio 14 2015 Win64" ..
+cmake -G "Visual Studio 15 2017" -A x64 ..
 cmake -DXP_STEP=build .
 explorer externpro.sln
 ```
