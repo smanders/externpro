@@ -2,7 +2,7 @@
 # * renamed to patcz on MSW because of MSFT boneheadedness:
 #   any exe with "setup" "install" "update" "patch" is flagged to be run as administrator
 #   http://stackoverflow.com/questions/7914180/windows-7-exe-filename-starts-with-patch-wont-run
-set(PATCH_MSWVER 2.5.9-7)
+set(PATCH_MSWVER 2.7.6)
 set(PATCH_GNUVER 2.7.5)
 set(PRO_PATCH
   NAME patch
@@ -14,8 +14,8 @@ set(PRO_PATCH
   GIT_ORIGIN git://git.savannah.gnu.org/patch.git
   DLURL http://ftp.gnu.org/gnu/patch/patch-${PATCH_GNUVER}.tar.gz
   DLMD5 ed4d5674ef4543b4eb463db168886dc7
-  DLURL_MSW http://prdownloads.sourceforge.net/gnuwin32/patch-${PATCH_MSWVER}-bin.zip
-  DLMD5_MSW b9c8b31d62f4b2e4f1887bbb63e8a905
+  DLURL_MSW https://github.com/smanders/externpro/releases/download/20.10.1/patch-${PATCH_MSWVER}-bin.zip
+  DLMD5_MSW e0d4690179d85c1cf543f52856a63db9
   DLADD _MSW
   )
 ####################
@@ -40,8 +40,10 @@ function(patch_patch)
         URL ${dwnldUrl}  URL_MD5 ${dwnldMd5}
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ${CMAKE_COMMAND} -E copy_if_different
-          <SOURCE_DIR>/bin/patch.exe ${patchbld_DIR}/bin/patcz.exe
-        INSTALL_COMMAND "" INSTALL_DIR ${NULL_DIR}
+          <SOURCE_DIR>/patch.exe ${patchbld_DIR}/bin/patcz.exe
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          <SOURCE_DIR>/msys-2.0.dll ${patchbld_DIR}/bin/
+        BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
         )
     else()
       xpGetArgValue(${PRO_PATCH} ARG DLURL VALUE dwnldUrl)
