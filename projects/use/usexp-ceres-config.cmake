@@ -1,6 +1,5 @@
 # CERES_FOUND - ceres was found
 # CERES_VER - ceres version
-# CERES_INCLUDE_DIR - the ceres include directory
 # CERES_LIBRARIES - the ceres libraries
 xpFindPkg(PKGS eigen) # dependencies
 set(prj ceres)
@@ -9,14 +8,10 @@ get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
 set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
-set(verDir /${prj}_@VER@)
-unset(${PRJ}_INCLUDE_DIR CACHE)
-find_path(${PRJ}_INCLUDE_DIR ceres/ceres.h PATHS ${XP_ROOTDIR}/include${verDir} NO_DEFAULT_PATH)
-list(APPEND ${PRJ}_INCLUDE_DIR ${XP_ROOTDIR}/include${verDir}/ceres/internal/miniglog)
 # ceres installs a Targets file among other .cmake files
-include(${XP_ROOTDIR}/lib/cmake${verDir}/CeresTargets.cmake)
-set(${PRJ}_LIBRARIES ceres)
-set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES)
+include(${XP_ROOTDIR}/lib/cmake/${prj}_@VER@/CeresTargets.cmake)
+set(${PRJ}_LIBRARIES xpro::ceres)
+set(reqVars ${PRJ}_VER ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
 set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
 find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})

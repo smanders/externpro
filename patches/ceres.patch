@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 02c72b5..e036d1e 100644
+index 02c72b5..7d330f6 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -88,6 +88,17 @@ set(CMAKE_DEBUG_POSTFIX "-debug")
@@ -46,7 +46,7 @@ index 02c72b5..e036d1e 100644
  endif (MINIGLOG)
  
  # Ceres supports two mechanisms by which it can be detected & imported into
-@@ -876,10 +887,14 @@ configure_file("${Ceres_SOURCE_DIR}/cmake/CeresConfigVersion.cmake.in"
+@@ -876,19 +887,27 @@ configure_file("${Ceres_SOURCE_DIR}/cmake/CeresConfigVersion.cmake.in"
  
  # Set the install path for the installed CeresConfig.cmake configuration file
  # relative to CMAKE_INSTALL_PREFIX.
@@ -63,7 +63,21 @@ index 02c72b5..e036d1e 100644
 +  endif ()
  endif ()
  
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++
  # This "exports" for installation all targets which have been put into the
+ # export set "CeresExport". This generates a CeresTargets.cmake file which,
+ # when read in by a client project as part of find_package(Ceres) creates
+ # imported library targets for Ceres (with dependency relations) which can be
+ # used in target_link_libraries() calls in the client project to use Ceres.
+ install(EXPORT CeresExport
+-        DESTINATION ${RELATIVE_CMAKECONFIG_INSTALL_DIR} FILE CeresTargets.cmake)
++        DESTINATION ${RELATIVE_CMAKECONFIG_INSTALL_DIR} ${nameSpace} FILE CeresTargets.cmake)
+ 
+ # Save the relative path from the installed CeresConfig.cmake file to the
+ # install prefix.  We do not save an absolute path in case the installed package
 diff --git a/cmake/AddCeresCXX11RequirementsToTarget.cmake b/cmake/AddCeresCXX11RequirementsToTarget.cmake
 index 107eb58..ca2ad64 100644
 --- a/cmake/AddCeresCXX11RequirementsToTarget.cmake
@@ -80,14 +94,18 @@ index 107eb58..ca2ad64 100644
          # CMake version >= 2.8.12 && < 3.1 supports target_compile_options()
          # but not target_compile_features(). For these intermediary versions,
 diff --git a/internal/ceres/CMakeLists.txt b/internal/ceres/CMakeLists.txt
-index cc43fec..5728e89 100644
+index cc43fec..25bf720 100644
 --- a/internal/ceres/CMakeLists.txt
 +++ b/internal/ceres/CMakeLists.txt
-@@ -214,6 +214,9 @@ add_library(ceres ${CERES_LIBRARY_SOURCE})
+@@ -214,6 +214,13 @@ add_library(ceres ${CERES_LIBRARY_SOURCE})
  set_target_properties(ceres PROPERTIES
    VERSION ${CERES_VERSION}
    SOVERSION ${CERES_VERSION_MAJOR})
 +if(NOT BUILD_SHARED_LIBS AND DEFINED ver)
++  target_include_directories(ceres PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>)
++  if (MINIGLOG)
++    target_include_directories(ceres PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}/ceres/internal/miniglog>)
++  endif()
 +  set_target_properties(ceres PROPERTIES OUTPUT_NAME ceres${ver})
 +endif()
  
