@@ -64,12 +64,11 @@ function(build_patch)
   configure_file(${PRO_DIR}/use/usexp-patch-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  get_filename_component(patchExe ${PATCH_EXE} NAME)
   ExternalProject_Add(patch_bld DEPENDS patch
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} CONFIGURE_COMMAND ""
     SOURCE_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
-    BUILD_COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      ${PATCH_EXE} ${STAGE_DIR}/bin/${patchExe}
+    BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${patchbld_DIR} -Ddst:STRING=${STAGE_DIR}
+      -P ${MODULES_DIR}/cmscopyfiles.cmake
     INSTALL_COMMAND ""
     )
   set_property(TARGET patch_bld PROPERTY FOLDER ${bld_folder})
