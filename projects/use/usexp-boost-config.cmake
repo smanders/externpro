@@ -90,7 +90,7 @@ if(BOOST_VER VERSION_GREATER_EQUAL "1.66.0" AND "x${CMAKE_CXX_COMPILER_ARCHITECT
   if(DEFINED unameMachine AND NOT unameErr)
     if(unameMachine STREQUAL x86_64)
       set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID x64)
-    elseif(unameMachine MATCHES "^armv")
+    elseif(unameMachine MATCHES "^armv" OR unameMachine MATCHES "^aarch")
       set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID "ARM")
     endif()
   endif()
