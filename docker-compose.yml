@@ -15,5 +15,3 @@ services:
       - .:/bpvol/${COMPOSE_PROJECT_NAME}
     stdin_open: true
     tty: true
-# docker-compose build
-# docker-compose run --rm bpro
