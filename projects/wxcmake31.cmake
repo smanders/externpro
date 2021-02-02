@@ -1,5 +1,5 @@
 # wxcmake31
-set(REPO github.com/smanders/wxcmake)
+set(REPO github.com/cameronfrandsen/wxcmake)
 set(PRO_WXCMAKE31
   NAME wxcmake31
   SUPERPRO wxWidgets31

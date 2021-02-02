@@ -111,6 +111,14 @@ function(build_wxv)
     if(${CMAKE_C_COMPILER_ID} MATCHES "Clang")
       list(APPEND XP_CONFIGURE_BASE CC=clang)
     endif()
+    execute_process(COMMAND uname --machine
+      OUTPUT_VARIABLE unameMachine
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_VARIABLE unameErr
+      )
+    if(DEFINED unameMachine AND NOT unameErr AND unameMachine MATCHES "^aarch")
+      list(APPEND XP_CONFIGURE_BASE --build=aarch64-unknown-linux-gnu --enable-arm-neon)
+    endif()
     list(APPEND XP_CONFIGURE_BASE ${wx_CONFIGURE_FLAGS} --with-opengl
       --with-libjpeg=builtin --with-libpng=builtin --with-libtiff=builtin
       --with-expat=builtin --with-regex=builtin --with-zlib=builtin

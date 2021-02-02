@@ -1,7 +1,7 @@
 # wx31
 xpProOption(wx31 DBG_MSVC)
 set(REPO github.com/wxWidgets/wxWidgets)
-set(FORK github.com/smanders/wxWidgets)
+set(FORK github.com/cameronfrandsen/wxWidgets)
 set(VER31 3.1.0)
 set(PRO_WX31
   NAME wx31

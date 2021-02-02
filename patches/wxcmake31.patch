@@ -2355,10 +2355,10 @@ index 0000000..1da11ea
 +set_wxtarget_properties(${lib_name})
 diff --git a/wxpng.cmake b/wxpng.cmake
 new file mode 100644
-index 0000000..7cec8be
+index 0000000..a433fc3
 --- /dev/null
 +++ b/wxpng.cmake
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,41 @@
 +set(lib_name wxpng)
 +#######################################
 +# library sources
@@ -2386,6 +2386,14 @@ index 0000000..7cec8be
 +  )
 +source_group("Source Files" FILES ${Source_srcs})
 +list(APPEND ${lib_name}_libsrcs ${Source_srcs})
++########################
++set(arm_srcs
++  ${wxroot}/src/png/arm/arm_init.c
++  ${wxroot}/src/png/arm/filter_neon_intrinsics.c
++  ${wxroot}/src/png/arm/filter_neon.S
++  )
++source_group("Arm Source Files" FILES ${arm_srcs})
++list(APPEND ${lib_name}_libsrcs ${arm_srcs})
 +#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
