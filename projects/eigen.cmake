@@ -1,6 +1,6 @@
 # eigen
 xpProOption(eigen)
-set(VER 3.2.7)
+set(VER 3.3.7)
 set(REPO https://gitlab.com/libeigen/eigen)
 set(FORK github.com/smanders/eigen)
 set(PRO_EIGEN
@@ -16,7 +16,7 @@ set(PRO_EIGEN
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
   DLURL ${REPO}/-/archive/${VER}/eigen-${VER}.tar.bz2
-  DLMD5 efad2bd915ca85c8de5b7e095c64ca2b
+  DLMD5 b9e98a200d2455f06db9c661c5610496
   PATCH ${PATCH_DIR}/eigen.patch
   DIFF https://${FORK}/compare/
   DEPS_FUNC build_eigen

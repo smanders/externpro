@@ -1,5 +1,5 @@
 diff --git a/cmake/FindAdolc.cmake b/cmake/FindAdolc.cmake
-index 1a7ff3628..1c9538076 100644
+index 937e54990..ced7d6994 100644
 --- a/cmake/FindAdolc.cmake
 +++ b/cmake/FindAdolc.cmake
 @@ -14,7 +14,7 @@ find_path(ADOLC_INCLUDES
@@ -37,57 +37,56 @@ index f6a81a02c..99c7bcbd2 100644
  
  mark_as_advanced(GOOGLEHASH_INCLUDES)
 diff --git a/cmake/FindMetis.cmake b/cmake/FindMetis.cmake
-index 6a0ce790c..27903a58f 100644
+index da2f1f1d7..6a2558d02 100644
 --- a/cmake/FindMetis.cmake
 +++ b/cmake/FindMetis.cmake
-@@ -53,7 +53,7 @@ endmacro(_metis_check_version)
- find_library(METIS_LIBRARIES metis PATHS $ENV{METISDIR} ${LIB_INSTALL_DIR} PATH_SUFFIXES lib)
- 
+@@ -256,7 +256,7 @@ mark_as_advanced(METIS_DIR_FOUND)
+ # check that METIS has been found
+ # ---------------------------------
  include(FindPackageHandleStandardArgs)
 -find_package_handle_standard_args(METIS DEFAULT_MSG
 +find_package_handle_standard_args(Metis DEFAULT_MSG
-                                   METIS_INCLUDES METIS_LIBRARIES METIS_VERSION_OK)
- 
- mark_as_advanced(METIS_INCLUDES METIS_LIBRARIES)
+   METIS_LIBRARIES
+   METIS_WORKS)
+ #
 diff --git a/cmake/FindPastix.cmake b/cmake/FindPastix.cmake
-index e2e6c810d..2f3f225b1 100644
+index 470477fdc..a21c39eb6 100644
 --- a/cmake/FindPastix.cmake
 +++ b/cmake/FindPastix.cmake
-@@ -19,7 +19,7 @@ find_library(PASTIX_LIBRARIES pastix PATHS $ENV{PASTIXDIR} ${LIB_INSTALL_DIR})
- 
- 
+@@ -699,6 +699,6 @@ mark_as_advanced(PASTIX_DIR_FOUND)
+ # check that PASTIX has been found
+ # ---------------------------------
  include(FindPackageHandleStandardArgs)
 -find_package_handle_standard_args(PASTIX DEFAULT_MSG
 +find_package_handle_standard_args(Pastix DEFAULT_MSG
-                                   PASTIX_INCLUDES PASTIX_LIBRARIES)
- 
- mark_as_advanced(PASTIX_INCLUDES PASTIX_LIBRARIES)
+   PASTIX_LIBRARIES
+   PASTIX_WORKS)
 diff --git a/cmake/FindScotch.cmake b/cmake/FindScotch.cmake
-index 530340b16..a82d3c323 100644
+index 89d295ac2..b3e60e3b6 100644
 --- a/cmake/FindScotch.cmake
 +++ b/cmake/FindScotch.cmake
-@@ -18,7 +18,7 @@ find_path(SCOTCH_INCLUDES
- find_library(SCOTCH_LIBRARIES scotch PATHS $ENV{SCOTCHDIR} ${LIB_INSTALL_DIR})
- 
+@@ -361,7 +361,7 @@ set(CMAKE_REQUIRED_INCLUDES "")
+ # check that SCOTCH has been found
+ # ---------------------------------
  include(FindPackageHandleStandardArgs)
 -find_package_handle_standard_args(SCOTCH DEFAULT_MSG
 +find_package_handle_standard_args(Scotch DEFAULT_MSG
-                                   SCOTCH_INCLUDES SCOTCH_LIBRARIES)
- 
- mark_as_advanced(SCOTCH_INCLUDES SCOTCH_LIBRARIES)
+   SCOTCH_LIBRARIES
+   SCOTCH_WORKS)
+ #
 diff --git a/cmake/FindSuperLU.cmake b/cmake/FindSuperLU.cmake
-index 8a3df3666..fc71c2b2b 100644
+index f38146e06..493002ac4 100644
 --- a/cmake/FindSuperLU.cmake
 +++ b/cmake/FindSuperLU.cmake
-@@ -20,7 +20,7 @@ find_path(SUPERLU_INCLUDES
- find_library(SUPERLU_LIBRARIES superlu PATHS $ENV{SUPERLUDIR} ${LIB_INSTALL_DIR} PATH_SUFFIXES lib)
-   
- include(FindPackageHandleStandardArgs)
--find_package_handle_standard_args(SUPERLU DEFAULT_MSG
-+find_package_handle_standard_args(SuperLU DEFAULT_MSG
-                                   SUPERLU_INCLUDES SUPERLU_LIBRARIES)
+@@ -90,7 +90,7 @@ endif()
+ endif()
  
- mark_as_advanced(SUPERLU_INCLUDES SUPERLU_LIBRARIES)
+ include(FindPackageHandleStandardArgs)
+-find_package_handle_standard_args(SUPERLU
++find_package_handle_standard_args(SuperLU
+                                   REQUIRED_VARS SUPERLU_INCLUDES SUPERLU_LIBRARIES SUPERLU_VERSION_OK
+                                   VERSION_VAR SUPERLU_VERSION_VAR)
+ 
 diff --git a/cmake/FindUmfpack.cmake b/cmake/FindUmfpack.cmake
 index 53cf0b49b..d8d25b896 100644
 --- a/cmake/FindUmfpack.cmake
@@ -101,16 +100,3 @@ index 53cf0b49b..d8d25b896 100644
                                    UMFPACK_INCLUDES UMFPACK_LIBRARIES)
  
  mark_as_advanced(UMFPACK_INCLUDES UMFPACK_LIBRARIES AMD_LIBRARY COLAMD_LIBRARY CHOLMOD_LIBRARY SUITESPARSE_LIBRARY)
-diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
-index 3739268d2..bb35b1e86 100644
---- a/test/CMakeLists.txt
-+++ b/test/CMakeLists.txt
-@@ -66,7 +66,7 @@ endif()
- 
- find_package(Pastix)
- find_package(Scotch)
--find_package(Metis 5.0 REQUIRED)
-+find_package(Metis 5.0)
- if(PASTIX_FOUND AND BLAS_FOUND)
-   add_definitions("-DEIGEN_PASTIX_SUPPORT")
-   include_directories(${PASTIX_INCLUDES})
