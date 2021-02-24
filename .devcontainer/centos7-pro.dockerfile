@@ -1,4 +1,4 @@
-FROM ghcr.io/smanders/buildpro/centos7-pro:21.01
+FROM ghcr.io/smanders/buildpro/centos7-pro:21.04
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
@@ -20,9 +20,5 @@ ENV USER=${USERNAME}
 # run container as non-root user from here onwards
 # so that build output files have the correct owner
 USER ${USERNAME}
-# needs to run as non-root user
-RUN if command -v git-lfs &>/dev/null; then \
-  git lfs install \
-  ; fi
 # run bash script and process the input command
 ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]
