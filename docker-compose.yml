@@ -9,9 +9,13 @@ services:
         USERNAME: ${USER}
         USERID: ${USERID}
         GROUPID: ${GROUPID}
+    environment:
+      - DISPLAY=${DISPLAY_ENV}
+      - XAUTHORITY=${XAUTH_ENV}
     hostname: ${HNAME}
     network_mode: host
     volumes:
       - .:/bpvol/${COMPOSE_PROJECT_NAME}
+      - /tmp/.X11-unix:/tmp/.X11-unix
     stdin_open: true
     tty: true
