@@ -2035,6 +2035,8 @@ macro(xpSetFlagsMsvc)
   xpStringAppendIfDne(CMAKE_CXX_FLAGS "/bigobj")
   # Treat Warnings As Errors
   xpStringAppendIfDne(CMAKE_CXX_FLAGS "/WX")
+  # Warning level 3
+  xpStringAppendIfDne(CMAKE_CXX_FLAGS "/W3")
   # Treat the following warnings as errors (above and beyond Warning Level 3)
   xpStringAppendIfDne(CMAKE_CXX_FLAGS "/we4238") # don't take address of temporaries
   xpStringAppendIfDne(CMAKE_CXX_FLAGS "/we4239") # don't bind temporaries to non-const references
