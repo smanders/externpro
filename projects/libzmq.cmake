@@ -1,6 +1,6 @@
 # libzmq
 xpProOption(libzmq DBG)
-set(VER 4.3.3)
+set(VER 4.3.4)
 set(REPO github.com/zeromq/libzmq)
 set(FORK github.com/smanders/libzmq)
 set(PRO_LIBZMQ
@@ -16,7 +16,7 @@ set(PRO_LIBZMQ
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/v${VER}.tar.gz
-  DLMD5 bad8d6f61f4c01f21697eb5bd22c15e3
+  DLMD5 cc20b769ac10afa352e5ed2769bb23b3
   DLNAME libzmq-${VER}.tar.gz
   PATCH ${PATCH_DIR}/libzmq.patch
   DIFF https://${FORK}/compare/zeromq:
