@@ -1,6 +1,6 @@
 # boost
 xpProOption(boost DBG)
-set(BOOST_OLDVER 1.67.0)
+set(BOOST_OLDVER 1.75.0)
 set(BOOST_NEWVER 1.75.0)
 ####################
 function(patch_boost)
@@ -236,7 +236,7 @@ function(build_boostlibs)
   # libraries with build issues
   set(exclude_libs locale math mpi python)
   # libraries excluded until there's an argument to use them
-  list(APPEND exclude_libs context contract coroutine fiber graph_parallel math stacktrace type_erasure wave)
+  list(APPEND exclude_libs context contract coroutine fiber graph_parallel stacktrace type_erasure wave)
   foreach(lib ${exclude_libs})
     list(APPEND boost_BUILD --without-${lib})
   endforeach()
