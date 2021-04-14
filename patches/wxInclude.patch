@@ -1,16 +1,16 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..f5b568e
+index 0000000..07ad077
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,19 @@
-+cmake_minimum_required(VERSION 3.12)
++cmake_minimum_required(VERSION 3.20)
 +project(wxInclude)
 +include(flags)
 +set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +xpFindPkg(PKGS boost)
 +add_executable(${CMAKE_PROJECT_NAME} wxInclude.cpp)
-+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Boost::filesystem Boost::program_options)
++target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Boost::filesystem Boost::program_options Boost::timer)
 +string(TOLOWER ${PROJECT_NAME} prj)
 +install(TARGETS ${CMAKE_PROJECT_NAME} EXPORT ${prj}-targets
 +  RUNTIME DESTINATION bin
@@ -103,17 +103,27 @@ index 0000000..d3aeb53
 +  return 0;
 +}
 diff --git a/wxInclude.cpp b/wxInclude.cpp
-index c2109e3..6cff95e 100644
+index c2109e3..04b8d1b 100644
 --- a/wxInclude.cpp
 +++ b/wxInclude.cpp
-@@ -1,5 +1,5 @@
+@@ -1,20 +1,25 @@
  /*
 -  wxInclude version 1.0
 +  wxInclude
    Kim De Deyn
  */
  
-@@ -15,6 +15,10 @@
+ #include <iostream>
+ #include <boost/algorithm/string.hpp>
++#include <boost/chrono.hpp>
+ #include <boost/filesystem.hpp>
+ #include <boost/filesystem/fstream.hpp>
+ #include <boost/foreach.hpp>
+ #include <boost/format.hpp>
+ #include <boost/program_options.hpp>
+-#include <boost/timer.hpp>
++#include <boost/timer/timer.hpp>
+ 
  namespace po = boost::program_options;
  namespace fs = boost::filesystem;
  
@@ -124,7 +134,7 @@ index c2109e3..6cff95e 100644
  #define WXINCLUDE_INFO	"wxInclude by Kim De Deyn, use --help for more information.\n"
  
  #define WXINCLUDE_HELP	"This tool can be used to convert binary files into a useful C/C++ header.\n" \
-@@ -25,9 +29,11 @@ namespace fs = boost::filesystem;
+@@ -25,9 +30,11 @@ namespace fs = boost::filesystem;
    "Example of use:\n\n" \
    "  wxInclude.exe --const --input-file=mydata1.bin\n" \
    "    --input-type=.png --input-type=.bmp\n" \
@@ -138,7 +148,7 @@ index c2109e3..6cff95e 100644
  
  #define BUFFER_SIZE 4096
  
-@@ -106,7 +112,7 @@ void definefile( std::ostringstream& data, fs::ifstream& input, std::string& nam
+@@ -106,7 +113,7 @@ void definefile( std::ostringstream& data, fs::ifstream& input, std::string& nam
    /* Define array */
    data << "static" << ( useconst ? " const " : " " ) << "unsigned char " << name << "[] = {" << std::endl;
  
@@ -147,7 +157,7 @@ index c2109e3..6cff95e 100644
    input.seekg( 0, std::ios::beg );
  
    int c = 0;
-@@ -130,7 +136,7 @@ void definefile( std::ostringstream& data, fs::ifstream& input, std::string& nam
+@@ -130,7 +137,7 @@ void definefile( std::ostringstream& data, fs::ifstream& input, std::string& nam
        Still faster then the optimized boost::format use, but not that much!
      */
      static char temp[5];
@@ -156,7 +166,7 @@ index c2109e3..6cff95e 100644
      data << temp;
  
      if ( i >= size )
-@@ -156,7 +162,7 @@ void definefile( std::ostringstream& data, fs::ifstream& input, std::string& nam
+@@ -156,7 +163,7 @@ void definefile( std::ostringstream& data, fs::ifstream& input, std::string& nam
    data << "};" << std::endl << std::endl;
  }
  
@@ -165,7 +175,7 @@ index c2109e3..6cff95e 100644
  {
    try
    {
-@@ -164,9 +170,10 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -164,9 +171,10 @@ int _tmain(int argc, _TCHAR* argv[])
      desc.add_options()
        ( "help,h", "Show detailed help." )
        ( "options,p", "Show parameter information." )
@@ -179,7 +189,7 @@ index c2109e3..6cff95e 100644
        ( "output-file,o", po::value<std::string>(), "Define file for the convertion output." )
        ( "noheader,h", "Disable adding of header support defines." )
        ( "const,C", "Define array as const." )
-@@ -174,7 +181,6 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -174,7 +182,6 @@ int _tmain(int argc, _TCHAR* argv[])
        ( "wxnone,w", "Disable adding of wxWidgets support macro's." )
        ( "wxheader,W", po::value<std::string>()->default_value( "wx/wx.h" ), "Select the header that includes wxWidgets (precompiled header?)." )
        ( "appendtype,t", "Add the file type at the end of the identifier (myimage_png)." )
@@ -187,7 +197,7 @@ index c2109e3..6cff95e 100644
      ;
  
      po::positional_options_description posdesc;
-@@ -182,10 +188,12 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -182,10 +189,12 @@ int _tmain(int argc, _TCHAR* argv[])
  
      po::variables_map opt;
      po::store( po::command_line_parser( argc, argv ).options( desc ).positional( posdesc ).run(), opt );
@@ -202,7 +212,14 @@ index c2109e3..6cff95e 100644
  
      /* Show options when requested */
      if ( opt.count( "options" ) )
-@@ -221,20 +229,17 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -215,26 +224,23 @@ int _tmain(int argc, _TCHAR* argv[])
+       if ( opt.count( "output-file" ) )
+       {
+         /* Create timer */
+-        boost::timer timer;
++        boost::timer::cpu_timer timer;
+ 
+         /* Create output file */
          std::string headername( opt[ "output-file" ].as<std::string>() );
  
          fs::path outputpath( headername );
@@ -226,7 +243,7 @@ index c2109e3..6cff95e 100644
  
          /* Get base name of file */
          headername = fs::basename( outputpath );
-@@ -259,7 +264,7 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -259,7 +265,7 @@ int _tmain(int argc, _TCHAR* argv[])
          /* Process input files based on provided list */
          if ( opt.count( "input-file" ) )
          {
@@ -235,7 +252,7 @@ index c2109e3..6cff95e 100644
  
            BOOST_FOREACH( std::string& file, files )
            {
-@@ -271,8 +276,8 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -271,8 +277,8 @@ int _tmain(int argc, _TCHAR* argv[])
  
              if ( input.is_open() )
              {
@@ -246,7 +263,7 @@ index c2109e3..6cff95e 100644
  
                /* Remove extension */
                boost::erase_last( file, fileext );
-@@ -308,7 +313,7 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -308,7 +314,7 @@ int _tmain(int argc, _TCHAR* argv[])
          /* Process input files based on provided type */
          if ( opt.count( "input-type" ) )
          {
@@ -255,7 +272,7 @@ index c2109e3..6cff95e 100644
  
            for ( fs::directory_iterator dir_itr( fs::initial_path() ); dir_itr != fs::directory_iterator(); ++dir_itr )
            {
-@@ -332,12 +337,12 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -332,12 +338,12 @@ int _tmain(int argc, _TCHAR* argv[])
                    fs::ifstream input( dir_itr->path(), std::ios::in | std::ios::binary | std::ios::ate );
                    input.rdbuf()->pubsetbuf( inbuffer, BUFFER_SIZE );
  
@@ -271,14 +288,18 @@ index c2109e3..6cff95e 100644
  
                      /* Remove extension */
                      boost::erase_last( file, fileext );
-@@ -378,8 +383,8 @@ int _tmain(int argc, _TCHAR* argv[])
+@@ -378,8 +384,12 @@ int _tmain(int argc, _TCHAR* argv[])
          output.seekp( 0, std::ios::beg );
          output << data.str();
  
 -        /* Show status */
 -        std::cout << "Build  : " << timer.elapsed() << "s needed for conversion of " << list.size() << " files." << std::endl;
 +        if ( !opt.count( "quiet" ) ) /* Show status */
-+          std::cout << "Build  : " << timer.elapsed() << "s needed for conversion of " << list.size() << " files." << std::endl;
++        {
++          auto nanoseconds = boost::chrono::nanoseconds(timer.elapsed().user + timer.elapsed().system);
++          auto seconds = boost::chrono::duration_cast<boost::chrono::seconds>(nanoseconds);
++          std::cout << "Build  : " << seconds.count() << "s needed for conversion of " << list.size() << " files." << std::endl;
++        }
        }
        else
        {
