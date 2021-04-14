@@ -14,36 +14,33 @@ else()
 endif()
 set(BOOST_VERSION "${BOOST_VER} [@PROJECT_NAME@]")
 if(NOT DEFINED Boost_LIBS)
-  set(Boost_LIBS # dependency order
-    log_setup  # ldd:log,regex
-    log        # ldd/cmake:filesystem,thread cmake:log_setup,regex
+  # dependencies determined by examining cmake's Modules/FindBoost.cmake
+  set(Boost_LIBS   # dependency order
+    log            # dep:thread
     ######
-    thread     # ldd/cmake:system cmake:atomic,chrono,date_time
-    timer      # ldd/cmake:chrono
-    ######
-    chrono     # ldd/cmake:system
-    filesystem # ldd/cmake:system
-    graph      # ldd:regex
-    iostreams  # cmake:regex
-    random     # ldd/cmake:system
-    wserialization # ldd/cmake:serialization
+    iostreams      # dep:regex
+    json           # dep:container
+    thread         # dep:atomic,chrono,date_time
+    timer          # dep:chrono
+    wserialization # dep:serialization
     ######
     atomic
+    chrono
     container
     date_time
     exception
-    #prg_exec_monitor # excluded because of link errors
+    filesystem
+    graph
+    log_setup
+    nowide
     program_options
+    random
     regex
     serialization
-    signals
     system
     test_exec_monitor
     unit_test_framework
     )
-  # NOTE: determined boost library dependency order by building boost on linux
-  # with link=shared and runtime-link=shared and using ldd
-  # cmake dependencies by examining cmake's Modules/FindBoost.cmake
 endif()
 list(FIND Boost_LIBS iostreams idx)
 if(NOT ${idx} EQUAL -1)
@@ -70,12 +67,6 @@ set(Boost_USE_STATIC_RUNTIME ON)
 #set(Boost_DEBUG TRUE) # enable debugging output of FindBoost.cmake
 #set(Boost_DETAILED_FAILURE_MSG) # output detailed information
 set(BOOST_ROOT ${XP_ROOTDIR})
-# TODO: remove the following once FindBoost.cmake: uses -dumpfullversion, detects clang
-if(UNIX AND TRUE) #"${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-  include(${CMAKE_CURRENT_LIST_DIR}/xpfunmac.cmake)
-  xpGetCompilerPrefix(Boost_COMPILER GCC_TWO_VER)
-  set(Boost_COMPILER "-${Boost_COMPILER}")
-endif()
 # TODO: remove the following once CMAKE_CXX_COMPILER_ARCHITECTURE_ID is defined for all supported compilers
 #   https://gitlab.kitware.com/cmake/cmake/issues/17702
 # boost versions >= 1.66.0 add an additional modifier to the library name and some compilers don't set the
@@ -115,7 +106,8 @@ if(UNIX)
     if(TARGET Boost::iostreams)
       get_target_property(libs Boost::iostreams INTERFACE_LINK_LIBRARIES)
       if(libs)
-          list(APPEND libs ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})
+        list(TRANSFORM libs REPLACE "^bz2$" ${BZIP2_LIBRARIES})
+        list(TRANSFORM libs REPLACE "^z$" ${ZLIB_LIBRARIES})
       else()
         set(libs ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})
       endif()
