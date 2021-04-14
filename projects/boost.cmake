@@ -1,7 +1,7 @@
 # boost
 xpProOption(boost DBG)
 set(BOOST_OLDVER 1.67.0)
-set(BOOST_NEWVER 1.67.0)
+set(BOOST_NEWVER 1.75.0)
 ####################
 function(patch_boost)
   string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
