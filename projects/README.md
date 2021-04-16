@@ -53,7 +53,6 @@
 |project|sub|description|version|repository|patch/diff|
 |-------|---|-----------|-------|----------|----------|
 |boost|[gil](http://boost.org/libs/gil 'boost gil website')|gil (generic image library)|1.67.0|[repo](https://github.com/boostorg/gil 'gil repo on github')|[diff](https://github.com/smanders/gil/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|
-|boost|[mpl](http://boost.org/libs/mpl 'boost mpl website')|mpl (metaprogramming library)|1.67.0|[repo](https://github.com/boostorg/mpl 'mpl repo on github')|[diff](https://github.com/smanders/mpl/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|
 |boost|[units](http://boost.org/libs/units 'boost units website')|zero-overhead dimensional analysis and unit/quantity manipulation and conversion|1.67.0|[repo](https://github.com/boostorg/units 'units repo on github')|[diff](https://github.com/smanders/units/compare/boostorg:boost-1.67.0...xp1.67.0 'patch/diff')|
 |llvm|[clang](http://clang.llvm.org/ 'clang website')|clang: a C language family frontend for LLVM|3.9.0|[repo](https://github.com/llvm-mirror/clang 'clang repo on github')|none|
 |clang|[clang-format](http://clang.llvm.org/docs/ClangFormat.html 'ClangFormat documentation')|used to format C/C++/Obj-C code|3.9.0|none|none|
