@@ -1,6 +1,6 @@
 # boost gil
-set(VER 1.67.0)
-string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" VER2_ ${VER}) # 1_67
+set(VER 1.75.0)
+string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" VER2_ ${VER}) # 1_75
 set(REPO github.com/boostorg/gil)
 set(FORK github.com/smanders/gil)
 set(PRO_BOOSTGIL${VER2_}
