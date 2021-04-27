@@ -56,8 +56,6 @@
 |boost|[units](http://boost.org/libs/units 'boost units website')|zero-overhead dimensional analysis and unit/quantity manipulation and conversion|1.75.0|[repo](https://github.com/boostorg/units 'units repo on github')|[diff](https://github.com/smanders/units/compare/boostorg:boost-1.75.0...xp1.75.0 'patch/diff')|
 |llvm|[clang](http://clang.llvm.org/ 'clang website')|clang: a C language family frontend for LLVM|3.9.0|[repo](https://github.com/llvm-mirror/clang 'clang repo on github')|none|
 |clang|[clang-format](http://clang.llvm.org/docs/ClangFormat.html 'ClangFormat documentation')|used to format C/C++/Obj-C code|3.9.0|none|none|
-|clangtoolsextra|[clang-tidy](http://clang.llvm.org/extra/clang-tidy/ 'Clang-Tidy documentation')|clang-based C++ 'linter' tool for diagnosing and fixing typical programming errors via static analysis|3.9.0|none|none|
-|llvm|[clang-tools-extra](http://clang.llvm.org/docs/ClangTools.html 'clang-tools-extra website')|Clang Tools: standalone command line (and potentially GUI) tools designed for use by C++ developers|3.9.0|[repo](https://github.com/llvm-mirror/clang-tools-extra 'clang-tools-extra repo on github')|none|
 |jpegxp|[jpeglossless](http://sourceforge.net/projects/jpeg/ 'JPEG on sourceforge')|lossless decode|62.1|[repo](https://github.com/smanders/libjpeg 'forked libjpeg repo on github')|[diff](https://github.com/smanders/libjpeg/compare/eccc424...lossless.6b 'patch/diff')|
 |jpegxp|[jpeglossy12](http://libjpeg.sourceforge.net/ 'libjpeg on sourceforge')|lossy 12-bit encode and decode|6b|[repo](https://github.com/smanders/libjpeg 'forked libjpeg repo on github')|[diff](https://github.com/smanders/libjpeg/compare/09a4003...lossy12.6b 'patch/diff')|
 |jpegxp|[jpeglossy8](http://libjpeg.sourceforge.net/ 'libjpeg on sourceforge')|lossy 8-bit encode and decode|6b|[repo](https://github.com/smanders/libjpeg 'forked libjpeg repo on github')|[diff](https://github.com/smanders/libjpeg/compare/09a4003...lossy8.6b 'patch/diff')|
@@ -70,10 +68,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_b2c0c30c44bc3af48cdab40f491de26f?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_44e356f980bfc8a1b3b6bfb772d3c8be?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_b2c0c30c44bc3af48cdab40f491de26f
+depgraph_44e356f980bfc8a1b3b6bfb772d3c8be
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
@@ -91,10 +89,6 @@ digraph GG {
   clang -> llvm;
   clangformat [shape=box];
   clangformat -> clang;
-  clangtidy [shape=box];
-  clangtidy -> clangtoolsextra;
-  clangtoolsextra [shape=box];
-  clangtoolsextra -> llvm;
   cppzmq [shape=diamond];
   cppzmq -> libzmq;
   curl_7_66_0 [label="curl_7.66.0" shape=diamond];
@@ -140,5 +134,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_b2c0c30c44bc3af48cdab40f491de26f
+depgraph_44e356f980bfc8a1b3b6bfb772d3c8be
 </details>
