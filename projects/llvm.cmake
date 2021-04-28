@@ -1,11 +1,11 @@
 # llvm
 xpProOption(llvm)
-set(VER 3.9.0)
+set(VER 9.0.0)
 set(REPO github.com/llvm/llvm-project)
 set(PRO_LLVM
   NAME llvm
   WEB "LLVM" http://llvm.org/ "LLVM website"
-  LICENSE "open" https://releases.llvm.org/${VER}/LICENSE.TXT "LLVM Release License"
+  LICENSE "open" https://releases.llvm.org/${VER}/LICENSE.TXT "Apache License v2.0 with LLVM Exceptions"
   DESC "The LLVM Compiler Infrastructure"
   REPO "repo" https://${REPO} "llvm repo on github"
   GRAPH GRAPH_SHAPE box
@@ -13,7 +13,7 @@ set(PRO_LLVM
   GIT_ORIGIN git://${REPO}.git
   GIT_TAG llvmorg-${VER}
   DLURL http://llvm.org/releases/${VER}/llvm-${VER}.src.tar.xz
-  DLMD5 f2093e98060532449eb7d2fcfd0bc6c6
+  DLMD5 0fd4283ff485dffb71a4f1cc8fd3fc72
   SUBPRO clang
   )
 ########################################

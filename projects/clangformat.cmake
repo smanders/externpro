@@ -5,7 +5,7 @@ set(PRO_CLANGFORMAT
   NAME clangformat
   SUPERPRO clang
   WEB "clang-format" http://clang.llvm.org/docs/ClangFormat.html "ClangFormat documentation"
-  LICENSE "open" "http://clang.llvm.org/features.html#license" "LLVM 'BSD' License"
+  LICENSE "open" "http://clang.llvm.org/features.html#license" "LLVM 'Apache 2' License"
   DESC "used to format C/C++/Obj-C code"
   GRAPH GRAPH_SHAPE box BUILD_DEPS clang
   VER ${llvmVer}

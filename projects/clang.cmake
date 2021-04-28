@@ -6,10 +6,10 @@ set(PRO_CLANG
   SUPERPRO llvm
   SUBDIR tools/clang
   WEB "clang" http://clang.llvm.org/ "clang website"
-  LICENSE "open" "http://clang.llvm.org/features.html#license" "LLVM 'BSD' License"
+  LICENSE "open" "http://clang.llvm.org/features.html#license" "LLVM 'Apache 2' License"
   DESC "clang: a C language family frontend for LLVM"
   GRAPH GRAPH_SHAPE box BUILD_DEPS llvm
   VER ${llvmVer}
   DLURL http://llvm.org/releases/${llvmVer}/cfe-${llvmVer}.src.tar.xz
-  DLMD5 29e1d86bee422ab5345f5e9fb808d2dc
+  DLMD5 0df6971e2f99b1e99e7bfb533e4067af
   )
