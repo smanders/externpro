@@ -172,6 +172,30 @@ function(stringToList stringlist lvalue)
   endif()
 endfunction()
 ####################
+function(userConfigJam jamFile)
+  # TRICKY: need zlib, bzip2 include directories at cmake-time (before they're built)
+  # so can't use xpGetPkgVar, xpFindPkg, etc - this complicates having multiple versions
+  # of zlib and bzip2 (boost will have to choose a version here)
+  xpGetArgValue(${PRO_ZLIB} ARG VER VALUE zlibVer)
+  xpGetArgValue(${PRO_BZIP2} ARG VER VALUE bzip2Ver)
+  set(zlibInc ${STAGE_DIR}/include/zlib_${zlibVer}/zlib)
+  set(bzip2Inc ${STAGE_DIR}/include/bzip2_${bzip2Ver}/bzip2)
+  if(WIN32)
+    set(prefix lib)
+  endif()
+  include(${STAGE_DIR}/share/cmake/xpopts.cmake)
+  xpSetPostfix()
+  set(zlibName ${prefix}z_${zlibVer}${CMAKE_RELEASE_POSTFIX})
+  set(bzip2Name bz2_${bzip2Ver}${CMAKE_RELEASE_POSTFIX})
+  ExternalProject_Get_Property(${bl_PRO} TMP_DIR)
+  set(cfgFile ${TMP_DIR}/user-config.jam)
+  file(WRITE ${cfgFile}
+    "using zlib : ${zlibVer} : <search>${STAGE_DIR}/lib <name>${zlibName} <include>${zlibInc} ;\n"
+    "using bzip2 : ${bzip2Ver} : <search>${STAGE_DIR}/lib <name>${bzip2Name} <include>${bzip2Inc} ;\n"
+    )
+  set(${jamFile} "${cfgFile}" PARENT_SCOPE)
+endfunction()
+####################
 function(build_boostlibs)
   # @param[in] PRO - project id (boost, boostold)
   # @param[in] B2PATH - path to b2
@@ -232,6 +256,7 @@ function(build_boostlibs)
     --ignore-site-config --layout=versioned link=static threading=multi
     address-model=${BUILD_PLATFORM} variant=${boost_VARIANT}
     runtime-link=${boost_RUNTIME_LINK} toolset=${boost_TOOLSET} ${boost_FLAGS}
+    --debug-configuration
     )
   # libraries with build issues
   set(exclude_libs locale math mpi python)
@@ -240,23 +265,6 @@ function(build_boostlibs)
   foreach(lib ${exclude_libs})
     list(APPEND boost_BUILD --without-${lib})
   endforeach()
-  # TRICKY: need zlib, bzip2 include directories at cmake-time (before they're built)
-  # so can't use xpGetPkgVar, xpFindPkg, etc - this complicates having multiple versions
-  # of zlib and bzip2 (boost will have to choose a version here)
-  xpGetArgValue(${PRO_ZLIB} ARG VER VALUE zlibVer)
-  xpGetArgValue(${PRO_BZIP2} ARG VER VALUE bzip2Ver)
-  set(zlibInc ${STAGE_DIR}/include/zlib_${zlibVer}/zlib)
-  set(bzip2Inc ${STAGE_DIR}/include/bzip2_${bzip2Ver}/bzip2)
-  list(APPEND boost_BUILD -s ZLIB_INCLUDE=${zlibInc} -s ZLIB_LIBPATH=${STAGE_DIR}/lib)
-  list(APPEND boost_BUILD -s BZIP2_INCLUDE=${bzip2Inc} -s BZIP2_LIBPATH=${STAGE_DIR}/lib)
-  if(WIN32)
-    include(${STAGE_DIR}/share/cmake/xpopts.cmake)
-    xpSetPostfix()
-    # TRICKY: BINARY (zlibstatic, bz2) needs to be the name of the binary,
-    # not including the file extension, or the "lib" prefix on UNIX
-    list(APPEND boost_BUILD -s ZLIB_BINARY=libz_${zlibVer}${CMAKE_RELEASE_POSTFIX})
-    list(APPEND boost_BUILD -s BZIP2_BINARY=bz2_${bzip2Ver}${CMAKE_RELEASE_POSTFIX})
-  endif()
   set(boost_INSTALL install --libdir=${STAGE_DIR}/lib --includedir=${STAGE_DIR}/include)
   addproject_boost(${bl_PRO}_bld)
   list(APPEND ${bl_PRO}_DEPENDS ${bl_PRO}_bld) # serialize the build
@@ -279,11 +287,13 @@ function(addproject_boost XP_TARGET)
       # reported here: http://permalink.gmane.org/gmane.comp.lib.boost.user/75695
       # if we build boost (on MSW) within source tree, the errors don't happen
     endif()
+    userConfigJam(USER_CONFIG_JAM_FILE)
     set(boost_STAGE stage --stagedir=${baseDir}/Build/${XP_TARGET}/stage)
     ExternalProject_Get_Property(${bl_PRO} SOURCE_DIR)
     ExternalProject_Add(${XP_TARGET} DEPENDS ${${bl_PRO}_DEPENDS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
-      SOURCE_DIR ${SOURCE_DIR} CONFIGURE_COMMAND ""
+      SOURCE_DIR ${SOURCE_DIR}
+      CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy ${USER_CONFIG_JAM_FILE} ${SOURCE_DIR}/tools/build/src/
       BUILD_COMMAND ${boost_BUILD} ${boost_STAGE} BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
       INSTALL_COMMAND ${boost_BUILD} ${boost_INSTALL} INSTALL_DIR ${NULL_DIR}
       )
