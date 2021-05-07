@@ -1,0 +1,18 @@
+diff --git a/boost-install.jam b/boost-install.jam
+index 5e599d5..709f509 100644
+--- a/boost-install.jam
++++ b/boost-install.jam
+@@ -64,11 +64,11 @@ local rule remap-library ( lib )
+ 
+     case "zlib" :
+ 
+-        return "z" ;
++        return "xpro::zlibstatic" ;
+ 
+     case "bzip2" :
+ 
+-        return "bz2" ;
++        return "xpro::bz2" ;
+ 
+     case "icudt" :
+ 
