@@ -1,6 +1,6 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000000..f47315f30e
+index 0000000000..16f0a0c34a
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,113 @@
@@ -30,7 +30,7 @@ index 0000000000..f47315f30e
 +  list(APPEND OPENSSL_DEFS
 +    -DOPENSSL_USE_NODELETE
 +    )
-+  set(asmDir asmfromnode/archs/linux-x86_64/asm)
++  set(asmDir asmfromnode/archs/linux-${CMAKE_SYSTEM_PROCESSOR}/asm)
 +endif()
 +if((CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64") AND WIN32)
 +  enable_language(ASM_NASM) # -DCMAKE_ASM_NASM_COMPILER=/path/to/nasm.exe
@@ -432,10 +432,10 @@ index 0000000000..bd4643da6a
 +DEFINE_LHASH_OF(FUNCTION);
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000000..e6dbe2658f
+index 0000000000..fa5f8ffe59
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1891 @@
+@@ -0,0 +1,1892 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file include/buildinf.h)
@@ -2297,6 +2297,7 @@ index 0000000000..e6dbe2658f
 +target_include_directories(${lib_name} PRIVATE
 +  ${CMAKE_CURRENT_SOURCE_DIR}/include
 +  ${CMAKE_CURRENT_BINARY_DIR}/include # buildinf.h, internal/[bn|dso]_conf.h
++  ${CMAKE_CURRENT_SOURCE_DIR} # arm_arch.h
 +  ec/curve448
 +  ec/curve448/arch_32
 +  modes # evp includes modes_lcl.h
