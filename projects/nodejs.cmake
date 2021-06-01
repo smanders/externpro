@@ -1,6 +1,6 @@
 # nodejs
-set(NODEJS_OLDVER 10.17.0)
-set(NODEJS_NEWVER 10.17.0)
+set(NODEJS_OLDVER 14.17.0)
+set(NODEJS_NEWVER 14.17.0)
 ####################
 xpProOption(nodejs)
 set(PRO_NODEJS
@@ -97,7 +97,7 @@ function(build_nodejs_ver ver)
     endif()
     list(APPEND XP_CONFIGURE_BASE <SOURCE_DIR>/configure
       --prefix=<INSTALL_DIR>
-      --without-etw --without-perfctr --without-dtrace
+      --without-etw --without-dtrace
       # TODO: explore --tag=TAG custom build tag
       # TODO: explore --fully-static
       --dest-cpu=${destcpu} --dest-os=${destos}

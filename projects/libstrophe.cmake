@@ -9,7 +9,7 @@ set(PRO_LIBSTROPHE
   LICENSE "open" "https://${REPO}/blob/${VER}/LICENSE.txt" "dual licensed under MIT and GPLv3"
   DESC "A simple, lightweight C library for writing XMPP client"
   REPO "repo" https://${REPO} "libstrophe repo on github"
-  GRAPH BUILD_DEPS expat openssl_1.1.1d
+  GRAPH BUILD_DEPS expat openssl_1.1.1k
   VER ${VER}
   GIT_ORIGIN git://${FORK}.git
   GIT_UPSTREAM git://${REPO}.git
