@@ -1,6 +1,6 @@
 # llvm
 xpProOption(llvm)
-set(VER 9.0.0)
+set(VER 11.0.0)
 set(REPO github.com/llvm/llvm-project)
 set(PRO_LLVM
   NAME llvm
@@ -12,8 +12,8 @@ set(PRO_LLVM
   VER ${VER}
   GIT_ORIGIN git://${REPO}.git
   GIT_TAG llvmorg-${VER}
-  DLURL http://llvm.org/releases/${VER}/llvm-${VER}.src.tar.xz
-  DLMD5 0fd4283ff485dffb71a4f1cc8fd3fc72
+  DLURL https://${REPO}/releases/download/llvmorg-${VER}/llvm-${VER}.src.tar.xz
+  DLMD5 85844102335b2e01b3c64b6734fb56f2
   SUBPRO clang
   )
 ########################################
