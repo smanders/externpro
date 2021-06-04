@@ -15,7 +15,7 @@ set(PRO_BOOST${VER2_}
   VER ${VER}
   GIT_ORIGIN git://${REPO}.git
   GIT_TAG boost-${VER} # what to 'git checkout'
-  DLURL https://dl.bintray.com/boostorg/release/${VER}/source/boost_${VER_}.tar.bz2
+  DLURL https://boostorg.jfrog.io/artifactory/main/release/${VER}/source/boost_${VER_}.tar.bz2
   DLMD5 ea217ed7c4414e93d44106c316966ae1
   SUBPRO boostgil${VER2_} boostunits${VER2_} boostinstall${VER2_}
   )
