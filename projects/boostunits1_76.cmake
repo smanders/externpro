@@ -1,6 +1,6 @@
 # boost units
-set(VER 1.75.0)
-string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" VER2_ ${VER}) # 1_75
+set(VER 1.76.0)
+string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" VER2_ ${VER}) # 1_76
 set(REPO github.com/boostorg/units)
 set(FORK github.com/smanders/units)
 set(PRO_BOOSTUNITS${VER2_}
