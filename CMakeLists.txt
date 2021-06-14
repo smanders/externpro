@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.20)
 project(externpro)
 set(XP_INSTALL_INFO "Installers located at https://github.com/smanders/externpro/releases")
 include(modules/macpro.cmake)

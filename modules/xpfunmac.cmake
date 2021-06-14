@@ -290,6 +290,7 @@ function(ipPatchAdditional tgt add)
         -P ${MODULES_DIR}/cmsdownload.cmake
       DEPENDEES download
       DEPENDERS patch
+      INDEPENDENT TRUE
       )
   endif()
 endfunction()
