@@ -54,6 +54,7 @@
 |-------|---|-----------|-------|----------|----------|
 |boost|[gil](http://boost.org/libs/gil 'boost gil website')|gil (generic image library)|1.76.0|[repo](https://github.com/boostorg/gil 'gil repo on github')|[diff](https://github.com/smanders/gil/compare/boostorg:boost-1.76.0...xp1.76.0 'patch/diff')|
 |boost|[boost_install](https://github.com/boostorg/boost_install 'boost_install repo')|implementation of the boost-install rule|1.76.0|[repo](https://github.com/boostorg/boost_install 'boost_install repo on github')|[diff](https://github.com/smanders/boost_install/compare/boostorg:boost-1.76.0...xp1.76.0 'patch/diff')|
+|boost|[regex](http://boost.org/libs/regex 'boost regex website')|Regular expression library|1.76.0|[repo](https://github.com/boostorg/regex 'regex repo on github')|[diff](https://github.com/smanders/regex/compare/boostorg:boost-1.76.0...xp1.76.0 'patch/diff')|
 |boost|[units](http://boost.org/libs/units 'boost units website')|zero-overhead dimensional analysis and unit/quantity manipulation and conversion|1.76.0|[repo](https://github.com/boostorg/units 'units repo on github')|[diff](https://github.com/smanders/units/compare/boostorg:boost-1.76.0...xp1.76.0 'patch/diff')|
 |llvm|[clang](http://clang.llvm.org/ 'clang website')|clang: a C language family frontend for LLVM|11.0.0|none|none|
 |clang|[clang-format](http://clang.llvm.org/docs/ClangFormat.html 'ClangFormat documentation')|used to format C/C++/Obj-C code|11.0.0|none|none|
