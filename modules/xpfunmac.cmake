@@ -91,12 +91,12 @@ function(ipCloneRepo)
       ExternalProject_Add_Step(${prj}_repo remote_add_upstream
         COMMAND ${GIT_EXECUTABLE} remote add upstream ${P_GIT_UPSTREAM}
         WORKING_DIRECTORY <SOURCE_DIR>
-        DEPENDEES download DEPENDERS update
+        DEPENDEES download DEPENDERS update INDEPENDENT TRUE
         )
       ExternalProject_Add_Step(${prj}_repo set_upstream
         COMMAND ${GIT_EXECUTABLE} branch ${upstreamCmd}
         WORKING_DIRECTORY <SOURCE_DIR>
-        DEPENDEES update DEPENDERS build
+        DEPENDEES update DEPENDERS build INDEPENDENT TRUE
         )
     endif()
   endif()
@@ -288,9 +288,7 @@ function(ipPatchAdditional tgt add)
         -Dpkg_md5:STRING=${X_DLMD5${add}}
         -Dpkg_dir:STRING=${pkgPath}
         -P ${MODULES_DIR}/cmsdownload.cmake
-      DEPENDEES download
-      DEPENDERS patch
-      INDEPENDENT TRUE
+      DEPENDEES download DEPENDERS patch INDEPENDENT TRUE
       )
   endif()
 endfunction()
@@ -463,7 +461,7 @@ function(ipAddProject XP_TARGET)
         # work around a cmake bug: run cmake again for changes to
         # CMAKE_CONFIGURATION_TYPES to take effect (see modules/flags.cmake)
         COMMAND ${CMAKE_COMMAND} <BINARY_DIR>
-        DEPENDEES configure DEPENDERS build
+        DEPENDEES configure DEPENDERS build #INDEPENDENT TRUE
         )
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(pfstr x64)
@@ -488,10 +486,10 @@ function(ipAddProject XP_TARGET)
           list(APPEND install_cmd -- /property:Platform=${pfstr})
         endif()
         ExternalProject_Add_Step(${XP_TARGET} build_${cfg}_${pfstr}
-          COMMAND ${build_cmd} DEPENDEES build DEPENDERS install
+          COMMAND ${build_cmd} DEPENDEES build DEPENDERS install #INDEPENDENT TRUE
           )
         ExternalProject_Add_Step(${XP_TARGET} install_${cfg}_${pfstr}
-          COMMAND ${install_cmd} DEPENDEES install
+          COMMAND ${install_cmd} DEPENDEES install #INDEPENDENT TRUE
           )
         if(XP_BUILD_VERBOSE)
           string(REPLACE ";" " " build_cmd "${build_cmd}")
