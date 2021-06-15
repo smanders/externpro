@@ -116,16 +116,19 @@ function(build_nodejs_ver ver)
   set(nodejsHdrs ${SOURCE_DIR}/src/*.h)
   set(uvDir ${SOURCE_DIR}/deps/uv/include)
   set(v8Hdrs ${SOURCE_DIR}/deps/v8/include/*.h)
+  set(cppgcHdrs ${SOURCE_DIR}/deps/v8/include/cppgc/*.h)
   set(XP_TARGET nodejs_${ver}_stage)
   if(NOT TARGET ${XP_TARGET})
     ExternalProject_Add(${XP_TARGET} DEPENDS ${nodejs_${ver}_DEPS}
-      DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
+      DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
       SOURCE_DIR ${NULL_DIR} INSTALL_DIR ${STAGE_DIR}/include/node_${ver}/node
-      CONFIGURE_COMMAND ${CMAKE_COMMAND} -E copy_directory ${uvDir} <INSTALL_DIR>
-      BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${nodejsHdrs}
+      DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${uvDir} <INSTALL_DIR>
+      CONFIGURE_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${nodejsHdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
-      INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${v8Hdrs}
+      BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${v8Hdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
+      INSTALL_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${cppgcHdrs}
+        -Ddst:STRING=<INSTALL_DIR>/cppgc -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
