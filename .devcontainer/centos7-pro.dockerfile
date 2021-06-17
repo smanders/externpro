@@ -1,4 +1,4 @@
-FROM ghcr.io/smanders/buildpro/centos7-pro:21.05
+FROM ghcr.io/smanders/buildpro/centos7-pro:21.09
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
@@ -8,9 +8,9 @@ ARG USERNAME
 ARG USERID
 ARG GROUPID
 RUN if [ ${USERID:-0} -ne 0 ] && [ ${GROUPID:-0} -ne 0 ]; then \
-  export GROUPNAME=$(getent group | grep ${GROUPID} | cut -d: -f1) \
+  export GROUPNAME=$(getent group ${GROUPID} | cut -d: -f1) \
   && if [[ -z ${GROUPNAME} ]]; then groupadd -g ${GROUPID} ${USERNAME}; fi \
-  && adduser --uid ${USERID} --gid ${GROUPID} ${USERNAME} \
+  && useradd --no-log-init --uid ${USERID} --gid ${GROUPID} ${USERNAME} \
   && echo "" >> /etc/sudoers \
   && echo "## dockerfile adds ${USERNAME} to sudoers" >> /etc/sudoers \
   && echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
