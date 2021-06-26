@@ -1,9 +1,24 @@
 # boost
-xpProOption(boost DBG)
 set(BOOST_OLDVER 1.67.0)
 set(BOOST_NEWVER 1.67.0)
 ####################
-function(patch_boost)
+xpProOption(boost DBG)
+string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
+string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" nv ${BOOST_NEWVER})
+set(PRO_BOOST
+  NAME boost
+  NO_README
+  DEPS_FUNC build_boost_all
+  BUILD_DEPS boost${ov} boost${nv}
+  )
+function(build_boost_all)
+  xpBuildDeps(depsTgts ${PRO_BOOST})
+  if(ARGN)
+    set(${ARGN} "${depsTgts}" PARENT_SCOPE)
+  endif()
+endfunction()
+####################
+function(build_boost)
   string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
   string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" nv ${BOOST_NEWVER})
   if(NOT (XP_DEFAULT OR XP_PRO_BOOST OR XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
@@ -24,38 +39,10 @@ function(patch_boost)
     endif()
   endif()
   list(REMOVE_DUPLICATES BOOST_VERSIONS)
-  foreach(ver ${BOOST_VERSIONS})
-    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ver2_ ${ver})
-    xpPatchProject(${PRO_BOOST${ver2_}})
-  endforeach()
-  set(BOOST_VERSIONS ${BOOST_VERSIONS} PARENT_SCOPE) # make BOOST_VERSIONS available to build_boost
-endfunction()
-####################
-function(build_boost)
-  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
-  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" nv ${BOOST_NEWVER})
-  if(NOT (XP_DEFAULT OR XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
-    return()
-  endif()
-  cmake_parse_arguments(boost "" TARGETS "" ${ARGN})
-  if(NOT (XP_DEFAULT OR XP_PRO_ZLIB))
-    message(STATUS "boost.cmake: requires zlib")
-    set(XP_PRO_ZLIB ON CACHE BOOL "include zlib" FORCE)
-    xpPatchProject(${PRO_ZLIB})
-  endif()
-  if(NOT (XP_DEFAULT OR XP_PRO_BZIP2))
-    message(STATUS "boost.cmake: requires bzip2")
-    set(XP_PRO_BZIP2 ON CACHE BOOL "include bzip2" FORCE)
-    xpPatchProject(${PRO_BZIP2})
-  endif()
-  build_zlib(zlibTgts)
-  build_bzip2(bzip2Tgts)
-  list(APPEND tgts
-    ${zlibTgts}
-    ${bzip2Tgts}
-    )
   list(LENGTH BOOST_VERSIONS NUM_VER)
-  if(NUM_VER EQUAL 1)
+  if(NUM_VER EQUAL 0)
+    return()
+  elseif(NUM_VER EQUAL 1)
     if(BOOST_VERSIONS VERSION_EQUAL BOOST_OLDVER)
       set(boolean OFF)
     else() # BOOST_VERSIONS VERSION_EQUAL BOOST_NEWVER
@@ -70,17 +57,17 @@ function(build_boost)
     )
   foreach(ver ${BOOST_VERSIONS})
     string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ver2_ ${ver})
+    xpBuildDeps(depTgts ${PRO_BOOST${ver2_}})
+    list(APPEND tgts ${depTgts})
     ExternalProject_Get_Property(boost${ver2_} SOURCE_DIR)
     build_boostb2(PRO boost${ver2_} BOOTSTRAP ${SOURCE_DIR}/tools/build
       B2PATH b2path TARGETS tgts
       )
     build_boostlibs(PRO boost${ver2_} B2PATH ${b2path} TARGETS tgts)
-    if(DEFINED boost_TARGETS)
-      xpListAppendIfDne(${boost_TARGETS} "${tgts}")
-    endif()
+    xpListAppendIfDne(boost_TARGETS "${tgts}")
   endforeach()
-  if(DEFINED boost_TARGETS)
-    set(${boost_TARGETS} "${${boost_TARGETS}}" PARENT_SCOPE)
+  if(ARGN)
+    set(${ARGN} "${boost_TARGETS}" PARENT_SCOPE)
   endif()
 endfunction()
 ####################
