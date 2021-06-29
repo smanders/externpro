@@ -4,6 +4,7 @@
 |-------|-------|-----------|-------|----------|----------|
 |[ActiveMQ-CPP](http://activemq.apache.org/cms/ 'ActiveMQ CMS website')|[open](http://www.apache.org/licenses/LICENSE-2.0.html 'Apache 2.0')|ActiveMQ C++ Messaging Service (CMS) client library|3.9.5|[repo](https://github.com/apache/activemq-cpp 'activemq-cpp repo on github')|[diff](https://github.com/smanders/activemq-cpp/compare/apache:activemq-cpp-3.9.5...xp-3.9.5 'patch/diff')|
 |[APR](http://apr.apache.org/ 'Apache Portable Runtime Project website')|[open](http://www.apache.org/licenses/LICENSE-2.0.html 'Apache 2.0')|Apache Portable Runtime project|1.5.2|[repo](https://github.com/apache/apr 'apr repo on github')|[diff](https://github.com/smanders/apr/compare/apache:1.5.2...xp1.5.2 'patch/diff')|
+|[azmq](https://zeromq.org/ 'ZeroMQ website')|[open](https://github.com/zeromq/azmq/blob/master/LICENSE-BOOST_1_0 'Boost Software License 1.0')|provides Boost Asio style bindings for ZeroMQ|21.06.02|[repo](https://github.com/zeromq/azmq 'zeromq/azmq repo on github')|[diff](https://github.com/smanders/azmq/compare/zeromq:fc6b42acaaeaa65692e031d796a02011d2924713...xp21.06.02 'patch/diff')|
 |[boost](http://www.boost.org/ 'Boost website')|[open](http://www.boost.org/users/license.html 'Boost Software License')|libraries that give C++ a boost|1.67.0|[repo](https://github.com/boostorg/boost 'boost repo on github')|none|
 |[bzip2](https://en.wikipedia.org/wiki/Bzip2 'bzip2 on wikipedia')|[open](https://spdx.org/licenses/bzip2-1.0.6.html 'bzip2 BSD-style license')|lossless block-sorting data compression library|1.0.6|[repo](https://github.com/smanders/bzip2 'forked bzip2 repo on github')|[diff](https://github.com/smanders/bzip2/compare/v1.0.6...xp1.0.6 'patch/diff')|
 |[c-ares](http://c-ares.haxx.se/ 'c-ares website')|[open](http://c-ares.haxx.se/license.html 'c-ares license: MIT license')|C library for asynchronous DNS requests (including name resolves)|1.10.0|[repo](https://github.com/c-ares/c-ares 'c-ares repo on github')|[diff](https://github.com/smanders/c-ares/compare/c-ares:cares-1_10_0...xp-1_10_0 'patch/diff')|
@@ -72,16 +73,19 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_b2c0c30c44bc3af48cdab40f491de26f?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_faafb48fc872806b2377d30d00750ab4?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_b2c0c30c44bc3af48cdab40f491de26f
+depgraph_faafb48fc872806b2377d30d00750ab4
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
   activemqcpp_3_9_5 -> apr;
   activemqcpp_3_9_5 -> openssl_1_1_1d;
   apr [shape=diamond];
+  azmq [shape=diamond];
+  azmq -> libzmq;
+  azmq -> boost;
   boost [shape=diamond];
   boost -> zlib;
   boost -> bzip2;
@@ -142,5 +146,5 @@ digraph GG {
   yasm [shape=box];
   zlib [shape=diamond];
 }
-depgraph_b2c0c30c44bc3af48cdab40f491de26f
+depgraph_faafb48fc872806b2377d30d00750ab4
 </details>
