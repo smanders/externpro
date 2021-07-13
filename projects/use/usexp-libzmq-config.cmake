@@ -7,6 +7,7 @@ get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
 get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
 string(TOUPPER ${prj} PRJ)
 set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
+xpFindPkg(PKGS sodium)
 # targets file installed to lib/cmake
 include(${XP_ROOTDIR}/lib/cmake/ZeroMQ_@VER@/ZeroMQTargets.cmake)
 set(${PRJ}_LIBRARIES xpro::libzmq-static)

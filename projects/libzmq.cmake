@@ -9,7 +9,7 @@ set(PRO_LIBZMQ
   LICENSE "open" http://wiki.zeromq.org/area:licensing "GNU LGPL plus static linking exception"
   DESC "high-performance asynchronous messaging library"
   REPO "repo" https://${REPO} "zeromq/libzmq repo on github"
-  GRAPH
+  GRAPH BUILD_DEPS sodium
   VER ${VER}
   GIT_ORIGIN git://${FORK}.git
   GIT_UPSTREAM git://${REPO}.git
@@ -27,6 +27,7 @@ function(build_libzmq)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBZMQ))
     return()
   endif()
+  xpBuildDeps(depsTgts ${PRO_LIBZMQ})
   xpGetArgValue(${PRO_LIBZMQ} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-libzmq-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
@@ -41,7 +42,7 @@ function(build_libzmq)
     -DLIBZMQ_VER=${VER}
     -DXP_NAMESPACE:STRING=xpro
     )
-  xpCmakeBuild(libzmq "" "${XP_CONFIGURE}" zmqTargets)
+  xpCmakeBuild(libzmq "${depsTgts}" "${XP_CONFIGURE}" zmqTargets)
   if(ARGN)
     set(${ARGN} "${zmqTargets}" PARENT_SCOPE)
   endif()

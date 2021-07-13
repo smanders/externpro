@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dd3d8eb9..5e2b9a12 100644
+index dd3d8eb9..2de767a1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,6 +20,7 @@ include(FindThreads)
@@ -10,7 +10,49 @@ index dd3d8eb9..5e2b9a12 100644
  
  list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}")
  set(ZMQ_CMAKE_MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/builds/cmake/Modules)
-@@ -1224,7 +1225,22 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
+@@ -262,20 +263,32 @@ option(ENABLE_CURVE "Enable CURVE security" ON)
+ 
+ if(ENABLE_CURVE)
+   if(WITH_LIBSODIUM)
+-    find_package("Sodium")
+-    if(SODIUM_FOUND)
++    if(COMMAND xpFindPkg)
++      set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
++      xpFindPkg(PKGS sodium)
+       message(STATUS "Using libsodium for CURVE security")
++      get_target_property(SODIUM_INCLUDE_DIRS xpro::sodium INTERFACE_INCLUDE_DIRECTORIES)
++      get_target_property(SODIUM_DEFS xpro::sodium INTERFACE_COMPILE_DEFINITIONS)
+       include_directories(${SODIUM_INCLUDE_DIRS})
+-      if(WITH_LIBSODIUM_STATIC)
+-        add_compile_definitions(SODIUM_STATIC)
+-      endif()
++      add_compile_definitions(${SODIUM_DEFS})
+       set(ZMQ_USE_LIBSODIUM 1)
+       set(ZMQ_HAVE_CURVE 1)
+     else()
+-      message(
+-        WARNING
+-          "libsodium not installed, instead using builtin tweetnacl, you may want to install libsodium and run cmake again"
+-      )
++      find_package("Sodium")
++      if(SODIUM_FOUND)
++        message(STATUS "Using libsodium for CURVE security")
++        include_directories(${SODIUM_INCLUDE_DIRS})
++        if(WITH_LIBSODIUM_STATIC)
++          add_compile_definitions(SODIUM_STATIC)
++        endif()
++        set(ZMQ_USE_LIBSODIUM 1)
++        set(ZMQ_HAVE_CURVE 1)
++      else()
++        message(
++          WARNING
++            "libsodium not installed, instead using builtin tweetnacl, you may want to install libsodium and run cmake again"
++        )
++      endif()
+     endif()
+   endif()
+   if(NOT ZMQ_HAVE_CURVE)
+@@ -1224,7 +1237,22 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/libzmq.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc @ONLY)
  set(zmq-pkgconfig ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc)
  
@@ -34,7 +76,7 @@ index dd3d8eb9..5e2b9a12 100644
    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
  endif()
  
-@@ -1350,7 +1366,8 @@ else()
+@@ -1350,7 +1378,8 @@ else()
      set_property(TARGET objects PROPERTY POSITION_INDEPENDENT_CODE ON)
      target_include_directories(
        objects PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -44,7 +86,7 @@ index dd3d8eb9..5e2b9a12 100644
    endif()
  
    if(BUILD_SHARED)
-@@ -1422,7 +1439,8 @@ endif()
+@@ -1422,7 +1451,8 @@ endif()
  foreach(target ${target_outputs})
    target_include_directories(
      ${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -54,7 +96,7 @@ index dd3d8eb9..5e2b9a12 100644
  endforeach()
  
  if(BUILD_SHARED)
-@@ -1688,7 +1706,7 @@ write_basic_package_version_file(
+@@ -1688,7 +1718,7 @@ write_basic_package_version_file(
  if(BUILD_SHARED OR BUILD_STATIC)
    install(
      EXPORT ${PROJECT_NAME}-targets
@@ -119,3 +161,19 @@ index 3f16e595..bae7e24f 100644
 +    get_target_property(@PROJECT_NAME@_STATIC_LIBRARY @nSpace@libzmq-static LOCATION)
    endif()
  endif()
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 08056143..bf0593f7 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -234,7 +234,10 @@ endif()
+ foreach(test ${tests})
+   # target_sources not supported before CMake 3.1
+   if(ZMQ_HAVE_CURVE AND ${test} MATCHES test_security_curve)
+-    add_executable(${test} ${test}.cpp "../src/tweetnacl.c" "../src/err.cpp" "../src/random.cpp" "../src/clock.cpp")
++    if(NOT SODIUM_FOUND)
++      set(tweetnacl_src "../src/tweetnacl.c")
++    endif()
++    add_executable(${test} ${test}.cpp ${tweetnacl_src} "../src/err.cpp" "../src/random.cpp" "../src/clock.cpp")
+   else()
+     add_executable(${test} ${test}.cpp)
+   endif()
