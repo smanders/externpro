@@ -17,5 +17,5 @@ set(PRO_BOOST${VER2_}
   DLURL https://dl.bintray.com/boostorg/release/${VER}/source/boost_${VER_}.tar.bz2
   DLMD5 ced776cb19428ab8488774e1415535ab
   DEPS_FUNC build_boost
-  SUBPRO boostasio${VER2_} boostgil${VER2_} boostmpl${VER2_} boostunits${VER2_}
+  SUBPRO boostasio${VER2_} boostgil${VER2_} boostmpl${VER2_} boostprogram_options${VER2_} boostprogram_optionshpp${VER2_} boostunits${VER2_}
   )
