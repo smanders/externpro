@@ -49,6 +49,7 @@
 |[wxx](https://github.com/smanders/wxx 'wxx project on github')|[open](http://wxcode.sourceforge.net/rules.php 'wxCode components must use wxWindows license')|wxWidget-based extra components|2020.01.02|[repo](https://github.com/smanders/wxx 'wxx repo on github')|[diff](https://github.com/smanders/wxx/compare/wxx.01...xpro 'patch/diff')|
 |[yasm](http://yasm.tortall.net/ 'yasm website')|[open](https://github.com/yasm/yasm/blob/v1.3.0/COPYING 'new BSD license')|assembler and disassembler for the Intel x86 architecture|1.3.0|[repo](https://github.com/yasm/yasm 'yasm repo on github')|[diff](https://github.com/smanders/yasm/compare/yasm:v1.3.0...xp1.3.0 'patch/diff')|
 |[zlib](http://zlib.net/ 'zlib website')|[open](http://zlib.net/zlib_license.html 'zlib license')|compression library|1.2.8|[repo](https://github.com/madler/zlib 'zlib repo on github')|[diff](https://github.com/smanders/zlib/compare/madler:v1.2.8...xp1.2.8 'patch/diff')|
+|[zmqpp](https://zeromq.github.io/zmqpp/ 'zmqpp website')|[open](https://github.com/zeromq/zmqpp/blob/develop/LICENSE 'Mozilla Public License 2.0')|high-level binding for libzmq|21.07.09|[repo](https://github.com/zeromq/zmqpp 'zeromq/zmqpp repo on github')|[diff](https://github.com/smanders/zmqpp/compare/zeromq:ba4230d5d03d29ced9ca788e3bd1095477db08ae...xp21.07.09 'patch/diff')|
 
 ## subprojects
 
@@ -76,10 +77,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_0833705ba42dce000db6ff958e2ec0ee?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_c31d4bffaeedb41f1def534b239cdc9c?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_0833705ba42dce000db6ff958e2ec0ee
+depgraph_c31d4bffaeedb41f1def534b239cdc9c
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
@@ -150,6 +151,8 @@ digraph GG {
   wxx -> wx;
   yasm [shape=box];
   zlib [shape=diamond];
+  zmqpp [shape=diamond];
+  zmqpp -> libzmq;
 }
-depgraph_0833705ba42dce000db6ff958e2ec0ee
+depgraph_c31d4bffaeedb41f1def534b239cdc9c
 </details>
