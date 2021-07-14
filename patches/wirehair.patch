@@ -91,6 +91,220 @@ index 7852b3f..03ba98f 100644
 +install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
 +install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 +install(DIRECTORY python DESTINATION ${CMAKE_INSTALL_PREFIX} ${optionalInstall})
+diff --git a/WirehairCodec.cpp b/WirehairCodec.cpp
+index c1ec664..6523aa0 100644
+--- a/WirehairCodec.cpp
++++ b/WirehairCodec.cpp
+@@ -1149,26 +1149,30 @@ bool Codec::TriangleNonHeavy()
+ 
+ #if defined(CAT_HEAVY_WIN_MULT)
+ 
+-#if defined(CAT_ENDIAN_BIG)
+-
++  namespace
++  {
++    bool isLittleEndian()
++    {
++      short int number = 0x1;
++      char* numPtr = (char*)&number;
++      return (numPtr[0] == 1);
++    }
++  }
+ // Flip endianness at compile time if possible
+-static uint32_t GF256_MULT_LOOKUP[16] = {
++  static uint32_t GF256_MULT_LOOKUP_BIG[16] = {
+     0x00000000, 0x01000000, 0x00010000, 0x01010000, 
+     0x00000100, 0x01000100, 0x00010100, 0x01010100, 
+     0x00000001, 0x01000001, 0x00010001, 0x01010001, 
+     0x00000101, 0x01000101, 0x00010101, 0x01010101, 
+ };
+ 
+-#else
+-
+ // Little-endian or unknown bit order:
+-static uint32_t GF256_MULT_LOOKUP[16] = {
++  static uint32_t GF256_MULT_LOOKUP_LITTLE[16] = {
+     0x00000000, 0x00000001, 0x00000100, 0x00000101, 
+     0x00010000, 0x00010001, 0x00010100, 0x00010101, 
+     0x01000000, 0x01000001, 0x01000100, 0x01000101, 
+     0x01010000, 0x01010001, 0x01010100, 0x01010101, 
+ };
+-#endif
+ 
+ #endif // CAT_HEAVY_WIN_MULT
+ 
+@@ -1178,7 +1182,8 @@ bool Codec::Triangle()
+     CAT_IF_DUMP(cout << endl << "---- Triangle ----" << endl << endl;)
+ 
+     const unsigned first_heavy_column = _first_heavy_column;
+-
++    uint32_t* GF256_MULT_LOOKUP =
++      isLittleEndian() ? GF256_MULT_LOOKUP_LITTLE : GF256_MULT_LOOKUP_BIG;
+     // If next pivot is not heavy:
+     if (_next_pivot < first_heavy_column &&
+         !TriangleNonHeavy())
+@@ -1281,7 +1286,7 @@ bool Codec::Triangle()
+                         rem_row[ge_column_i - first_heavy_column] ^= code_value;
+                     }
+                 }
+-#else // CAT_HEAVY_WIN_MULT
++#else  // CAT_HEAVY_WIN_MULT
+                 const unsigned odd_count = pivot_i & 3;
+                 unsigned ge_column_i = pivot_i + 1;
+                 uint64_t temp_mask = ge_mask;
+@@ -1329,11 +1334,8 @@ bool Codec::Triangle()
+                 {
+                     // Look up 4 bit window
+                     const uint32_t bits = (uint32_t)(pivot_row[ge_column_i >> 6] >> (ge_column_i & 63)) & 15;
+-#if defined(CAT_ENDIAN_UNKNOWN)
+-                    const uint32_t window = getLE(GF256_MULT_LOOKUP[bits]);
+-#else
++
+                     const uint32_t window = GF256_MULT_LOOKUP[bits];
+-#endif
+ 
+                     CAT_IF_DUMP(cout << " " << ge_column_i << "x" << hex << setw(8) << setfill('0') << window << dec;)
+ 
+@@ -2523,7 +2525,9 @@ void Codec::BackSubstituteAboveDiagonal()
+             } // end if contains heavy
+ 
+             // Only add window table entries for rows under this limit
+-            const uint16_t window_row_limit = (pivot_i >= first_heavy_column) ? first_heavy_row : 0x7fff;
++          const uint16_t window_row_limit = (pivot_i >= first_heavy_column)
++                                              ? first_heavy_row
++                                              : uint16_t(0x7fff);
+ 
+             const uint32_t first_word = backsub_i >> 6;
+             const uint32_t shift0 = backsub_i & 63;
+@@ -2709,7 +2713,7 @@ void Codec::BackSubstituteAboveDiagonal()
+             }
+         } // next pivot above
+ 
+-        if (pivot_i <= 0) {
++      if (pivot_i == 0) {
+             break;
+         }
+         --pivot_i;
+diff --git a/WirehairTools.cpp b/WirehairTools.cpp
+index dfd6585..84ccb24 100644
+--- a/WirehairTools.cpp
++++ b/WirehairTools.cpp
+@@ -331,7 +331,7 @@ void AddInvertibleGF2Matrix(
+         target -= written0;
+         prev = word0;
+ 
+-        if (target <= 0) {
++      if (target == 0) {
+             continue;
+         }
+ 
+@@ -388,9 +388,8 @@ void ShuffleDeck16(
+             uint32_t jj, rv = prng.Next();
+ 
+             // 8-bit unroll
+-            switch (count - ii)
++        if (count - ii == 3)
+             {
+-            default:
+                 jj = (uint8_t)rv % ii;
+                 deck[ii] = deck[jj];
+                 deck[jj] = (uint16_t)ii;
+@@ -402,29 +401,48 @@ void ShuffleDeck16(
+                 jj = (uint8_t)(rv >> 16) % ii;
+                 deck[ii] = deck[jj];
+                 deck[jj] = (uint16_t)ii;
+-                ++ii;
+-                jj = (uint8_t)(rv >> 24) % ii;
++          return;
++        }
++        else if (count - ii == 2)
++        {
++          jj = (uint8_t)(rv >> 8) % ii;
+                 deck[ii] = deck[jj];
+                 deck[jj] = (uint16_t)ii;
+                 ++ii;
+-                break;
+-
+-            case 3:
++          jj = (uint8_t)(rv >> 16) % ii;
++          deck[ii] = deck[jj];
++          deck[jj] = (uint16_t)ii;
++          return;
++        }
++        else if (count - ii == 1)
++        {
++          jj = (uint8_t)(rv >> 16) % ii;
++          deck[ii] = deck[jj];
++          deck[jj] = (uint16_t)ii;
++          return;
++        }
++        else if (count - ii == 0)
++        {
++          return;
++        }
++        else
++        {
+                 jj = (uint8_t)rv % ii;
+                 deck[ii] = deck[jj];
+                 deck[jj] = (uint16_t)ii;
+                 ++ii;
+-            case 2:
+                 jj = (uint8_t)(rv >> 8) % ii;
+                 deck[ii] = deck[jj];
+                 deck[jj] = (uint16_t)ii;
+                 ++ii;
+-            case 1:
+                 jj = (uint8_t)(rv >> 16) % ii;
+                 deck[ii] = deck[jj];
+                 deck[jj] = (uint16_t)ii;
+-            case 0:
+-                return;
++          ++ii;
++          jj = (uint8_t)(rv >> 24) % ii;
++          deck[ii] = deck[jj];
++          deck[jj] = (uint16_t)ii;
++          ++ii;
+             }
+         }
+     }
+@@ -436,25 +454,27 @@ void ShuffleDeck16(
+             uint32_t jj, rv = prng.Next();
+ 
+             // 16-bit unroll
+-            switch (count - ii)
++        if (count - ii == 1)
+             {
+-            default:
+                 jj = (uint16_t)rv % ii;
+                 deck[ii] = deck[jj];
+                 deck[jj] = (uint16_t)ii;
+-                ++ii;
+-                jj = (uint16_t)(rv >> 16) % ii;
++          return;
++        }
++        else if (count - ii == 0)
++        {
++          return;
++        }
++        else
++        {
++          jj = (uint16_t)rv % ii;
+                 deck[ii] = deck[jj];
+                 deck[jj] = (uint16_t)ii;
+                 ++ii;
+-                break;
+-
+-            case 1:
+-                jj = (uint16_t)rv % ii;
++          jj = (uint16_t)(rv >> 16) % ii;
+                 deck[ii] = deck[jj];
+                 deck[jj] = (uint16_t)ii;
+-            case 0:
+-                return;
++          ++ii;
+             }
+         }
+     }
 diff --git a/WirehairTools.h b/WirehairTools.h
 index 8340df5..f8b3251 100644
 --- a/WirehairTools.h
@@ -106,10 +320,10 @@ index 8340df5..f8b3251 100644
  // Compiler-specific debug break
 diff --git a/cm256.cpp b/cm256.cpp
 new file mode 100644
-index 0000000..b51ff8f
+index 0000000..4abd632
 --- /dev/null
 +++ b/cm256.cpp
-@@ -0,0 +1,603 @@
+@@ -0,0 +1,613 @@
 +/*
 +	Copyright (c) 2015 Christopher A. Taylor.  All rights reserved.
 +
@@ -363,8 +577,18 @@ index 0000000..b51ff8f
 +
 +    // Generate the LU decomposition of the matrix
 +    void GenerateLDUDecomposition(uint8_t* matrix_L, uint8_t* diag_D, uint8_t* matrix_U);
++  CM256Decoder();
 +};
 +
++CM256Decoder::CM256Decoder()
++  : Params(),
++    Recovery(),
++    RecoveryCount(0),
++    Original(),
++    OriginalCount(0),
++    ErasuresIndices()
++{
++}
 +bool CM256Decoder::Initialize(cm256_encoder_params& params, cm256_block* blocks)
 +{
 +    Params = params;
@@ -714,24 +938,239 @@ index 0000000..b51ff8f
 +    return 0;
 +}
 diff --git a/gf256.cpp b/gf256.cpp
-index 510146b..cad3a43 100644
+index 510146b..586832e 100644
 --- a/gf256.cpp
 +++ b/gf256.cpp
-@@ -27,7 +27,7 @@
+@@ -27,44 +27,25 @@
      POSSIBILITY OF SUCH DAMAGE.
  */
  
 -#include "gf256.h"
 +#include <wirehair/gf256.h>
  
- #ifdef LINUX_ARM
- #include <unistd.h>
+-#ifdef LINUX_ARM
+-#include <unistd.h>
+-#include <fcntl.h>
+-#include <elf.h>
+-#include <linux/auxvec.h>
+-#endif
+-
+-//------------------------------------------------------------------------------
+-// Detect host byte order.
+-// This check works with GCC and LLVM; assume little-endian byte order when
+-// using any other compiler.
+-// The result is verified during initialization.
+-//
+-#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) \
+-    && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+-#define GF256_IS_BIG_ENDIAN
+-#endif
++namespace
+ 
+-//------------------------------------------------------------------------------
+-// Workaround for ARMv7 that doesn't provide vqtbl1_*
+-// This comes from linux-raid (https://www.spinics.net/lists/raid/msg58403.html)
+-//
+-#ifdef GF256_TRY_NEON
+-#if __ARM_ARCH <= 7 && !defined(__aarch64__)
+-static GF256_FORCE_INLINE uint8x16_t vqtbl1q_u8(uint8x16_t a, uint8x16_t b)
+ {
+-    union {
+-        uint8x16_t    val;
+-        uint8x8x2_t    pair;
+-    } __a = { a };
+-
+-    return vcombine_u8(vtbl2_u8(__a.pair, vget_low_u8(b)),
+-                       vtbl2_u8(__a.pair, vget_high_u8(b)));
++  union UnionType {
++    uint32_t IntValue;
++    char CharArray[4];
++  };
++  bool isLittleEndian()
++  {
++    // unsigned char kEndianTestData[4] = { 1, 2, 3, 4 };
++    unsigned char kEndianTestData[4] = {4, 3, 2, 1};
++    UnionType type;
++    for (unsigned i = 0; i < 4; ++i)
++      type.CharArray[i] = kEndianTestData[i];
++    return 0x01020304 == type.IntValue;
++  }
+ }
+-#endif
+-#endif
+ 
+ //------------------------------------------------------------------------------
+ // Self-Test
+@@ -194,40 +175,16 @@ static bool gf256_self_test()
+ //
+ // Feature checks stolen shamelessly from
+ // https://github.com/jedisct1/libsodium/blob/master/src/libsodium/sodium/runtime.c
+-
+-#if defined(HAVE_ANDROID_GETCPUFEATURES)
+-#include <cpu-features.h>
+-#endif
+-
+-#if defined(GF256_TRY_NEON)
+-# if defined(IOS) && defined(__ARM_NEON__)
+-// Requires iPhone 5S or newer
+-static const bool CpuHasNeon = true;
+-static const bool CpuHasNeon64 = true;
+-# else // ANDROID or LINUX_ARM
+-#  if defined(__aarch64__)
+-static bool CpuHasNeon = true;      // if AARCH64, then we have NEON for sure...
+-static bool CpuHasNeon64 = true;    // And we have ASIMD
+-#  else
+-static bool CpuHasNeon = false;     // if not, then we have to check at runtime.
+-static bool CpuHasNeon64 = false;   // And we don't have ASIMD
+-#  endif
+-# endif
+-#endif
+-
+-#if !defined(GF256_TARGET_MOBILE)
+-
+ #ifdef _MSC_VER
+     #include <intrin.h> // __cpuid
+     #pragma warning(disable: 4752) // found Intel(R) Advanced Vector Extensions; consider using /arch:AVX
++// consider using /arch:AVX
+ #endif
+-
+-#ifdef GF256_TRY_AVX2
+-static bool CpuHasAVX2 = false;
+-#endif
++// static bool CpuHasAVX2 = false;
+ static bool CpuHasSSSE3 = false;
++static bool IsLittleEndian = false;
+ 
+-#define CPUID_EBX_AVX2    0x00000020
++//#define CPUID_EBX_AVX2 0x00000020
+ #define CPUID_ECX_SSSE3   0x00000200
+ 
+ static void _cpuid(unsigned int cpu_info[4U], const unsigned int cpu_info_type)
+@@ -267,78 +224,24 @@ static void _cpuid(unsigned int cpu_info[4U], const unsigned int cpu_info_type)
+ #endif
+ }
+ 
+-#else
+-#if defined(LINUX_ARM)
+-static void checkLinuxARMNeonCapabilities( bool& cpuHasNeon )
+-{
+-    auto cpufile = open("/proc/self/auxv", O_RDONLY);
+-    Elf32_auxv_t auxv;
+-    if (cpufile >= 0)
+-    {
+-        const auto size_auxv_t = sizeof(Elf32_auxv_t);
+-        while (read(cpufile, &auxv, size_auxv_t) == size_auxv_t)
+-        {
+-            if (auxv.a_type == AT_HWCAP)
+-            {
+-                cpuHasNeon = (auxv.a_un.a_val & 4096) != 0;
+-                break;
+-            }
+-        }
+-        close(cpufile);
+-    }
+-    else
+-    {
+-        cpuHasNeon = false;
+-    }
+-}
+-#endif
+-#endif // defined(GF256_TARGET_MOBILE)
+-
+ static void gf256_architecture_init()
+ {
+-#if defined(GF256_TRY_NEON)
+-
+-    // Check for NEON support on Android platform
+-#if defined(HAVE_ANDROID_GETCPUFEATURES)
+-    AndroidCpuFamily family = android_getCpuFamily();
+-    if (family == ANDROID_CPU_FAMILY_ARM)
+-    {
+-        if (android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON)
+-            CpuHasNeon = true;
+-    }
+-    else if (family == ANDROID_CPU_FAMILY_ARM64)
+-    {
+-        CpuHasNeon = true;
+-        if (android_getCpuFeatures() & ANDROID_CPU_ARM64_FEATURE_ASIMD)
+-            CpuHasNeon64 = true;
+-    }
+-#endif
+-
+-#if defined(LINUX_ARM)
+-    // Check for NEON support on other ARM/Linux platforms
+-    checkLinuxARMNeonCapabilities(CpuHasNeon);
+-#endif
++  IsLittleEndian = isLittleEndian();
+ 
+-#endif //GF256_TRY_NEON
+-
+-#if !defined(GF256_TARGET_MOBILE)
+     unsigned int cpu_info[4];
+ 
+     _cpuid(cpu_info, 1);
+     CpuHasSSSE3 = ((cpu_info[2] & CPUID_ECX_SSSE3) != 0);
+ 
+-#if defined(GF256_TRY_AVX2)
+-    _cpuid(cpu_info, 7);
+-    CpuHasAVX2 = ((cpu_info[1] & CPUID_EBX_AVX2) != 0);
+-#endif // GF256_TRY_AVX2
++  // if (!CpuHasSSSE3) return;
++  //_cpuid(cpu_info, 7);
++  // CpuHasAVX2 = ((cpu_info[1] & CPUID_EBX_AVX2) != 0);
+ 
+-    // When AVX2 and SSSE3 are unavailable, Siamese takes 4x longer to decode
+-    // and 2.6x longer to encode.  Encoding requires a lot more simple XOR ops
+-    // so it is still pretty fast.  Decoding is usually really quick because
+-    // average loss rates are low, but when needed it requires a lot more
+-    // GF multiplies requiring table lookups which is slower.
+-
+-#endif // GF256_TARGET_MOBILE
++// When AVX2 and SSSE3 are unavailable, Siamese takes 4x longer to decode
++// and 2.6x longer to encode.  Encoding requires a lot more simple XOR ops
++// so it is still pretty fast.  Decoding is usually really quick because
++// average loss rates are low, but when needed it requires a lot more
++// GF multiplies requiring table lookups which is slower.
+ }
+ 
+ 
+@@ -605,20 +508,6 @@ static unsigned char kEndianTestData[4] = { 1, 2, 3, 4 };
+ static unsigned char kEndianTestData[4] = { 4, 3, 2, 1 };
+ #endif
+ 
+-union UnionType
+-{
+-    uint32_t IntValue;
+-    char CharArray[4];
+-};
+-
+-static bool IsExpectedEndian()
+-{
+-    UnionType type;
+-    for (unsigned i = 0; i < 4; ++i)
+-        type.CharArray[i] = kEndianTestData[i];
+-    return 0x01020304 == type.IntValue;
+-}
+-
+ extern "C" int gf256_init_(int version)
+ {
+     if (version != GF256_VERSION)
+@@ -629,9 +518,6 @@ extern "C" int gf256_init_(int version)
+         return 0;
+     Initialized = true;
+ 
+-    if (!IsExpectedEndian())
+-        return -2; // Unexpected byte order.
+-
+     gf256_architecture_init();
+     gf256_poly_init(kDefaultPolynomialIndex);
+     gf256_explog_init();
 diff --git a/include/wirehair/cm256.h b/include/wirehair/cm256.h
 new file mode 100644
-index 0000000..72a8415
+index 0000000..8d09171
 --- /dev/null
 +++ b/include/wirehair/cm256.h
-@@ -0,0 +1,170 @@
+@@ -0,0 +1,171 @@
 +/*
 +	Copyright (c) 2015 Christopher A. Taylor.  All rights reserved.
 +
@@ -823,7 +1262,8 @@ index 0000000..72a8415
 +}
 +static inline unsigned char cm256_get_original_block_index(cm256_encoder_params params, int originalBlockIndex)
 +{
-+    assert(originalBlockIndex >= 0 && originalBlockIndex < params.OriginalCount);
++  // assert(originalBlockIndex >= 0 && originalBlockIndex <
++  // params.OriginalCount);
 +    return (unsigned char)(originalBlockIndex);
 +}
 +
@@ -903,9 +1343,121 @@ index 0000000..72a8415
 +
 +#endif // CM256_H
 diff --git a/gf256.h b/include/wirehair/gf256.h
-similarity index 100%
+similarity index 87%
 rename from gf256.h
 rename to include/wirehair/gf256.h
+index c618c0d..1fbd7dd 100644
+--- a/gf256.h
++++ b/include/wirehair/gf256.h
+@@ -53,51 +53,20 @@
+ //------------------------------------------------------------------------------
+ // Platform/Architecture
+ 
+-#if defined(ANDROID) || defined(IOS) || defined(LINUX_ARM) || defined(__powerpc__) || defined(__s390__)
+-    #define GF256_TARGET_MOBILE
+-#endif // ANDROID
+-
+-#if defined(__AVX2__) || (defined (_MSC_VER) && _MSC_VER >= 1900)
+-    #define GF256_TRY_AVX2 /* 256-bit */
+-    #include <immintrin.h>
+-    #define GF256_ALIGN_BYTES 32
+-#else // __AVX2__
++//#define GF256_TRY_AVX2 /* 256-bit */
++//#include <immintrin.h>
++//#define GF256_ALIGN_BYTES 32
+     #define GF256_ALIGN_BYTES 16
+-#endif // __AVX2__
+ 
+-#if !defined(GF256_TARGET_MOBILE)
+     // Note: MSVC currently only supports SSSE3 but not AVX2
+     #include <tmmintrin.h> // SSSE3: _mm_shuffle_epi8
+     #include <emmintrin.h> // SSE2
+-#endif // GF256_TARGET_MOBILE
+-
+-#if defined(HAVE_ARM_NEON_H)
+-    #include <arm_neon.h>
+-#endif // HAVE_ARM_NEON_H
+-
+-#if defined(GF256_TARGET_MOBILE)
+-
+-    #define GF256_ALIGNED_ACCESSES /* Inputs must be aligned to GF256_ALIGN_BYTES */
+-
+-# if defined(HAVE_ARM_NEON_H)
+-    // Compiler-specific 128-bit SIMD register keyword
+-    #define GF256_M128 uint8x16_t
+-    #define GF256_TRY_NEON
+-#else
+-    #define GF256_M128 uint64_t
+-# endif
+-
+-#else // GF256_TARGET_MOBILE
+ 
+     // Compiler-specific 128-bit SIMD register keyword
+     #define GF256_M128 __m128i
+ 
+-#endif // GF256_TARGET_MOBILE
+-
+-#ifdef GF256_TRY_AVX2
+     // Compiler-specific 256-bit SIMD register keyword
+     #define GF256_M256 __m256i
+-#endif
+ 
+ // Compiler-specific C++11 restrict keyword
+ #define GF256_RESTRICT __restrict
+@@ -110,7 +79,6 @@
+ #endif
+ 
+ // Compiler-specific alignment keyword
+-// Note: Alignment only matters for ARM NEON where it should be 16
+ #ifdef _MSC_VER
+     #define GF256_ALIGNED __declspec(align(GF256_ALIGN_BYTES))
+ #else // _MSC_VER
+@@ -147,13 +115,11 @@ struct gf256_ctx
+         GF256_ALIGNED GF256_M128 TABLE_LO_Y[256];
+         GF256_ALIGNED GF256_M128 TABLE_HI_Y[256];
+     } MM128;
+-#ifdef GF256_TRY_AVX2
+-    struct
++  /*struct
+     {
+-        GF256_ALIGNED GF256_M256 TABLE_LO_Y[256];
+-        GF256_ALIGNED GF256_M256 TABLE_HI_Y[256];
+-    } MM256;
+-#endif // GF256_TRY_AVX2
++  GF256_ALIGNED GF256_M256 TABLE_LO_Y[256];
++  GF256_ALIGNED GF256_M256 TABLE_HI_Y[256];
++  } MM256;*/
+ 
+     /// Mul/Div/Inv/Sqr tables
+     uint8_t GF256_MUL_TABLE[256 * 256];
+diff --git a/include/wirehair/wirehair.h b/include/wirehair/wirehair.h
+index 451368a..165a657 100644
+--- a/include/wirehair/wirehair.h
++++ b/include/wirehair/wirehair.h
+@@ -46,23 +46,7 @@
+ 
+ #define WIREHAIR_VERSION 2
+ 
+-// Tweak if the functions are exported or statically linked
+-//#define WIREHAIR_DLL /* Defined when building/linking as DLL */
+-//#define WIREHAIR_BUILDING /* Defined by the library makefile */
+-
+-#if defined(WIREHAIR_BUILDING)
+-# if defined(WIREHAIR_DLL) && defined(_WIN32)
+-    #define WIREHAIR_EXPORT __declspec(dllexport)
+-# else
+-    #define WIREHAIR_EXPORT
+-# endif
+-#else
+-# if defined(WIREHAIR_DLL) && defined(_WIN32)
+-    #define WIREHAIR_EXPORT __declspec(dllimport)
+-# else
+     #define WIREHAIR_EXPORT extern
+-# endif
+-#endif
+ 
+ #include <stdint.h>
+ 
 diff --git a/tables/HeavyRowGenerator.cpp b/tables/HeavyRowGenerator.cpp
 index c8ec0c8..c3050a6 100644
 --- a/tables/HeavyRowGenerator.cpp
