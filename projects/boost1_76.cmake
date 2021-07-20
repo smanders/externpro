@@ -17,5 +17,6 @@ set(PRO_BOOST${VER2_}
   GIT_TAG boost-${VER} # what to 'git checkout'
   DLURL https://boostorg.jfrog.io/artifactory/main/release/${VER}/source/boost_${VER_}.tar.bz2
   DLMD5 33334dd7f862e8ac9fe1cc7c6584fb6d
-  SUBPRO boostgil${VER2_} boostunits${VER2_} boostinstall${VER2_} boostregex${VER2_}
+  DEPS_FUNC build_boost
+  SUBPRO boostgil${VER2_} boostinstall${VER2_} boostprogram_options${VER2_} boostprogram_optionshpp${VER2_} boostregex${VER2_} boostunits${VER2_}
   )

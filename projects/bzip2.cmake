@@ -20,6 +20,7 @@ set(PRO_BZIP2
   DLNAME bzip2-v${VER}.tar.gz
   PATCH ${PATCH_DIR}/bzip2.patch
   DIFF https://${FORK}/compare/
+  DEPS_FUNC build_bzip2
   )
 ########################################
 function(build_bzip2)

@@ -1,0 +1,75 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 762fa31..006c680 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
+ project(azmq)
+ 
+ include(AzmqCPack.cmake)
++include(flags OPTIONAL)
+ 
+ set(CMAKE_CXX_STANDARD 11)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+@@ -37,10 +38,16 @@ if(USE_LIBCXX)
+     set(ADDITIONAL_LIBS "pthread")
+ endif()
+ 
+-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config")
+-
+-find_package(Boost 1.48 COMPONENTS system date_time thread chrono regex random REQUIRED)
+-find_package(ZeroMQ 4.0 REQUIRED)
++if(DEFINED CMAKE_MODULE_PATH)
++    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
++    xpFindPkg(PKGS boost libzmq)
++    set(Boost_LIBRARIES Boost::regex Boost::system Boost::thread)
++    set(ZeroMQ_LIBRARIES xpro::libzmq-static)
++else()
++    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config")
++    find_package(Boost 1.48 COMPONENTS system date_time thread chrono regex random REQUIRED)
++    find_package(ZeroMQ 4.0 REQUIRED)
++endif()
+ 
+ set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+ find_package(Threads REQUIRED)
+@@ -70,5 +77,18 @@ if(NOT AZMQ_NO_TESTS)
+     add_subdirectory(doc)
+ endif()
+ 
++include(GNUInstallDirs)
++add_library(${PROJECT_NAME} INTERFACE)
++target_include_directories(${PROJECT_NAME} INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
++target_link_libraries(${PROJECT_NAME} INTERFACE ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES})
++install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets)
++if(DEFINED XP_NAMESPACE)
++    set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++if(NOT DEFINED AZMQ_CMAKECONFIG_INSTALL_DIR)
++    set(AZMQ_CMAKECONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake)
++endif()
++install(EXPORT ${PROJECT_NAME}-targets ${nameSpace} DESTINATION ${AZMQ_CMAKECONFIG_INSTALL_DIR})
++
+ install(DIRECTORY ${PROJECT_SOURCE_DIR}/azmq
+-        DESTINATION include)
++        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+diff --git a/azmq/detail/socket_ops.hpp b/azmq/detail/socket_ops.hpp
+index 7557ed3..7d3cef5 100644
+--- a/azmq/detail/socket_ops.hpp
++++ b/azmq/detail/socket_ops.hpp
+@@ -263,7 +263,7 @@ namespace detail {
+                 ec = make_error_code();
+                 return 0;
+             }
+-            return rc;
++            return static_cast<size_t>(rc);
+         }
+ 
+         template<typename ConstBufferSequence>
+@@ -295,7 +295,7 @@ namespace detail {
+                 ec = make_error_code();
+                 return 0;
+             }
+-            return rc;
++            return static_cast<size_t>(rc);
+         }
+ 
+         template<typename MutableBufferSequence>

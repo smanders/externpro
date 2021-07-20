@@ -4,6 +4,7 @@
 |-------|-------|-----------|-------|----------|----------|
 |[ActiveMQ-CPP](http://activemq.apache.org/cms/ 'ActiveMQ CMS website')|[open](http://www.apache.org/licenses/LICENSE-2.0.html 'Apache 2.0')|ActiveMQ C++ Messaging Service (CMS) client library|3.9.5|[repo](https://github.com/apache/activemq-cpp 'activemq-cpp repo on github')|[diff](https://github.com/smanders/activemq-cpp/compare/apache:activemq-cpp-3.9.5...xp-3.9.5 'patch/diff')|
 |[APR](http://apr.apache.org/ 'Apache Portable Runtime Project website')|[open](http://www.apache.org/licenses/LICENSE-2.0.html 'Apache 2.0')|Apache Portable Runtime project|1.5.2|[repo](https://github.com/apache/apr 'apr repo on github')|[diff](https://github.com/smanders/apr/compare/apache:1.5.2...xp1.5.2 'patch/diff')|
+|[azmq](https://zeromq.org/ 'ZeroMQ website')|[open](https://github.com/zeromq/azmq/blob/master/LICENSE-BOOST_1_0 'Boost Software License 1.0')|provides Boost Asio style bindings for ZeroMQ|21.06.02|[repo](https://github.com/zeromq/azmq 'zeromq/azmq repo on github')|[diff](https://github.com/smanders/azmq/compare/zeromq:fc6b42acaaeaa65692e031d796a02011d2924713...xp21.06.02 'patch/diff')|
 |[boost](http://www.boost.org/ 'Boost website')|[open](http://www.boost.org/users/license.html 'Boost Software License')|libraries that give C++ a boost|1.76.0|[repo](https://github.com/boostorg/boost 'boost repo on github')|none|
 |[bzip2](https://en.wikipedia.org/wiki/Bzip2 'bzip2 on wikipedia')|[open](https://spdx.org/licenses/bzip2-1.0.6.html 'bzip2 BSD-style license')|lossless block-sorting data compression library|1.0.6|[repo](https://github.com/smanders/bzip2 'forked bzip2 repo on github')|[diff](https://github.com/smanders/bzip2/compare/v1.0.6...xp1.0.6 'patch/diff')|
 |[c-ares](http://c-ares.haxx.se/ 'c-ares website')|[open](http://c-ares.haxx.se/license.html 'c-ares license: MIT license')|C library for asynchronous DNS requests (including name resolves)|1.10.0|[repo](https://github.com/c-ares/c-ares 'c-ares repo on github')|[diff](https://github.com/smanders/c-ares/compare/c-ares:cares-1_10_0...xp-1_10_0 'patch/diff')|
@@ -40,6 +41,7 @@
 |[RapidJSON](http://miloyip.github.io/rapidjson/ 'RapidJSON on githubio')|[open](https://raw.githubusercontent.com/miloyip/rapidjson/master/license.txt 'The MIT License - http://opensource.org/licenses/mit-license.php')|C++ library for parsing and generating JSON|1.1.0|[repo](https://github.com/miloyip/rapidjson 'rapidjson repo on github')|none|
 |[RapidXml](http://rapidxml.sourceforge.net/ 'RapidXml on sourceforge')|[open](http://rapidxml.sourceforge.net/license.txt 'Boost Software License -or- The MIT License')|fast XML parser|1.13|[repo](https://github.com/smanders/rapidxml 'rapidxml repo on github')|[diff](https://github.com/smanders/rapidxml/compare/v1.13...xp1.13 'patch/diff')|
 |[shapelib](http://shapelib.maptools.org/ 'Shapefile C Library website')|[open](http://shapelib.maptools.org/license.html 'MIT Style -or- LGPL')|reading, writing, updating ESRI Shapefiles|1.2.10|[repo](https://github.com/smanders/shapelib 'forked shapelib repo on github')|[diff](https://github.com/smanders/shapelib/compare/v1.2.10...xp1.2.10 'patch/diff')|
+|[sodium](https://doc.libsodium.org/ 'libsodium website')|[open](https://doc.libsodium.org/#license 'ISC license')|library for encryption, decryption, signatures, password hashing and more|21.06.17|[repo](https://github.com/jedisct1/libsodium 'libsodium repo on github')|[diff](https://github.com/smanders/libsodium/compare/jedisct1:95673e5b51e750c5eee1aecd935cbfc5791d741b...xp21.06.17 'patch/diff')|
 |[SQLite](https://www.sqlite.org/index.html 'SQLite website')|[open](https://www.sqlite.org/copyright.html 'Public Domain')|C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine|3.34.1|[repo](https://github.com/azadkuh/sqlite-amalgamation 'sqlite-amalgamation repo on github')|[diff](https://github.com/smanders/sqlite-amalgamation/compare/3.34.1...xp3.34.1 'patch/diff')|
 |[wirehair](https://github.com/catid/wirehair 'wirehair repo on github')|[open](https://github.com/catid/wirehair/blob/master/LICENSE.txt 'BSD 3-Clause New or Revised License')|fast and portable fountain codes in C|20.11.21|[repo](https://github.com/catid/wirehair 'wirehair repo on github')|[diff](https://github.com/smanders/wirehair/compare/catid:9e8923a200045c7bdb9e89b449692dbfed6b6de0...xp20.11.21 'patch/diff')|
 |[wxWidgets](http://wxwidgets.org/ 'wxWidgets website')|[open](http://www.wxwidgets.org/about/newlicen.htm 'wxWindows License: essentially LGPL with an exception')|Cross-Platform GUI Library|3.1.0|[repo](https://github.com/wxWidgets/wxWidgets 'wxWidgets repo on github')|[diff](https://github.com/smanders/wxWidgets/compare/v3.1.0_pkg...xp3.1.0 'patch/diff')|
@@ -47,6 +49,7 @@
 |[wxx](https://github.com/smanders/wxx 'wxx project on github')|[open](http://wxcode.sourceforge.net/rules.php 'wxCode components must use wxWindows license')|wxWidget-based extra components|2020.01.02|[repo](https://github.com/smanders/wxx 'wxx repo on github')|[diff](https://github.com/smanders/wxx/compare/wxx.01...xpro 'patch/diff')|
 |[yasm](http://yasm.tortall.net/ 'yasm website')|[open](https://github.com/yasm/yasm/blob/v1.3.0/COPYING 'new BSD license')|assembler and disassembler for the Intel x86 architecture|1.3.0|[repo](https://github.com/yasm/yasm 'yasm repo on github')|[diff](https://github.com/smanders/yasm/compare/yasm:v1.3.0...xp1.3.0 'patch/diff')|
 |[zlib](http://zlib.net/ 'zlib website')|[open](http://zlib.net/zlib_license.html 'zlib license')|compression library|1.2.8|[repo](https://github.com/madler/zlib 'zlib repo on github')|[diff](https://github.com/smanders/zlib/compare/madler:v1.2.8...xp1.2.8 'patch/diff')|
+|[zmqpp](https://zeromq.github.io/zmqpp/ 'zmqpp website')|[open](https://github.com/zeromq/zmqpp/blob/develop/LICENSE 'Mozilla Public License 2.0')|high-level binding for libzmq|21.07.09|[repo](https://github.com/zeromq/zmqpp 'zeromq/zmqpp repo on github')|[diff](https://github.com/smanders/zmqpp/compare/zeromq:ba4230d5d03d29ced9ca788e3bd1095477db08ae...xp21.07.09 'patch/diff')|
 
 ## subprojects
 
@@ -54,6 +57,8 @@
 |-------|---|-----------|-------|----------|----------|
 |boost|[gil](http://boost.org/libs/gil 'boost gil website')|gil (generic image library)|1.76.0|[repo](https://github.com/boostorg/gil 'gil repo on github')|[diff](https://github.com/smanders/gil/compare/boostorg:boost-1.76.0...xp1.76.0 'patch/diff')|
 |boost|[boost_install](https://github.com/boostorg/boost_install 'boost_install repo')|implementation of the boost-install rule|1.76.0|[repo](https://github.com/boostorg/boost_install 'boost_install repo on github')|[diff](https://github.com/smanders/boost_install/compare/boostorg:boost-1.76.0...xp1.76.0 'patch/diff')|
+|boost|[program_options](http://boost.org/libs/program_options 'boost program_options website')|library allows program developers to obtain program options, that is (name, value) pairs from the user, via conventional methods such as command line and config file|1.76.0|[repo](https://github.com/boostorg/program_options 'program_options repo on github')|[diff](https://github.com/smanders/program_options/compare/boostorg:boost-1.76.0...xp1.76.0 'patch/diff')|
+|boost|[program_options](http://boost.org/libs/program_options 'boost program_options website')|library allows program developers to obtain program options, that is (name, value) pairs from the user, via conventional methods such as command line and config file|1.76.0|[repo](https://github.com/boostorg/program_options 'program_options repo on github')|[diff](https://github.com/smanders/program_options/compare/boostorg:boost-1.76.0...xphpp1.76.0 'patch/diff')|
 |boost|[regex](http://boost.org/libs/regex 'boost regex website')|Regular expression library|1.76.0|[repo](https://github.com/boostorg/regex 'regex repo on github')|[diff](https://github.com/smanders/regex/compare/boostorg:boost-1.76.0...xp1.76.0 'patch/diff')|
 |boost|[units](http://boost.org/libs/units 'boost units website')|zero-overhead dimensional analysis and unit/quantity manipulation and conversion|1.76.0|[repo](https://github.com/boostorg/units 'units repo on github')|[diff](https://github.com/smanders/units/compare/boostorg:boost-1.76.0...xp1.76.0 'patch/diff')|
 |llvm|[clang](http://clang.llvm.org/ 'clang website')|clang: a C language family frontend for LLVM|11.0.0|none|none|
@@ -70,16 +75,19 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_e4fe24023dc3658aba7606b08f40f3e0?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_55829d6a40804ff9c4093891a52ab591?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_e4fe24023dc3658aba7606b08f40f3e0
+depgraph_55829d6a40804ff9c4093891a52ab591
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
   activemqcpp_3_9_5 -> apr;
   activemqcpp_3_9_5 -> openssl_1_1_1k;
   apr [shape=diamond];
+  azmq [shape=diamond];
+  azmq -> libzmq;
+  azmq -> boost;
   boost [shape=diamond];
   boost -> zlib;
   boost -> bzip2;
@@ -114,6 +122,7 @@ digraph GG {
   libstrophe -> expat;
   libstrophe -> openssl_1_1_1k;
   libzmq [shape=diamond];
+  libzmq -> sodium;
   llvm [shape=box];
   nasm [shape=box];
   node_addon_api [label="node-addon-api" shape=diamond];
@@ -128,6 +137,7 @@ digraph GG {
   opensslasm [shape=diamond];
   protobuf [shape=diamond];
   protobuf -> zlib;
+  sodium [shape=diamond];
   wx [shape=diamond];
   wxinclude [shape=box];
   wxinclude -> boost;
@@ -135,6 +145,8 @@ digraph GG {
   wxx -> wx;
   yasm [shape=box];
   zlib [shape=diamond];
+  zmqpp [shape=diamond];
+  zmqpp -> libzmq;
 }
-depgraph_e4fe24023dc3658aba7606b08f40f3e0
+depgraph_55829d6a40804ff9c4093891a52ab591
 </details>
