@@ -1,11 +1,11 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000000..7cb1311230
+index 0000000000..df9ec9b66e
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,113 @@
 +cmake_minimum_required(VERSION 3.20)
-+project(openssl)
++project(openssl LANGUAGES C ASM)
 +include(flags OPTIONAL)
 +########################################
 +set_property(GLOBAL PROPERTY USE_FOLDERS ON) # enables MSVC Solution Folders
@@ -432,10 +432,10 @@ index 0000000000..bd4643da6a
 +DEFINE_LHASH_OF(FUNCTION);
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000000..e502a5785e
+index 0000000000..e552115983
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1811 @@
+@@ -0,0 +1,1808 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file buildinf.h)
@@ -2209,9 +2209,6 @@ index 0000000000..e502a5785e
 +  source_group(whrlpool\\asm FILES ${whrlpool_asm_srcs})
 +  list(APPEND asm_srcs ${whrlpool_asm_srcs})
 +  ##########
-+  if(UNIX) # gcc can compile .s files with the C compiler
-+    set_property(SOURCE ${asm_srcs} PROPERTY LANGUAGE C)
-+  endif()
 +  list(APPEND ${lib_name}_libsrcs ${asm_srcs})
 +endif()
 +########################################
