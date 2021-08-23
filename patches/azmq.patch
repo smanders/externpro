@@ -1,8 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 762fa31..006c680 100644
+index 762fa31..4a89db3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
+@@ -1,7 +1,8 @@
+-cmake_minimum_required(VERSION 2.8)
++cmake_minimum_required(VERSION 3.12)
  project(azmq)
  
  include(AzmqCPack.cmake)
