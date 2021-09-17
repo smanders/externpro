@@ -53,10 +53,11 @@ else()
   set(xpRevision "Unknown-revision")
   message(AUTHOR_WARNING "Not a git repository? Using revision: ${xpRevision}.")
 endif()
+set(revision_txt ${CMAKE_BINARY_DIR}/revision.txt)
 # write a txt file with only the revision, so other cmake can get it:
 #  file(READ ${CMAKE_BINARY_DIR}/revision.txt revNum)
 #  string(STRIP ${revNum} revNum)
-file(WRITE ${CMAKE_BINARY_DIR}/revision.txt
+file(WRITE ${revision_txt}
   "${xpRevision}\n"
   )
 # write a file with the SCM_REV_NUM define
@@ -71,7 +72,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
 ################################################################################
 # do the following at cmake-time so the Revision_hpp target exists at build-time
 if(NOT TARGET Revision_hpp AND DEFINED CMAKE_SYSTEM_NAME)
-  add_custom_command(OUTPUT revision_cmake
+  add_custom_command(OUTPUT ${revision_txt}
     COMMAND ${CMAKE_COMMAND}
       -DxpSourceDir:FILEPATH="${xpSourceDir}"
       -DxpRelBranch:STRING="${xpRelBranch}"
@@ -81,7 +82,7 @@ if(NOT TARGET Revision_hpp AND DEFINED CMAKE_SYSTEM_NAME)
     )
   add_custom_target(Revision_hpp
     SOURCES ${CMAKE_CURRENT_LIST_FILE}
-    DEPENDS revision_cmake
+    DEPENDS ${revision_txt}
     )
   set_property(TARGET Revision_hpp PROPERTY FOLDER CMakeTargets)
 endif()
