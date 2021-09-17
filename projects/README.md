@@ -33,9 +33,9 @@
 |[Lua](http://www.lua.org/ 'Lua website')|[open](http://www.lua.org/license.html 'MIT license')|a powerful, fast, lightweight, embeddable scripting language|5.2.3|[repo](https://github.com/LuaDist/lua 'lua repo on github')|[diff](https://github.com/smanders/lua/compare/LuaDist:5.2.3...xp5.2.3 'patch/diff')|
 |[nasm](https://www.nasm.us/ 'nasm website')|[BSD](https://www.nasm.us/ 'Simplified (2-clause) BSD license')|The Netwide Assembler - an 80x86 and x86-64 assembler|2.14.02|none|none|
 |[node-addon-api](https://github.com/nodejs/node-addon-api 'node-addon-api on github')|[open](https://github.com/nodejs/node-addon-api/blob/3.0.2/LICENSE.md 'The MIT License - http://opensource.org/licenses/mit-license.php')|Module for using N-API from C++|3.0.2|[repo](https://github.com/nodejs/node-addon-api 'node-addon-api repo on github')|none|
-|[Node.js](http://nodejs.org 'Node.js website')|[open](https://raw.githubusercontent.com/nodejs/node/v14.17.0/LICENSE 'MIT license')|platform to build scalable network applications|14.17.0|[repo](https://github.com/nodejs/node 'node repo on github')|[diff](https://github.com/smanders/node/compare/nodejs:v14.17.0...xp14.17.0 'patch/diff')|
+|[Node.js](http://nodejs.org 'Node.js website')|[open](https://raw.githubusercontent.com/nodejs/node/v14.17.6/LICENSE 'MIT license')|platform to build scalable network applications|14.17.6|[repo](https://github.com/nodejs/node 'node repo on github')|[diff](https://github.com/smanders/node/compare/nodejs:v14.17.6...xp14.17.6 'patch/diff')|
 |[OpenH264](http://www.openh264.org/ 'OpenH264 website')|[open](http://www.openh264.org/faq.html 'Two-Clause BSD license')|a codec library which supports H.264 encoding and decoding|1.4.0|[repo](https://github.com/cisco/openh264 'openh264 repo on github')|[diff](https://github.com/smanders/openh264/compare/cisco:v1.4.0...xp1.4.0 'patch/diff')|
-|[OpenSSL](http://www.openssl.org/ 'OpenSSL website')|[open](http://www.openssl.org/source/license.html 'OpenSSL, SSLeay License: BSD-style')|Cryptography and SSL/TLS Toolkit|1.1.1k|[repo](https://github.com/openssl/openssl 'openssl repo on github')|[diff](https://github.com/smanders/openssl/compare/openssl:OpenSSL_1_1_1k...xp_1_1_1k 'patch/diff')|
+|[OpenSSL](http://www.openssl.org/ 'OpenSSL website')|[open](http://www.openssl.org/source/license.html 'OpenSSL, SSLeay License: BSD-style')|Cryptography and SSL/TLS Toolkit|1.1.1l|[repo](https://github.com/openssl/openssl 'openssl repo on github')|[diff](https://github.com/smanders/openssl/compare/openssl:OpenSSL_1_1_1l...xp_1_1_1l 'patch/diff')|
 |[patch](http://www.gnu.org/software/patch 'GNU patch website')|[GPL](http://www.gnu.org/licenses/gpl.html 'GNU GPL v3')|pre-built (MSW), built here (non-MSW) used internally to apply a patch file of differences|2.7.6/2.7.5|[repo](http://git.savannah.gnu.org/cgit/patch.git 'patch (git) repo on gnu.org')|none|
 |[protobuf](https://developers.google.com/protocol-buffers/ 'Protocol Buffers website')|[open](https://github.com/protocolbuffers/protobuf/blob/v3.13.0/LICENSE '3-clause BSD license')|language-neutral, platform-neutral extensible mechanism for serializing structured data|3.13.0|[repo](https://github.com/protocolbuffers/protobuf 'protobuf repo on github')|[diff](https://github.com/smanders/protobuf/compare/protocolbuffers:v3.13.0...xp3.13.0 'patch/diff')|
 |[RapidJSON](http://miloyip.github.io/rapidjson/ 'RapidJSON on githubio')|[open](https://raw.githubusercontent.com/miloyip/rapidjson/master/license.txt 'The MIT License - http://opensource.org/licenses/mit-license.php')|C++ library for parsing and generating JSON|1.1.0|[repo](https://github.com/miloyip/rapidjson 'rapidjson repo on github')|none|
@@ -67,7 +67,7 @@
 |jpegxp|[jpeglossy12](http://libjpeg.sourceforge.net/ 'libjpeg on sourceforge')|lossy 12-bit encode and decode|6b|[repo](https://github.com/smanders/libjpeg 'forked libjpeg repo on github')|[diff](https://github.com/smanders/libjpeg/compare/09a4003...lossy12.6b 'patch/diff')|
 |jpegxp|[jpeglossy8](http://libjpeg.sourceforge.net/ 'libjpeg on sourceforge')|lossy 8-bit encode and decode|6b|[repo](https://github.com/smanders/libjpeg 'forked libjpeg repo on github')|[diff](https://github.com/smanders/libjpeg/compare/09a4003...lossy8.6b 'patch/diff')|
 |lua|[LuaBridge](http://vinniefalco.github.io/LuaBridge/Manual.html 'LuaBridge Reference Manual')|a lightweight, dependency-free library for binding Lua to C++|2.5|[repo](https://github.com/vinniefalco/LuaBridge 'LuaBridge repo on github')|none|
-|openssl|[opensslasm](https://github.com/smanders/opensslasm 'opensslasm project on github')|openssl assembly|1.1.1k|[repo](https://github.com/smanders/opensslasm 'opensslasm repo on github')|none|
+|openssl|[opensslasm](https://github.com/smanders/opensslasm 'opensslasm project on github')|openssl assembly|1.1.1l|[repo](https://github.com/smanders/opensslasm 'opensslasm repo on github')|none|
 |wxWidgets31|[wxcmake](https://github.com/smanders/wxcmake 'wxcmake project on github')|build wxWidgets via cmake|2019.11.08|[repo](https://github.com/smanders/wxcmake 'wxcmake repo on github')|[diff](https://github.com/smanders/wxcmake/compare/wx0...wx31 'patch/diff')|
 |wxx|[wxPlotCtrl](http://wxcode.sourceforge.net/showcomp.php?name=wxPlotCtrl 'wxplotctrl on sourceforge')|interactive xy data plotting widgets|2006.04.28|[repo](https://github.com/smanders/wxplotctrl 'wxplotctrl repo on github')|[diff](https://github.com/smanders/wxplotctrl/compare/v2006.04.28...xp2006.04.28 'patch/diff')|
 |wxx|[wxThings](http://wxcode.sourceforge.net/showcomp.php?name=wxThings 'wxthings on sourceforge')|a variety of data containers and controls|2006.04.28|[repo](https://github.com/smanders/wxthings 'wxthings repo on github')|[diff](https://github.com/smanders/wxthings/compare/v2006.04.28...xp2006.04.28 'patch/diff')|
@@ -75,15 +75,15 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_55829d6a40804ff9c4093891a52ab591?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_e9b7ef94dae0f8ba49a785d2466431aa?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_55829d6a40804ff9c4093891a52ab591
+depgraph_e9b7ef94dae0f8ba49a785d2466431aa
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
   activemqcpp_3_9_5 -> apr;
-  activemqcpp_3_9_5 -> openssl_1_1_1k;
+  activemqcpp_3_9_5 -> openssl_1_1_1l;
   apr [shape=diamond];
   azmq [shape=diamond];
   azmq -> libzmq;
@@ -117,10 +117,10 @@ digraph GG {
   libgit2_0_28_3 -> libssh2_1_9_0;
   libssh2_1_9_0 [label="libssh2_1.9.0" shape=diamond];
   libssh2_1_9_0 -> zlib;
-  libssh2_1_9_0 -> openssl_1_1_1k;
+  libssh2_1_9_0 -> openssl_1_1_1l;
   libstrophe [shape=diamond];
   libstrophe -> expat;
-  libstrophe -> openssl_1_1_1k;
+  libstrophe -> openssl_1_1_1l;
   libzmq [shape=diamond];
   libzmq -> sodium;
   llvm [shape=box];
@@ -131,9 +131,9 @@ digraph GG {
   nodejs -> nasm;
   openh264 [shape=diamond];
   openh264 -> yasm;
-  openssl_1_1_1k [label="openssl_1.1.1k" shape=diamond];
-  openssl_1_1_1k -> opensslasm;
-  openssl_1_1_1k -> nasm;
+  openssl_1_1_1l [label="openssl_1.1.1l" shape=diamond];
+  openssl_1_1_1l -> opensslasm;
+  openssl_1_1_1l -> nasm;
   opensslasm [shape=diamond];
   protobuf [shape=diamond];
   protobuf -> zlib;
@@ -148,5 +148,5 @@ digraph GG {
   zmqpp [shape=diamond];
   zmqpp -> libzmq;
 }
-depgraph_55829d6a40804ff9c4093891a52ab591
+depgraph_e9b7ef94dae0f8ba49a785d2466431aa
 </details>

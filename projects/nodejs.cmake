@@ -1,6 +1,6 @@
 # nodejs
-set(NODEJS_OLDVER 14.17.0)
-set(NODEJS_NEWVER 14.17.0)
+set(NODEJS_OLDVER 14.17.6)
+set(NODEJS_NEWVER 14.17.6)
 ####################
 xpProOption(nodejs)
 set(PRO_NODEJS

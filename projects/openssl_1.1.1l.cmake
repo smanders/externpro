@@ -1,6 +1,6 @@
 # openssl
 set(BRANCH 1.1.1)
-set(VER ${BRANCH}k)
+set(VER ${BRANCH}l)
 xpProOption(openssl_${VER} DBG)
 string(REPLACE "." "_" VER_ ${VER})
 string(TOUPPER ${VER} VER_UC)
@@ -20,7 +20,7 @@ set(PRO_OPENSSL_${VER_UC}
   GIT_REF OpenSSL_${VER_} # create patch from this tag to 'git checkout'
   #DLURL https://www.openssl.org/source/old/${BRANCH}/openssl-${VER}.tar.gz
   DLURL https://www.openssl.org/source/openssl-${VER}.tar.gz
-  DLMD5 c4e7d95f782b08116afa27b30393dd27
+  DLMD5 ac0d4387f3ba0ad741b0580dd45f6ff3
   PATCH ${PATCH_DIR}/openssl_${VER}.patch
   DIFF https://${FORK}/compare/openssl:
   DEPS_FUNC build_openssl

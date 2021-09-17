@@ -1,6 +1,6 @@
 # openssl
-set(OPENSSL_OLDVER 1.1.1k)
-set(OPENSSL_NEWVER 1.1.1k)
+set(OPENSSL_OLDVER 1.1.1l)
+set(OPENSSL_NEWVER 1.1.1l)
 ########################################
 function(build_openssl)
   string(TOUPPER ${OPENSSL_OLDVER} OLDVER)

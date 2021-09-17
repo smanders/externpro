@@ -1,4 +1,4 @@
-set(VER 14.17.0)
+set(VER 14.17.6)
 xpProOption(nodejs_${VER})
 set(REPO github.com/nodejs/node)
 set(FORK github.com/smanders/node)
@@ -17,6 +17,6 @@ set(PRO_NODEJS_${VER}
   PATCH ${PATCH_DIR}/nodejs_${VER}.patch
   DIFF https://${FORK}/compare/nodejs:
   DLURL http://nodejs.org/dist/v${VER}/node-v${VER}.tar.gz
-  DLMD5 f9c3d013c4c1bf1f917ae624343c36d4
+  DLMD5 d1f71584169c9d293e5264e1966c703e
   DEPS_FUNC build_nodejs
   )

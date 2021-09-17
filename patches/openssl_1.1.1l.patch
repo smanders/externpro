@@ -2887,10 +2887,10 @@ index 0000000000..53810c352e
 +compareCmakeFilesys("${${lib_name}_all}")
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
 new file mode 100644
-index 0000000000..6e161ba5f6
+index 0000000000..200c556c46
 --- /dev/null
 +++ b/test/CMakeLists.txt
-@@ -0,0 +1,341 @@
+@@ -0,0 +1,343 @@
 +set(folder test)
 +########################################
 +# tests that depend on include
@@ -3202,6 +3202,8 @@ index 0000000000..6e161ba5f6
 +  testreq2.pem
 +  testrsa.pem
 +  testrsapub.pem
++  testrsa_withattrs.der
++  testrsa_withattrs.pem
 +  testsid.pem
 +  testx509.pem
 +  Uss.cnf
