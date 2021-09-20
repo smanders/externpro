@@ -1248,6 +1248,17 @@ function(xpCheckInstall cmakeProjectName)
         )
     endif()
   endif()
+  if(DEFINED MSVC_VERSION)
+    set(msvcString "^MSVC_VERSION[ \t]+(.*)")
+    file(STRINGS ${infoFile} MSVC_VER REGEX "${msvcString}")
+    string(REGEX REPLACE "${msvcString}" "\\1" xpMsvcVer ${MSVC_VER})
+    if(NOT MSVC_VERSION EQUAL xpMsvcVer)
+      message(AUTHOR_WARNING "MSVC_VERSION mismatch: "
+        "${cmakeProjectName} built on \"${xpMsvcVer}\", "
+        "building ${PROJECT_NAME} on \"${MSVC_VERSION}\"."
+        )
+    endif()
+  endif()
 endfunction()
 
 function(xpFindPkg)
