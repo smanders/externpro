@@ -1215,6 +1215,41 @@ function(xpTouchFiles fileList)
   endforeach()
 endfunction()
 
+function(xpCheckInstall cmakeProjectName)
+  set(findFile ${moduleDir}/Find${cmakeProjectName}.cmake)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_CURRENT_LIST_FILE} ${findFile}
+    RESULT_VARIABLE filesDiff
+    OUTPUT_QUIET
+    ERROR_QUIET
+    )
+  if(filesDiff)
+    message(AUTHOR_WARNING "Find scripts don't match. "
+      "You may want to update the local with the ${cmakeProjectName} version. "
+      "local: ${CMAKE_CURRENT_LIST_FILE}. "
+      "${cmakeProjectName}: ${findFile}."
+      )
+  endif()
+  file(GLOB txtFiles ${${cmakeProjectName}_DIR}/${cmakeProjectName}_*.txt)
+  list(GET txtFiles 0 infoFile)
+  execute_process(COMMAND lsb_release --description
+    OUTPUT_VARIABLE lsbDesc # LSB (Linux Standard Base)
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+    )
+  if(NOT lsbDesc STREQUAL "")
+    set(lsbString "^lsb_release Description:[ \t]+(.*)")
+    file(STRINGS ${infoFile} LSB REGEX "${lsbString}")
+    string(REGEX REPLACE "${lsbString}" "\\1" xpLSB ${LSB})
+    string(REGEX REPLACE "Description:[ \t]+(.*)" "\\1" thisLSB ${lsbDesc})
+    if(NOT xpLSB STREQUAL thisLSB)
+      message(AUTHOR_WARNING "linux distribution mismatch: "
+        "${cmakeProjectName} built on \"${xpLSB}\", "
+        "building ${PROJECT_NAME} on \"${thisLSB}\"."
+        )
+    endif()
+  endif()
+endfunction()
+
 function(xpFindPkg)
   cmake_parse_arguments(FP "" "" PKGS ${ARGN})
   foreach(pkg ${FP_PKGS})
