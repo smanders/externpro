@@ -2144,16 +2144,24 @@ macro(xpSetFlagsGccDebug)
       endif()
       list(APPEND XP_COVERAGE_RM '${CMAKE_BINARY_DIR}/*')
       list(REMOVE_DUPLICATES XP_COVERAGE_RM)
-      add_custom_target(coverage
+      add_custom_target(precoverage
         COMMAND ${XP_PATH_LCOV} --directory ${CMAKE_BINARY_DIR} --zerocounters
         COMMAND ${XP_PATH_LCOV} --capture --initial --directory ${CMAKE_BINARY_DIR} --output-file ${PROJECT_NAME}-base.info
-        COMMAND make test
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        )
+      add_custom_target(postcoverage
         COMMAND ${XP_PATH_LCOV} --directory ${CMAKE_BINARY_DIR} --capture --output-file ${PROJECT_NAME}-test.info
         COMMAND ${XP_PATH_LCOV} -a ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-base.info
           -a ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-test.info -o ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.info
         COMMAND ${XP_PATH_LCOV} --remove ${PROJECT_NAME}.info ${XP_COVERAGE_RM} --output-file ${PROJECT_NAME}-cleaned.info
         COMMAND ${XP_PATH_GENHTML} -o report ${PROJECT_NAME}-cleaned.info
         COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}*.info
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        )
+      add_custom_target(coverage
+        COMMAND make precoverage
+        COMMAND make test
+        COMMAND make postcoverage
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
       xpStringAppendIfDne(CMAKE_CXX_FLAGS_DEBUG "--coverage")
