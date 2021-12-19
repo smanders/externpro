@@ -1,7 +1,7 @@
 # sodium
 xpProOption(sodium DBG)
-set(VER 21.06.17)
-set(TAG 95673e5b51e750c5eee1aecd935cbfc5791d741b) # 2021.06.17 commit, head of stable branch
+set(VER 21.11.18)
+set(TAG aa099f5e82ae78175f9c1c48372a123cb634dd92) # 2021.11.18 commit, head of stable branch
 set(REPO github.com/jedisct1/libsodium)
 set(FORK github.com/smanders/libsodium)
 set(PRO_SODIUM
@@ -17,7 +17,7 @@ set(PRO_SODIUM
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${TAG} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/${TAG}.tar.gz
-  DLMD5 15477f2c27601453cb4b7401fb57e978
+  DLMD5 44dc8965223c87b10321d18a15616d8f
   DLNAME libsodium-${VER}.tar.gz
   PATCH ${PATCH_DIR}/sodium.patch
   DIFF https://${FORK}/compare/jedisct1:
