@@ -73,7 +73,7 @@ index 0000000..a4c26d7
 +  target_link_libraries(${sample} PRIVATE ${lib_name})
 +endforeach()
 diff --git a/include/wx/things/bmpcombo.h b/include/wx/things/bmpcombo.h
-index 8bcb9f1..bc316c7 100644
+index 8bcb9f1..55dbc7e 100644
 --- a/include/wx/things/bmpcombo.h
 +++ b/include/wx/things/bmpcombo.h
 @@ -26,6 +26,7 @@ arrows.
@@ -84,14 +84,23 @@ index 8bcb9f1..bc316c7 100644
  #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
      #pragma interface "bmpcombo.h"
  #endif
-@@ -220,4 +221,5 @@ private:
+@@ -33,6 +34,8 @@ arrows.
+ #include "wx/things/thingdef.h"
+ #include "wx/things/dropdown.h"
+ 
++#include <wx/scrolwin.h>
++
+ class WXDLLEXPORT wxMenu;
+ class WXDLLEXPORT wxBitmap;
+ class WXDLLEXPORT wxKeyEvent;
+@@ -220,4 +223,5 @@ private:
      DECLARE_EVENT_TABLE()
  };
  
 +#endif // NOT __WXMAC__
  #endif  // _WX_BMPCOMBO_H_
 diff --git a/include/wx/things/dropdown.h b/include/wx/things/dropdown.h
-index 45fa697..04d4f4c 100644
+index 45fa697..a45a994 100644
 --- a/include/wx/things/dropdown.h
 +++ b/include/wx/things/dropdown.h
 @@ -33,6 +33,7 @@ DoShowPopup() - this is called from ShowPopup after creating the m_popupWin.
@@ -102,7 +111,16 @@ index 45fa697..04d4f4c 100644
  #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
      #pragma interface "dropdown.h"
  #endif
-@@ -164,4 +165,5 @@ private:
+@@ -40,6 +41,8 @@ DoShowPopup() - this is called from ShowPopup after creating the m_popupWin.
+ #include "wx/popupwin.h"
+ #include "wx/things/thingdef.h"
+ 
++#include <wx/control.h>
++
+ class WXDLLEXPORT wxTimer;
+ class WXDLLEXPORT wxTimerEvent;
+ class WXDLLEXPORT wxCustomButton;
+@@ -164,4 +167,5 @@ private:
      DECLARE_EVENT_TABLE()
  };
  
@@ -267,11 +285,49 @@ index 4b9f74b..e97a8ad 100644
  
      // -----------------------------------------------------------------------
      // Equivalency tests
+diff --git a/include/wx/things/optvalue.h b/include/wx/things/optvalue.h
+index b8c6a4d..df8b14b 100644
+--- a/include/wx/things/optvalue.h
++++ b/include/wx/things/optvalue.h
+@@ -20,6 +20,10 @@ class WXDLLIMPEXP_THINGS wxOptionValue;
+ #include "wx/dynarray.h"
+ WX_DECLARE_OBJARRAY_WITH_DECL(wxOptionValue, wxArrayOptionValue, class WXDLLIMPEXP_THINGS);
+ 
++#include <wx/arrstr.h>
++#include <wx/gdicmn.h>
++#include <wx/object.h>
++
+ //----------------------------------------------------------------------------
+ // Global wxString utilities
+ //----------------------------------------------------------------------------
+diff --git a/include/wx/things/range.h b/include/wx/things/range.h
+index a4dffce..cb84ee4 100644
+--- a/include/wx/things/range.h
++++ b/include/wx/things/range.h
+@@ -16,6 +16,8 @@
+ 
+ #include "wx/things/thingdef.h"
+ 
++#include <wx/utils.h>
++
+ class WXDLLIMPEXP_THINGS wxRangeInt;
+ class WXDLLIMPEXP_THINGS wxRangeDouble;
+ class WXDLLIMPEXP_THINGS wxRangeIntSelection;
 diff --git a/include/wx/things/toggle.h b/include/wx/things/toggle.h
-index 3dcfc1e..a0cad60 100644
+index 3dcfc1e..454ddd2 100644
 --- a/include/wx/things/toggle.h
 +++ b/include/wx/things/toggle.h
-@@ -227,6 +227,7 @@ protected:
+@@ -74,6 +74,9 @@ You have to #include "wx/tglbtn.h" for EVT_TOGGLEBUTTON
+ 
+ #include "wx/things/thingdef.h"
+ 
++#include <wx/bitmap.h>
++#include <wx/control.h>
++
+ class WXDLLEXPORT wxTimer;
+ class WXDLLEXPORT wxTimerEvent;
+ 
+@@ -227,6 +230,7 @@ protected:
      int m_down;         // toggle state if m_down%2 then depressed
      bool m_focused;     // mouse in window
      long m_button_style;
