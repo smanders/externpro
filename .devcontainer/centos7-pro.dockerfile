@@ -1,8 +1,11 @@
-FROM ghcr.io/smanders/buildpro/centos7-pro:21.11
+FROM ghcr.io/smanders/buildpro/centos7-pro:21.14
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
+# timezone
+ARG TZ
+ENV TZ=$TZ
 # create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID
