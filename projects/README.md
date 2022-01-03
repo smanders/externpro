@@ -25,7 +25,7 @@
 |[jpegxp](http://www.ijg.org/ 'Independent JPEG Group website')|[open](https://github.com/smanders/libjpeg/blob/upstream/README 'libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)')|JPEG codec with mods for Lossless, 12-bit lossy (XP)|17.08|[repo](https://github.com/smanders/jpegxp 'jpegxp repo on github')|[diff](https://github.com/smanders/jpegxp/compare/jxp.130220...jxp 'patch/diff')|
 |[jxrlib](https://jxrlib.codeplex.com/ 'jxrlib project hosted on CodePlex')|[open](https://jxrlib.codeplex.com/license 'New BSD License (BSD)')|open source implementation of the jpegxr image format standard|15.08|[repo](https://github.com/smanders/jxrlib 'forked jxrlib repo on github')|[diff](https://github.com/smanders/jxrlib/compare/v15.08...xp15.08 'patch/diff')|
 |[libgeotiff](http://trac.osgeo.org/geotiff/ 'GeoTIFF trac website')|[open](http://trac.osgeo.org/geotiff/ 'trac site states it is an open source library (no specific license mentioned)')|georeferencing info embedded within TIFF file|1.2.4|[repo](https://github.com/smanders/libgeotiff 'libgeotiff repo on github')|[diff](https://github.com/smanders/libgeotiff/compare/v1.2.4...xp1.2.4 'patch/diff')|
-|[libgit2](https://libgit2.github.com/ 'libgit2 website')|[open](https://github.com/libgit2/libgit2/blob/master/README.md#license 'GPL2 with linking exception')|portable, pure C implementation of the Git core methods|0.28.3|[repo](https://github.com/libgit2/libgit2 'libgit2 repo on github')|[diff](https://github.com/smanders/libgit2/compare/libgit2:v0.28.3...xp0.28.3 'patch/diff')|
+|[libgit2](https://libgit2.github.com/ 'libgit2 website')|[open](https://github.com/libgit2/libgit2/blob/master/README.md#license 'GPL2 with linking exception')|portable, pure C implementation of the Git core methods|1.3.0|[repo](https://github.com/libgit2/libgit2 'libgit2 repo on github')|[diff](https://github.com/smanders/libgit2/compare/libgit2:v1.3.0...xp1.3.0 'patch/diff')|
 |[libssh2](http://www.libssh2.org/ 'libssh2 website')|[open](http://www.libssh2.org/license.html 'BSD 3-Clause License - https://www.openhub.net/licenses/BSD-3-Clause')|client-side C library implementing SSH2 protocol|1.9.0|[repo](https://github.com/libssh2/libssh2 'libssh2 repo on github')|[diff](https://github.com/smanders/libssh2/compare/libssh2:libssh2-1.9.0...xp-1.9.0 'patch/diff')|
 |[libstrophe](http://strophe.im/libstrophe/ 'libstrophe website')|[open](https://github.com/strophe/libstrophe/blob/0.9.1/LICENSE.txt 'dual licensed under MIT and GPLv3')|A simple, lightweight C library for writing XMPP client|0.9.1|[repo](https://github.com/strophe/libstrophe 'libstrophe repo on github')|[diff](https://github.com/smanders/libstrophe/compare/strophe:0.9.1...xp0.9.1 'patch/diff')|
 |[libzmq](https://zeromq.org/ 'ZeroMQ website')|[open](http://wiki.zeromq.org/area:licensing 'GNU LGPL plus static linking exception')|high-performance asynchronous messaging library|4.3.4|[repo](https://github.com/zeromq/libzmq 'zeromq/libzmq repo on github')|[diff](https://github.com/smanders/libzmq/compare/zeromq:v4.3.4...xp4.3.4 'patch/diff')|
@@ -76,10 +76,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_e9b7ef94dae0f8ba49a785d2466431aa?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_99cc6ab4fe27f2d0cddf1e72978366e2?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_e9b7ef94dae0f8ba49a785d2466431aa
+depgraph_99cc6ab4fe27f2d0cddf1e72978366e2
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
@@ -114,8 +114,8 @@ digraph GG {
   ffmpeg -> yasm;
   libgeotiff [shape=diamond];
   libgeotiff -> wx;
-  libgit2_0_28_3 [label="libgit2_0.28.3" shape=diamond];
-  libgit2_0_28_3 -> libssh2_1_9_0;
+  libgit2_1_3_0 [label="libgit2_1.3.0" shape=diamond];
+  libgit2_1_3_0 -> libssh2_1_9_0;
   libssh2_1_9_0 [label="libssh2_1.9.0" shape=diamond];
   libssh2_1_9_0 -> zlib;
   libssh2_1_9_0 -> openssl_1_1_1l;
@@ -149,5 +149,5 @@ digraph GG {
   zmqpp [shape=diamond];
   zmqpp -> libzmq;
 }
-depgraph_e9b7ef94dae0f8ba49a785d2466431aa
+depgraph_99cc6ab4fe27f2d0cddf1e72978366e2
 </details>

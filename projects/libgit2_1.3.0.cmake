@@ -1,5 +1,5 @@
 # libgit2
-set(VER 0.28.3)
+set(VER 1.3.0)
 xpProOption(libgit2_${VER} DBG)
 set(REPO github.com/libgit2/libgit2)
 set(FORK github.com/smanders/libgit2)
@@ -13,10 +13,11 @@ set(PRO_LIBGIT2_${VER}
   VER ${VER}
   GIT_ORIGIN git://${FORK}.git
   GIT_UPSTREAM git://${REPO}.git
+  GIT_TRACKING_BRANCH main
   GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL https://${REPO}/archive/v${VER}.tar.gz
-  DLMD5 f9f2a2a2da09b4cdb8b1a596eb799179
+  DLMD5 c8b6658e421d51f0e1a5fe0c17fc41dc
   DLNAME libgit2-${VER}.tar.gz
   PATCH ${PATCH_DIR}/libgit2_${VER}.patch
   DIFF https://${FORK}/compare/libgit2:

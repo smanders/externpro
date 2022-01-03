@@ -1,6 +1,6 @@
 # libgit2
-set(LIBGIT2_OLDVER 0.28.3)
-set(LIBGIT2_NEWVER 0.28.3)
+set(LIBGIT2_OLDVER 1.3.0)
+set(LIBGIT2_NEWVER 1.3.0)
 ########################################
 function(build_libgit2)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBGIT2_${LIBGIT2_OLDVER} OR XP_PRO_LIBGIT2_${LIBGIT2_NEWVER}))
@@ -73,6 +73,9 @@ function(build_libgit2)
     set(xpConfigBase
       -DBUILD_CLAR:BOOL=OFF
       -DBUILD_SHARED_LIBS=OFF
+      -DCMAKE_INSTALL_INCLUDEDIR=include/libgit2_${ver}
+      -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
+      -DREGEX_BACKEND=builtin
       -DTHREADSAFE=ON
       -DINSTALL_LIBGIT2_CONFIG=OFF
       -DXP_NAMESPACE:STRING=xpro
