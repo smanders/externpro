@@ -1,6 +1,6 @@
 # curl
-set(CURL_OLDVER 7.66.0)
-set(CURL_NEWVER 7.66.0)
+set(CURL_OLDVER 7.80.0)
+set(CURL_NEWVER 7.80.0)
 ########################################
 function(build_curl)
   if(NOT (XP_DEFAULT OR XP_PRO_CURL_${CURL_OLDVER} OR XP_PRO_CURL_${CURL_NEWVER}))
@@ -40,6 +40,7 @@ function(build_curl)
     list(APPEND depTgts ${cmTgts})
     set(XP_CONFIGURE
       -DCURL_VER=${ver}
+      -DCMAKE_INSTALL_INCLUDEDIR=include/curl_${ver}
       -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
       -DBUILD_CURL_EXE=ON
       -DBUILD_SHARED_LIBS=OFF
@@ -52,7 +53,7 @@ function(build_curl)
       -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
       -DCMAKE_USE_LIBSSH2_MODULE_PATH=ON
       -DCURL_DISABLE_LDAP=ON
-      -DENABLE_LIBIDN=OFF
+      -DUSE_LIBIDN2=OFF
       -DXP_INSTALL_DIRS=ON
       -DXP_NAMESPACE:STRING=xpro
       ${XP_CONFIGURE_${ver}}

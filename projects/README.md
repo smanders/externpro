@@ -11,7 +11,7 @@
 |[ceres-solver](http://ceres-solver.org 'Ceres Solver website')|[open](http://ceres-solver.org/license.html 'New BSD License')|C++ library for modeling and solving large, complicated optimization problems|1.14.0|[repo](https://github.com/ceres-solver/ceres-solver 'ceres-solver repo on github')|[diff](https://github.com/smanders/ceres-solver/compare/ceres-solver:1.14.0...xp1.14.0 'patch/diff')|
 |[cppzmq](https://zeromq.org/ 'ZeroMQ website')|[open](http://wiki.zeromq.org/area:licensing 'GNU LGPL plus static linking exception')|header-only C++ binding for libzmq|4.7.1|[repo](https://github.com/zeromq/cppzmq 'zeromq/cppzmq repo on github')|[diff](https://github.com/smanders/cppzmq/compare/zeromq:v4.7.1...xp4.7.1 'patch/diff')|
 |[CUB](http://nvlabs.github.io/cub/ 'CUB Project Website')|[open](https://github.com/NVlabs/cub/tree/v1.8.0#open-source-license 'BSD 3-Clause')|flexible library of cooperative threadblock primitives and other utilites for CUDA kernel programming|1.8.0|[repo](https://github.com/NVlabs/cub 'CUB repo on github')|none|
-|[cURL](http://curl.haxx.se/libcurl/ 'libcurl website')|[open](http://curl.haxx.se/docs/copyright.html 'curl license: MIT/X derivate license')|the multiprotocol file transfer library|7.66.0|[repo](https://github.com/curl/curl 'curl repo on github')|[diff](https://github.com/smanders/curl/compare/curl:curl-7_66_0...xp-7_66_0 'patch/diff')|
+|[cURL](http://curl.haxx.se/libcurl/ 'libcurl website')|[open](http://curl.haxx.se/docs/copyright.html 'curl license: MIT/X derivate license')|the multiprotocol file transfer library|7.80.0|[repo](https://github.com/curl/curl 'curl repo on github')|[diff](https://github.com/smanders/curl/compare/curl:curl-7_80_0...xp-7_80_0 'patch/diff')|
 |[Eigen](http://eigen.tuxfamily.org/ 'Eigen website')|[open](http://eigen.tuxfamily.org/index.php?title=Main_Page#License 'Eigen license: MPL2 (aka Mozilla Public License)')|C++ template library for linear algebra|3.3.7|[repo](https://gitlab.com/libeigen/eigen 'eigen repo on gitlab')|[diff](https://github.com/smanders/eigen/compare/3.3.7...xp3.3.7 'patch/diff')|
 |[Expat](https://libexpat.github.io 'Expat website')|[open](https://github.com/libexpat/libexpat/blob/R_2_2_5/expat/COPYING 'Expat License (MIT/X Consortium license)')|a stream-oriented XML parser library written in C|2.2.5|[repo](https://github.com/libexpat/libexpat 'libexpat repo on github')|[diff](https://github.com/smanders/libexpat/compare/libexpat:R_2_2_5...xp2.2.5 'patch/diff')|
 |[fecpp](http://www.randombit.net/code/fecpp/ 'C++ forward error correction with SIMD optimizations')|[open](http://www.randombit.net/code/fecpp/ 'BSD License')|fecpp is a Forward Error Correction Library|0.9|[repo](https://github.com/randombit/fecpp 'fecpp repo on github')|[diff](https://github.com/smanders/fecpp/compare/v0.9...xp0.9 'patch/diff')|
@@ -76,10 +76,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_99cc6ab4fe27f2d0cddf1e72978366e2?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_3e289fcdb5352c9d18bf2c515d248d16?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_99cc6ab4fe27f2d0cddf1e72978366e2
+depgraph_3e289fcdb5352c9d18bf2c515d248d16
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
@@ -102,9 +102,9 @@ digraph GG {
   clangformat -> clang;
   cppzmq [shape=diamond];
   cppzmq -> libzmq;
-  curl_7_66_0 [label="curl_7.66.0" shape=diamond];
-  curl_7_66_0 -> libssh2_1_9_0;
-  curl_7_66_0 -> cares;
+  curl_7_80_0 [label="curl_7.80.0" shape=diamond];
+  curl_7_80_0 -> libssh2_1_9_0;
+  curl_7_80_0 -> cares;
   eigen [shape=diamond];
   expat [shape=diamond];
   fecpp [shape=diamond];
@@ -149,5 +149,5 @@ digraph GG {
   zmqpp [shape=diamond];
   zmqpp -> libzmq;
 }
-depgraph_99cc6ab4fe27f2d0cddf1e72978366e2
+depgraph_3e289fcdb5352c9d18bf2c515d248d16
 </details>
