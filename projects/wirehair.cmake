@@ -1,7 +1,7 @@
 # wirehair
 xpProOption(wirehair DBG)
-set(VER 20.11.21) # upstream repo has no tags
-set(TAG 9e8923a200045c7bdb9e89b449692dbfed6b6de0) # 2020.11.21 commit, head of master branch
+set(VER 21.07.31) # upstream repo has no tags
+set(TAG 6d84fad40cbbbb29d4eb91204750ddffe0dcacfe) # 2021.07.31 commit, head of master branch
 set(REPO github.com/catid/wirehair)
 set(FORK github.com/smanders/wirehair)
 set(PRO_WIREHAIR
@@ -16,7 +16,7 @@ set(PRO_WIREHAIR
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${TAG} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/${TAG}.tar.gz
-  DLMD5 f379fd3123d5f5b4484e222816343ad2
+  DLMD5 1c2c8d59ed98c4a4dc3fb93f5d03b70f
   DLNAME wirehair-${VER}.tar.gz
   PATCH ${PATCH_DIR}/wirehair.patch
   DIFF https://${FORK}/compare/catid:
@@ -33,8 +33,9 @@ function(build_wirehair)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
     -DCMAKE_INSTALL_INCLUDEDIR=include/wirehair_${VER}
-    -DWIREHAIR_VER=${VER}
     -DDONT_INSTALL_PYTHON:BOOL=TRUE
+    -DMARCH_NATIVE=OFF
+    -DWIREHAIR_VER=${VER}
     -DXP_NAMESPACE:STRING=xpro
     )
   xpCmakeBuild(wirehair "" "${XP_CONFIGURE}")
