@@ -1,6 +1,6 @@
 # flatbuffers
 xpProOption(flatbuffers DBG)
-set(VER 1.12.0)
+set(VER 2.0.6)
 set(REPO github.com/google/flatbuffers)
 set(FORK github.com/smanders/flatbuffers)
 set(PRO_FLATBUFFERS
@@ -15,7 +15,7 @@ set(PRO_FLATBUFFERS
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/v${VER}.tar.gz
-  DLMD5 c62ffefb3d4548b127cca14ce047f16c
+  DLMD5 231d9070d4b58ed91da539815543e07f
   DLNAME flatbuffers-${VER}.tar.gz
   PATCH ${PATCH_DIR}/flatbuffers.patch
   DIFF https://${FORK}/compare/google:
