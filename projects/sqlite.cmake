@@ -29,6 +29,7 @@ function(build_sqlite)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
     -DCMAKE_INSTALL_INCLUDEDIR=include/sqlite_${VER}
+    -DBUILD_SHELL=ON
     -DSQLITE_VER=${VER}
     -DXP_NAMESPACE:STRING=xpro
     )

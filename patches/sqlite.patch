@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4a5bba6..de17612 100644
+index 4a5bba6..2ee740a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,11 +1,30 @@
@@ -49,7 +49,18 @@ index 4a5bba6..de17612 100644
  target_compile_definitions(${PROJECT_NAME} PUBLIC # inject user's options
      $<BUILD_INTERFACE:
          $<$<BOOL:${SQLITE_ENABLE_DBSTAT_VTAB}>:SQLITE_ENABLE_DBSTAT_VTAB>
-@@ -83,14 +102,14 @@ endif()
+@@ -79,18 +98,25 @@ elseif(WIN32 AND ${CMAKE_SIZEOF_VOID_P} LESS 8) # this is a 32bit windows
+             )
+     endif()
+ endif()
++if(SQLITE_ENABLE_MATH_FUNCTIONS)
++  include(CheckLibraryExists)
++  check_library_exists(m sin "" HAVE_LIB_M)
++  if(HAVE_LIB_M)
++    target_link_libraries(${PROJECT_NAME} PRIVATE m)
++  endif()
++endif()
+ 
  #------------------------------------------------------------------------------
  configure_file(sqlite3_config.h.in ${CMAKE_BINARY_DIR}/sqlite3_config.h)
  
@@ -68,3 +79,13 @@ index 4a5bba6..de17612 100644
      )
  install(FILES
      ${CMAKE_BINARY_DIR}/sqlite3_config.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+@@ -120,7 +146,7 @@ if(BUILD_SHELL)
+             set(${flag} "${${flag}}" CACHE STRING "msvc flags" FORCE)
+         endforeach()
+     endif()
+-    install(TARGETS shell_app
+-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++    install(TARGETS shell_app EXPORT ${PROJECT_NAME}Config${verEmbed}
++        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} CONFIGURATIONS Release
+         )
+ endif()
