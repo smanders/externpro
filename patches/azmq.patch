@@ -54,10 +54,28 @@ index 762fa31..4a89db3 100644
 -        DESTINATION include)
 +        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 diff --git a/azmq/detail/socket_ops.hpp b/azmq/detail/socket_ops.hpp
-index 7557ed3..7d3cef5 100644
+index 7557ed3..f4ecc40 100644
 --- a/azmq/detail/socket_ops.hpp
 +++ b/azmq/detail/socket_ops.hpp
-@@ -263,7 +263,7 @@ namespace detail {
+@@ -79,9 +79,15 @@ namespace detail {
+ 
+         static socket_type create_socket(context_ops::context_type context,
+                                          int type,
+-                                         boost::system::error_code & ec) {
++                                         boost::system::error_code & ec,
++                                         zmq_router_skt_peer_connect_notification_fn* pCnfn = nullptr,
++                                         void* pCnfnHint = nullptr) {
+             BOOST_ASSERT_MSG(context, "Invalid context");
+-            auto res = zmq_socket(context.get(), type);
++            void* res = nullptr;
++            if (type == ZMQ_ROUTER && pCnfn)
++              res = zmq_new_router_socket(context.get(), pCnfn, pCnfnHint);
++            else
++              res = zmq_socket(context.get(), type);
+             if (!res) {
+                 ec = make_error_code();
+                 return socket_type();
+@@ -263,7 +269,7 @@ namespace detail {
                  ec = make_error_code();
                  return 0;
              }
@@ -66,7 +84,7 @@ index 7557ed3..7d3cef5 100644
          }
  
          template<typename ConstBufferSequence>
-@@ -295,7 +295,7 @@ namespace detail {
+@@ -295,7 +301,7 @@ namespace detail {
                  ec = make_error_code();
                  return 0;
              }
@@ -75,3 +93,98 @@ index 7557ed3..7d3cef5 100644
          }
  
          template<typename MutableBufferSequence>
+diff --git a/azmq/detail/socket_service.hpp b/azmq/detail/socket_service.hpp
+index 1992804..83508bf 100644
+--- a/azmq/detail/socket_service.hpp
++++ b/azmq/detail/socket_service.hpp
+@@ -101,9 +101,11 @@ namespace detail {
+                          context_type & ctx,
+                          int type,
+                          bool optimize_single_threaded,
+-                         boost::system::error_code & ec) {
++                         boost::system::error_code & ec,
++                         zmq_router_skt_peer_connect_notification_fn* pCnfn = nullptr,
++                         void* pCnfnHint = nullptr) {
+                 BOOST_ASSERT_MSG(!socket_, "socket already open");
+-                socket_ = socket_ops::create_socket(ctx, type, ec);
++                socket_ = socket_ops::create_socket(ctx, type, ec, pCnfn, pCnfnHint);
+                 if (ec) return;
+ 
+                 sd_ = socket_ops::get_stream_descriptor(ios, socket_, ec);
+@@ -233,12 +235,14 @@ namespace detail {
+         boost::system::error_code do_open(implementation_type & impl,
+                                           int type,
+                                           bool optimize_single_threaded,
+-                                          boost::system::error_code & ec) {
++                                          boost::system::error_code & ec,
++                                          zmq_router_skt_peer_connect_notification_fn* pCnfn = nullptr,
++                                          void* pCnfnHint = nullptr) {
+             BOOST_ASSERT_MSG(impl, "impl");
+ #ifdef AZMQ_DETAIL_USE_IO_SERVICE
+-            impl->do_open(get_io_service(), ctx_, type, optimize_single_threaded, ec);
++            impl->do_open(get_io_service(), ctx_, type, optimize_single_threaded, ec, pCnfn, pCnfnHint);
+ #else
+-            impl->do_open(get_io_context(), ctx_, type, optimize_single_threaded, ec);
++            impl->do_open(get_io_context(), ctx_, type, optimize_single_threaded, ec, pCnfn, pCnfnHint);
+ #endif
+             if (ec)
+                 impl.reset();
+diff --git a/azmq/socket.hpp b/azmq/socket.hpp
+index 720fba1..aa8d7e6 100644
+--- a/azmq/socket.hpp
++++ b/azmq/socket.hpp
+@@ -103,10 +103,12 @@ public:
+      */
+     explicit socket(boost::asio::io_service& ios,
+                     int type,
+-                    bool optimize_single_threaded = false)
++                    bool optimize_single_threaded = false,
++                    zmq_router_skt_peer_connect_notification_fn* pCnfn = nullptr,
++                    void* pCnfnHint = nullptr)
+             : azmq::detail::basic_io_object<detail::socket_service>(ios) {
+         boost::system::error_code ec;
+-        if (get_service().do_open(get_implementation(), type, optimize_single_threaded, ec))
++        if (get_service().do_open(get_implementation(), type, optimize_single_threaded, ec, pCnfn, pCnfnHint))
+             throw boost::system::system_error(ec);
+     }
+ 
+@@ -709,6 +711,39 @@ namespace detail {
+             return *this;
+         }
+     };
++
++    template<>
++    class specialized_socket<ZMQ_ROUTER>: public socket
++    {
++        typedef socket Base;
++
++    public:
++        specialized_socket(boost::asio::io_service & ios,
++                           bool optimize_single_threaded = false)
++            : Base(ios, ZMQ_ROUTER, optimize_single_threaded)
++        {
++            // Note that we expect these to get sliced to socket, so DO NOT add any data members
++            static_assert(sizeof(*this) == sizeof(socket), "Specialized socket must not have any specific data members");
++        }
++        specialized_socket(boost::asio::io_service & ios,
++                           zmq_router_skt_peer_connect_notification_fn* pCnfn,
++                           void* pCnfnHint)
++            : Base(ios, ZMQ_ROUTER, /*optimize_single_threaded=*/false, pCnfn, pCnfnHint)
++        {
++            // Note that we expect these to get sliced to socket, so DO NOT add any data members
++            static_assert(sizeof(*this) == sizeof(socket), "Specialized socket must not have any specific data members");
++        }
++
++        specialized_socket(specialized_socket&& op)
++            : Base(std::move(op))
++        {}
++
++        specialized_socket& operator= (specialized_socket&& rhs)
++        {
++            Base::operator=(std::move(rhs));
++            return *this;
++        }
++    };
+ }
+ 
+ AZMQ_V1_INLINE_NAMESPACE_BEGIN
