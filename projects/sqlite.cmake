@@ -2,7 +2,7 @@
 xpProOption(sqlite DBG)
 set(REPO github.com/azadkuh/sqlite-amalgamation)
 set(FORK github.com/smanders/sqlite-amalgamation)
-set(VER 3.34.1)
+set(VER 3.37.2)
 set(PRO_SQLITE
   NAME sqlite
   WEB "SQLite" https://www.sqlite.org/index.html "SQLite website"
@@ -15,7 +15,7 @@ set(PRO_SQLITE
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/${VER}.tar.gz
-  DLMD5 ab8e3ae159d2c1aeb7875f99bc0b0ab5
+  DLMD5 3c0ea08d0fdadb8927d536a50a3967aa
   DLNAME sqlite-${VER}.tar.gz
   PATCH ${PATCH_DIR}/sqlite.patch
   DIFF https://${FORK}/compare/
