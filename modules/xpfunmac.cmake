@@ -1562,7 +1562,7 @@ function(xpClassifiedRepo)
     if(DEFINED CURL_EXE)
       get_target_property(curlExe ${CURL_EXE} IMPORTED_LOCATION_RELEASE)
       execute_process(
-        COMMAND ${curlExe} -s -o /dev/null -w "%{http_code}" https://${P_PATH_URL}/${P_REPO}
+        COMMAND ${curlExe} -k -s -o /dev/null -w "%{http_code}" https://${P_PATH_URL}/${P_REPO}
         OUTPUT_VARIABLE statusCode ERROR_QUIET
         )
       if(statusCode EQUAL 200)
