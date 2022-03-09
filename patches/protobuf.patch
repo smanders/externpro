@@ -61,9 +61,18 @@ index 9ca31ac0b..60acd67b5 100644
  include(libprotobuf.cmake)
  if (protobuf_BUILD_LIBPROTOC)
 diff --git a/cmake/install.cmake b/cmake/install.cmake
-index be47c54a1..2e93b0dfa 100644
+index be47c54a1..c66f92bad 100644
 --- a/cmake/install.cmake
 +++ b/cmake/install.cmake
+@@ -29,7 +29,7 @@ foreach(_library ${_protobuf_libraries})
+ endforeach()
+ 
+ if (protobuf_BUILD_PROTOC_BINARIES)
+-  install(TARGETS protoc EXPORT protobuf-targets
++  install(TARGETS protoc EXPORT protobuf-targets CONFIGURATIONS Release
+     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT protoc)
+   if (UNIX AND NOT APPLE)
+     set_property(TARGET protoc
 @@ -40,7 +40,7 @@ if (protobuf_BUILD_PROTOC_BINARIES)
    endif()
  endif (protobuf_BUILD_PROTOC_BINARIES)

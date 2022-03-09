@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 21e90151..8bb147ee 100644
+index 21e90151..5778ad56 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -25,6 +25,7 @@ else()
@@ -69,7 +69,13 @@ index 21e90151..8bb147ee 100644
        DESTINATION ${FB_CMAKE_DIR}
      )
    endif()
-@@ -678,7 +695,7 @@ if(FLATBUFFERS_INSTALL)
+@@ -673,12 +690,13 @@ if(FLATBUFFERS_INSTALL)
+     install(
+       TARGETS flatc EXPORT FlatcTargets
+       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++      CONFIGURATIONS Release
+     )
+ 
      install(
        EXPORT FlatcTargets
        FILE FlatcTargets.cmake
@@ -78,7 +84,7 @@ index 21e90151..8bb147ee 100644
        DESTINATION ${FB_CMAKE_DIR}
      )
    endif()
-@@ -695,7 +712,7 @@ if(FLATBUFFERS_INSTALL)
+@@ -695,7 +713,7 @@ if(FLATBUFFERS_INSTALL)
      install(
        EXPORT FlatbuffersSharedTargets
        FILE FlatbuffersSharedTargets.cmake
@@ -87,7 +93,7 @@ index 21e90151..8bb147ee 100644
        DESTINATION ${FB_CMAKE_DIR}
      )
    endif()
-@@ -756,4 +773,4 @@ add_library(FlatBuffers::FlatBuffers ALIAS FlatBuffers)
+@@ -756,4 +774,4 @@ add_library(FlatBuffers::FlatBuffers ALIAS FlatBuffers)
  target_include_directories(
    FlatBuffers
    INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
