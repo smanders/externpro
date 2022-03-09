@@ -47,3 +47,19 @@ function(xpFlatBuffersBuild)
     target_include_directories(${P_TARGET} ${scope} ${P_GENERATED_INCLUDES_DIR})
   endif()
 endfunction()
+function(xpFlatBuffersBuildTS)
+  set(oneValueArgs OUTPUT_DIR TARGET)
+  set(multiValueArgs SCHEMAS)
+  cmake_parse_arguments(P "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  xpGetPkgVar(flatbuffers FLATC_EXECUTABLE) # sets FLATBUFFERS_FLATC_EXECUTABLE
+  set(cmdFile "${CMAKE_CURRENT_BINARY_DIR}/${P_TARGET}_fbs_ts_cmd")
+  add_custom_command(OUTPUT ${cmdFile}
+    COMMAND $<TARGET_FILE:${FLATBUFFERS_FLATC_EXECUTABLE}> --ts -o ${P_OUTPUT_DIR} ${P_SCHEMAS}
+    COMMAND ${CMAKE_COMMAND} -E touch ${cmdFile}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    DEPENDS ${P_SCHEMAS}
+    )
+  set(tgtName ${P_TARGET}_fbs_ts)
+  add_custom_target(${tgtName} ALL DEPENDS ${cmdFile})
+  set_property(TARGET ${tgtName} PROPERTY FOLDER ${folder})
+endfunction()
