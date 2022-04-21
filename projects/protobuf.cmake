@@ -13,6 +13,7 @@ set(PRO_PROTOBUF
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
   GIT_UPSTREAM https://${REPO}.git
+  GIT_TRACKING_BRANCH main
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/v${VER}.tar.gz

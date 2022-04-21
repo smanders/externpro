@@ -14,6 +14,7 @@ set(PRO_CARES
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
   GIT_UPSTREAM https://${REPO}.git
+  GIT_TRACKING_BRANCH main
   GIT_TAG xp-${VER_} # what to 'git checkout'
   GIT_REF cares-${VER_} # create patch from this tag to 'git checkout'
   DLURL http://c-ares.haxx.se/download/c-ares-${VER}.tar.gz
