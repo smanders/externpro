@@ -9,10 +9,10 @@ set(PRO_WXX
   DESC "wxWidget-based extra components"
   REPO "repo" https://${REPO} "wxx repo on github"
   GRAPH BUILD_DEPS wx
-  VER 2020.01.02 # latest xpro branch commit date
+  VER 2022.04.21 # latest xpro branch commit date
   GIT_ORIGIN https://${REPO}.git
   GIT_TAG xpro # what to 'git checkout'
-  GIT_REF wxx.01 # create patch from this tag to 'git checkout'
+  GIT_REF wxx.02 # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/wxx.xpro.patch
   DIFF https://${REPO}/compare/
   SUBPRO ${WXX_TARGETS}

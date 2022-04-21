@@ -14,7 +14,7 @@ set(PRO_WX31
   GIT_ORIGIN https://${FORK}.git
   GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER31} # what to 'git checkout'
-  GIT_REF v${VER31}_pkg # patch from REF to TAG
+  GIT_REF v${VER31}_220421 # patch from REF to TAG
   DLURL https://${REPO}/releases/download/v${VER31}/wxWidgets-${VER31}.tar.bz2
   DLMD5 ba4cd1f3853d0cd49134c5ae028ad080
   DLMD5 e20c14bb9bf5d4ec0979a3cd7510dece

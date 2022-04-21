@@ -3,7 +3,7 @@
 # http://libjpeg6b.sourcearchive.com/
 # http://libjpeg8.sourcearchive.com/
 xpProOption(jpegxp DBG)
-set(VER 17.08) # latest jxp branch commit date (yr.mo)
+set(VER 22.04) # latest jxp branch commit date (yr.mo)
 set(REPO github.com/smanders/jpegxp)
 set(PRO_JPEGXP
   NAME jpegxp
@@ -14,7 +14,7 @@ set(PRO_JPEGXP
   VER ${VER}
   GIT_ORIGIN https://${REPO}.git
   GIT_TAG jxp # what to 'git checkout'
-  GIT_REF jxp.130220 # create patch from this tag to 'git checkout'
+  GIT_REF jxp.220421 # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/jpegxp.patch
   DIFF https://${REPO}/compare/
   SUBPRO jpeglossy8 jpeglossy12 jpeglossless
