@@ -61,7 +61,7 @@ if you always plan to use an installed version the path to the source and build 
 unless you have a reason to use an old release (`git checkout <tag>`) or have a reason to use a development version (`git checkout -b dev origin/dev` -- where development == not ready for release), you should be using the master branch (which is always the latest release)
 
 ```bash
-git clone git://github.com/smanders/externpro.git
+git clone https://github.com/smanders/externpro.git
 cd externpro
 mkdir _bld
 cd _bld
