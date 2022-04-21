@@ -10,7 +10,7 @@ set(PRO_NODE-ADDON-API
   REPO "repo" https://${REPO} "node-addon-api repo on github"
   GRAPH BUILD_DEPS nodejs
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG ${VER}
   DLURL https://${REPO}/archive/${VER}.tar.gz
   DLMD5 020c40cbb9af791f7934fa66f87c904c

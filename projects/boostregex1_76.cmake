@@ -12,8 +12,8 @@ set(PRO_BOOSTREGEX${VER2_}
   DESC "Regular expression library"
   REPO "repo" https://${REPO} "regex repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}

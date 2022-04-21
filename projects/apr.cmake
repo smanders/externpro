@@ -11,8 +11,8 @@ set(PRO_APR
   REPO "repo" https://${REPO} "apr repo on github"
   GRAPH
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TRACKING_BRANCH trunk
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'

@@ -12,7 +12,7 @@ set(PRO_LIBGEOTIFF
   REPO "repo" https://${REPO} "libgeotiff repo on github"
   GRAPH BUILD_DEPS wx
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   #DLURL http://libgeotiff-dfsg.sourcearchive.com/downloads/${VER}/libgeotiff-dfsg_${VER}.orig.tar.gz

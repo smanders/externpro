@@ -10,8 +10,8 @@ set(PRO_SQLITE
   DESC "C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine"
   REPO "repo" https://${REPO} "sqlite-amalgamation repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/${VER}.tar.gz

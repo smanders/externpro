@@ -10,7 +10,7 @@ set(PRO_WXX
   REPO "repo" https://${REPO} "wxx repo on github"
   GRAPH BUILD_DEPS wx
   VER 2020.01.02 # latest xpro branch commit date
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG xpro # what to 'git checkout'
   GIT_REF wxx.01 # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/wxx.xpro.patch

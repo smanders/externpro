@@ -11,7 +11,7 @@ set(PRO_GLEW_${VER}
   DESC "pre-built (MSW-only) The OpenGL Extension Wrangler Library"
   REPO "repo" https://${REPO} "GLEW repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG glew-${VER}
   DLURL ${GLDL}/glew-${VER}.tgz
   DLMD5 fb7a8bb79187ac98a90b57f0f27a3e84

@@ -11,8 +11,8 @@ set(PRO_WIREHAIR
   DESC "fast and portable fountain codes in C"
   REPO "repo" https://${REPO} "wirehair repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${TAG} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/${TAG}.tar.gz

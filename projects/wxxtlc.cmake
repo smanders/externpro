@@ -12,7 +12,7 @@ set(PRO_WXXTLC
   DESC "a multi column tree control"
   REPO "repo" https://${REPO} "wxTLC repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL http://downloads.sourceforge.net/project/wxcode/Components/treelistctrl/treelistctrl_${VER}.zip

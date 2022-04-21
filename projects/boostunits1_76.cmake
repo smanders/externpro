@@ -12,8 +12,8 @@ set(PRO_BOOSTUNITS${VER2_}
   DESC "zero-overhead dimensional analysis and unit/quantity manipulation and conversion"
   REPO "repo" https://${REPO} "units repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}

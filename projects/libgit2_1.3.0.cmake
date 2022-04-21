@@ -11,8 +11,8 @@ set(PRO_LIBGIT2_${VER}
   REPO "repo" https://${REPO} "libgit2 repo on github"
   GRAPH BUILD_DEPS libssh2_1.9.0
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TRACKING_BRANCH main
   GIT_TAG xp${VER}
   GIT_REF v${VER}

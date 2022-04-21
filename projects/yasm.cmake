@@ -11,8 +11,8 @@ set(PRO_YASM
   REPO "repo" https://${REPO} "yasm repo on github"
   GRAPH GRAPH_SHAPE box
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL http://www.tortall.net/projects/yasm/releases/yasm-${VER}.tar.gz

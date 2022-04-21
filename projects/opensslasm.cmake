@@ -13,7 +13,7 @@ set(PRO_OPENSSLASM
   REPO "repo" https://${REPO} "opensslasm repo on github"
   GRAPH
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG asm_${VER} # what to 'git checkout'
   DLURL https://${REPO}/archive/asm_${VER}.tar.gz
   DLMD5 f9ad9ef70e25298756fd08b5cf4bcafc

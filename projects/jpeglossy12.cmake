@@ -11,8 +11,8 @@ set(PRO_JPEGLOSSY12
   DESC "lossy 12-bit encode and decode"
   REPO "repo" https://${FORK} "forked libjpeg repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG lossy12.6b # what to 'git checkout'
   GIT_REF 09a4003 # create patch from this tag to 'git checkout'
   DLURL http://www.ijg.org/files/jpegsrc.v${VER}.tar.gz

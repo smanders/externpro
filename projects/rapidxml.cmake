@@ -10,7 +10,7 @@ set(PRO_RAPIDXML
   DESC "fast XML parser"
   REPO "repo" https://${REPO} "rapidxml repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://downloads.sourceforge.net/project/rapidxml/rapidxml/rapidxml%20${VER}/rapidxml-${VER}.zip

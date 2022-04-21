@@ -12,8 +12,8 @@ set(PRO_GLEW_${VER}
   DESC "The OpenGL Extension Wrangler Library"
   REPO "repo" https://${REPO} "GLEW repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp-${VER}
   GIT_REF glew-${VER}
   DLURL ${GLDL}/glew-${VER}.tgz

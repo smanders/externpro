@@ -13,8 +13,8 @@ set(PRO_SHAPELIB
   DESC "reading, writing, updating ESRI Shapefiles"
   REPO "repo" https://${FORK} "forked shapelib repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://download.osgeo.org/shapelib/shapelib-${VER}.tar.gz

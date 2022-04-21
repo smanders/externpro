@@ -13,7 +13,7 @@ set(PRO_GEOTRANZ
   DESC "geographic translator (convert coordinates)"
   REPO "repo" https://${REPO} "geotranz repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TRACKING_BRANCH xp2.4.2 # not master, to avoid Git-LFS bandwidth
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'

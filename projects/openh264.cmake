@@ -12,8 +12,8 @@ set(PRO_OPENH264
   REPO "repo" https://${REPO} "openh264 repo on github"
   GRAPH BUILD_DEPS yasm
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/openh264_${VER}.patch

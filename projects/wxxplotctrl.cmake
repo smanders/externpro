@@ -13,7 +13,7 @@ set(PRO_WXXPLOTCTRL
   DESC "interactive xy data plotting widgets"
   REPO "repo" https://${REPO} "wxplotctrl repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL http://downloads.sourceforge.net/project/wxcode/Components/wxPlotCtrl/wxplotctrl_${VER_}.tar.gz

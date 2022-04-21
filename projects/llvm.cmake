@@ -10,7 +10,7 @@ set(PRO_LLVM
   REPO "repo" https://${REPO} "llvm repo on github"
   GRAPH GRAPH_SHAPE box
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG llvmorg-${VER}
   DLURL https://${REPO}/releases/download/llvmorg-${VER}/llvm-${VER}.src.tar.xz
   DLMD5 85844102335b2e01b3c64b6734fb56f2

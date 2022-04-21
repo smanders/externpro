@@ -11,8 +11,8 @@ set(PRO_LIBSSH2_${VER}
   REPO "repo" https://${REPO} "libssh2 repo on github"
   GRAPH BUILD_DEPS zlib openssl_1.1.1l
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp-${VER} # what to 'git checkout'
   GIT_REF libssh2-${VER} # create patch from this tag to 'git checkout'
   DLURL http://www.libssh2.org/download/libssh2-${VER}.tar.gz

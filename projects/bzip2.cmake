@@ -11,8 +11,8 @@ set(PRO_BZIP2
   REPO "repo" https://${FORK} "forked bzip2 repo on github"
   GRAPH
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL https://${FORK}/archive/v${VER}.tar.gz

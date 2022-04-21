@@ -11,8 +11,8 @@ set(PRO_JXRLIB
   REPO "repo" https://${FORK} "forked jxrlib repo on github"
   VER ${VER}
   GIT_ORIGINAL_UPSTREAM https://git01.codeplex.com/jxrlib # CodePlex is shutting down!
-  GIT_UPSTREAM git://${REPO}.git
-  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   # NOTE: the download from codeplex is CR/LF, the repo is LF

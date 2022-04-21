@@ -10,8 +10,8 @@ set(PRO_JASPER
   DESC "JPEG 2000 Part-1 codec implementation"
   REPO "repo" https://${FORK} "forked jasper repo on github"
   VER ${VER}
-  GIT_UPSTREAM git://${REPO}.git
-  GIT_ORIGIN git://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
   GIT_TAG xp-${VER} # what to 'git checkout'
   GIT_REF version-${VER} # create patch from this tag to 'git checkout'
   DLURL http://www.ece.uvic.ca/~frodo/jasper/software/jasper-${VER}.zip

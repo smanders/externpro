@@ -9,7 +9,7 @@ set(PRO_RAPIDJSON
   DESC "C++ library for parsing and generating JSON"
   REPO "repo" https://${REPO} "rapidjson repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG v${VER}
   DLURL https://${REPO}/archive/v${VER}.tar.gz
   DLMD5 badd12c511e081fec6c89c43a7027bce

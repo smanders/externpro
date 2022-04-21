@@ -12,8 +12,8 @@ set(PRO_ACTIVEMQCPP_${VER}
   REPO "repo" https://${REPO} "${PROJ} repo on github"
   GRAPH BUILD_DEPS apr openssl_1.1.1l
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp-${VER} # what to 'git checkout'
   GIT_REF ${PROJ}-${VER} # create patch from this tag to 'git checkout'
   DLURL https://archive.apache.org/dist/activemq/${PROJ}/${VER}/${PROJ}-library-${VER}-src.tar.gz

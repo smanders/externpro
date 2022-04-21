@@ -12,8 +12,8 @@ set(PRO_BOOSTGRAPH${VER2_}
   DESC "a generic interface for traversing graphs, using C++ templates"
   REPO "repo" https://${REPO} "graph repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}

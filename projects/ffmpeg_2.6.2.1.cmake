@@ -9,7 +9,7 @@ set(PRO_FFMPEG_${VER}
   DESC "pre-built (MSW-only) complete, cross-platform solution to record, convert and stream audio and video"
   REPO "repo" https://${REPO} "ffmpeg binary repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/v${VER}.tar.gz

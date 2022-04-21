@@ -13,7 +13,7 @@ set(PRO_WXXTHINGS
   DESC "a variety of data containers and controls"
   REPO "repo" https://${REPO} "wxthings repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG xp${VER}
   GIT_REF v${VER}
   DLURL http://downloads.sourceforge.net/project/wxcode/Components/wxThings/wxthings_${VER_}.tar.gz

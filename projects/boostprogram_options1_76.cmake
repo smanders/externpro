@@ -12,8 +12,8 @@ set(PRO_BOOSTPROGRAM_OPTIONS${VER2_}
   DESC "library allows program developers to obtain program options, that is (name, value) pairs from the user, via conventional methods such as command line and config file"
   REPO "repo" https://${REPO} "program_options repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}

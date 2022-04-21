@@ -9,7 +9,7 @@ set(PRO_CUB
   DESC "flexible library of cooperative threadblock primitives and other utilites for CUDA kernel programming"
   REPO "repo" https://${REPO} "CUB repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG v${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/v${VER}.tar.gz

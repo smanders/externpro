@@ -11,8 +11,8 @@ set(PRO_WX31
   REPO "repo" https://${REPO} "wxWidgets repo on github"
   GRAPH GRAPH_NODE wx
   VER ${VER31}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER31} # what to 'git checkout'
   GIT_REF v${VER31}_pkg # patch from REF to TAG
   DLURL https://${REPO}/releases/download/v${VER31}/wxWidgets-${VER31}.tar.bz2

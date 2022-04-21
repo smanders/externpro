@@ -12,8 +12,8 @@ set(PRO_AZMQ
   REPO "repo" https://${REPO} "zeromq/azmq repo on github"
   GRAPH BUILD_DEPS libzmq boost
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${TAG} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/${TAG}.tar.gz

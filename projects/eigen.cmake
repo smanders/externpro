@@ -12,7 +12,7 @@ set(PRO_EIGEN
   GRAPH
   VER ${VER}
   GIT_UPSTREAM ${REPO}.git
-  GIT_ORIGIN git://${FORK}.git
+  GIT_ORIGIN https://${FORK}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
   DLURL ${REPO}/-/archive/${VER}/eigen-${VER}.tar.bz2

@@ -15,7 +15,7 @@ set(PRO_WXINCLUDE
   REPO "repo" https://${REPO} "wxInclude repo on github"
   GRAPH GRAPH_SHAPE box BUILD_DEPS boost
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG rel # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/v${VER}.tar.gz

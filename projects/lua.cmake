@@ -10,8 +10,8 @@ set(PRO_LUA
   DESC "a powerful, fast, lightweight, embeddable scripting language"
   REPO "repo" https://${REPO} "lua repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER}
   GIT_REF ${VER}
   # NOTE: the tar.gz from lua.org doesn't have the cmake (and several other files)

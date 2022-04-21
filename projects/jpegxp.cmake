@@ -12,7 +12,7 @@ set(PRO_JPEGXP
   DESC "JPEG codec with mods for Lossless, 12-bit lossy (XP)"
   REPO "repo" https://${REPO} "jpegxp repo on github"
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG jxp # what to 'git checkout'
   GIT_REF jxp.130220 # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/jpegxp.patch

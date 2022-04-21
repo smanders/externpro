@@ -13,7 +13,7 @@ set(PRO_BOOST${VER2_}
   GRAPH GRAPH_NODE boost
   BUILD_DEPS zlib bzip2
   VER ${VER}
-  GIT_ORIGIN git://${REPO}.git
+  GIT_ORIGIN https://${REPO}.git
   GIT_TAG boost-${VER} # what to 'git checkout'
   DLURL https://boostorg.jfrog.io/artifactory/main/release/${VER}/source/boost_${VER_}.tar.bz2
   DLMD5 33334dd7f862e8ac9fe1cc7c6584fb6d

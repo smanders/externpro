@@ -12,8 +12,8 @@ set(PRO_CURL_${VER}
   REPO "repo" https://${REPO} "curl repo on github"
   GRAPH BUILD_DEPS libssh2_1.9.0 cares
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp-${VER_} # what to 'git checkout'
   GIT_REF curl-${VER_} # create patch from this tag to 'git checkout'
   DLURL http://curl.haxx.se/download/curl-${VER}.tar.bz2

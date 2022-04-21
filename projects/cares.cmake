@@ -12,8 +12,8 @@ set(PRO_CARES
   REPO "repo" https://${REPO} "c-ares repo on github"
   GRAPH GRAPH_LABEL "c-ares"
   VER ${VER}
-  GIT_ORIGIN git://${FORK}.git
-  GIT_UPSTREAM git://${REPO}.git
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp-${VER_} # what to 'git checkout'
   GIT_REF cares-${VER_} # create patch from this tag to 'git checkout'
   DLURL http://c-ares.haxx.se/download/c-ares-${VER}.tar.gz
