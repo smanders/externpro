@@ -1149,10 +1149,28 @@ macro(xpSourceListAppend)
     endif() # is a .git repo
     option(XP_GRAPHVIZ "create a \${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake file" ON)
     mark_as_advanced(XP_GRAPHVIZ)
+    if(NOT DEFINED XP_GRAPHVIZ_PRIVATE_DEPS)
+      set(NV_GRAPHVIZ_PRIVATE_DEPS ON) # (NV: normal variable)
+    else()
+      set(NV_GRAPHVIZ_PRIVATE_DEPS ${XP_GRAPHVIZ_PRIVATE_DEPS})
+      unset(XP_GRAPHVIZ_PRIVATE_DEPS)
+    endif()
+    cmake_dependent_option(XP_GRAPHVIZ_PRIVATE_DEPS
+      "keep private dependencies in graph" ${NV_GRAPHVIZ_PRIVATE_DEPS}
+      "XP_GRAPHVIZ" ON
+      )
+    mark_as_advanced(XP_GRAPHVIZ_PRIVATE_DEPS)
     if(XP_GRAPHVIZ)
+      if(NOT XP_GRAPHVIZ_PRIVATE_DEPS)
+        configure_file(${xpThisDir}/graphPvtClean.sh.in graphPvtClean.sh
+          @ONLY NEWLINE_STYLE LF
+          )
+        set(graphPvtClean COMMAND ./graphPvtClean.sh)
+      endif()
       if(NOT TARGET graph)
         add_custom_command(OUTPUT graph_cmake
           COMMAND ${CMAKE_COMMAND} --graphviz=${CMAKE_PROJECT_NAME}.dot .
+	  ${graphPvtClean}
           COMMAND dot -Tpng -o${CMAKE_PROJECT_NAME}.png ${CMAKE_PROJECT_NAME}.dot
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
           COMMENT "Generating ${CMAKE_PROJECT_NAME}.dot and ${CMAKE_PROJECT_NAME}.png..."
