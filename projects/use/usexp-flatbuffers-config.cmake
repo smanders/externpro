@@ -53,11 +53,12 @@ function(xpFlatBuffersBuildTS)
   cmake_parse_arguments(P "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   xpGetPkgVar(flatbuffers FLATC_EXECUTABLE) # sets FLATBUFFERS_FLATC_EXECUTABLE
   set(cmdFile "${CMAKE_CURRENT_BINARY_DIR}/${P_TARGET}_fbs_ts_cmd")
+  file(GLOB schemas ${P_SCHEMAS})
   add_custom_command(OUTPUT ${cmdFile}
-    COMMAND $<TARGET_FILE:${FLATBUFFERS_FLATC_EXECUTABLE}> --ts -o ${P_OUTPUT_DIR} ${P_SCHEMAS}
+    COMMAND $<TARGET_FILE:${FLATBUFFERS_FLATC_EXECUTABLE}> --ts -o ${P_OUTPUT_DIR} ${schemas}
     COMMAND ${CMAKE_COMMAND} -E touch ${cmdFile}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS ${P_SCHEMAS}
+    DEPENDS ${schemas}
     )
   set(tgtName ${P_TARGET}_fbs_ts)
   add_custom_target(${tgtName} ALL DEPENDS ${cmdFile})
