@@ -1147,59 +1147,63 @@ macro(xpSourceListAppend)
         endif()
       endif()
     endif() # is a .git repo
-    option(XP_GRAPHVIZ "create a \${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake file" ON)
-    mark_as_advanced(XP_GRAPHVIZ)
-    if(NOT DEFINED XP_GRAPHVIZ_PRIVATE_DEPS)
-      set(NV_GRAPHVIZ_PRIVATE_DEPS ON) # (NV: normal variable)
-    else()
-      set(NV_GRAPHVIZ_PRIVATE_DEPS ${XP_GRAPHVIZ_PRIVATE_DEPS})
-      unset(XP_GRAPHVIZ_PRIVATE_DEPS)
-    endif()
-    cmake_dependent_option(XP_GRAPHVIZ_PRIVATE_DEPS
-      "keep private dependencies in graph" ${NV_GRAPHVIZ_PRIVATE_DEPS}
-      "XP_GRAPHVIZ" ON
-      )
-    mark_as_advanced(XP_GRAPHVIZ_PRIVATE_DEPS)
-    if(XP_GRAPHVIZ)
-      if(NOT XP_GRAPHVIZ_PRIVATE_DEPS)
-        configure_file(${xpThisDir}/graphPvtClean.sh.in graphPvtClean.sh
-          @ONLY NEWLINE_STYLE LF
-          )
-        set(graphPvtClean COMMAND ./graphPvtClean.sh)
+    find_program(XP_DOT_EXE "dot")
+    mark_as_advanced(XP_DOT_EXE)
+    if(XP_DOT_EXE)
+      option(XP_GRAPHVIZ "create a \${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake file" ON)
+      mark_as_advanced(XP_GRAPHVIZ)
+      if(NOT DEFINED XP_GRAPHVIZ_PRIVATE_DEPS)
+        set(NV_GRAPHVIZ_PRIVATE_DEPS ON) # (NV: normal variable)
+      else()
+        set(NV_GRAPHVIZ_PRIVATE_DEPS ${XP_GRAPHVIZ_PRIVATE_DEPS})
+        unset(XP_GRAPHVIZ_PRIVATE_DEPS)
       endif()
-      if(NOT TARGET graph)
-        add_custom_command(OUTPUT graph_cmake
-          COMMAND ${CMAKE_COMMAND} --graphviz=${CMAKE_PROJECT_NAME}.dot .
-	  ${graphPvtClean}
-          COMMAND dot -Tpng -o${CMAKE_PROJECT_NAME}.png ${CMAKE_PROJECT_NAME}.dot
-          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-          COMMENT "Generating ${CMAKE_PROJECT_NAME}.dot and ${CMAKE_PROJECT_NAME}.png..."
-          )
-        add_custom_target(graph SOURCES ${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake DEPENDS graph_cmake)
-        set_property(TARGET graph PROPERTY FOLDER CMakeTargets)
-      endif()
-      set(opts "# Generating Dependency Graphs with CMake\n")
-      set(opts "${opts}# https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/Graphviz\n")
-      set(opts "${opts}# https://cmake.org/cmake/help/latest/module/CMakeGraphVizOptions.html\n")
-      set(opts "${opts}# cmake --graphviz=${CMAKE_PROJECT_NAME}.dot ..\n")
-      set(opts "${opts}# dot -Tpng -o${CMAKE_PROJECT_NAME}.png ${CMAKE_PROJECT_NAME}.dot\n")
-      foreach(stringOpt GRAPH_NAME GRAPH_HEADER NODE_PREFIX IGNORE_TARGETS)
-        if(DEFINED GRAPHVIZ_${stringOpt})
-          set(opts "${opts}set(GRAPHVIZ_${stringOpt}")
-          foreach(str ${GRAPHVIZ_${stringOpt}})
-            set(opts "${opts} \"${str}\"")
-          endforeach()
-          set(opts "${opts})\n")
+      cmake_dependent_option(XP_GRAPHVIZ_PRIVATE_DEPS
+        "keep private dependencies in graph" ${NV_GRAPHVIZ_PRIVATE_DEPS}
+        "XP_GRAPHVIZ" ON
+        )
+      mark_as_advanced(XP_GRAPHVIZ_PRIVATE_DEPS)
+      if(XP_GRAPHVIZ)
+        if(NOT XP_GRAPHVIZ_PRIVATE_DEPS)
+          configure_file(${xpThisDir}/graphPvtClean.sh.in graphPvtClean.sh
+            @ONLY NEWLINE_STYLE LF
+            )
+          set(graphPvtClean COMMAND ./graphPvtClean.sh)
         endif()
-      endforeach()
-      foreach(boolOpt EXECUTABLES STATIC_LIBS SHARED_LIBS MODULE_LIBS INTERFACE_LIBS OBJECT_LIBS UNKNOWN_LIBS
-                      EXTERNAL_LIBS CUSTOM_TARGETS GENERATE_PER_TARGET GENERATE_DEPENDERS)
-        if(DEFINED GRAPHVIZ_${boolOpt})
-          set(opts "${opts}set(GRAPHVIZ_${boolOpt} ${GRAPHVIZ_${boolOpt}})\n")
+        if(NOT TARGET graph)
+          add_custom_command(OUTPUT graph_cmake
+            COMMAND ${CMAKE_COMMAND} --graphviz=${CMAKE_PROJECT_NAME}.dot .
+            ${graphPvtClean}
+            COMMAND dot -Tpng -o${CMAKE_PROJECT_NAME}.png ${CMAKE_PROJECT_NAME}.dot
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generating ${CMAKE_PROJECT_NAME}.dot and ${CMAKE_PROJECT_NAME}.png..."
+            )
+          add_custom_target(graph SOURCES ${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake DEPENDS graph_cmake)
+          set_property(TARGET graph PROPERTY FOLDER CMakeTargets)
         endif()
-      endforeach()
-      file(WRITE ${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake ${opts})
-    endif()
+        set(opts "# Generating Dependency Graphs with CMake\n")
+        set(opts "${opts}# https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/Graphviz\n")
+        set(opts "${opts}# https://cmake.org/cmake/help/latest/module/CMakeGraphVizOptions.html\n")
+        set(opts "${opts}# cmake --graphviz=${CMAKE_PROJECT_NAME}.dot ..\n")
+        set(opts "${opts}# dot -Tpng -o${CMAKE_PROJECT_NAME}.png ${CMAKE_PROJECT_NAME}.dot\n")
+        foreach(stringOpt GRAPH_NAME GRAPH_HEADER NODE_PREFIX IGNORE_TARGETS)
+          if(DEFINED GRAPHVIZ_${stringOpt})
+            set(opts "${opts}set(GRAPHVIZ_${stringOpt}")
+            foreach(str ${GRAPHVIZ_${stringOpt}})
+              set(opts "${opts} \"${str}\"")
+            endforeach()
+            set(opts "${opts})\n")
+          endif()
+        endforeach()
+        foreach(boolOpt EXECUTABLES STATIC_LIBS SHARED_LIBS MODULE_LIBS INTERFACE_LIBS OBJECT_LIBS UNKNOWN_LIBS
+                        EXTERNAL_LIBS CUSTOM_TARGETS GENERATE_PER_TARGET GENERATE_DEPENDERS)
+          if(DEFINED GRAPHVIZ_${boolOpt})
+            set(opts "${opts}set(GRAPHVIZ_${boolOpt} ${GRAPHVIZ_${boolOpt}})\n")
+          endif()
+        endforeach()
+        file(WRITE ${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake ${opts})
+      endif() # XP_GRAPHVIZ
+    endif() # XP_DOT_EXE
     option(XP_CSCOPE "always update cscope database" OFF)
     mark_as_advanced(XP_CSCOPE)
     if(XP_CSCOPE)
