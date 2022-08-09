@@ -10,6 +10,9 @@ for (( i=0; i<=${num_nodes}; i++ )); do
     # if nothing depends on this external library, delete it
     if ! grep -qe "-> \"node$i\"" ${dotFile}; then
       sed -i "/node$i\"/d" ${dotFile}
+    else
+      # color red for remaining external::libraries
+      sed -i "s/node$i\" \[ label/node$i\" \[ color = red, label/" ${dotFile}
     fi
   fi
 done
