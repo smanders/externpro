@@ -8,8 +8,8 @@ get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative part
 string(TOUPPER ${prj} PRJ)
 set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
 # targets file (-targets) installed to lib/cmake
-include(${XP_ROOTDIR}/lib/cmake/${prj}_@VER@-targets.cmake)
-set(${PRJ}_LIBRARIES xpro::cares)
+include(${XP_ROOTDIR}/lib/cmake/c-ares/c-ares-targets.cmake)
+set(${PRJ}_LIBRARIES c-ares::cares)
 set(reqVars ${PRJ}_VER ${PRJ}_LIBRARIES)
 include(FindPackageHandleStandardArgs)
 set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)

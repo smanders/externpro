@@ -1,6 +1,6 @@
 # cares
 xpProOption(cares DBG)
-set(VER 1.10.0)
+set(VER 1.18.1)
 string(REPLACE "." "_" VER_ ${VER})
 set(REPO github.com/c-ares/c-ares)
 set(FORK github.com/smanders/c-ares)
@@ -18,7 +18,7 @@ set(PRO_CARES
   GIT_TAG xp-${VER_} # what to 'git checkout'
   GIT_REF cares-${VER_} # create patch from this tag to 'git checkout'
   DLURL http://c-ares.haxx.se/download/c-ares-${VER}.tar.gz
-  DLMD5 1196067641411a75d3cbebe074fd36d8
+  DLMD5 bf770c0d3131ec0dd0575a0d2dcab226
   PATCH ${PATCH_DIR}/cares.patch
   DIFF https://${FORK}/compare/c-ares:
   DEPS_FUNC build_cares
@@ -33,10 +33,11 @@ function(build_cares)
     @ONLY NEWLINE_STYLE LF
     )
   set(XP_CONFIGURE
-    -DXP_INSTALL_DIRS:BOOL=ON
-    -DXP_NAMESPACE:STRING=xpro
+    -DCMAKE_INSTALL_INCLUDEDIR=include/cares_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-    -DCARES_VER:STRING=${VER}
+    -DCARES_BUILD_TOOLS:BOOL=OFF
+    -DCARES_SHARED:BOOL=OFF
+    -DCARES_STATIC:BOOL=ON
     )
   xpCmakeBuild(cares "" "${XP_CONFIGURE}" caresTargets)
   if(ARGN)
