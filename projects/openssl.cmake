@@ -1,7 +1,7 @@
 # openssl
 set(BRANCH 1.1.1)
 set(VER ${BRANCH}l)
-xpProOption(openssl_${VER} DBG)
+xpProOption(openssl DBG)
 string(REPLACE "." "_" VER_ ${VER})
 set(REPO github.com/openssl/openssl)
 set(FORK github.com/smanders/openssl)
@@ -47,10 +47,7 @@ function(build_openssl)
     -DXP_NAMESPACE:STRING=xpro
     ${NASM_EXE}
     )
-  set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)
-find_package(THREADS REQUIRED) # crypto depends on Threads::Threads
-"
-  )
+  set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\nfind_package(Threads REQUIRED) # crypto depends on Threads::Threads\n")
   set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
   set(LIBRARIES "xpro::crypto xpro::ssl")
   configure_file(${PRO_DIR}/use/usexp-template-config.cmake
