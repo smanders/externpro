@@ -78,15 +78,15 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_75c4083b8e8be9f4b35db6737a53c6d9?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_5fb3cc69ffc19edfe3b23ef1e22f6f32?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_75c4083b8e8be9f4b35db6737a53c6d9
+depgraph_5fb3cc69ffc19edfe3b23ef1e22f6f32
 digraph GG {
   node [fontsize=12];
-  activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
-  activemqcpp_3_9_5 -> apr;
-  activemqcpp_3_9_5 -> openssl;
+  activemqcpp [shape=diamond];
+  activemqcpp -> apr;
+  activemqcpp -> openssl;
   apr [shape=diamond];
   azmq [shape=diamond];
   azmq -> libzmq;
@@ -151,5 +151,5 @@ digraph GG {
   zmqpp [shape=diamond];
   zmqpp -> libzmq;
 }
-depgraph_75c4083b8e8be9f4b35db6737a53c6d9
+depgraph_5fb3cc69ffc19edfe3b23ef1e22f6f32
 </details>

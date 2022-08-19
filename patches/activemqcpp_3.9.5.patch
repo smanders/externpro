@@ -1,22 +1,21 @@
 diff --git a/activemq-cpp/CMakeLists.txt b/activemq-cpp/CMakeLists.txt
 new file mode 100644
-index 00000000..e7473941
+index 00000000..1a4b9287
 --- /dev/null
 +++ b/activemq-cpp/CMakeLists.txt
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,26 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(activemq-cpp)
 +include(flags OPTIONAL)
-+option(FIND_APR_MODULE_PATH "Find APR in CMAKE_MODULE_PATH" OFF)
-+option(FIND_OPENSSL_MODULE_PATH "Find OpenSSL in CMAKE_MODULE_PATH" OFF)
-+mark_as_advanced(FIND_APR_MODULE_PATH)
-+mark_as_advanced(FIND_OPENSSL_MODULE_PATH)
-+if(FIND_APR_MODULE_PATH)
++include(GNUInstallDirs)
++option(XP_MODULE_PATH "Find dependencies in CMAKE_MODULE_PATH" OFF)
++mark_as_advanced(XP_MODULE_PATH)
++if(XP_MODULE_PATH)
 +  find_package(usexp-APR REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
 +else()
 +  find_package(APR REQUIRED)
 +endif()
-+if(FIND_OPENSSL_MODULE_PATH)
++if(XP_MODULE_PATH)
 +  find_package(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
 +else()
 +  find_package(OpenSSL)
@@ -769,10 +768,10 @@ index 00000000..7a229f29
 +endforeach()
 diff --git a/activemq-cpp/src/main/CMakeLists.txt b/activemq-cpp/src/main/CMakeLists.txt
 new file mode 100644
-index 00000000..bdec5275
+index 00000000..9268b8d8
 --- /dev/null
 +++ b/activemq-cpp/src/main/CMakeLists.txt
-@@ -0,0 +1,1714 @@
+@@ -0,0 +1,1707 @@
 +set(lib_name activemqcpp)
 +#######################################
 +# library sources
@@ -2455,35 +2454,28 @@ index 00000000..bdec5275
 +source_group(decaf\\util\\zip FILES ${decaf_util_zip_srcs})
 +list(APPEND ${lib_name}_libsrcs ${decaf_util_zip_srcs})
 +#######################################
-+# version
-+if(DEFINED ACTIVEMQCPP_VER)
-+  set(ver _${ACTIVEMQCPP_VER})
-+  set(verDir /${lib_name}${ver})
-+endif()
-+#######################################
 +# library
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
 +target_link_libraries(${lib_name} PUBLIC ${APR_LIBRARIES} ${OPENSSL_LIBRARIES})
 +target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-+  $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}/${lib_name}>
++  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${lib_name}>
 +  )
 +if(TARGET xpro::crypto)
 +  get_target_property(defs xpro::crypto INTERFACE_COMPILE_DEFINITIONS)
 +  string(REPLACE "OPENSSL_API_COMPAT=0x10100000L" "OPENSSL_API_COMPAT=0x00908000L" newDefs "${defs}")
 +  set_target_properties(xpro::crypto PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${newDefs}")
 +endif()
-+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-+  DESTINATION include${verDir}/${lib_name}
++  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${lib_name}
 +  FILES_MATCHING PATTERN "*.h"
 +  )
-+set(targetsFile ${lib_name}${ver}-targets)
++set(targetsFile ${lib_name}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
-+  ARCHIVE DESTINATION lib
-+  LIBRARY DESTINATION lib
-+  RUNTIME DESTINATION bin
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 +  )
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
++install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
