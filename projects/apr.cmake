@@ -33,14 +33,19 @@ function(build_apr)
   if(NOT (XP_DEFAULT OR XP_PRO_APR))
     return()
   endif()
+  xpGetArgValue(${PRO_APR} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_APR} ARG VER VALUE VER)
   set(XP_CONFIGURE
-    -DAPR_BUILD_TESTAPR=ON
-    -DTEST_STATIC_LIBS=ON
-    -DAPR_VER=${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DXP_NAMESPACE:STRING=xpro
+    -DAPR_BUILD_TESTAPR:BOOL=ON
+    -DTEST_STATIC_LIBS:BOOL=ON
     )
-  configure_file(${PRO_DIR}/use/usexp-apr-config.cmake ${STAGE_DIR}/share/cmake/
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::apr-1)
+  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(apr "" "${XP_CONFIGURE}" aprTargets)
