@@ -78,15 +78,15 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_3e289fcdb5352c9d18bf2c515d248d16?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_75c4083b8e8be9f4b35db6737a53c6d9?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_3e289fcdb5352c9d18bf2c515d248d16
+depgraph_75c4083b8e8be9f4b35db6737a53c6d9
 digraph GG {
   node [fontsize=12];
   activemqcpp_3_9_5 [label="activemqcpp_3.9.5" shape=diamond];
   activemqcpp_3_9_5 -> apr;
-  activemqcpp_3_9_5 -> openssl_1_1_1l;
+  activemqcpp_3_9_5 -> openssl;
   apr [shape=diamond];
   azmq [shape=diamond];
   azmq -> libzmq;
@@ -120,10 +120,10 @@ digraph GG {
   libgit2_1_3_0 -> libssh2_1_9_0;
   libssh2_1_9_0 [label="libssh2_1.9.0" shape=diamond];
   libssh2_1_9_0 -> zlib;
-  libssh2_1_9_0 -> openssl_1_1_1l;
+  libssh2_1_9_0 -> openssl;
   libstrophe [shape=diamond];
   libstrophe -> expat;
-  libstrophe -> openssl_1_1_1l;
+  libstrophe -> openssl;
   libzmq [shape=diamond];
   libzmq -> sodium;
   llvm [shape=box];
@@ -134,9 +134,9 @@ digraph GG {
   nodejs -> nasm;
   openh264 [shape=diamond];
   openh264 -> yasm;
-  openssl_1_1_1l [label="openssl_1.1.1l" shape=diamond];
-  openssl_1_1_1l -> opensslasm;
-  openssl_1_1_1l -> nasm;
+  openssl [shape=diamond];
+  openssl -> opensslasm;
+  openssl -> nasm;
   opensslasm [shape=diamond];
   protobuf [shape=diamond];
   protobuf -> zlib;
@@ -151,5 +151,5 @@ digraph GG {
   zmqpp [shape=diamond];
   zmqpp -> libzmq;
 }
-depgraph_3e289fcdb5352c9d18bf2c515d248d16
+depgraph_75c4083b8e8be9f4b35db6737a53c6d9
 </details>

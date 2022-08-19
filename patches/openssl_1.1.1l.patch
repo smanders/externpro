@@ -1,12 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000000..df9ec9b66e
+index 0000000000..dd2f13e39c
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,113 @@
+@@ -0,0 +1,110 @@
 +cmake_minimum_required(VERSION 3.20)
 +project(openssl LANGUAGES C ASM)
 +include(flags OPTIONAL)
++include(GNUInstallDirs)
 +########################################
 +set_property(GLOBAL PROPERTY USE_FOLDERS ON) # enables MSVC Solution Folders
 +# NOTE: attempted to make OPENSSL_DEFS match other build systems (node.js and openssl perl)
@@ -102,11 +103,7 @@ index 0000000000..df9ec9b66e
 +  endif()
 +endfunction()
 +########################################
-+if(DEFINED OPENSSL_VER)
-+  set(ver _${OPENSSL_VER})
-+  set(verDir /${PROJECT_NAME}${ver})
-+endif()
-+set(targetsFile ${PROJECT_NAME}${ver}-targets)
++set(targetsFile ${PROJECT_NAME}-targets)
 +########################################
 +add_subdirectory(include)
 +add_subdirectory(crypto)
@@ -116,7 +113,7 @@ index 0000000000..df9ec9b66e
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
++install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
 diff --git a/apps/CMakeLists.txt b/apps/CMakeLists.txt
 new file mode 100644
 index 0000000000..5cf5fd01cc
@@ -432,15 +429,15 @@ index 0000000000..bd4643da6a
 +DEFINE_LHASH_OF(FUNCTION);
 diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
 new file mode 100644
-index 0000000000..e552115983
+index 0000000000..84e5335ca4
 --- /dev/null
 +++ b/crypto/CMakeLists.txt
-@@ -0,0 +1,1808 @@
+@@ -0,0 +1,1807 @@
 +set(lib_name crypto)
 +########################################
 +set(gen_file buildinf.h)
 +set(BUILDINF_PLATFORM ${CMAKE_SYSTEM_NAME})
-+if(DEFINED OPENSSL_VER) # passed in via externpro
++if(DEFINED XP_NAMESPACE) # passed in via externpro
 +  string(TIMESTAMP BUILDINF_DATE "%a %b %d %H:%M:%S %Y UTC" UTC)
 +else()
 +  string(TIMESTAMP BUILDINF_DATE "%a %b %d %Y UTC" UTC)
@@ -2220,7 +2217,7 @@ index 0000000000..e552115983
 +  ec/curve448/arch_32
 +  modes # evp includes modes_lcl.h
 +  PUBLIC
-+  $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>
++  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 +  )
 +target_compile_definitions(${lib_name} PUBLIC $<INSTALL_INTERFACE:OPENSSL_API_COMPAT=0x10100000L>)
 +set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -2231,12 +2228,11 @@ index 0000000000..e552115983
 +if(CRYPTO_HAS_WS2_32)
 +  target_link_libraries(${lib_name} PRIVATE ws2_32)
 +endif()
-+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +########################################
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
-+  RUNTIME DESTINATION bin
-+  LIBRARY DESTINATION lib
-+  ARCHIVE DESTINATION lib
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  )
 +########################################
 +list(APPEND ${lib_name}_all ${${lib_name}_libsrcs})
@@ -2275,7 +2271,7 @@ index 0000000000..8ff8bde686
 +};
 diff --git a/include/CMakeLists.txt b/include/CMakeLists.txt
 new file mode 100644
-index 0000000000..6e04c447cf
+index 0000000000..056ed0f541
 --- /dev/null
 +++ b/include/CMakeLists.txt
 @@ -0,0 +1,322 @@
@@ -2591,7 +2587,7 @@ index 0000000000..6e04c447cf
 +  openssl/opensslconf.h.cmake.in
 +  openssl/opensslconf.h.in
 +  )
-+install(FILES ${openssl_srcs} DESTINATION include${verDir}/${PROJECT_NAME})
++install(FILES ${openssl_srcs} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 +########################################
 +list(APPEND ${lib_name}_libsrcs CMakeLists.txt)
 +list(REMOVE_ITEM ${lib_name}_libsrcs
@@ -2784,10 +2780,10 @@ index 0000000000..1782ddd7e2
 +#endif
 diff --git a/ssl/CMakeLists.txt b/ssl/CMakeLists.txt
 new file mode 100644
-index 0000000000..53810c352e
+index 0000000000..7734ae1d7d
 --- /dev/null
 +++ b/ssl/CMakeLists.txt
-@@ -0,0 +1,97 @@
+@@ -0,0 +1,96 @@
 +set(lib_name ssl)
 +########################################
 +# root
@@ -2875,12 +2871,11 @@ index 0000000000..53810c352e
 +########################################
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
 +target_link_libraries(${lib_name} PUBLIC crypto)
-+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +########################################
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
-+  RUNTIME DESTINATION bin
-+  LIBRARY DESTINATION lib
-+  ARCHIVE DESTINATION lib
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  )
 +########################################
 +list(APPEND ${lib_name}_all ${${lib_name}_libsrcs})

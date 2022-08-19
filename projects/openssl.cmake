@@ -1,11 +1,33 @@
 # openssl
-set(OPENSSL_OLDVER 1.1.1l)
-set(OPENSSL_NEWVER 1.1.1l)
+set(BRANCH 1.1.1)
+set(VER ${BRANCH}l)
+xpProOption(openssl_${VER} DBG)
+string(REPLACE "." "_" VER_ ${VER})
+set(REPO github.com/openssl/openssl)
+set(FORK github.com/smanders/openssl)
+set(PRO_OPENSSL
+  NAME openssl
+  WEB "OpenSSL" http://www.openssl.org/ "OpenSSL website"
+  LICENSE "open" http://www.openssl.org/source/license.html "OpenSSL, SSLeay License: BSD-style"
+  DESC "Cryptography and SSL/TLS Toolkit"
+  REPO "repo" https://${REPO} "openssl repo on github"
+  GRAPH BUILD_DEPS opensslasm nasm
+  VER ${VER}
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
+  GIT_TAG xp_${VER_} # what to 'git checkout'
+  GIT_REF OpenSSL_${VER_} # create patch from this tag to 'git checkout'
+  #DLURL https://www.openssl.org/source/old/${BRANCH}/openssl-${VER}.tar.gz
+  DLURL https://www.openssl.org/source/openssl-${VER}.tar.gz
+  DLMD5 ac0d4387f3ba0ad741b0580dd45f6ff3
+  PATCH ${PATCH_DIR}/openssl_${VER}.patch
+  DIFF https://${FORK}/compare/openssl:
+  DEPS_FUNC build_openssl
+  SUBPRO opensslasm
+  )
 ########################################
 function(build_openssl)
-  string(TOUPPER ${OPENSSL_OLDVER} OLDVER)
-  string(TOUPPER ${OPENSSL_NEWVER} NEWVER)
-  if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL_${OLDVER} OR XP_PRO_OPENSSL_${NEWVER}))
+  if(NOT (XP_DEFAULT OR XP_PRO_OPENSSL))
     return()
   endif()
   if(WIN32)
@@ -17,40 +39,25 @@ function(build_openssl)
     ExternalProject_Get_Property(nasm SOURCE_DIR)
     set(NASM_EXE "-DCMAKE_ASM_NASM_COMPILER=${SOURCE_DIR}/nasm.exe")
   endif()
-  if(XP_DEFAULT)
-    set(OPENSSL_VERSIONS ${OPENSSL_OLDVER} ${OPENSSL_NEWVER})
-  else()
-    if(XP_PRO_OPENSSL_${OLDVER})
-      set(OPENSSL_VERSIONS ${OPENSSL_OLDVER})
-    endif()
-    if(XP_PRO_OPENSSL_${NEWVER})
-      list(APPEND OPENSSL_VERSIONS ${OPENSSL_NEWVER})
-    endif()
-  endif()
-  list(REMOVE_DUPLICATES OPENSSL_VERSIONS)
-  list(LENGTH OPENSSL_VERSIONS NUM_VER)
-  if(NUM_VER EQUAL 1)
-    if(OPENSSL_VERSIONS VERSION_EQUAL OPENSSL_OLDVER)
-      set(boolean OFF)
-    else() # OPENSSL_VERSIONS VERSION_EQUAL OPENSSL_NEWVER
-      set(boolean ON)
-    endif()
-    set(ONE_VER "set(XP_USE_LATEST_OPENSSL ${boolean}) # currently only one version supported\n")
-  endif()
-  set(MOD_OPT "set(VER_MOD)")
-  set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
-  configure_file(${PRO_DIR}/use/usexp-openssl-config.cmake ${STAGE_DIR}/share/cmake/
+  xpGetArgValue(${PRO_OPENSSL} ARG NAME VALUE NAME)
+  xpGetArgValue(${PRO_OPENSSL} ARG VER VALUE VER)
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DXP_NAMESPACE:STRING=xpro
+    ${NASM_EXE}
+    )
+  set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)
+find_package(THREADS REQUIRED) # crypto depends on Threads::Threads
+"
+  )
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES "xpro::crypto xpro::ssl")
+  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  foreach(ver ${OPENSSL_VERSIONS})
-    set(XP_CONFIGURE
-      -DXP_NAMESPACE:STRING=xpro
-      -DOPENSSL_VER:STRING=${ver}
-      ${NASM_EXE}
-      )
-    xpCmakeBuild(openssl_${ver} "" "${XP_CONFIGURE}" opensslTargets_${ver})
-    list(APPEND opensslTargets ${opensslTargets_${ver}})
-  endforeach()
+  xpCmakeBuild(openssl "" "${XP_CONFIGURE}" opensslTargets)
   if(ARGN)
     set(${ARGN} "${opensslTargets}" PARENT_SCOPE)
   endif()
