@@ -1,18 +1,16 @@
 diff --git a/activemq-cpp/CMakeLists.txt b/activemq-cpp/CMakeLists.txt
 new file mode 100644
-index 00000000..2e20dbd2
+index 00000000..51429793
 --- /dev/null
 +++ b/activemq-cpp/CMakeLists.txt
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,21 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(activemq-cpp)
 +include(flags OPTIONAL)
 +include(GNUInstallDirs)
-+option(XP_MODULE_PATH "Find dependencies in CMAKE_MODULE_PATH" OFF)
-+mark_as_advanced(XP_MODULE_PATH)
-+if(XP_MODULE_PATH)
-+  find_package(usexp-APR REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
-+  find_package(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++if(COMMAND xpFindPkg)
++  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
++  xpFindPkg(PKGS apr openssl)
 +else()
 +  find_package(APR REQUIRED)
 +  find_package(OpenSSL)

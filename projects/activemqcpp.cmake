@@ -33,7 +33,6 @@ function(build_activemqcpp)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
-    -DXP_MODULE_PATH:BOOL=ON
     -DXP_NAMESPACE:STRING=xpro
     )
   set(FIND_DEPS "xpFindPkg(PKGS apr openssl) # dependencies\n")
