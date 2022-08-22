@@ -28,6 +28,7 @@ function(build_activemqcpp)
   if(NOT (XP_DEFAULT OR XP_PRO_ACTIVEMQCPP))
     return()
   endif()
+  xpBuildDeps(depTgts ${PRO_ACTIVEMQCPP})
   xpGetArgValue(${PRO_ACTIVEMQCPP} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_ACTIVEMQCPP} ARG VER VALUE VER)
   set(XP_CONFIGURE
@@ -42,6 +43,5 @@ function(build_activemqcpp)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpBuildDeps(depTgts ${PRO_ACTIVEMQCPP})
   xpCmakeBuild(activemqcpp "${depTgts}" "${XP_CONFIGURE}")
 endfunction()
