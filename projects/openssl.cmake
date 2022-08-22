@@ -42,8 +42,8 @@ function(build_openssl)
   xpGetArgValue(${PRO_OPENSSL} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_OPENSSL} ARG VER VALUE VER)
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
     -DXP_NAMESPACE:STRING=xpro
     ${NASM_EXE}
     )

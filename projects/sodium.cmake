@@ -31,8 +31,8 @@ function(build_sodium)
   xpGetArgValue(${PRO_SODIUM} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_SODIUM} ARG VER VALUE VER)
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
     -DXP_NAMESPACE:STRING=xpro
     )
   set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\nfind_package(Threads REQUIRED) # ${NAME} depends on Threads::Threads\n")

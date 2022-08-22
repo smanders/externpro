@@ -31,8 +31,8 @@ function(build_activemqcpp)
   xpGetArgValue(${PRO_ACTIVEMQCPP} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_ACTIVEMQCPP} ARG VER VALUE VER)
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
     -DXP_NAMESPACE:STRING=xpro
     )
   set(FIND_DEPS "xpFindPkg(PKGS apr openssl) # dependencies\n")
