@@ -783,10 +783,10 @@ index 00000000..0f038f5a
 +endif()
 diff --git a/src/libsodium/CMakeLists.txt b/src/libsodium/CMakeLists.txt
 new file mode 100644
-index 00000000..edd3d8d8
+index 00000000..98361872
 --- /dev/null
 +++ b/src/libsodium/CMakeLists.txt
-@@ -0,0 +1,699 @@
+@@ -0,0 +1,694 @@
 +set(lib_name sodium)
 +############################################################
 +set(root_srcs
@@ -1454,10 +1454,6 @@ index 00000000..edd3d8d8
 +endif()
 +configure_file(include/sodium/version.h.in include/sodium/version.h)
 +############################################################
-+if(DEFINED XP_VER)
-+  set(ver _${XP_VER})
-+  set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}${ver})
-+endif()
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
@@ -1472,13 +1468,12 @@ index 00000000..edd3d8d8
 +  PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include/sodium
 +  )
 +target_link_libraries(${lib_name} PRIVATE Threads::Threads)
-+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 +install(DIRECTORY include/ ${CMAKE_CURRENT_BINARY_DIR}/include/
 +  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 +  FILES_MATCHING PATTERN "*.h"
 +  PATTERN "private*" EXCLUDE
 +  )
-+set(targetsFile ${lib_name}${ver}-targets)
++set(targetsFile ${lib_name}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
 +  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

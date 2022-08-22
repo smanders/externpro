@@ -28,14 +28,19 @@ function(build_sodium)
   if(NOT (XP_DEFAULT OR XP_PRO_SODIUM))
     return()
   endif()
+  xpGetArgValue(${PRO_SODIUM} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_SODIUM} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-sodium-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-    -DXP_VER=${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DXP_NAMESPACE:STRING=xpro
+    )
+  set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\nfind_package(Threads REQUIRED) # ${NAME} depends on Threads::Threads\n")
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::${NAME})
+  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-sodium-config.cmake
+    @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(sodium "" "${XP_CONFIGURE}" sodiumTargets)
   if(ARGN)
