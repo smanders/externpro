@@ -1,8 +1,22 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dd3d8eb9..2de767a1 100644
+index dd3d8eb9..4ac4d50f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -20,6 +20,7 @@ include(FindThreads)
+@@ -1,12 +1,7 @@
+ # CMake build script for ZeroMQ
++cmake_minimum_required(VERSION 3.0.2...3.21)
+ project(ZeroMQ)
+ 
+-if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+-  cmake_minimum_required(VERSION 3.0.2)
+-else()
+-  cmake_minimum_required(VERSION 2.8.12)
+-endif()
+-
+ include(CheckIncludeFiles)
+ include(CheckCCompilerFlag)
+ include(CheckCXXCompilerFlag)
+@@ -20,6 +15,7 @@ include(FindThreads)
  include(GNUInstallDirs)
  include(CheckTypeSize)
  include(CMakePackageConfigHelpers)
@@ -10,7 +24,7 @@ index dd3d8eb9..2de767a1 100644
  
  list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}")
  set(ZMQ_CMAKE_MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/builds/cmake/Modules)
-@@ -262,20 +263,32 @@ option(ENABLE_CURVE "Enable CURVE security" ON)
+@@ -262,20 +258,32 @@ option(ENABLE_CURVE "Enable CURVE security" ON)
  
  if(ENABLE_CURVE)
    if(WITH_LIBSODIUM)
@@ -52,31 +66,26 @@ index dd3d8eb9..2de767a1 100644
      endif()
    endif()
    if(NOT ZMQ_HAVE_CURVE)
-@@ -1224,7 +1237,22 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
+@@ -1224,7 +1232,17 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/libzmq.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc @ONLY)
  set(zmq-pkgconfig ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc)
  
 -if(NOT ZMQ_BUILD_FRAMEWORK)
-+if(DEFINED LIBZMQ_VER)
-+  if(NOT LIBZMQ_VER STREQUAL ZMQ_VERSION)
-+    message(AUTHOR_WARNING "version passed in (${LIBZMQ_VER}) doesn't match internal version (${ZMQ_VERSION})")
-+  endif()
-+  if(NOT MSVC)
-+    set(ZMQ_OUTPUT_BASENAME ${ZMQ_OUTPUT_BASENAME}_${ZMQ_VERSION})
-+  endif()
-+endif()
 +if(DEFINED XP_NAMESPACE)
 +  set(nSpace ${XP_NAMESPACE}::)
 +  set(nameSpace NAMESPACE ${nSpace})
 +endif()
++if(DEFINED XP_INSTALL_CMAKECFGDIR)
++  set(ZEROMQ_CMAKECONFIG_INSTALL_DIR ${XP_INSTALL_CMAKECFGDIR} CACHE STRING "install path for ZeroMQConfig.cmake")
++endif()
 +
-+option(INSTALL_PKGCONFIG "pkgconfig install" ON)
-+mark_as_advanced(INSTALL_PKGCONFIG)
-+if(NOT ZMQ_BUILD_FRAMEWORK AND INSTALL_PKGCONFIG)
++option(XP_INSTALL_PKGCONFIG "pkgconfig install" ON)
++mark_as_advanced(XP_INSTALL_PKGCONFIG)
++if(NOT ZMQ_BUILD_FRAMEWORK AND XP_INSTALL_PKGCONFIG)
    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
  endif()
  
-@@ -1350,7 +1378,8 @@ else()
+@@ -1350,7 +1368,8 @@ else()
      set_property(TARGET objects PROPERTY POSITION_INDEPENDENT_CODE ON)
      target_include_directories(
        objects PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -86,7 +95,7 @@ index dd3d8eb9..2de767a1 100644
    endif()
  
    if(BUILD_SHARED)
-@@ -1422,7 +1451,8 @@ endif()
+@@ -1422,7 +1441,8 @@ endif()
  foreach(target ${target_outputs})
    target_include_directories(
      ${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -96,7 +105,7 @@ index dd3d8eb9..2de767a1 100644
  endforeach()
  
  if(BUILD_SHARED)
-@@ -1688,7 +1718,7 @@ write_basic_package_version_file(
+@@ -1688,7 +1708,7 @@ write_basic_package_version_file(
  if(BUILD_SHARED OR BUILD_STATIC)
    install(
      EXPORT ${PROJECT_NAME}-targets
@@ -480,9 +489,16 @@ index 2c2e3d52..569dbc17 100644
  {
      zmq::socket_base_t *s = as_socket_base_t (s_);
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
-index 08056143..bf0593f7 100644
+index 08056143..f47dbf60 100644
 --- a/tests/CMakeLists.txt
 +++ b/tests/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ # CMake build script for ZeroMQ tests
+-cmake_minimum_required(VERSION "2.8.1")
++cmake_minimum_required(VERSION 2.8.1...3.21)
+ 
+ # On Windows: solution file will be called tests.sln
+ project(tests)
 @@ -234,7 +234,10 @@ endif()
  foreach(test ${tests})
    # target_sources not supported before CMake 3.1
@@ -495,3 +511,14 @@ index 08056143..bf0593f7 100644
    else()
      add_executable(${test} ${test}.cpp)
    endif()
+diff --git a/unittests/CMakeLists.txt b/unittests/CMakeLists.txt
+index 7132f00b..ae083a41 100644
+--- a/unittests/CMakeLists.txt
++++ b/unittests/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ # CMake build script for ZeroMQ unit tests
+-cmake_minimum_required(VERSION "2.8.1")
++cmake_minimum_required(VERSION 2.8.1...3.21)
+ 
+ set(unittests
+     unittest_ypipe

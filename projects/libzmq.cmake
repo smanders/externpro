@@ -28,19 +28,23 @@ function(build_libzmq)
     return()
   endif()
   xpBuildDeps(depsTgts ${PRO_LIBZMQ})
+  xpGetArgValue(${PRO_LIBZMQ} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_LIBZMQ} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-libzmq-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-    -DCMAKE_INSTALL_INCLUDEDIR=include/libzmq_${VER}
-    -DZEROMQ_CMAKECONFIG_INSTALL_DIR=lib/cmake/ZeroMQ_${VER}
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKECFGDIR=lib/cmake/ZeroMQ
+    -DXP_INSTALL_PKGCONFIG:BOOL=OFF
+    -DXP_NAMESPACE:STRING=xpro
     -DBUILD_SHARED:BOOL=OFF
     -DENABLE_CPACK:BOOL=OFF
-    -DINSTALL_PKGCONFIG:BOOL=OFF
-    -DLIBZMQ_VER=${VER}
-    -DXP_NAMESPACE:STRING=xpro
+    )
+  set(FIND_DEPS "xpFindPkg(PKGS sodium) # dependencies\n")
+  set(TARGETS_FILE lib/cmake/ZeroMQ/ZeroMQTargets.cmake)
+  set(LIBRARIES xpro::${NAME}-static)
+  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+    @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(libzmq "${depsTgts}" "${XP_CONFIGURE}" zmqTargets)
   if(ARGN)
