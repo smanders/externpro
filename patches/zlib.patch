@@ -1,8 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0c0247c..f7259dc 100644
+index 0c0247c..6008469 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2,18 +2,14 @@ cmake_minimum_required(VERSION 2.4.4)
+@@ -1,19 +1,15 @@
+-cmake_minimum_required(VERSION 2.4.4)
++cmake_minimum_required(VERSION 2.4.4...3.21)
  set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
  
  project(zlib C)
