@@ -27,9 +27,17 @@ function(build_bzip2)
   if(NOT (XP_DEFAULT OR XP_PRO_BZIP2))
     return()
   endif()
+  xpGetArgValue(${PRO_BZIP2} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_BZIP2} ARG VER VALUE VER)
-  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro -DBZIP2_VER=${VER})
-  configure_file(${PRO_DIR}/use/usexp-bzip2-config.cmake ${STAGE_DIR}/share/cmake/
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_NAMESPACE:STRING=xpro
+    )
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::bz2)
+  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-bzip2-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(bzip2 "" "${XP_CONFIGURE}" bzip2Targets)
