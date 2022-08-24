@@ -32,9 +32,13 @@ function(build_wxinclude)
   xpBuildDeps(depsTgts ${PRO_WXINCLUDE})
   set(oneValueArgs TARGETS EXE)
   cmake_parse_arguments(wxinc "" "${oneValueArgs}" "" ${ARGN})
+  xpGetArgValue(${PRO_WXINCLUDE} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_WXINCLUDE} ARG VER VALUE VER)
   set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro)
-  configure_file(${PRO_DIR}/use/usexp-wxinclude-config.cmake ${STAGE_DIR}/share/cmake/
+  set(TARGETS_FILE bin/cmake/${NAME}-targets.cmake)
+  set(EXECUTABLE xpro::wxInclude)
+  configure_file(${PRO_DIR}/use/usexp-template-exe-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-wxinclude-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   set(BUILD_CONFIGS Release) # we only need a release executable
@@ -44,10 +48,6 @@ function(build_wxinclude)
     set(${wxinc_TARGETS} "${${wxinc_TARGETS}}" PARENT_SCOPE)
   endif()
   if(DEFINED wxinc_EXE)
-    if(MSVC)
-      set(${wxinc_EXE} ${STAGE_DIR}/bin/wxInclude.exe PARENT_SCOPE)
-    else()
-      set(${wxinc_EXE} ${STAGE_DIR}/bin/wxInclude PARENT_SCOPE)
-    endif()
+    set(${wxinc_EXE} ${STAGE_DIR}/bin/wxInclude${CMAKE_EXECUTABLE_SUFFIX} PARENT_SCOPE)
   endif()
 endfunction()
