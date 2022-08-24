@@ -1,10 +1,9 @@
 # boost dll
 set(VER 1.76.0)
-string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" VER2_ ${VER}) # 1_76
 set(REPO github.com/boostorg/dll)
 set(FORK github.com/smanders/dll)
-set(PRO_BOOSTDLL${VER2_}
-  NAME boostdll${VER2_}
+set(PRO_BOOSTDLL
+  NAME boostdll
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/dll
   WEB "dll" http://boost.org/libs/dll "Boost.DLL website"
@@ -17,7 +16,7 @@ set(PRO_BOOSTDLL${VER2_}
   GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}
-  PATCH ${PATCH_DIR}/boost.dll.${VER2_}.patch
+  PATCH ${PATCH_DIR}/boost.dll.patch
   PATCH_STRIP 2 # Strip NUM leading components from file names (defaults to 1)
   DIFF https://${FORK}/compare/boostorg:
   )

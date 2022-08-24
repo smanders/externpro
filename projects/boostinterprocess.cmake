@@ -1,10 +1,9 @@
 # boost interprocess
 set(VER 1.76.0)
-string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" VER2_ ${VER}) # 1_76
 set(REPO github.com/boostorg/interprocess)
 set(FORK github.com/smanders/interprocess)
-set(PRO_BOOSTINTERPROCESS${VER2_}
-  NAME boostinterprocess${VER2_}
+set(PRO_BOOSTINTERPROCESS
+  NAME boostinterprocess
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/interprocess
   WEB "interprocess" http://boost.org/libs/interprocess "Boost.Interprocess website"
@@ -17,7 +16,7 @@ set(PRO_BOOSTINTERPROCESS${VER2_}
   GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}
-  PATCH ${PATCH_DIR}/boost.interprocess.${VER2_}.patch
+  PATCH ${PATCH_DIR}/boost.interprocess.patch
   PATCH_STRIP 2 # Strip NUM leading components from file names (defaults to 1)
   DIFF https://${FORK}/compare/boostorg:
   )

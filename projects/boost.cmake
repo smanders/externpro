@@ -1,71 +1,41 @@
 # boost
-set(BOOST_OLDVER 1.76.0)
-set(BOOST_NEWVER 1.76.0)
-####################
+set(VER 1.76.0)
+string(REPLACE "." "_" VER_ ${VER}) # 1_76_0
 xpProOption(boost DBG)
-string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
-string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" nv ${BOOST_NEWVER})
+set(REPO github.com/boostorg/boost)
 set(PRO_BOOST
   NAME boost
-  NO_README
-  DEPS_FUNC build_boost_all
-  BUILD_DEPS boost${ov} boost${nv}
+  WEB "boost" http://www.boost.org/ "Boost website"
+  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
+  DESC "libraries that give C++ a boost"
+  REPO "repo" https://${REPO} "boost repo on github"
+  GRAPH GRAPH_NODE boost
+  BUILD_DEPS zlib bzip2
+  VER ${VER}
+  GIT_ORIGIN https://${REPO}.git
+  GIT_TAG boost-${VER} # what to 'git checkout'
+  DLURL https://boostorg.jfrog.io/artifactory/main/release/${VER}/source/boost_${VER_}.tar.bz2
+  DLMD5 33334dd7f862e8ac9fe1cc7c6584fb6d
+  DEPS_FUNC build_boost
+  SUBPRO boostdll boostgil boostgraph boostinstall boostinterprocess boostprogram_options boostprogram_optionshpp boostregex boostunits
   )
-function(build_boost_all)
-  xpBuildDeps(depsTgts ${PRO_BOOST})
-  if(ARGN)
-    set(${ARGN} "${depsTgts}" PARENT_SCOPE)
-  endif()
-endfunction()
-####################
 function(build_boost)
-  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ov ${BOOST_OLDVER})
-  string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" nv ${BOOST_NEWVER})
-  if(NOT (XP_DEFAULT OR XP_PRO_BOOST OR XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
+  if(NOT (XP_DEFAULT OR XP_PRO_BOOST))
     return()
   endif()
-  if(XP_DEFAULT)
-    xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER} ${BOOST_NEWVER}) # edit this to set default version(s) to build
-  else()
-    if(XP_PRO_BOOST AND NOT (XP_PRO_BOOST${ov} OR XP_PRO_BOOST${nv}))
-      set(XP_PRO_BOOST${ov} ON CACHE BOOL "include boost${ov}" FORCE)
-      set(XP_PRO_BOOST${nv} ON CACHE BOOL "include boost${nv}" FORCE)
-    endif()
-    if(XP_PRO_BOOST${ov})
-      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_OLDVER})
-    endif()
-    if(XP_PRO_BOOST${nv})
-      xpListAppendIfDne(BOOST_VERSIONS ${BOOST_NEWVER})
-    endif()
-  endif()
-  list(REMOVE_DUPLICATES BOOST_VERSIONS)
-  list(LENGTH BOOST_VERSIONS NUM_VER)
-  if(NUM_VER EQUAL 0)
-    return()
-  elseif(NUM_VER EQUAL 1)
-    if(BOOST_VERSIONS VERSION_EQUAL BOOST_OLDVER)
-      set(boolean OFF)
-    else() # BOOST_VERSIONS VERSION_EQUAL BOOST_NEWVER
-      set(boolean ON)
-    endif()
-    set(USE_SCRIPT_INSERT "set(XP_USE_LATEST_BOOST ${boolean}) # currently only one version supported")
-  else()
-    set(USE_SCRIPT_INSERT "#set(XP_USE_LATEST_BOOST) # currently multiple versions supported")
-  endif()
+  xpBuildDeps(depTgts ${PRO_BOOST})
+  list(APPEND boost_TARGETS ${depTgts})
+  xpGetArgValue(${PRO_BOOST} ARG NAME VALUE NAME)
+  xpGetArgValue(${PRO_BOOST} ARG VER VALUE VER)
+  set(FIND_DEPS "xpFindPkg(PKGS bzip2 zlib) # iostream dependencies\n")
   configure_file(${PRO_DIR}/use/usexp-boost-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  foreach(ver ${BOOST_VERSIONS})
-    string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" ver2_ ${ver})
-    xpBuildDeps(depTgts ${PRO_BOOST${ver2_}})
-    list(APPEND tgts ${depTgts})
-    ExternalProject_Get_Property(boost${ver2_} SOURCE_DIR)
-    build_boostb2(PRO boost${ver2_} BOOTSTRAP ${SOURCE_DIR}/tools/build
-      B2PATH b2path TARGETS tgts
-      )
-    build_boostlibs(PRO boost${ver2_} B2PATH ${b2path} TARGETS tgts)
-    xpListAppendIfDne(boost_TARGETS "${tgts}")
-  endforeach()
+  ExternalProject_Get_Property(boost SOURCE_DIR)
+  build_boostb2(PRO boost BOOTSTRAP ${SOURCE_DIR}/tools/build
+    B2PATH b2path TARGETS boost_TARGETS
+    )
+  build_boostlibs(PRO boost B2PATH ${b2path} TARGETS boost_TARGETS)
   if(ARGN)
     set(${ARGN} "${boost_TARGETS}" PARENT_SCOPE)
   endif()
@@ -94,18 +64,14 @@ function(build_boostb2)
   get_property(base_DIR DIRECTORY PROPERTY "EP_BASE")
   set(boostbld_DIR ${base_DIR}/bld.${bb_PRO})
   if(DEFINED bb_B2PATH)
-    if(MSVC)
-      set(${bb_B2PATH} ${boostbld_DIR}/bin/b2.exe PARENT_SCOPE)
-    else()
-      set(${bb_B2PATH} ${boostbld_DIR}/bin/b2 PARENT_SCOPE)
-    endif()
+    set(${bb_B2PATH} ${boostbld_DIR}/bin/b2${CMAKE_EXECUTABLE_SUFFIX} PARENT_SCOPE)
   endif()
   if(TARGET ${bb_PRO}.build)
     return()
   endif()
   if(MSVC)
     set(XP_CONFIGURE <SOURCE_DIR>/bootstrap.bat)
-    set(boost_b2 <SOURCE_DIR>/b2.exe toolset=msvc)
+    set(boost_b2 <SOURCE_DIR>/b2${CMAKE_EXECUTABLE_SUFFIX} toolset=msvc)
   else()
     set(XP_CONFIGURE <SOURCE_DIR>/bootstrap.sh)
     # NOTE: specifying the toolset (clang) here gives output similar to this:
@@ -172,8 +138,8 @@ function(userConfigJam jamFile)
   endif()
   include(${STAGE_DIR}/share/cmake/xpopts.cmake)
   xpSetPostfix()
-  set(zlibName ${prefix}z_${zlibVer}${CMAKE_RELEASE_POSTFIX})
-  set(bzip2Name bz2_${bzip2Ver}${CMAKE_RELEASE_POSTFIX})
+  set(zlibName ${prefix}z${CMAKE_RELEASE_POSTFIX})
+  set(bzip2Name bz2${CMAKE_RELEASE_POSTFIX})
   ExternalProject_Get_Property(${bl_PRO} TMP_DIR)
   set(cfgFile ${TMP_DIR}/user-config.jam)
   file(WRITE ${cfgFile}

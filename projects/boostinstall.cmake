@@ -1,10 +1,9 @@
 # boost install
 set(VER 1.76.0)
-string(REGEX REPLACE "([0-9]+)\\.([0-9]+)(\\.[0-9]+)?" "\\1_\\2" VER2_ ${VER}) # 1_76
 set(REPO github.com/boostorg/boost_install)
 set(FORK github.com/smanders/boost_install)
-set(PRO_BOOSTINSTALL${VER2_}
-  NAME boostinstall${VER2_}
+set(PRO_BOOSTINSTALL
+  NAME boostinstall
   SUPERPRO boost
   SUBDIR tools/boost_install
   WEB "boost_install" https://${REPO} "boost_install repo"
@@ -17,6 +16,6 @@ set(PRO_BOOSTINSTALL${VER2_}
   GIT_TRACKING_BRANCH develop
   GIT_TAG xp${VER}
   GIT_REF boost-${VER}
-  PATCH ${PATCH_DIR}/boost.install.${VER2_}.patch
+  PATCH ${PATCH_DIR}/boost.install.patch
   DIFF https://${FORK}/compare/boostorg:
   )
