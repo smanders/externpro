@@ -27,8 +27,12 @@ function(build_ceres)
     return()
   endif()
   xpBuildDeps(depTgts ${PRO_CERES}) # defines EIGEN_INCDIR
+  xpGetArgValue(${PRO_CERES} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_CERES} ARG VER VALUE VER)
   set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_NAMESPACE:STRING=xpro
     -DMINIGLOG:BOOL=ON
     -DGFLAGS:BOOL=OFF
     -DSUITESPARSE:BOOL=OFF
@@ -41,15 +45,17 @@ function(build_ceres)
     -DBUILD_TESTING:BOOL=OFF
     -DBUILD_EXAMPLES:BOOL=OFF
     -DEIGEN_INCLUDE_DIR_HINTS:PATH=${STAGE_DIR}/${EIGEN_INCDIR}
-    -DCERES_VER:STRING=${VER}
-    -DXP_NAMESPACE:STRING=xpro
     )
   if(MSVC)
     list(APPEND XP_CONFIGURE -DMSVC_USE_STATIC_CRT:BOOL=ON)
   elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    list(APPEND XP_CONFIGURE -DLIB_SUFFIX:STRING=) # install to lib, not lib64
+    list(APPEND XP_CONFIGURE -DLIB_SUFFIX:STRING=) # lib, not lib64
   endif()
-  configure_file(${PRO_DIR}/use/usexp-ceres-config.cmake ${STAGE_DIR}/share/cmake/
+  set(FIND_DEPS "xpFindPkg(PKGS eigen) # dependencies\n")
+  set(TARGETS_FILE lib/cmake/Ceres/CeresTargets.cmake)
+  set(LIBRARIES xpro::ceres)
+  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(ceres "${depTgts}" "${XP_CONFIGURE}")
