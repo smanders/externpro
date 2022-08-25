@@ -16,8 +16,12 @@ function(build_clangformat)
     return()
   endif()
   build_llvm(llvmTgt)
+  xpGetArgValue(${PRO_CLANGFORMAT} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_LLVM} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-clangformat-config.cmake ${STAGE_DIR}/share/cmake/
+  set(TARGETS_FILE share/cmake/xpopts.cmake) # no targets-file, set to harmless .cmake
+  set(EXECUTABLE \${XP_ROOTDIR}/bin/clang-format\${CMAKE_EXECUTABLE_SUFFIX})
+  configure_file(${PRO_DIR}/use/usexp-template-exe-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   ExternalProject_Get_Property(${llvmTgt} BINARY_DIR)
