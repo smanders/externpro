@@ -28,16 +28,20 @@ function(build_cares)
   if(NOT (XP_DEFAULT OR XP_PRO_CARES))
     return()
   endif()
+  xpGetArgValue(${PRO_CARES} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_CARES} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-cares-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_INCLUDEDIR=include/cares_${VER}
-    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
     -DCARES_BUILD_TOOLS:BOOL=OFF
     -DCARES_SHARED:BOOL=OFF
     -DCARES_STATIC:BOOL=ON
+    )
+  set(TARGETS_FILE lib/cmake/c-ares/c-ares-targets.cmake)
+  set(LIBRARIES c-ares::${NAME})
+  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-cares-config.cmake
+    @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(cares "" "${XP_CONFIGURE}" caresTargets)
   if(ARGN)
