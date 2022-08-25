@@ -39,7 +39,7 @@ function(build_activemqcpp)
   set(FIND_DEPS "xpFindPkg(PKGS apr openssl) # dependencies\n")
   set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
   set(LIBRARIES xpro::${NAME})
-  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

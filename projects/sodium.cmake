@@ -38,7 +38,7 @@ function(build_sodium)
   set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\nfind_package(Threads REQUIRED) # ${NAME} depends on Threads::Threads\n")
   set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
   set(LIBRARIES xpro::${NAME})
-  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
     ${STAGE_DIR}/share/cmake/usexp-sodium-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

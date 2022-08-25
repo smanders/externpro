@@ -50,7 +50,7 @@ function(build_openssl)
   set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\nfind_package(Threads REQUIRED) # crypto depends on Threads::Threads\n")
   set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
   set(LIBRARIES "xpro::crypto xpro::ssl")
-  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

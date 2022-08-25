@@ -54,7 +54,7 @@ function(build_ceres)
   set(FIND_DEPS "xpFindPkg(PKGS eigen) # dependencies\n")
   set(TARGETS_FILE lib/cmake/Ceres/CeresTargets.cmake)
   set(LIBRARIES xpro::ceres)
-  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

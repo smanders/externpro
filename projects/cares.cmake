@@ -39,7 +39,7 @@ function(build_cares)
     )
   set(TARGETS_FILE lib/cmake/c-ares/c-ares-targets.cmake)
   set(LIBRARIES c-ares::${NAME})
-  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
     ${STAGE_DIR}/share/cmake/usexp-cares-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
