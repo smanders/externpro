@@ -43,5 +43,5 @@ function(build_activemqcpp)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(activemqcpp "${depTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()

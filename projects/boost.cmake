@@ -28,7 +28,7 @@ function(build_boost)
   xpGetArgValue(${PRO_BOOST} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_BOOST} ARG VER VALUE VER)
   set(FIND_DEPS "xpFindPkg(PKGS bzip2 zlib) # iostream dependencies\n")
-  configure_file(${PRO_DIR}/use/usexp-boost-config.cmake ${STAGE_DIR}/share/cmake/
+  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   ExternalProject_Get_Property(boost SOURCE_DIR)

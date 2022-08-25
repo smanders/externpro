@@ -25,12 +25,12 @@ function(build_clangformat)
     @ONLY NEWLINE_STYLE LF
     )
   ExternalProject_Get_Property(${llvmTgt} BINARY_DIR)
-  ExternalProject_Add(clangformat_install DEPENDS ${llvmTgt}
+  ExternalProject_Add(${NAME}_install DEPENDS ${llvmTgt}
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
     SOURCE_DIR ${NULL_DIR} CONFIGURE_COMMAND "" BUILD_COMMAND ""
     BINARY_DIR ${BINARY_DIR}/tools/clang/tools/clang-format
     INSTALL_COMMAND ${CMAKE_COMMAND} -P cmake_install.cmake
     INSTALL_DIR ${STAGE_DIR}
     )
-  set_property(TARGET clangformat_install PROPERTY FOLDER ${bld_folder})
+  set_property(TARGET ${NAME}_install PROPERTY FOLDER ${bld_folder})
 endfunction()

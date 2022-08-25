@@ -37,10 +37,10 @@ function(build_azmq)
     )
   set(FIND_DEPS "xpFindPkg(PKGS boost libzmq)\n")
   set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
-  set(LIBRARIES xpro::azmq)
+  set(LIBRARIES xpro::${NAME})
   configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
-    ${STAGE_DIR}/share/cmake/usexp-azmq-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(azmq "${depsTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "${depsTgts}" "${XP_CONFIGURE}")
 endfunction()

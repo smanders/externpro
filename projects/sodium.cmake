@@ -39,11 +39,11 @@ function(build_sodium)
   set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
   set(LIBRARIES xpro::${NAME})
   configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
-    ${STAGE_DIR}/share/cmake/usexp-sodium-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(sodium "" "${XP_CONFIGURE}" sodiumTargets)
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
-    set(${ARGN} "${sodiumTargets}" PARENT_SCOPE)
+    set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
   endif()
 endfunction()

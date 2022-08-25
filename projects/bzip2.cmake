@@ -37,11 +37,11 @@ function(build_bzip2)
   set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
   set(LIBRARIES xpro::bz2)
   configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
-    ${STAGE_DIR}/share/cmake/usexp-bzip2-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(bzip2 "" "${XP_CONFIGURE}" bzip2Targets)
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
-    set(${ARGN} "${bzip2Targets}" PARENT_SCOPE)
+    set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
   endif()
 endfunction()

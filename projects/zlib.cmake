@@ -41,8 +41,8 @@ function(build_zlib)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(zlib "" "${XP_CONFIGURE}" zlibTargets)
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
-    set(${ARGN} "${zlibTargets}" PARENT_SCOPE)
+    set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
   endif()
 endfunction()

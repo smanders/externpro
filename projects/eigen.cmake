@@ -34,16 +34,16 @@ function(build_eigen)
     -DCMAKE_INSTALL_INCLUDEDIR=${incDir}
     -DEIGEN_BUILD_PKGCONFIG:BOOL=OFF
     )
-  set(LIBRARY_HDR xpro::eigen)
+  set(LIBRARY_HDR xpro::${NAME})
   set(LIBRARY_INCLUDEDIRS "${incDir} ${incDir}/eigen3")
   configure_file(${PRO_DIR}/use/usexp-template-hdr-config.cmake
-    ${STAGE_DIR}/share/cmake/usexp-eigen-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   set(BUILD_CONFIGS Release) # this project is only copying headers
-  xpCmakeBuild(eigen "" "${XP_CONFIGURE}" eigenTargets)
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
-    set(${ARGN} "${eigenTargets}" PARENT_SCOPE)
+    set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
     set(EIGEN_INCDIR ${incDir}/eigen3 PARENT_SCOPE)
   endif()
 endfunction()

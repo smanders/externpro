@@ -40,11 +40,11 @@ function(build_cares)
   set(TARGETS_FILE lib/cmake/c-ares/c-ares-targets.cmake)
   set(LIBRARIES c-ares::${NAME})
   configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
-    ${STAGE_DIR}/share/cmake/usexp-cares-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(cares "" "${XP_CONFIGURE}" caresTargets)
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
-    set(${ARGN} "${caresTargets}" PARENT_SCOPE)
+    set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
   endif()
 endfunction()

@@ -46,8 +46,8 @@ function(build_libzmq)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(libzmq "${depsTgts}" "${XP_CONFIGURE}" zmqTargets)
+  xpCmakeBuild(${NAME} "${depsTgts}" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
-    set(${ARGN} "${zmqTargets}" PARENT_SCOPE)
+    set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
   endif()
 endfunction()

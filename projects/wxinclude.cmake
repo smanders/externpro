@@ -38,13 +38,13 @@ function(build_wxinclude)
   set(TARGETS_FILE bin/cmake/${NAME}-targets.cmake)
   set(EXECUTABLE xpro::wxInclude)
   configure_file(${PRO_DIR}/use/usexp-template-exe-config.cmake
-    ${STAGE_DIR}/share/cmake/usexp-wxinclude-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   set(BUILD_CONFIGS Release) # we only need a release executable
-  xpCmakeBuild(wxinclude "${depsTgts}" "${XP_CONFIGURE}" wxincludeTargets)
+  xpCmakeBuild(${NAME} "${depsTgts}" "${XP_CONFIGURE}" ${NAME}Targets)
   if(DEFINED wxinc_TARGETS)
-    xpListAppendIfDne(${wxinc_TARGETS} "${wxincludeTargets}")
+    xpListAppendIfDne(${wxinc_TARGETS} "${${NAME}Targets}")
     set(${wxinc_TARGETS} "${${wxinc_TARGETS}}" PARENT_SCOPE)
   endif()
   if(DEFINED wxinc_EXE)

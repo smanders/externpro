@@ -43,13 +43,13 @@ function(build_apr)
     -DTEST_STATIC_LIBS:BOOL=ON
     )
   set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
-  set(LIBRARIES xpro::apr-1)
+  set(LIBRARIES xpro::${NAME}-1)
   configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(apr "" "${XP_CONFIGURE}" aprTargets)
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
-    set(${ARGN} "${aprTargets}" PARENT_SCOPE)
+    set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
   endif()
 endfunction()
