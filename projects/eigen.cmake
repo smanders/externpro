@@ -27,17 +27,23 @@ function(build_eigen)
   if(NOT (XP_DEFAULT OR XP_PRO_EIGEN))
     return()
   endif()
+  xpGetArgValue(${PRO_EIGEN} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_EIGEN} ARG VER VALUE VER)
-  set(verDir /eigen_${VER})
-  set(incDir include${verDir}/eigen3)
-  set(XP_CONFIGURE -DEIGEN_BUILD_PKGCONFIG:BOOL=OFF -DEIGEN_INCLUDE_INSTALL_DIR:PATH=${incDir})
-  configure_file(${PRO_DIR}/use/usexp-eigen-config.cmake ${STAGE_DIR}/share/cmake/
+  set(incDir include/${NAME}_${VER})
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=${incDir}
+    -DEIGEN_BUILD_PKGCONFIG:BOOL=OFF
+    )
+  set(LIBRARY_HDR xpro::eigen)
+  set(LIBRARY_INCLUDEDIRS "${incDir} ${incDir}/eigen3")
+  configure_file(${PRO_DIR}/use/usexp-template-hdr-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-eigen-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   set(BUILD_CONFIGS Release) # this project is only copying headers
   xpCmakeBuild(eigen "" "${XP_CONFIGURE}" eigenTargets)
   if(ARGN)
     set(${ARGN} "${eigenTargets}" PARENT_SCOPE)
-    set(EIGEN_INCDIR ${incDir} PARENT_SCOPE)
+    set(EIGEN_INCDIR ${incDir}/eigen3 PARENT_SCOPE)
   endif()
 endfunction()
