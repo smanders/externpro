@@ -28,14 +28,19 @@ function(build_azmq)
     return()
   endif()
   xpBuildDeps(depsTgts ${PRO_AZMQ})
+  xpGetArgValue(${PRO_AZMQ} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_AZMQ} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-azmq-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_INCLUDEDIR=include/azmq_${VER}
-    -DAZMQ_CMAKECONFIG_INSTALL_DIR=lib/cmake/azmq_${VER}
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
     -DXP_NAMESPACE:STRING=xpro
+    )
+  set(FIND_DEPS "xpFindPkg(PKGS boost libzmq)\n")
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::azmq)
+  configure_file(${PRO_DIR}/use/usexp-template-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-azmq-config.cmake
+    @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(azmq "${depsTgts}" "${XP_CONFIGURE}")
 endfunction()
