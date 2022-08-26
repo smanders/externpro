@@ -27,16 +27,21 @@ function(build_cppzmq)
     return()
   endif()
   xpBuildDeps(depTgts ${PRO_CPPZMQ})
+  xpGetArgValue(${PRO_CPPZMQ} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_CPPZMQ} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-cppzmq-config.cmake ${STAGE_DIR}/share/cmake/
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_NAMESPACE:STRING=xpro
+    -DCPPZMQ_BUILD_TESTS:BOOL=OFF
+    -DCPPZMQ_CMAKECONFIG_INSTALL_DIR=lib/cmake/${NAME}
+    )
+  set(FIND_DEPS "xpFindPkg(PKGS libzmq)\n")
+  set(TARGETS_FILE lib/cmake/${NAME}/${NAME}Targets.cmake)
+  set(LIBRARIES xpro::${NAME}-static)
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  set(XP_CONFIGURE
-    -DCPPZMQ_BUILD_TESTS:BOOL=OFF
-    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-    -DCMAKE_INSTALL_INCLUDEDIR=include/cppzmq_${VER}
-    -DCPPZMQ_CMAKECONFIG_INSTALL_DIR=lib/cmake/cppzmq_${VER}
-    -DXP_NAMESPACE:STRING=xpro
-    )
-  xpCmakeBuild(cppzmq "${depTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()
