@@ -78,10 +78,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_5fb3cc69ffc19edfe3b23ef1e22f6f32?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_f388ca38552c3d9c96190332a350f1a2?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_5fb3cc69ffc19edfe3b23ef1e22f6f32
+depgraph_f388ca38552c3d9c96190332a350f1a2
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
@@ -105,7 +105,7 @@ digraph GG {
   cppzmq [shape=diamond];
   cppzmq -> libzmq;
   curl_7_80_0 [label="curl_7.80.0" shape=diamond];
-  curl_7_80_0 -> libssh2_1_9_0;
+  curl_7_80_0 -> libssh2;
   curl_7_80_0 -> cares;
   eigen [shape=diamond];
   expat [shape=diamond];
@@ -117,10 +117,10 @@ digraph GG {
   libgeotiff [shape=diamond];
   libgeotiff -> wx;
   libgit2_1_3_0 [label="libgit2_1.3.0" shape=diamond];
-  libgit2_1_3_0 -> libssh2_1_9_0;
-  libssh2_1_9_0 [label="libssh2_1.9.0" shape=diamond];
-  libssh2_1_9_0 -> zlib;
-  libssh2_1_9_0 -> openssl;
+  libgit2_1_3_0 -> libssh2;
+  libssh2 [shape=diamond];
+  libssh2 -> zlib;
+  libssh2 -> openssl;
   libstrophe [shape=diamond];
   libstrophe -> expat;
   libstrophe -> openssl;
@@ -151,5 +151,5 @@ digraph GG {
   zmqpp [shape=diamond];
   zmqpp -> libzmq;
 }
-depgraph_5fb3cc69ffc19edfe3b23ef1e22f6f32
+depgraph_f388ca38552c3d9c96190332a350f1a2
 </details>

@@ -10,7 +10,7 @@ set(PRO_CURL_${VER}
   LICENSE "open" http://curl.haxx.se/docs/copyright.html "curl license: MIT/X derivate license"
   DESC "the multiprotocol file transfer library"
   REPO "repo" https://${REPO} "curl repo on github"
-  GRAPH BUILD_DEPS libssh2_1.9.0 cares
+  GRAPH BUILD_DEPS libssh2 cares
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
   GIT_UPSTREAM https://${REPO}.git

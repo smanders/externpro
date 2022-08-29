@@ -1,10 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ae55942..9f58758 100644
+index ae55942..81a0e5e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -35,11 +35,16 @@
+@@ -33,13 +33,21 @@
+ # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ # OF SUCH DAMAGE.
  
- cmake_minimum_required(VERSION 2.8.11)
+-cmake_minimum_required(VERSION 2.8.11)
++cmake_minimum_required(VERSION 2.8.11...3.21)
  
 -set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 +if(DEFINED CMAKE_MODULE_PATH)
@@ -17,28 +20,12 @@ index ae55942..9f58758 100644
  set(PROJECT_URL "https://www.libssh2.org/")
  set(PROJECT_DESCRIPTION "The SSH library")
 +include(flags OPTIONAL)
++if(DEFINED XP_NAMESPACE)
++  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
++endif()
  
  if (CMAKE_VERSION VERSION_LESS "3.1")
    if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-@@ -77,6 +82,18 @@ if(NOT LIBSSH2_VERSION OR
-     "${CMAKE_CURRENT_SOURCE_DIR}/include/libssh2.h")
- endif()
- 
-+if(NOT DEFINED LIBSSH2_VER)
-+  set(LIBSSH2_VER ${LIBSSH2_VERSION})
-+elseif(NOT LIBSSH2_VER STREQUAL LIBSSH2_VERSION)
-+  message(AUTHOR_WARNING "version passed in (${LIBSSH2_VER}) doesn't match version from include/libssh2.h (${LIBSSH2_VERSION})")
-+endif()
-+if(XP_INSTALL_DIRS)
-+  set(_ver _${LIBSSH2_VER})
-+  set(CMAKE_INSTALL_DOCDIR share/doc/${PROJECT_NAME}${_ver})
-+  set(CMAKE_INSTALL_INCLUDEDIR include/${PROJECT_NAME}${_ver}/${PROJECT_NAME})
-+  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
-+endif()
-+
- include(GNUInstallDirs)
- install(
-   FILES docs/AUTHORS COPYING docs/HACKING README RELEASE-NOTES NEWS
 diff --git a/docs/CMakeLists.txt b/docs/CMakeLists.txt
 index 6abf0e4..5002089 100644
 --- a/docs/CMakeLists.txt
@@ -50,53 +37,39 @@ index 6abf0e4..5002089 100644
 -install(FILES ${MAN_PAGES} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 +install(FILES ${MAN_PAGES} ${XP_OPT_INSTALL} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 2eaf4cc..3b4a809 100644
+index 2eaf4cc..4ec5fde 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -60,7 +60,14 @@ endif()
+@@ -60,7 +60,12 @@ endif()
  
  if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
  
 -  find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
-+  option(FIND_OPENSSL_MODULE_PATH "Find OpenSSL in CMAKE_MODULE_PATH" OFF)
-+  mark_as_advanced(FIND_OPENSSL_MODULE_PATH)
-+
-+  if(FIND_OPENSSL_MODULE_PATH)
-+    find_package(usexp-OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT} PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  if(COMMAND xpFindPkg)
++    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
++    xpFindPkg(PKGS openssl)
 +  else()
 +    find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
 +  endif()
  
    if(OPENSSL_FOUND)
      set(CRYPTO_BACKEND "OpenSSL")
-@@ -216,14 +223,15 @@ endif()
- 
- add_library(libssh2 ${SOURCES})
- # we want it to be called libssh2 on all platforms
--set_target_properties(libssh2 PROPERTIES PREFIX "")
-+set_target_properties(libssh2 PROPERTIES OUTPUT_NAME libssh2${_ver} PREFIX "")
- 
- target_compile_definitions(libssh2 PRIVATE ${PRIVATE_COMPILE_DEFINITIONS})
- target_include_directories(libssh2
+@@ -223,6 +228,7 @@ target_include_directories(libssh2
    PRIVATE "${PROJECT_SOURCE_DIR}/include/" ${PRIVATE_INCLUDE_DIRECTORIES}
    PUBLIC
      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
--    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>)
-+    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include/${PROJECT_NAME}${_ver}> #include <libssh2/libssh2.h>
-+    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>)   #include <libssh2.h>
++    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
+     $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>)
  
  ## Options
- 
-@@ -239,9 +247,16 @@ option(ENABLE_ZLIB_COMPRESSION "Use zlib for compression")
+@@ -239,9 +245,14 @@ option(ENABLE_ZLIB_COMPRESSION "Use zlib for compression")
  add_feature_info(Compression ENABLE_ZLIB_COMPRESSION
    "using zlib for compression")
  if(ENABLE_ZLIB_COMPRESSION)
 -  find_package(ZLIB REQUIRED)
-+  option(FIND_ZLIB_MODULE_PATH "Find zlib in CMAKE_MODULE_PATH" OFF)
-+  mark_as_advanced(FIND_ZLIB_MODULE_PATH)
-+
-+  if(FIND_ZLIB_MODULE_PATH)
-+    find_package(usexp-ZLIB REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  if(COMMAND xpFindPkg)
++    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
++    xpFindPkg(PKGS zlib)
 +  else()
 +    find_package(ZLIB REQUIRED)
 +    target_include_directories(libssh2 PRIVATE ${ZLIB_INCLUDE_DIRS})
@@ -106,7 +79,16 @@ index 2eaf4cc..3b4a809 100644
    list(APPEND LIBRARIES ${ZLIB_LIBRARIES})
    list(APPEND PC_REQUIRES_PRIVATE zlib)
    if(ZLIB_FOUND)
-@@ -389,14 +404,20 @@ set(RUNTIME_DEPENDENCIES ${_RUNTIME_DEPENDENCIES} CACHE INTERNAL
+@@ -372,7 +383,7 @@ install(FILES
+   ${PROJECT_SOURCE_DIR}/include/libssh2.h
+   ${PROJECT_SOURCE_DIR}/include/libssh2_publickey.h
+   ${PROJECT_SOURCE_DIR}/include/libssh2_sftp.h
+-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+ 
+ install(TARGETS libssh2
+   EXPORT Libssh2Config
+@@ -389,14 +400,20 @@ set(RUNTIME_DEPENDENCIES ${_RUNTIME_DEPENDENCIES} CACHE INTERNAL
  
  # Package config
  
@@ -119,9 +101,8 @@ index 2eaf4cc..3b4a809 100644
  ## During package installation, install Libssh2Config.cmake
  install(EXPORT Libssh2Config
 -  NAMESPACE Libssh2::
--  DESTINATION lib/cmake/libssh2)
 +  NAMESPACE ${nameSpace}
-+  DESTINATION lib/cmake/libssh2${_ver})
+   DESTINATION lib/cmake/libssh2)
  
  ## During build, register directly from build tree
  # create Libssh2Config.cmake
@@ -130,22 +111,16 @@ index 2eaf4cc..3b4a809 100644
  export(PACKAGE Libssh2) # register it
  
  ## Export a .pc file for client projects not using CMaek
-@@ -409,6 +430,7 @@ endif()
+@@ -409,6 +426,7 @@ endif()
  configure_file(libssh2.pc.in libssh2.pc @ONLY)
  install(
    FILES ${CMAKE_CURRENT_BINARY_DIR}/libssh2.pc
-+  RENAME libssh2${_ver}.pc ${XP_OPT_INSTALL}
++  ${XP_OPT_INSTALL}
    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
  
  ## Versioning
-@@ -424,4 +446,4 @@ write_basic_package_version_file(
-   COMPATIBILITY SameMajorVersion)
- install(
-   FILES ${CMAKE_CURRENT_BINARY_DIR}/Libssh2ConfigVersion.cmake
--  DESTINATION lib/cmake/libssh2)
-+  DESTINATION lib/cmake/libssh2${_ver})
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
-index c8c5253..525f4c7 100644
+index c8c5253..7440d9a 100644
 --- a/tests/CMakeLists.txt
 +++ b/tests/CMakeLists.txt
 @@ -36,7 +36,6 @@
@@ -156,20 +131,21 @@ index c8c5253..525f4c7 100644
  include(CopyRuntimeDependencies)
  include(SocketLibraries)
  
-@@ -72,7 +71,11 @@ endif()
+@@ -72,7 +71,12 @@ endif()
  
  if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
  
 -  find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
-+  if(FIND_OPENSSL_MODULE_PATH)
-+    find_package(usexp-OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT} PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  if(COMMAND xpFindPkg)
++    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
++    xpFindPkg(PKGS openssl)
 +  else()
 +    find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
 +  endif()
  
    if(OPENSSL_FOUND)
      set(CRYPTO_BACKEND "OpenSSL")
-@@ -124,8 +127,8 @@ if(CRYPTO_BACKEND STREQUAL "OpenSSL")
+@@ -124,8 +128,8 @@ if(CRYPTO_BACKEND STREQUAL "OpenSSL")
      list(APPEND TESTS
        public_key_auth_succeeds_with_correct_rsa_openssh_key
      )
