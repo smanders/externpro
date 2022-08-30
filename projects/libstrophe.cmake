@@ -15,7 +15,7 @@ set(PRO_LIBSTROPHE
   GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
-  PATCH ${PATCH_DIR}/libstrophe_${VER}.patch
+  PATCH ${PATCH_DIR}/libstrophe.patch
   DIFF https://${FORK}/compare/strophe:
   DLURL https://${REPO}/releases/download/${VER}/libstrophe-${VER}.tar.bz2
   DLMD5 f5475547891fc0697c46ecc004bdfd95
@@ -25,49 +25,20 @@ function(build_libstrophe)
   if(NOT (XP_DEFAULT OR XP_PRO_LIBSTROPHE))
     return()
   endif()
-  if(FALSE)
-    # build multiple versions against different versions of openssl
-    set(MOD_OLD _ossl10)
-    set(MOD_NEW _ossl11)
-    set(MOD_OPT "if(XP_USE_LATEST_OPENSSL)\n  set(VER_MOD ${MOD_NEW})\nelse()\n  set(VER_MOD ${MOD_OLD})\nendif()")
-    set(VER_CFG ${MOD_OLD} ${MOD_NEW})
-  elseif(FALSE)
-    # build against single version of openssl
-    set(MOD_NEW _ossl11)
-    set(MOD_OPT "set(VER_MOD ${MOD_NEW})")
-    set(VER_CFG ${MOD_NEW})
-  else()
-    set(MOD_OPT "set(VER_MOD)")
-    set(VER_CFG xpConfigBase)
-  endif()
-  set(USE_SCRIPT_INSERT ${MOD_OPT})
-  xpGetArgValue(${PRO_LIBSTROPHE} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-libstrophe-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
   xpBuildDeps(depTgts ${PRO_LIBSTROPHE})
-  set(xpConfigBase
-    -DLIBSTROPHE_VER=${VER}
-    -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
-    -DCMAKE_USE_EXPAT_MODULE_PATH=ON
+  xpGetArgValue(${PRO_LIBSTROPHE} ARG NAME VALUE NAME)
+  xpGetArgValue(${PRO_LIBSTROPHE} ARG VER VALUE VER)
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
     -DXP_NAMESPACE:STRING=xpro
     )
-  set(${MOD_OLD} ${xpConfigBase}
-    -DVER_MOD:STRING=${MOD_OLD}
-    -DXP_USE_LATEST_OPENSSL:BOOL=OFF
+  set(FIND_DEPS "xpFindPkg(PKGS expat openssl) # dependencies\n")
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::${NAME})
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+    @ONLY NEWLINE_STYLE LF
     )
-  set(${MOD_NEW} ${xpConfigBase}
-    -DVER_MOD:STRING=${MOD_NEW}
-    -DXP_USE_LATEST_OPENSSL:BOOL=ON
-    )
-  foreach(cfg ${VER_CFG})
-    build_libstrophe_cfg(${cfg})
-  endforeach()
-endfunction()
-function(build_libstrophe_cfg cfg)
-  if(${cfg} STREQUAL xpConfigBase)
-    xpCmakeBuild(libstrophe "${depTgts}" "${${cfg}}")
-  else()
-    xpCmakeBuild(libstrophe "${depTgts}" "${${cfg}}" "" TGT ${cfg})
-  endif()
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()

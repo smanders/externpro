@@ -1,12 +1,17 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..dbfa40b
+index 0000000..1412643
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,49 @@
 +cmake_minimum_required(VERSION 3.12)
 +project(libstrophe)
++include(GNUInstallDirs)
 +include(flags OPTIONAL)
++if(DEFINED XP_NAMESPACE)
++  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
 +enable_testing()
 +set_property(GLOBAL PROPERTY USE_FOLDERS ON) # enables MSVC Solution Folders
 +########################################
@@ -18,26 +23,17 @@ index 0000000..dbfa40b
 +    )
 +endif()
 +########################################
-+option(CMAKE_USE_OPENSSL_MODULE_PATH "Find OpenSSL in CMAKE_MODULE_PATH." OFF)
-+mark_as_advanced(CMAKE_USE_OPENSSL_MODULE_PATH)
-+if(CMAKE_USE_OPENSSL_MODULE_PATH)
-+  find_package(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++if(COMMAND xpFindPkg)
++  xpFindPkg(PKGS expat openssl)
 +else()
 +  find_package(OpenSSL)
-+endif()
-+if(NOT OPENSSL_FOUND)
-+  message(FATAL_ERROR "can't find OpenSSL - libstrophe cmake currently hard-coded to use OpenSSL")
-+endif()
-+####################
-+option(CMAKE_USE_EXPAT_MODULE_PATH "Find expat in CMAKE_MODULE_PATH." OFF)
-+mark_as_advanced(CMAKE_USE_EXPAT_MODULE_PATH)
-+if(CMAKE_USE_EXPAT_MODULE_PATH)
-+  find_package(usexp-EXPAT REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
-+else()
 +  find_package(EXPAT)
 +endif()
 +if(NOT EXPAT_FOUND)
 +  message(FATAL_ERROR "can't find expat - libstrophe cmake currently hard-coded to use expat")
++endif()
++if(NOT OPENSSL_FOUND)
++  message(FATAL_ERROR "can't find OpenSSL - libstrophe cmake currently hard-coded to use OpenSSL")
 +endif()
 +####################
 +include(CheckLibraryExists)
@@ -53,26 +49,10 @@ index 0000000..dbfa40b
 +checkLibraryConcat(winmm timeGetTime SYS_LIBS)
 +checkLibraryConcat(ws2_32 getch SYS_LIBS)
 +########################################
-+# version
-+set(verString "^AC_INIT.*\\[\([.0-9]*\)\\].*")
-+set(verFile configure.ac)
-+file(STRINGS ${verFile} VER REGEX "${verString}")
-+string(REGEX REPLACE "${verString}" "\\1" VER ${VER})
-+if(NOT DEFINED LIBSTROPHE_VER)
-+  set(LIBSTROPHE_VER ${VER})
-+elseif(NOT ${LIBSTROPHE_VER} STREQUAL ${VER})
-+  message(AUTHOR_WARNING "version passed in (${LIBSTROPHE_VER}) doesn't match version from ${verFile} (${VER})")
-+endif()
-+set(ver _${LIBSTROPHE_VER})
-+if(DEFINED VER_MOD)
-+  set(ver ${ver}${VER_MOD})
-+endif()
-+set(verDir /${PROJECT_NAME}${ver})
-+########################################
 +add_subdirectory(src)
 +add_subdirectory(examples)
 +add_subdirectory(tests)
-+install(FILES strophe.h strophepp.h DESTINATION include${verDir}/${PROJECT_NAME})
++install(FILES strophe.h strophepp.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 diff --git a/examples/CMakeLists.txt b/examples/CMakeLists.txt
 new file mode 100644
 index 0000000..5de7bc3
@@ -94,10 +74,10 @@ index 0000000..5de7bc3
 +endforeach()
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 new file mode 100644
-index 0000000..0c12fe8
+index 0000000..2e00238
 --- /dev/null
 +++ b/src/CMakeLists.txt
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,61 @@
 +set(lib_name ${PROJECT_NAME})
 +########################################
 +set(${lib_name}_libsrcs
@@ -144,25 +124,21 @@ index 0000000..0c12fe8
 +source_group("" FILES ${${lib_name}_libsrcs})
 +########################################
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>
++target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 +  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 +  )
 +target_link_libraries(${lib_name} PRIVATE ${EXPAT_LIBRARIES} ${OPENSSL_LIBRARIES} ${SYS_LIBS})
 +set_target_properties(${lib_name} PROPERTIES
-+  OUTPUT_NAME ${lib_name}${ver}
 +  PREFIX "" # strip off the "lib" prefix, since it's already libstrophe
 +  )
 +########################################
-+set(targetsFile ${PROJECT_NAME}${ver}-targets)
++set(targetsFile ${PROJECT_NAME}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
-+  RUNTIME DESTINATION bin
-+  LIBRARY DESTINATION lib
-+  ARCHIVE DESTINATION lib
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  )
-+if(DEFINED XP_NAMESPACE)
-+  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
-+endif()
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
++install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
 diff --git a/src/tls_openssl.c b/src/tls_openssl.c
 index 0e440c1..04f379e 100644
 --- a/src/tls_openssl.c
