@@ -29,15 +29,20 @@ function(build_zmqpp)
     return()
   endif()
   xpBuildDeps(depTgts ${PRO_ZMQPP})
+  xpGetArgValue(${PRO_ZMQPP} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_ZMQPP} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-zmqpp-config.cmake ${STAGE_DIR}/share/cmake/
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_NAMESPACE:STRING=xpro
+    -DZMQPP_BUILD_SHARED:BOOL=false
+    )
+  set(FIND_DEPS "xpFindPkg(PKGS libzmq)\n")
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::${NAME}-static)
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  set(XP_CONFIGURE
-    -DZMQPP_BUILD_SHARED:BOOL=false
-    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-    -DCMAKE_INSTALL_INCLUDEDIR=include/zmqpp_${VER}
-    -DXP_NAMESPACE:STRING=xpro
-    )
-  xpCmakeBuild(zmqpp "${depTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()

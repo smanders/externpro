@@ -1,9 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0e2cc7a..5606358 100644
+index 0e2cc7a..2872fb0 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -14,6 +14,7 @@
- cmake_minimum_required(VERSION 2.8.12)
+@@ -11,9 +11,10 @@
+ #
+ 
+ 
+-cmake_minimum_required(VERSION 2.8.12)
++cmake_minimum_required(VERSION 2.8.12...3.21)
  project(zmqpp)
  enable_testing()
 +include(flags OPTIONAL)
