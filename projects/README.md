@@ -78,10 +78,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_f388ca38552c3d9c96190332a350f1a2?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_80ed02592aa1121ff750969fd80cbdf9?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_f388ca38552c3d9c96190332a350f1a2
+depgraph_80ed02592aa1121ff750969fd80cbdf9
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
@@ -104,9 +104,9 @@ digraph GG {
   clangformat -> clang;
   cppzmq [shape=diamond];
   cppzmq -> libzmq;
-  curl_7_80_0 [label="curl_7.80.0" shape=diamond];
-  curl_7_80_0 -> libssh2;
-  curl_7_80_0 -> cares;
+  curl [shape=diamond];
+  curl -> libssh2;
+  curl -> cares;
   eigen [shape=diamond];
   expat [shape=diamond];
   fecpp [shape=diamond];
@@ -151,5 +151,5 @@ digraph GG {
   zmqpp [shape=diamond];
   zmqpp -> libzmq;
 }
-depgraph_f388ca38552c3d9c96190332a350f1a2
+depgraph_80ed02592aa1121ff750969fd80cbdf9
 </details>

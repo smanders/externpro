@@ -1,25 +1,29 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a88f49b3b..9a3e30607 100644
+index a88f49b3b..feb404d07 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -46,6 +46,7 @@ include(CMakeDependentOption)
+@@ -46,6 +46,14 @@ include(CMakeDependentOption)
  include(CheckCCompilerFlag)
  
  project(CURL C)
 +include(flags OPTIONAL)
++if(DEFINED XP_NAMESPACE)
++  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
++  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
++  set(nameSpace ${XP_NAMESPACE}::)
++else()
++  set(nameSpace ${PROJECT_NAME}::)
++endif()
  
  file(STRINGS ${CURL_SOURCE_DIR}/include/curl/curlver.h CURL_VERSION_H_CONTENTS REGEX "#define LIBCURL_VERSION( |_NUM )")
  string(REGEX MATCH "#define LIBCURL_VERSION \"[^\"]*"
-@@ -149,8 +150,15 @@ endif()
- set(CURL_LIBS "")
+@@ -150,7 +158,12 @@ set(CURL_LIBS "")
  
  if(ENABLE_ARES)
-+  option(FIND_ARES_MODULE_PATH "Find c-ares in CMAKE_MODULE_PATH" OFF)
-+  mark_as_advanced(FIND_ARES_MODULE_PATH)
    set(USE_ARES 1)
 -  find_package(CARES REQUIRED)
-+  if(FIND_ARES_MODULE_PATH)
-+    find_package(usexp-CARES REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  if(COMMAND xpFindPkg)
++    xpFindPkg(PKGS cares)
 +    set(CARES_LIBRARY ${CARES_LIBRARIES})
 +  else()
 +    find_package(CARES REQUIRED)
@@ -27,22 +31,20 @@ index a88f49b3b..9a3e30607 100644
    list(APPEND CURL_LIBS ${CARES_LIBRARY})
  endif()
  
-@@ -429,7 +437,13 @@ if(use_core_foundation)
+@@ -429,7 +442,11 @@ if(use_core_foundation)
  endif()
  
  if(CMAKE_USE_OPENSSL)
 -  find_package(OpenSSL REQUIRED)
-+  option(CMAKE_USE_OPENSSL_MODULE_PATH "Find OpenSSL in CMAKE_MODULE_PATH." OFF)
-+  mark_as_advanced(CMAKE_USE_OPENSSL_MODULE_PATH)
-+  if(CMAKE_USE_OPENSSL_MODULE_PATH)
-+    find_package(usexp-OpenSSL REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  if(COMMAND xpFindPkg)
++    xpFindPkg(PKGS openssl)
 +  else()
 +    find_package(OpenSSL REQUIRED)
 +  endif()
    set(SSL_ENABLED ON)
    set(USE_OPENSSL ON)
  
-@@ -437,7 +451,13 @@ if(CMAKE_USE_OPENSSL)
+@@ -437,7 +454,13 @@ if(CMAKE_USE_OPENSSL)
    # version of CMake.  This allows our dependents to get our dependencies
    # transitively.
    if(NOT CMAKE_VERSION VERSION_LESS 3.4)
@@ -57,22 +59,20 @@ index a88f49b3b..9a3e30607 100644
    else()
      list(APPEND CURL_LIBS ${OPENSSL_LIBRARIES})
      include_directories(${OPENSSL_INCLUDE_DIR})
-@@ -682,7 +702,13 @@ check_library_exists("${CURL_LIBS}" dlopen "" HAVE_DLOPEN)
+@@ -682,7 +705,11 @@ check_library_exists("${CURL_LIBS}" dlopen "" HAVE_DLOPEN)
  set(HAVE_LIBZ OFF)
  set(HAVE_ZLIB_H OFF)
  set(USE_ZLIB OFF)
 -optional_dependency(ZLIB)
-+option(CURL_ZLIB_MODULE_PATH "Find zlib in CMAKE_MODULE_PATH." OFF)
-+mark_as_advanced(CURL_ZLIB_MODULE_PATH)
-+if(CURL_ZLIB_MODULE_PATH)
-+  find_package(usexp-ZLIB REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++if(COMMAND xpFindPkg)
++  xpFindPkg(PKGS zlib)
 +else()
 +  optional_dependency(ZLIB)
 +endif()
  if(ZLIB_FOUND)
    set(HAVE_ZLIB_H ON)
    set(HAVE_LIBZ ON)
-@@ -692,7 +718,13 @@ if(ZLIB_FOUND)
+@@ -692,7 +719,13 @@ if(ZLIB_FOUND)
    # version of CMake.  This allows our dependents to get our dependencies
    # transitively.
    if(NOT CMAKE_VERSION VERSION_LESS 3.4)
@@ -87,15 +87,13 @@ index a88f49b3b..9a3e30607 100644
    else()
      list(APPEND CURL_LIBS ${ZLIB_LIBRARIES})
      include_directories(${ZLIB_INCLUDE_DIRS})
-@@ -736,7 +768,16 @@ set(HAVE_LIBSSH2 OFF)
+@@ -736,7 +769,14 @@ set(HAVE_LIBSSH2 OFF)
  set(HAVE_LIBSSH2_H OFF)
  
  if(CMAKE_USE_LIBSSH2)
 -  find_package(LibSSH2)
-+  option(CMAKE_USE_LIBSSH2_MODULE_PATH "Find libssh2 in CMAKE_MODULE_PATH." OFF)
-+  mark_as_advanced(CMAKE_USE_LIBSSH2_MODULE_PATH)
-+  if(CMAKE_USE_LIBSSH2_MODULE_PATH)
-+    find_package(usexp-LibSSH2 REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
++  if(COMMAND xpFindPkg)
++    xpFindPkg(PKGS libssh2)
 +    get_target_property(LIBSSH2_INCLUDE_DIR ${LIBSSH2_LIBRARIES} INTERFACE_INCLUDE_DIRECTORIES)
 +    list(FILTER LIBSSH2_INCLUDE_DIR INCLUDE REGEX "/libssh2$") # include dir ending with /libssh2
 +    set(LIBSSH2_LIBRARY ${LIBSSH2_LIBRARIES})
@@ -105,64 +103,23 @@ index a88f49b3b..9a3e30607 100644
    if(LIBSSH2_FOUND)
      list(APPEND CURL_LIBS ${LIBSSH2_LIBRARY})
      set(CMAKE_REQUIRED_LIBRARIES ${LIBSSH2_LIBRARY})
-@@ -1343,9 +1384,23 @@ function(transform_makefile_inc INPUT_FILE OUTPUT_FILE)
-   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${INPUT_FILE}")
- endfunction()
- 
-+if(NOT DEFINED CURL_VER)
-+  set(CURL_VER ${CURL_VERSION})
-+elseif(NOT CURL_VER STREQUAL CURL_VERSION)
-+  message(AUTHOR_WARNING "version passed in (${CURL_VER}) doesn't match internal version (${CURL_VERSION})")
-+endif()
-+if(XP_INSTALL_DIRS)
-+  set(_ver _${CURL_VER})
-+endif()
-+if(DEFINED XP_NAMESPACE)
-+  set(nameSpace ${XP_NAMESPACE}::)
-+else()
-+  set(nameSpace ${PROJECT_NAME}::)
-+endif()
-+
- include(GNUInstallDirs)
- 
--set(CURL_INSTALL_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
-+set(CURL_INSTALL_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}${_ver})
- set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
- set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
- set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
-@@ -1530,24 +1585,31 @@ set(REQUIRE_LIB_DEPS        "no")
- # SUPPORT_PROTOCOLS
- set(VERSIONNUM              "${CURL_VERSION_NUM}")
- 
-+option(INSTALL_CURL_CONFIG "Set to ON to install cURL config." ON)
-+mark_as_advanced(INSTALL_CURL_CONFIG)
-+
- # Finally generate a "curl-config" matching this config
- # Use:
- # * ENABLE_SHARED
- # * ENABLE_STATIC
- configure_file("${CURL_SOURCE_DIR}/curl-config.in"
+@@ -1538,6 +1578,7 @@ configure_file("${CURL_SOURCE_DIR}/curl-config.in"
                 "${CURL_BINARY_DIR}/curl-config" @ONLY)
-+if(INSTALL_CURL_CONFIG)
  install(FILES "${CURL_BINARY_DIR}/curl-config"
          DESTINATION ${CMAKE_INSTALL_BINDIR}
++        ${XP_OPT_INSTALL}
          PERMISSIONS
            OWNER_READ OWNER_WRITE OWNER_EXECUTE
            GROUP_READ GROUP_EXECUTE
-           WORLD_READ WORLD_EXECUTE)
-+endif()
- 
- # Finally generate a pkg-config file matching this config
+@@ -1547,6 +1588,7 @@ install(FILES "${CURL_BINARY_DIR}/curl-config"
  configure_file("${CURL_SOURCE_DIR}/libcurl.pc.in"
                 "${CURL_BINARY_DIR}/libcurl.pc" @ONLY)
-+if(INSTALL_CURL_CONFIG)
  install(FILES "${CURL_BINARY_DIR}/libcurl.pc"
++        ${XP_OPT_INSTALL}
          DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-+endif()
  
  # install headers
- install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/curl"
-@@ -1572,15 +1634,17 @@ configure_package_config_file(CMake/curl-config.cmake.in
+@@ -1572,13 +1614,14 @@ configure_package_config_file(CMake/curl-config.cmake.in
  if(CURL_ENABLE_EXPORT_TARGET)
    install(
            EXPORT "${TARGETS_EXPORT_NAME}"
@@ -172,15 +129,12 @@ index a88f49b3b..9a3e30607 100644
    )
  endif()
  
-+if(INSTALL_CURL_CONFIG)
  install(
          FILES ${version_config} ${project_config}
++        ${XP_OPT_INSTALL}
          DESTINATION ${CURL_INSTALL_CMAKE_DIR}
  )
-+endif()
  
- # Workaround for MSVS10 to avoid the Dialog Hell
- # FIXME: This could be removed with future version of CMake.
 diff --git a/include/curl/curl.h b/include/curl/curl.h
 index 6b6ac8a05..fa5f382c0 100644
 --- a/include/curl/curl.h
@@ -195,20 +149,10 @@ index 6b6ac8a05..fa5f382c0 100644
  
  #ifndef CURL_MAX_HTTP_HEADER
 diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
-index 2575288f7..49678e9d3 100644
+index 2575288f7..8638f3916 100644
 --- a/lib/CMakeLists.txt
 +++ b/lib/CMakeLists.txt
-@@ -113,6 +113,9 @@ endif()
- set_target_properties(${LIB_NAME} PROPERTIES PREFIX "")
- set_target_properties(${LIB_NAME} PROPERTIES IMPORT_PREFIX "")
- 
-+# embed version number in the library filename, if _ver defined
-+set_target_properties(${LIB_NAME} PROPERTIES OUTPUT_NAME ${LIB_NAME}${_ver})
-+
- if(CURL_HAS_LTO)
-   set_target_properties(${LIB_NAME} PROPERTIES
-     INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
-@@ -142,5 +145,5 @@ install(TARGETS ${LIB_NAME}
+@@ -142,5 +142,5 @@ install(TARGETS ${LIB_NAME}
  
  export(TARGETS ${LIB_NAME}
         APPEND FILE ${PROJECT_BINARY_DIR}/libcurl-target.cmake
@@ -216,18 +160,10 @@ index 2575288f7..49678e9d3 100644
 +       NAMESPACE ${nameSpace}
  )
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 6f9c5d658..25af53047 100644
+index 6f9c5d658..f2cb1b58f 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -105,10 +105,13 @@ target_link_libraries(${EXE_NAME} libcurl ${CURL_LIBS})
- #SET_TARGET_PROPERTIES(${EXE_NAME} RUNTIME_OUTPUT_DIRECTORY "blah blah blah")
- #SET_TARGET_PROPERTIES(${EXE_NAME} LIBRARY_OUTPUT_DIRECTORY "blah blah blah")
- 
-+# embed version number in the executable filename, if _ver defined
-+set_target_properties(${EXE_NAME} PROPERTIES OUTPUT_NAME ${EXE_NAME}${_ver})
-+
- #INCLUDE(ModuleInstall OPTIONAL)
- 
+@@ -110,5 +110,5 @@ target_link_libraries(${EXE_NAME} libcurl ${CURL_LIBS})
  install(TARGETS ${EXE_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
  export(TARGETS ${EXE_NAME}
         APPEND FILE ${PROJECT_BINARY_DIR}/curl-target.cmake

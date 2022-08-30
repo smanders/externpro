@@ -1,63 +1,53 @@
 # curl
-set(CURL_OLDVER 7.80.0)
-set(CURL_NEWVER 7.80.0)
+set(VER 7.80.0)
+xpProOption(curl DBG)
+string(REPLACE "." "_" VER_ ${VER})
+set(REPO github.com/curl/curl)
+set(FORK github.com/smanders/curl)
+set(PRO_CURL
+  NAME curl
+  WEB "cURL" http://curl.haxx.se/libcurl/ "libcurl website"
+  LICENSE "open" http://curl.haxx.se/docs/copyright.html "curl license: MIT/X derivate license"
+  DESC "the multiprotocol file transfer library"
+  REPO "repo" https://${REPO} "curl repo on github"
+  GRAPH BUILD_DEPS libssh2 cares
+  VER ${VER}
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
+  GIT_TAG xp-${VER_} # what to 'git checkout'
+  GIT_REF curl-${VER_} # create patch from this tag to 'git checkout'
+  DLURL http://curl.haxx.se/download/curl-${VER}.tar.bz2
+  DLMD5 6be3ed3a8069d81dd18e80872bc80ba6
+  PATCH ${PATCH_DIR}/curl.patch
+  DIFF https://${FORK}/compare/curl:
+  )
 ########################################
 function(build_curl)
-  if(NOT (XP_DEFAULT OR XP_PRO_CURL_${CURL_OLDVER} OR XP_PRO_CURL_${CURL_NEWVER}))
+  if(NOT (XP_DEFAULT OR XP_PRO_CURL))
     return()
   endif()
-  if(XP_DEFAULT)
-    set(CURL_VERSIONS ${CURL_OLDVER} ${CURL_NEWVER})
-  else()
-    if(XP_PRO_CURL_${CURL_OLDVER})
-      set(CURL_VERSIONS ${CURL_OLDVER})
-    endif()
-    if(XP_PRO_CURL_${CURL_NEWVER})
-      list(APPEND CURL_VERSIONS ${CURL_NEWVER})
-    endif()
-  endif()
-  list(REMOVE_DUPLICATES CURL_VERSIONS)
-  list(LENGTH CURL_VERSIONS NUM_VER)
-  if(NUM_VER EQUAL 1)
-    if(CURL_VERSIONS VERSION_EQUAL CURL_OLDVER)
-      set(boolean OFF)
-    else() # CURL_VERSIONS VERSION_EQUAL CURL_NEWVER
-      set(boolean ON)
-    endif()
-    set(ONE_VER "set(XP_USE_LATEST_CURL ${boolean}) # currently only one version supported\n")
-  endif()
-  set(MOD_OPT "set(VER_MOD)")
-  set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
-  configure_file(${PRO_DIR}/use/usexp-curl-config.cmake ${STAGE_DIR}/share/cmake/
+  xpBuildDeps(depTgts ${PRO_CURL})
+  xpGetArgValue(${PRO_CURL} ARG NAME VALUE NAME)
+  xpGetArgValue(${PRO_CURL} ARG VER VALUE VER)
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_NAMESPACE:STRING=xpro
+    -DBUILD_CURL_EXE=ON
+    -DBUILD_SHARED_LIBS=OFF
+    -DBUILD_TESTING=OFF
+    -DENABLE_ARES=ON
+    -DCMAKE_USE_OPENSSL=ON
+    -DCURL_DISABLE_LDAP=ON
+    -DUSE_LIBIDN2=OFF
+    )
+  set(FIND_DEPS "xpFindPkg(PKGS libssh2 cares) # dependencies\n")
+  set(TARGETS_FILE lib/cmake/CURL/CURLTargets.cmake)
+  set(EXECUTABLE xpro::curl)
+  set(LIBRARIES xpro::libcurl)
+  configure_file(${PRO_DIR}/use/usexp-template-exe-lib-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  set(XP_CONFIGURE_${CURL_OLDVER}
-    )
-  set(XP_CONFIGURE_${CURL_NEWVER}
-    )
-  foreach(ver ${CURL_VERSIONS})
-    xpBuildDeps(depTgts ${PRO_CURL_${ver}})
-    list(APPEND depTgts ${cmTgts})
-    set(XP_CONFIGURE
-      -DCURL_VER=${ver}
-      -DCMAKE_INSTALL_INCLUDEDIR=include/curl_${ver}
-      -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-      -DBUILD_CURL_EXE=ON
-      -DBUILD_SHARED_LIBS=OFF
-      -DBUILD_TESTING=OFF
-      -DINSTALL_CURL_CONFIG=OFF
-      -DENABLE_ARES=ON
-      -DFIND_ARES_MODULE_PATH=ON
-      -DCURL_ZLIB_MODULE_PATH=ON
-      -DCMAKE_USE_OPENSSL=ON
-      -DCMAKE_USE_OPENSSL_MODULE_PATH=ON
-      -DCMAKE_USE_LIBSSH2_MODULE_PATH=ON
-      -DCURL_DISABLE_LDAP=ON
-      -DUSE_LIBIDN2=OFF
-      -DXP_INSTALL_DIRS=ON
-      -DXP_NAMESPACE:STRING=xpro
-      ${XP_CONFIGURE_${ver}}
-      )
-    xpCmakeBuild(curl_${ver} "${depTgts}" "${XP_CONFIGURE}")
-  endforeach()
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()
