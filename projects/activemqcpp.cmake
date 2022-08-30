@@ -18,7 +18,7 @@ set(PRO_ACTIVEMQCPP
   GIT_REF ${PROJ}-${VER} # create patch from this tag to 'git checkout'
   DLURL https://archive.apache.org/dist/activemq/${PROJ}/${VER}/${PROJ}-library-${VER}-src.tar.gz
   DLMD5 c758cc8f36505a48680d454e376f4203
-  PATCH ${PATCH_DIR}/activemqcpp_${VER}.patch
+  PATCH ${PATCH_DIR}/activemqcpp.patch
   # TRICKY: PATCH_STRIP because the repo has an extra level of directories that the .tar.gz file doesn't have
   PATCH_STRIP 2 # Strip NUM leading components from file names (defaults to 1)
   DIFF https://${FORK}/compare/apache:

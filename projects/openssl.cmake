@@ -20,7 +20,7 @@ set(PRO_OPENSSL
   #DLURL https://www.openssl.org/source/old/${BRANCH}/openssl-${VER}.tar.gz
   DLURL https://www.openssl.org/source/openssl-${VER}.tar.gz
   DLMD5 ac0d4387f3ba0ad741b0580dd45f6ff3
-  PATCH ${PATCH_DIR}/openssl_${VER}.patch
+  PATCH ${PATCH_DIR}/openssl.patch
   DIFF https://${FORK}/compare/openssl:
   DEPS_FUNC build_openssl
   SUBPRO opensslasm
