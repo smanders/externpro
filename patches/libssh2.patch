@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ae55942..81a0e5e 100644
+index ae55942..529d2cf 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -33,13 +33,21 @@
+@@ -33,13 +33,25 @@
  # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  # OF SUCH DAMAGE.
  
@@ -21,7 +21,11 @@ index ae55942..81a0e5e 100644
  set(PROJECT_DESCRIPTION "The SSH library")
 +include(flags OPTIONAL)
 +if(DEFINED XP_NAMESPACE)
++  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
++  set(nameSpace ${XP_NAMESPACE}::)
++else()
++  set(nameSpace Libssh2::)
 +endif()
  
  if (CMAKE_VERSION VERSION_LESS "3.1")
@@ -37,16 +41,15 @@ index 6abf0e4..5002089 100644
 -install(FILES ${MAN_PAGES} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 +install(FILES ${MAN_PAGES} ${XP_OPT_INSTALL} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 2eaf4cc..4ec5fde 100644
+index 2eaf4cc..f70ab02 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -60,7 +60,12 @@ endif()
+@@ -60,7 +60,11 @@ endif()
  
  if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
  
 -  find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
 +  if(COMMAND xpFindPkg)
-+    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +    xpFindPkg(PKGS openssl)
 +  else()
 +    find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
@@ -54,7 +57,7 @@ index 2eaf4cc..4ec5fde 100644
  
    if(OPENSSL_FOUND)
      set(CRYPTO_BACKEND "OpenSSL")
-@@ -223,6 +228,7 @@ target_include_directories(libssh2
+@@ -223,6 +227,7 @@ target_include_directories(libssh2
    PRIVATE "${PROJECT_SOURCE_DIR}/include/" ${PRIVATE_INCLUDE_DIRECTORIES}
    PUBLIC
      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -62,13 +65,12 @@ index 2eaf4cc..4ec5fde 100644
      $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>)
  
  ## Options
-@@ -239,9 +245,14 @@ option(ENABLE_ZLIB_COMPRESSION "Use zlib for compression")
+@@ -239,9 +244,13 @@ option(ENABLE_ZLIB_COMPRESSION "Use zlib for compression")
  add_feature_info(Compression ENABLE_ZLIB_COMPRESSION
    "using zlib for compression")
  if(ENABLE_ZLIB_COMPRESSION)
 -  find_package(ZLIB REQUIRED)
 +  if(COMMAND xpFindPkg)
-+    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +    xpFindPkg(PKGS zlib)
 +  else()
 +    find_package(ZLIB REQUIRED)
@@ -79,7 +81,7 @@ index 2eaf4cc..4ec5fde 100644
    list(APPEND LIBRARIES ${ZLIB_LIBRARIES})
    list(APPEND PC_REQUIRES_PRIVATE zlib)
    if(ZLIB_FOUND)
-@@ -372,7 +383,7 @@ install(FILES
+@@ -372,7 +381,7 @@ install(FILES
    ${PROJECT_SOURCE_DIR}/include/libssh2.h
    ${PROJECT_SOURCE_DIR}/include/libssh2_publickey.h
    ${PROJECT_SOURCE_DIR}/include/libssh2_sftp.h
@@ -88,16 +90,8 @@ index 2eaf4cc..4ec5fde 100644
  
  install(TARGETS libssh2
    EXPORT Libssh2Config
-@@ -389,14 +400,20 @@ set(RUNTIME_DEPENDENCIES ${_RUNTIME_DEPENDENCIES} CACHE INTERNAL
+@@ -391,12 +400,12 @@ set(RUNTIME_DEPENDENCIES ${_RUNTIME_DEPENDENCIES} CACHE INTERNAL
  
- # Package config
- 
-+if(DEFINED XP_NAMESPACE)
-+  set(nameSpace ${XP_NAMESPACE}::)
-+else()
-+  set(nameSpace Libssh2::)
-+endif()
-+
  ## During package installation, install Libssh2Config.cmake
  install(EXPORT Libssh2Config
 -  NAMESPACE Libssh2::
@@ -111,7 +105,7 @@ index 2eaf4cc..4ec5fde 100644
  export(PACKAGE Libssh2) # register it
  
  ## Export a .pc file for client projects not using CMaek
-@@ -409,6 +426,7 @@ endif()
+@@ -409,6 +418,7 @@ endif()
  configure_file(libssh2.pc.in libssh2.pc @ONLY)
  install(
    FILES ${CMAKE_CURRENT_BINARY_DIR}/libssh2.pc
@@ -120,7 +114,7 @@ index 2eaf4cc..4ec5fde 100644
  
  ## Versioning
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
-index c8c5253..7440d9a 100644
+index c8c5253..ffbd835 100644
 --- a/tests/CMakeLists.txt
 +++ b/tests/CMakeLists.txt
 @@ -36,7 +36,6 @@
@@ -131,13 +125,12 @@ index c8c5253..7440d9a 100644
  include(CopyRuntimeDependencies)
  include(SocketLibraries)
  
-@@ -72,7 +71,12 @@ endif()
+@@ -72,7 +71,11 @@ endif()
  
  if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
  
 -  find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
 +  if(COMMAND xpFindPkg)
-+    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +    xpFindPkg(PKGS openssl)
 +  else()
 +    find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
@@ -145,7 +138,7 @@ index c8c5253..7440d9a 100644
  
    if(OPENSSL_FOUND)
      set(CRYPTO_BACKEND "OpenSSL")
-@@ -124,8 +128,8 @@ if(CRYPTO_BACKEND STREQUAL "OpenSSL")
+@@ -124,8 +127,8 @@ if(CRYPTO_BACKEND STREQUAL "OpenSSL")
      list(APPEND TESTS
        public_key_auth_succeeds_with_correct_rsa_openssh_key
      )
