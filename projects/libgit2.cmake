@@ -1,109 +1,59 @@
 # libgit2
-set(LIBGIT2_OLDVER 1.3.0)
-set(LIBGIT2_NEWVER 1.3.0)
+set(VER 1.3.0)
+xpProOption(libgit2 DBG)
+set(REPO github.com/libgit2/libgit2)
+set(FORK github.com/smanders/libgit2)
+set(PRO_LIBGIT2
+  NAME libgit2
+  WEB "libgit2" https://libgit2.github.com/ "libgit2 website"
+  LICENSE "open" "https://${REPO}/blob/master/README.md#license" "GPL2 with linking exception"
+  DESC "portable, pure C implementation of the Git core methods"
+  REPO "repo" https://${REPO} "libgit2 repo on github"
+  GRAPH BUILD_DEPS libssh2
+  VER ${VER}
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
+  GIT_TRACKING_BRANCH main
+  GIT_TAG xp${VER}
+  GIT_REF v${VER}
+  DLURL https://${REPO}/archive/v${VER}.tar.gz
+  DLMD5 c8b6658e421d51f0e1a5fe0c17fc41dc
+  DLNAME libgit2-${VER}.tar.gz
+  PATCH ${PATCH_DIR}/libgit2.patch
+  DIFF https://${FORK}/compare/libgit2:
+  )
 ########################################
 function(build_libgit2)
-  if(NOT (XP_DEFAULT OR XP_PRO_LIBGIT2_${LIBGIT2_OLDVER} OR XP_PRO_LIBGIT2_${LIBGIT2_NEWVER}))
+  if(NOT (XP_DEFAULT OR XP_PRO_LIBGIT2))
     return()
   endif()
-  if(XP_DEFAULT)
-    set(LIBGIT2_VERSIONS ${LIBGIT2_OLDVER} ${LIBGIT2_NEWVER})
-  else()
-    if(XP_PRO_LIBGIT2_${LIBGIT2_OLDVER})
-      set(LIBGIT2_VERSIONS ${LIBGIT2_OLDVER})
-    endif()
-    if(XP_PRO_LIBGIT2_${LIBGIT2_NEWVER})
-      list(APPEND LIBGIT2_VERSIONS ${LIBGIT2_NEWVER})
-    endif()
-  endif()
-  list(REMOVE_DUPLICATES LIBGIT2_VERSIONS)
-  list(LENGTH LIBGIT2_VERSIONS NUM_VER)
-  if(NUM_VER EQUAL 1)
-    if(LIBGIT2_VERSIONS VERSION_EQUAL LIBGIT2_OLDVER)
-      set(boolean OFF)
-    else() # LIBGIT2_VERSIONS VERSION_EQUAL LIBGIT2_NEWVER
-      set(boolean ON)
-    endif()
-    set(ONE_VER "set(XP_USE_LATEST_LIBGIT2 ${boolean}) # currently only one version supported\n")
-  endif()
   if(WIN32)
-    set(MOD_OPT "set(VER_MOD)")
-    set(VER_CFG xpConfigBase)
-  elseif(FALSE)
-    # build multiple versions against different versions of openssl/libssh2
-    set(MOD_OLD _ossl10)
-    set(MOD_NEW _ossl11)
-    set(MOD_OPT "if(XP_USE_LATEST_OPENSSL)\n  set(VER_MOD ${MOD_NEW})\nelse()\n  set(VER_MOD ${MOD_OLD})\nendif()")
-    set(VER_CFG ${MOD_OLD} ${MOD_NEW})
-  elseif(FALSE)
-    # build against single versions of openssl/libssh2
-    set(MOD_OLD _ossl10)
-    set(MOD_OPT "set(VER_MOD ${MOD_OLD})")
-    set(VER_CFG ${MOD_OLD})
+    set(depTgts)
   else()
-    set(MOD_OPT "set(VER_MOD)")
-    set(VER_CFG xpConfigBase)
+    xpBuildDeps(depTgts ${PRO_LIBGIT2})
   endif()
-  set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
-  configure_file(${PRO_DIR}/use/usexp-libgit2-config.cmake ${STAGE_DIR}/share/cmake/
+  xpGetArgValue(${PRO_LIBGIT2} ARG NAME VALUE NAME)
+  xpGetArgValue(${PRO_LIBGIT2} ARG VER VALUE VER)
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_NAMESPACE:STRING=xpro
+    -DBUILD_CLAR:BOOL=OFF
+    -DBUILD_SHARED_LIBS=OFF
+    -DREGEX_BACKEND=builtin
+    -DTHREADSAFE=ON
+    )
+  if(WIN32)
+    list(APPEND XP_CONFIGURE
+      -DXP_SKIP_MSVC_FLAGS=ON
+      )
+  endif()
+  set(FIND_DEPS "xpFindPkg(PKGS libssh2) # dependency\n")
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::git2)
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  if(NOT WIN32)
-    set(XP_CONFIGURE_${LIBGIT2_OLDVER}
-      )
-    set(XP_CONFIGURE_${LIBGIT2_NEWVER}
-      )
-    set(${MOD_OLD}
-      -DXP_USE_LATEST_OPENSSL:BOOL=OFF
-      -DXP_USE_LATEST_LIBSSH2:BOOL=OFF
-      -DVER_MOD:STRING=${MOD_OLD}
-      )
-    set(${MOD_NEW}
-      -DXP_USE_LATEST_OPENSSL:BOOL=ON
-      -DXP_USE_LATEST_LIBSSH2:BOOL=ON
-      -DVER_MOD:STRING=${MOD_NEW}
-      )
-  endif()
-  foreach(ver ${LIBGIT2_VERSIONS})
-    if(WIN32)
-      set(depTgts)
-    else()
-      xpBuildDeps(depTgts ${PRO_LIBGIT2_${ver}})
-    endif()
-    set(xpConfigBase
-      -DBUILD_CLAR:BOOL=OFF
-      -DBUILD_SHARED_LIBS=OFF
-      -DCMAKE_INSTALL_INCLUDEDIR=include/libgit2_${ver}
-      -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-      -DREGEX_BACKEND=builtin
-      -DTHREADSAFE=ON
-      -DINSTALL_LIBGIT2_CONFIG=OFF
-      -DXP_NAMESPACE:STRING=xpro
-      -DLIBGIT2_VER=${ver}
-      )
-    if(WIN32)
-      list(APPEND xpConfigBase
-        -DSKIP_MSVC_FLAGS=ON
-        )
-    else()
-      list(APPEND xpConfigBase
-        -DOPENSSL_MODULE_PATH=ON
-        -DZLIB_MODULE_PATH=ON
-        -DLIBSSH2_MODULE_PATH=ON
-        ${XP_CONFIGURE_${ver}}
-        )
-    endif()
-    foreach(cfg ${VER_CFG})
-      list(INSERT ${cfg} 0 ${xpConfigBase})
-      list(REMOVE_DUPLICATES ${cfg})
-      build_libgit2_ver(${ver} ${cfg})
-    endforeach()
-  endforeach()
-endfunction()
-function(build_libgit2_ver ver cfg)
-  if(${cfg} STREQUAL xpConfigBase)
-    xpCmakeBuild(libgit2_${ver} "${depTgts}" "${${cfg}}")
-  else()
-    xpCmakeBuild(libgit2_${ver} "${depTgts}" "${${cfg}}" "" TGT ${cfg})
-  endif()
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()
