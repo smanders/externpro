@@ -9,7 +9,7 @@ set(PRO_FECPP
   LICENSE "open" http://www.randombit.net/code/fecpp/ "BSD License"
   DESC "fecpp is a Forward Error Correction Library"
   REPO "repo" https://${REPO} "fecpp repo on github"
-  GRAPH BUILD_DEPS boost
+  GRAPH BUILD_DEPS boost # library test code depends on boost
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
   GIT_UPSTREAM https://${REPO}.git
@@ -26,10 +26,18 @@ function(build_fecpp)
     return()
   endif()
   xpBuildDeps(depsTgts ${PRO_FECPP})
+  xpGetArgValue(${PRO_FECPP} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_FECPP} ARG VER VALUE VER)
-  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro -DFECPP_VER=${VER})
-  configure_file(${PRO_DIR}/use/usexp-fecpp-config.cmake ${STAGE_DIR}/share/cmake/
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_NAMESPACE:STRING=xpro
+    )
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::${NAME})
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(fecpp "${depsTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "${depsTgts}" "${XP_CONFIGURE}")
 endfunction()

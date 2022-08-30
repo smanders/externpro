@@ -1,11 +1,12 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..9ac49e0
+index 0000000..7d2856b
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,35 @@
+@@ -0,0 +1,32 @@
 +cmake_minimum_required(VERSION 3.12)
 +project(fecpp)
++include(GNUInstallDirs)
 +include(flags)
 +set(lib_name ${PROJECT_NAME})
 +#######################################
@@ -16,29 +17,25 @@ index 0000000..9ac49e0
 +  )
 +source_group("" FILES ${${lib_name}_libsrcs})
 +#######################################
-+if(DEFINED FECPP_VER)
-+  set(ver _${FECPP_VER})
-+  set(verDir /${PROJECT_NAME}${ver})
-+endif()
-+#######################################
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>)
-+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
++target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
++  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
++  )
 +add_subdirectory(test)
 +#######################################
-+set(targetsFile ${PROJECT_NAME}${ver}-targets)
++set(targetsFile ${PROJECT_NAME}-targets)
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
-+  RUNTIME DESTINATION bin
-+  LIBRARY DESTINATION lib
-+  ARCHIVE DESTINATION lib
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  )
-+install(FILES fecpp.h DESTINATION include${verDir}/${PROJECT_NAME})
++install(FILES fecpp.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
++install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
 +set(txtFiles format.txt license.txt news.txt readme.txt)
-+install(FILES ${txtFiles} DESTINATION share${verDir}/${PROJECT_NAME})
++install(FILES ${txtFiles} DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME})
 diff --git a/fecpp.cpp b/fecpp.cpp
 index e2e5b56..82e21b2 100644
 --- a/fecpp.cpp
@@ -94,14 +91,11 @@ index aa68bbe..b9888a4 100644
     private:
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
 new file mode 100644
-index 0000000..40fe06a
+index 0000000..41f105e
 --- /dev/null
 +++ b/test/CMakeLists.txt
-@@ -0,0 +1,18 @@
-+include_directories(${PROJECT_SOURCE_DIR})
-+set(externpro_DIR ${CMAKE_INSTALL_PREFIX})
-+set(XP_MODULE_PATH ${externpro_DIR}/share/cmake)
-+include(${XP_MODULE_PATH}/xpfunmac.cmake)
+@@ -0,0 +1,15 @@
++set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +xpFindPkg(PKGS boost)
 +set(${PROJECT_NAME}_exes
 +  benchmark
