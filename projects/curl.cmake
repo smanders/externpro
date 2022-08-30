@@ -43,8 +43,8 @@ function(build_curl)
     )
   set(FIND_DEPS "xpFindPkg(PKGS libssh2 cares) # dependencies\n")
   set(TARGETS_FILE lib/cmake/CURL/CURLTargets.cmake)
-  set(EXECUTABLE xpro::curl)
-  set(LIBRARIES xpro::libcurl)
+  set(EXECUTABLE xpro::${NAME})
+  set(LIBRARIES xpro::lib${NAME})
   configure_file(${PRO_DIR}/use/usexp-template-exe-lib-config.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
