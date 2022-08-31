@@ -22,21 +22,28 @@ function(build_node_addon_api)
     return()
   endif()
   xpBuildDeps(depTgts ${PRO_NODE-ADDON-API})
+  xpGetArgValue(${PRO_NODE-ADDON-API} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_NODE-ADDON-API} ARG VER VALUE VER)
-  set(verDir /node-addon-api_${VER})
-  configure_file(${PRO_DIR}/use/usexp-node-addon-api-config.cmake ${STAGE_DIR}/share/cmake/
+  set(FIND_DEPS "xpFindPkg(PKGS node)\n")
+  set(LIBRARY_HDR xpro::${NAME})
+  set(LIBRARY_INCLUDEDIRS include/${NAME}_${VER})
+  set(INTERFACE_PROPERTIES "
+    INTERFACE_LINK_LIBRARIES xpro::node
+    INTERFACE_COMPILE_DEFINITIONS \"NODE_ADDON_API_DISABLE_DEPRECATED;NAPI_CPP_EXCEPTIONS\"")
+  configure_file(${PRO_DIR}/use/usexp-template-hdr-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  ExternalProject_Get_Property(node-addon-api SOURCE_DIR)
+  ExternalProject_Get_Property(${NAME} SOURCE_DIR)
   set(headers ${SOURCE_DIR}/*.h)
-  ExternalProject_Add(node-addon-api_bld DEPENDS ${depTgts} node-addon-api
-    DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${DWNLD_DIR} CONFIGURE_COMMAND ""
+  ExternalProject_Add(${NAME}_bld DEPENDS ${depTgts} ${NAME}
+    DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} CONFIGURE_COMMAND ""
     SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${NULL_DIR}
-    INSTALL_DIR ${STAGE_DIR}/include${verDir}/node-addon-api
+    INSTALL_DIR ${STAGE_DIR}/${LIBRARY_INCLUDEDIRS}/${NAME}
     BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${headers}
       -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
     INSTALL_COMMAND ""
     )
-  set_property(TARGET node-addon-api_bld PROPERTY FOLDER ${bld_folder})
-  message(STATUS "target node-addon-api_bld")
+  set_property(TARGET ${NAME}_bld PROPERTY FOLDER ${bld_folder})
+  message(STATUS "target ${NAME}_bld")
 endfunction()
