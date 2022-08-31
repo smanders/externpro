@@ -1,23 +1,30 @@
 # nodejs
-set(NODEJS_OLDVER 14.17.6)
-set(NODEJS_NEWVER 14.17.6)
-####################
+set(VER 14.17.6)
 xpProOption(nodejs)
+set(REPO github.com/nodejs/node)
+set(FORK github.com/smanders/node)
 set(PRO_NODEJS
   NAME nodejs
-  NO_README
-  DEPS_FUNC build_nodejs_all
-  BUILD_DEPS nodejs_${NODEJS_OLDVER} nodejs_${NODEJS_NEWVER}
+  WEB "Node.js" http://nodejs.org "Node.js website"
+  LICENSE "open" https://raw.githubusercontent.com/nodejs/node/v${VER}/LICENSE "MIT license"
+  DESC "platform to build scalable network applications"
+  REPO "repo" https://${REPO} "node repo on github"
+  GRAPH GRAPH_NODE nodejs BUILD_DEPS nasm
+  VER ${VER}
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
+  GIT_TRACKING_BRANCH main
+  GIT_TAG xp${VER} # what to 'git checkout'
+  GIT_REF v${VER} # create patch from this tag to 'git checkout'
+  PATCH ${PATCH_DIR}/nodejs.patch
+  DIFF https://${FORK}/compare/nodejs:
+  DLURL http://nodejs.org/dist/v${VER}/node-v${VER}.tar.gz
+  DLMD5 d1f71584169c9d293e5264e1966c703e
+  DEPS_FUNC build_nodejs
   )
-function(build_nodejs_all)
-  xpBuildDeps(depTgts ${PRO_NODEJS})
-  if(ARGN)
-    set(${ARGN} "${depsTgts}" PARENT_SCOPE)
-  endif()
-endfunction()
 ####################
 function(build_nodejs)
-  if(NOT (XP_DEFAULT OR XP_PRO_NODEJS_${NODEJS_OLDVER} OR XP_PRO_NODEJS_${NODEJS_NEWVER}))
+  if(NOT (XP_DEFAULT OR XP_PRO_NODEJS))
     return()
   endif()
   find_package(PythonInterp)
@@ -32,40 +39,10 @@ function(build_nodejs)
       xpPatchProject(${PRO_NASM})
     endif()
   endif()
-  if(XP_DEFAULT)
-    set(NODEJS_VERSIONS ${NODEJS_OLDVER} ${NODEJS_NEWVER})
-  else()
-    if(XP_PRO_NODEJS_${NODEJS_OLDVER})
-      set(NODEJS_VERSIONS ${NODEJS_OLDVER})
-    endif()
-    if(XP_PRO_NODEJS_${NODEJS_NEWVER})
-      list(APPEND NODEJS_VERSIONS ${NODEJS_NEWVER})
-    endif()
-  endif()
-  list(REMOVE_DUPLICATES NODEJS_VERSIONS)
-  list(LENGTH NODEJS_VERSIONS NUM_VER)
-  if(NUM_VER EQUAL 1)
-    if(NODEJS_VERSIONS VERSION_EQUAL NODEJS_OLDVER)
-      set(boolean OFF)
-    else() # NODEJS_VERSIONS VERSION_EQUAL NODEJS_NEWVER
-      set(boolean ON)
-    endif()
-    set(ONE_VER "set(XP_USE_LATEST_NODE ${boolean}) # currently only one version supported\n")
-  endif()
-  set(MOD_OPT "set(VER_MOD)")
-  set(USE_SCRIPT_INSERT ${ONE_VER}${MOD_OPT})
+  xpGetArgValue(${PRO_NODEJS} ARG VER VALUE VER)
   configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  foreach(ver ${NODEJS_VERSIONS})
-    build_nodejs_ver(${ver})
-  endforeach()
-endfunction()
-####################
-function(build_nodejs_ver ver)
-  # TODO: support Debug by renaming files going into STAGE_DIR?
-  set(BUILD_CONFIGS Release)
-  set(nodejs_${ver}_DEPS nodejs_${ver})
   if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
     if(${BUILD_PLATFORM} STREQUAL "64")
       set(destcpu arm64)
@@ -107,21 +84,24 @@ function(build_nodejs_ver ver)
   else()
     message(FATAL_ERROR "nodejs.cmake: unsupported OS platform")
   endif()
+  set(nodejs_DEPS nodejs)
+  # TODO: support Debug by renaming files going into STAGE_DIR?
+  set(BUILD_CONFIGS Release)
   foreach(cfg ${BUILD_CONFIGS})
     set(XP_CONFIGURE_CMD ${XP_CONFIGURE_${cfg}})
-    addproject_nodejs(nodejs_${ver} ${cfg})
+    addproject_nodejs(nodejs ${cfg})
   endforeach() # cfg
   # copy headers to STAGE_DIR
-  ExternalProject_Get_Property(nodejs_${ver} SOURCE_DIR)
+  ExternalProject_Get_Property(nodejs SOURCE_DIR)
   set(nodejsHdrs ${SOURCE_DIR}/src/*.h)
   set(uvDir ${SOURCE_DIR}/deps/uv/include)
   set(v8Hdrs ${SOURCE_DIR}/deps/v8/include/*.h)
   set(cppgcHdrs ${SOURCE_DIR}/deps/v8/include/cppgc/*.h)
-  set(XP_TARGET nodejs_${ver}_stage)
+  set(XP_TARGET nodejs_stage)
   if(NOT TARGET ${XP_TARGET})
-    ExternalProject_Add(${XP_TARGET} DEPENDS ${nodejs_${ver}_DEPS}
+    ExternalProject_Add(${XP_TARGET} DEPENDS ${nodejs_DEPS}
       DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
-      SOURCE_DIR ${NULL_DIR} INSTALL_DIR ${STAGE_DIR}/include/node_${ver}/node
+      SOURCE_DIR ${NULL_DIR} INSTALL_DIR ${STAGE_DIR}/include/node_${VER}/node
       DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory ${uvDir} <INSTALL_DIR>
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${nodejsHdrs}
         -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
@@ -150,25 +130,25 @@ macro(addproject_nodejs basename cfg)
       #   MSVC thinks it always needs to build this (after what appears to be a
       #   successful build) -- and there can't be any external project steps
       #   after the step with vcbuild or they won't execute
-      ExternalProject_Add(${XP_TARGET}vcbuild DEPENDS ${nodejs_${ver}_DEPS}
+      ExternalProject_Add(${XP_TARGET}vcbuild DEPENDS ${nodejs_DEPS}
         DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
         SOURCE_DIR ${nodejsSrcDir} INSTALL_DIR ${NULL_DIR}
         CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
         BUILD_IN_SOURCE 1 # <BINARY_DIR>==<SOURCE_DIR>
         )
       set_property(TARGET ${XP_TARGET}vcbuild PROPERTY FOLDER ${bld_folder})
-      list(APPEND nodejs_${ver}_DEPS ${XP_TARGET}vcbuild) # serialize the build
+      list(APPEND nodejs_DEPS ${XP_TARGET}vcbuild) # serialize the build
       set(binNode <SOURCE_DIR>/${cfg}/node.exe)
       set(libNode <SOURCE_DIR>/${cfg}/node.lib)
       set(XP_CONFIGURE_CMD ${CMAKE_COMMAND} -E echo "Configure MSVC...")
-      set(XP_BUILD_CMD ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node_${ver}/lib)
-      set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E copy ${libNode} ${STAGE_DIR}/node_${ver}/lib)
+      set(XP_BUILD_CMD ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/lib)
+      set(XP_INSTALL_CMD ${CMAKE_COMMAND} -E copy ${libNode} ${STAGE_DIR}/lib)
     elseif(UNIX)
       set(binNode <SOURCE_DIR>/out/${cfg}/node)
       set(XP_BUILD_CMD)   # use default
       set(XP_INSTALL_CMD) # use default
     endif()
-    ExternalProject_Add(${XP_TARGET} DEPENDS ${nodejs_${ver}_DEPS}
+    ExternalProject_Add(${XP_TARGET} DEPENDS ${nodejs_DEPS}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
       SOURCE_DIR ${nodejsSrcDir} INSTALL_DIR ${NULL_DIR}
       CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
@@ -177,11 +157,11 @@ macro(addproject_nodejs basename cfg)
       INSTALL_COMMAND ${XP_INSTALL_CMD}
       )
     ExternalProject_Add_Step(${XP_TARGET} copy_bin
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/node_${ver}/bin
-      COMMAND ${CMAKE_COMMAND} -E copy ${binNode} ${STAGE_DIR}/node_${ver}/bin
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${STAGE_DIR}/bin
+      COMMAND ${CMAKE_COMMAND} -E copy ${binNode} ${STAGE_DIR}/bin
       DEPENDEES install
       )
     set_property(TARGET ${XP_TARGET} PROPERTY FOLDER ${bld_folder})
   endif()
-  list(APPEND nodejs_${ver}_DEPS ${XP_TARGET}) # serialize the build
+  list(APPEND nodejs_DEPS ${XP_TARGET}) # serialize the build
 endmacro()
