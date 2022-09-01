@@ -27,14 +27,15 @@ function(build_yasm)
   if(NOT (XP_DEFAULT OR XP_PRO_YASM))
     return()
   endif()
-  set(XP_CONFIGURE -DBUILD_SHARED_LIBS=OFF -DINSTALL_YASM_ONLY:BOOL=ON)
+  xpGetArgValue(${PRO_YASM} ARG NAME VALUE NAME)
+  set(XP_CONFIGURE
+    -DXP_INSTALL_YASM_EXE_ONLY:BOOL=ON
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+    )
   set(BUILD_CONFIGS Release) # we only need a release executable
-  xpCmakeBuild(yasm "" "${XP_CONFIGURE}" yasmTargets)
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
-    set(${ARGN} "${yasmTargets}" PARENT_SCOPE)
-    if(WIN32)
-      set(ext ".exe")
-    endif()
-    set(YASM_EXE ${STAGE_DIR}/bin/yasm${ext} PARENT_SCOPE)
+    set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
+    set(YASM_EXE ${STAGE_DIR}/bin/${NAME}${CMAKE_EXECUTABLE_SUFFIX} PARENT_SCOPE)
   endif()
 endfunction()
