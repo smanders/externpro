@@ -3,7 +3,6 @@ xpProOption(openh264 DBG)
 set(VER 1.4.0)
 set(REPO github.com/cisco/openh264)
 set(FORK github.com/smanders/openh264)
-set(DLBIN https://${REPO}/releases/download/v${VER})
 set(PRO_OPENH264
   NAME openh264
   WEB "OpenH264" http://www.openh264.org/ "OpenH264 website"
@@ -16,7 +15,7 @@ set(PRO_OPENH264
   GIT_UPSTREAM https://${REPO}.git
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  PATCH ${PATCH_DIR}/openh264_${VER}.patch
+  PATCH ${PATCH_DIR}/openh264.patch
   DIFF https://${FORK}/compare/cisco:
   DLURL https://${REPO}/archive/v${VER}.tar.gz
   DLMD5 ca77b91a7a33efb4c5e7c56a5c0f599f
@@ -29,17 +28,23 @@ function(build_openh264)
     return()
   endif()
   xpBuildDeps(depTgts ${PRO_OPENH264}) # sets YASM_EXE
+  xpGetArgValue(${PRO_OPENH264} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_OPENH264} ARG VER VALUE VER)
   set(XP_CONFIGURE
-    -DOPENH264_VER=${VER}
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_ASM_NASM_COMPILER=${YASM_EXE}
     -DXP_NAMESPACE:STRING=xpro
+    -DXP_PRO_VER=${VER}
     )
-  configure_file(${PRO_DIR}/use/usexp-openh264-config.cmake ${STAGE_DIR}/share/cmake/
+  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::${NAME})
+  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(openh264 "${depTgts}" "${XP_CONFIGURE}" openh264Targets)
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
-    set(${ARGN} "${openh264Targets}" PARENT_SCOPE)
+    set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
   endif()
 endfunction()
