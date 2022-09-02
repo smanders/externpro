@@ -49,10 +49,12 @@ function(build_ffmpegv)
     return()
   endif()
   if(ff_VER VERSION_EQUAL FFMPEG_MSWVER)
+    xpPatchProject(${PRO_FFMPEG_${FFMPEG_MSWVER}})
     set(BUILD_CONFIGS Release) # we only need a release version
     xpCmakeBuild(ffmpeg_${ff_VER} "" "-DFFMPEG_VER=${ff_VER}")
   elseif(ff_VER VERSION_EQUAL FFMPEG_CFGVER)
     xpBuildDeps(depTgts ${PRO_FFMPEG_${FFMPEG_CFGVER}})
+    xpPatchProject(${PRO_FFMPEG_${FFMPEG_CFGVER}})
     set(XP_CONFIGURE_BASE ${CMAKE_COMMAND} -E env PKG_CONFIG_PATH=${STAGE_DIR}/share/cmake
       PATH=${STAGE_DIR}/bin:$ENV{PATH} # prepend path to yasm
       <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> #--enable-shared --disable-static
@@ -93,13 +95,14 @@ function(build_ffmpegv)
 endfunction()
 ########################################
 macro(addproject_ffmpeg XP_TARGET)
+  list(APPEND depTgts ffmpeg_${ff_VER})
   message(STATUS "target ${XP_TARGET}")
   if(XP_BUILD_VERBOSE)
     xpVerboseListing("[CONFIGURE]" "${XP_CONFIGURE_CMD}")
     xpVerboseListing("[DEPS]" "${depTgts}")
   endif()
   ExternalProject_Get_Property(ffmpeg_${ff_VER} SOURCE_DIR)
-  ExternalProject_Add(${XP_TARGET} DEPENDS ffmpeg_${ff_VER} ${depTgts}
+  ExternalProject_Add(${XP_TARGET} DEPENDS ${depTgts}
     DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR}
     SOURCE_DIR ${SOURCE_DIR}
     CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
