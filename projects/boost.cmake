@@ -218,7 +218,7 @@ function(build_boostlibs)
   foreach(lib ${exclude_libs})
     list(APPEND boost_BUILD --without-${lib})
   endforeach()
-  set(boost_INSTALL install --libdir=${STAGE_DIR}/lib --includedir=${STAGE_DIR}/include)
+  set(boost_INSTALL install --libdir=${STAGE_DIR}/lib --includedir=${STAGE_DIR}/include --cmakedir=${STAGE_DIR}/share/cmake/tgt-boost)
   addproject_boost(${bl_PRO}_bld)
   list(APPEND ${bl_PRO}_DEPENDS ${bl_PRO}_bld) # serialize the build
   if(DEFINED bl_TARGETS)

@@ -1,17 +1,13 @@
 string(TOUPPER @NAME@ PRJ)
 set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
-@FIND_DEPS@# this file (-config) installed to share/cmake
-get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
-get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
-# see BoostConfig.cmake for details on the following variables
+@FIND_DEPS@# see BoostConfig.cmake for details on the following variables
 set(Boost_FIND_QUIETLY TRUE)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME ON)
 #set(Boost_VERBOSE TRUE) # enable verbose output of BoostConfig.cmake
 #set(Boost_DEBUG TRUE) # enable debug (even more verbose) output of BoostConfig.cmake
-set(boostPath ${XP_ROOTDIR}/lib/cmake/Boost-@VER@)
-find_package(Boost @VER@ REQUIRED ALL PATHS ${boostPath} NO_DEFAULT_PATH)
+find_package(Boost @VER@ REQUIRED ALL PATHS ${CMAKE_CURRENT_LIST_DIR}/tgt-boost/Boost-@VER@ NO_DEFAULT_PATH)
 mark_as_advanced(Boost_DIR)
 if(UNIX)
   include(CheckLibraryExists)
