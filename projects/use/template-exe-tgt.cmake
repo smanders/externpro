@@ -1,9 +1,6 @@
 string(TOUPPER @NAME@ PRJ)
 set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
-@FIND_DEPS@# this file (-config) installed to share/cmake
-get_filename_component(XP_ROOTDIR ${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)
-get_filename_component(XP_ROOTDIR ${XP_ROOTDIR} ABSOLUTE) # remove relative parts
-include(${XP_ROOTDIR}/@TARGETS_FILE@)
+@FIND_DEPS@include(${CMAKE_CURRENT_LIST_DIR}/@TARGETS_FILE@)
 set(${PRJ}_EXE @EXECUTABLE@)
 set(reqVars ${PRJ}_VER ${PRJ}_EXE)
 include(FindPackageHandleStandardArgs)

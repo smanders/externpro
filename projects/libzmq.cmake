@@ -33,16 +33,15 @@ function(build_libzmq)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
-    -DXP_INSTALL_CMAKECFGDIR=lib/cmake/ZeroMQ
-    -DXP_INSTALL_PKGCONFIG:BOOL=OFF
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
     -DBUILD_SHARED:BOOL=OFF
     -DENABLE_CPACK:BOOL=OFF
     )
   set(FIND_DEPS "xpFindPkg(PKGS sodium) # dependencies\n")
-  set(TARGETS_FILE lib/cmake/ZeroMQ/ZeroMQTargets.cmake)
+  set(TARGETS_FILE tgt-${NAME}/ZeroMQTargets.cmake)
   set(LIBRARIES xpro::${NAME}-static)
-  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

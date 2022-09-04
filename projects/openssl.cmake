@@ -44,13 +44,14 @@ function(build_openssl)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
     ${NASM_EXE}
     )
   set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\nfind_package(Threads REQUIRED) # crypto depends on Threads::Threads\n")
-  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
   set(LIBRARIES "xpro::crypto xpro::ssl")
-  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

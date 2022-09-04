@@ -33,13 +33,14 @@ function(build_cares)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DCARES_BUILD_TOOLS:BOOL=OFF
     -DCARES_SHARED:BOOL=OFF
     -DCARES_STATIC:BOOL=ON
     )
-  set(TARGETS_FILE lib/cmake/c-ares/c-ares-targets.cmake)
+  set(TARGETS_FILE tgt-${NAME}/c-ares-targets.cmake)
   set(LIBRARIES c-ares::${NAME})
-  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..b8a86b4
+index 0000000..b8dd8a6
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,23 @@
 +cmake_minimum_required(VERSION 3.20)
 +project(wxInclude)
 +include(GNUInstallDirs)
@@ -21,7 +21,10 @@ index 0000000..b8a86b4
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+install(EXPORT ${prj}-targets DESTINATION ${CMAKE_INSTALL_BINDIR}/cmake ${nameSpace})
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++endif()
++install(EXPORT ${prj}-targets DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
 +add_executable(decompressor decompress.cpp)
 +target_link_libraries(decompressor PRIVATE Boost::filesystem Boost::iostreams)
 diff --git a/decompress.cpp b/decompress.cpp

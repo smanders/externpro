@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ae55942..529d2cf 100644
+index ae55942..74cc9c5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -33,13 +33,25 @@
+@@ -33,13 +33,28 @@
  # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  # OF SUCH DAMAGE.
  
@@ -27,6 +27,9 @@ index ae55942..529d2cf 100644
 +else()
 +  set(nameSpace Libssh2::)
 +endif()
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME})
++endif()
  
  if (CMAKE_VERSION VERSION_LESS "3.1")
    if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -41,7 +44,7 @@ index 6abf0e4..5002089 100644
 -install(FILES ${MAN_PAGES} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 +install(FILES ${MAN_PAGES} ${XP_OPT_INSTALL} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 2eaf4cc..f70ab02 100644
+index 2eaf4cc..4586671 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -60,7 +60,11 @@ endif()
@@ -95,8 +98,9 @@ index 2eaf4cc..f70ab02 100644
  ## During package installation, install Libssh2Config.cmake
  install(EXPORT Libssh2Config
 -  NAMESPACE Libssh2::
+-  DESTINATION lib/cmake/libssh2)
 +  NAMESPACE ${nameSpace}
-   DESTINATION lib/cmake/libssh2)
++  DESTINATION ${XP_INSTALL_CMAKEDIR})
  
  ## During build, register directly from build tree
  # create Libssh2Config.cmake
@@ -113,6 +117,12 @@ index 2eaf4cc..f70ab02 100644
    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
  
  ## Versioning
+@@ -424,4 +434,4 @@ write_basic_package_version_file(
+   COMPATIBILITY SameMajorVersion)
+ install(
+   FILES ${CMAKE_CURRENT_BINARY_DIR}/Libssh2ConfigVersion.cmake
+-  DESTINATION lib/cmake/libssh2)
++  DESTINATION ${XP_INSTALL_CMAKEDIR})
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
 index c8c5253..ffbd835 100644
 --- a/tests/CMakeLists.txt

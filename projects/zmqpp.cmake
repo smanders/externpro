@@ -34,13 +34,14 @@ function(build_zmqpp)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
     -DZMQPP_BUILD_SHARED:BOOL=false
     )
   set(FIND_DEPS "xpFindPkg(PKGS libzmq)\n")
-  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
   set(LIBRARIES xpro::${NAME}-static)
-  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

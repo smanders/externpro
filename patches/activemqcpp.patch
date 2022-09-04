@@ -763,10 +763,10 @@ index 00000000..7a229f29
 +endforeach()
 diff --git a/activemq-cpp/src/main/CMakeLists.txt b/activemq-cpp/src/main/CMakeLists.txt
 new file mode 100644
-index 00000000..9268b8d8
+index 00000000..df7f8053
 --- /dev/null
 +++ b/activemq-cpp/src/main/CMakeLists.txt
-@@ -0,0 +1,1707 @@
+@@ -0,0 +1,1710 @@
 +set(lib_name activemqcpp)
 +#######################################
 +# library sources
@@ -2473,4 +2473,7 @@ index 00000000..9268b8d8
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++endif()
++install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})

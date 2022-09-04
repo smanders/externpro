@@ -20,10 +20,10 @@ index 00000000..0a4aa6c4
 +add_subdirectory(codec)
 diff --git a/codec/CMakeLists.txt b/codec/CMakeLists.txt
 new file mode 100644
-index 00000000..b506f0aa
+index 00000000..f1dfcd14
 --- /dev/null
 +++ b/codec/CMakeLists.txt
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,57 @@
 +project(codec)
 +if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64")
 +  enable_language(ASM_NASM)
@@ -77,7 +77,10 @@ index 00000000..b506f0aa
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++endif()
++install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
 diff --git a/codec/common/CMakeLists.txt b/codec/common/CMakeLists.txt
 new file mode 100644
 index 00000000..4df5e77f

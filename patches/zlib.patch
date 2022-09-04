@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0c0247c..6008469 100644
+index 0c0247c..2360cbe 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,19 +1,15 @@
@@ -49,7 +49,7 @@ index 0c0247c..6008469 100644
  if(UNIX)
      # On unix-like platforms the library is almost always called libz
     set_target_properties(zlib zlibstatic PROPERTIES OUTPUT_NAME z)
-@@ -208,22 +211,35 @@ if(UNIX)
+@@ -208,22 +211,38 @@ if(UNIX)
  elseif(BUILD_SHARED_LIBS AND WIN32)
      # Creates zlib1.dll when building shared library version
      set_target_properties(zlib PROPERTIES SUFFIX "1.dll")
@@ -76,7 +76,10 @@ index 0c0247c..6008469 100644
 +    if(DEFINED XP_NAMESPACE)
 +      set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +    endif()
-+    install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++    if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++      set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++    endif()
++    install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
  endif()
  if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL )
 -    install(FILES ${ZLIB_PUBLIC_HDRS} DESTINATION "${INSTALL_INC_DIR}")

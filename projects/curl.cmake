@@ -32,6 +32,7 @@ function(build_curl)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
     -DBUILD_CURL_EXE=ON
     -DBUILD_SHARED_LIBS=OFF
@@ -42,10 +43,10 @@ function(build_curl)
     -DUSE_LIBIDN2=OFF
     )
   set(FIND_DEPS "xpFindPkg(PKGS libssh2 cares) # dependencies\n")
-  set(TARGETS_FILE lib/cmake/CURL/CURLTargets.cmake)
+  set(TARGETS_FILE tgt-${NAME}/CURLTargets.cmake)
   set(EXECUTABLE xpro::${NAME})
   set(LIBRARIES xpro::lib${NAME})
-  configure_file(${PRO_DIR}/use/usexp-template-exe-lib-config.cmake
+  configure_file(${PRO_DIR}/use/template-exe-lib-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

@@ -30,7 +30,7 @@ function(build_node_addon_api)
   set(INTERFACE_PROPERTIES "
     INTERFACE_LINK_LIBRARIES xpro::node
     INTERFACE_COMPILE_DEFINITIONS \"NODE_ADDON_API_DISABLE_DEPRECATED;NAPI_CPP_EXCEPTIONS\"")
-  configure_file(${PRO_DIR}/use/usexp-template-hdr-config.cmake
+  configure_file(${PRO_DIR}/use/template-hdr-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

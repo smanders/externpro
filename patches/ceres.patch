@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 02c72b5c..58430f04 100644
+index 02c72b5c..bbdf513d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -29,13 +29,8 @@
@@ -61,8 +61,8 @@ index 02c72b5c..58430f04 100644
  # relative to CMAKE_INSTALL_PREFIX.
 -if (WIN32)
 -  set(RELATIVE_CMAKECONFIG_INSTALL_DIR CMake)
-+if (DEFINED CMAKE_INSTALL_LIBDIR)
-+  set(RELATIVE_CMAKECONFIG_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/Ceres)
++if(DEFINED XP_INSTALL_CMAKEDIR)
++  set(RELATIVE_CMAKECONFIG_INSTALL_DIR ${XP_INSTALL_CMAKEDIR})
  else ()
 -  set(RELATIVE_CMAKECONFIG_INSTALL_DIR lib${LIB_SUFFIX}/cmake/Ceres)
 +  if (WIN32)

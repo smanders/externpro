@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..e044395
+index 0000000..24dc037
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,72 @@
 +cmake_minimum_required(VERSION 3.0)
 +project(bzip2 C)
 +include(GNUInstallDirs)
@@ -72,4 +72,7 @@ index 0000000..e044395
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++endif()
++install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})

@@ -1,8 +1,8 @@
 diff --git a/expat/CMakeLists.txt b/expat/CMakeLists.txt
-index 504d087a..46359bf2 100644
+index 504d087a..233adb29 100644
 --- a/expat/CMakeLists.txt
 +++ b/expat/CMakeLists.txt
-@@ -1,9 +1,15 @@
+@@ -1,9 +1,18 @@
  # This file is copyrighted under the BSD-license for buildsystem files of KDE
  # copyright 2010, Patrick Spendrin <ps_ml@gmx.de>
  
@@ -16,10 +16,13 @@ index 504d087a..46359bf2 100644
 +  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++endif()
  set(PACKAGE_BUGREPORT "expat-bugs@libexpat.org")
  set(PACKAGE_NAME "expat")
  set(PACKAGE_VERSION "2.2.5")
-@@ -82,9 +88,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+@@ -82,9 +91,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/lib)
  if(MSVC)
      add_definitions(-D_CRT_SECURE_NO_WARNINGS -wd4996)
  endif(MSVC)
@@ -31,7 +34,7 @@ index 504d087a..46359bf2 100644
  
  set(expat_SRCS
      lib/loadlibrary.c
-@@ -111,6 +117,12 @@ add_library(expat ${_SHARED} ${expat_SRCS})
+@@ -111,6 +120,12 @@ add_library(expat ${_SHARED} ${expat_SRCS})
  if(USE_libbsd)
      target_link_libraries(expat ${LIB_BSD})
  endif()
@@ -44,7 +47,7 @@ index 504d087a..46359bf2 100644
  
  set(LIBCURRENT 7)   # sync
  set(LIBREVISION 7)  # with
-@@ -129,9 +141,11 @@ macro(expat_install)
+@@ -129,9 +144,11 @@ macro(expat_install)
      endif()
  endmacro()
  
@@ -55,11 +58,11 @@ index 504d087a..46359bf2 100644
 +expat_install(TARGETS expat EXPORT ${targetsFile} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 +                      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +                      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-+expat_install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++expat_install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
  
  set(prefix ${CMAKE_INSTALL_PREFIX})
  set(exec_prefix "\${prefix}/bin")
-@@ -139,8 +153,8 @@ set(libdir "\${prefix}/lib")
+@@ -139,8 +156,8 @@ set(libdir "\${prefix}/lib")
  set(includedir "\${prefix}/include")
  configure_file(expat.pc.in ${CMAKE_CURRENT_BINARY_DIR}/expat.pc)
  
@@ -70,7 +73,7 @@ index 504d087a..46359bf2 100644
  
  if(BUILD_tools)
      set(xmlwf_SRCS
-@@ -153,10 +167,10 @@ if(BUILD_tools)
+@@ -153,10 +170,10 @@ if(BUILD_tools)
      add_executable(xmlwf ${xmlwf_SRCS})
      set_property(TARGET xmlwf PROPERTY RUNTIME_OUTPUT_DIRECTORY xmlwf)
      target_link_libraries(xmlwf expat)

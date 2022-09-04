@@ -34,12 +34,13 @@ function(build_openh264)
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_ASM_NASM_COMPILER=${YASM_EXE}
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
     -DXP_PRO_VER=${VER}
     )
-  set(TARGETS_FILE lib/cmake/${NAME}-targets.cmake)
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
   set(LIBRARIES xpro::${NAME})
-  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

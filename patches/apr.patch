@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 75f35c7cd..c1015fc10 100644
+index 75f35c7cd..247678b95 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -17,15 +17,22 @@
@@ -271,7 +271,7 @@ index 75f35c7cd..c1015fc10 100644
  
    FOREACH(simple ${simple_tests})
      ADD_TEST(NAME ${simple} COMMAND ${simple})
-@@ -381,19 +509,26 @@ ENDIF (APR_BUILD_TESTAPR)
+@@ -381,19 +509,29 @@ ENDIF (APR_BUILD_TESTAPR)
  
  # Installation
  
@@ -290,7 +290,10 @@ index 75f35c7cd..c1015fc10 100644
 +IF(DEFINED XP_NAMESPACE)
 +  SET(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +ENDIF()
-+INSTALL(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++IF(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  SET(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++ENDIF()
++INSTALL(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
  
  IF(INSTALL_PDB)
    INSTALL(FILES ${install_bin_pdb}
@@ -304,7 +307,7 @@ index 75f35c7cd..c1015fc10 100644
  IF(APR_INSTALL_PRIVATE_H)
    # Kludges for unexpected dependencies of httpd 2.x, not installed by default
    SET(APR_PRIVATE_H_FOR_HTTPD
-@@ -402,8 +537,8 @@ IF(APR_INSTALL_PRIVATE_H)
+@@ -402,8 +540,8 @@ IF(APR_INSTALL_PRIVATE_H)
      include/arch/win32/apr_arch_utf8.h
      include/arch/win32/apr_private.h
      )
@@ -315,7 +318,7 @@ index 75f35c7cd..c1015fc10 100644
  ENDIF()
  
  STRING(TOUPPER "${CMAKE_BUILD_TYPE}" buildtype)
-@@ -417,7 +552,9 @@ MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
+@@ -417,7 +555,9 @@ MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
  MESSAGE(STATUS "  Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
  MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
  MESSAGE(STATUS "  IPv6 ............................ : ${APR_HAVE_IPV6}")

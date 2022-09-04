@@ -34,10 +34,13 @@ function(build_wxinclude)
   cmake_parse_arguments(wxinc "" "${oneValueArgs}" "" ${ARGN})
   xpGetArgValue(${PRO_WXINCLUDE} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_WXINCLUDE} ARG VER VALUE VER)
-  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro)
-  set(TARGETS_FILE bin/cmake/${NAME}-targets.cmake)
+  set(XP_CONFIGURE
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=xpro
+    )
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
   set(EXECUTABLE xpro::wxInclude)
-  configure_file(${PRO_DIR}/use/usexp-template-exe-config.cmake
+  configure_file(${PRO_DIR}/use/template-exe-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

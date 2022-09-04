@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000000..dd2f13e39c
+index 0000000000..e6b82cb009
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,110 @@
+@@ -0,0 +1,113 @@
 +cmake_minimum_required(VERSION 3.20)
 +project(openssl LANGUAGES C ASM)
 +include(flags OPTIONAL)
@@ -113,7 +113,10 @@ index 0000000000..dd2f13e39c
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++endif()
++install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
 diff --git a/apps/CMakeLists.txt b/apps/CMakeLists.txt
 new file mode 100644
 index 0000000000..5cf5fd01cc

@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dd3d8eb9..4ac4d50f 100644
+index dd3d8eb9..94c3d492 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,12 +1,7 @@
@@ -66,26 +66,26 @@ index dd3d8eb9..4ac4d50f 100644
      endif()
    endif()
    if(NOT ZMQ_HAVE_CURVE)
-@@ -1224,7 +1232,17 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
+@@ -1224,8 +1232,17 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/libzmq.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc @ONLY)
  set(zmq-pkgconfig ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc)
  
--if(NOT ZMQ_BUILD_FRAMEWORK)
 +if(DEFINED XP_NAMESPACE)
 +  set(nSpace ${XP_NAMESPACE}::)
 +  set(nameSpace NAMESPACE ${nSpace})
++  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
 +endif()
-+if(DEFINED XP_INSTALL_CMAKECFGDIR)
-+  set(ZEROMQ_CMAKECONFIG_INSTALL_DIR ${XP_INSTALL_CMAKECFGDIR} CACHE STRING "install path for ZeroMQConfig.cmake")
++if(DEFINED XP_INSTALL_CMAKEDIR)
++  set(ZEROMQ_CMAKECONFIG_INSTALL_DIR ${XP_INSTALL_CMAKEDIR} CACHE STRING "install path for ZeroMQConfig.cmake")
 +endif()
 +
-+option(XP_INSTALL_PKGCONFIG "pkgconfig install" ON)
-+mark_as_advanced(XP_INSTALL_PKGCONFIG)
-+if(NOT ZMQ_BUILD_FRAMEWORK AND XP_INSTALL_PKGCONFIG)
-   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ if(NOT ZMQ_BUILD_FRAMEWORK)
+-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
++  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc ${XP_OPT_INSTALL} DESTINATION ${CMAKE_INSTALL_DATADIR}/pkgconfig)
  endif()
  
-@@ -1350,7 +1368,8 @@ else()
+ if(MSVC)
+@@ -1350,7 +1367,8 @@ else()
      set_property(TARGET objects PROPERTY POSITION_INDEPENDENT_CODE ON)
      target_include_directories(
        objects PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -95,7 +95,7 @@ index dd3d8eb9..4ac4d50f 100644
    endif()
  
    if(BUILD_SHARED)
-@@ -1422,7 +1441,8 @@ endif()
+@@ -1422,7 +1440,8 @@ endif()
  foreach(target ${target_outputs})
    target_include_directories(
      ${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -105,7 +105,34 @@ index dd3d8eb9..4ac4d50f 100644
  endforeach()
  
  if(BUILD_SHARED)
-@@ -1688,7 +1708,7 @@ write_basic_package_version_file(
+@@ -1566,7 +1585,7 @@ if(BUILD_SHARED)
+           VERBATIM
+           COMMENT "Perf tools")
+       else()
+-        install(TARGETS ${perf-tool} RUNTIME DESTINATION bin COMPONENT PerfTools)
++        install(TARGETS ${perf-tool} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT PerfTools)
+       endif()
+       if(ZMQ_HAVE_WINDOWS_UWP)
+         set_target_properties(${perf-tool} PROPERTIES LINK_FLAGS_DEBUG "/OPT:NOICF /OPT:NOREF")
+@@ -1650,7 +1669,7 @@ foreach(readme ${readme-docs})
+   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${readme} ${CMAKE_CURRENT_BINARY_DIR}/${readme}.txt)
+ 
+   if(NOT ZMQ_BUILD_FRAMEWORK)
+-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${readme}.txt DESTINATION share/zmq)
++    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${readme}.txt DESTINATION ${CMAKE_INSTALL_DATADIR}/zmq)
+   endif()
+ endforeach()
+ 
+@@ -1658,7 +1677,7 @@ if(WITH_DOC)
+   if(NOT ZMQ_BUILD_FRAMEWORK)
+     install(
+       FILES ${html-docs}
+-      DESTINATION doc/zmq
++      DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/zmq
+       COMPONENT RefGuide)
+   endif()
+ endif()
+@@ -1688,7 +1707,7 @@ write_basic_package_version_file(
  if(BUILD_SHARED OR BUILD_STATIC)
    install(
      EXPORT ${PROJECT_NAME}-targets

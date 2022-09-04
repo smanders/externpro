@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..1412643
+index 0000000..12150cc
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,49 @@
+@@ -0,0 +1,52 @@
 +cmake_minimum_required(VERSION 3.12)
 +project(libstrophe)
 +include(GNUInstallDirs)
@@ -11,6 +11,9 @@ index 0000000..1412643
 +if(DEFINED XP_NAMESPACE)
 +  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++endif()
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
 +endif()
 +enable_testing()
 +set_property(GLOBAL PROPERTY USE_FOLDERS ON) # enables MSVC Solution Folders
@@ -74,7 +77,7 @@ index 0000000..5de7bc3
 +endforeach()
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 new file mode 100644
-index 0000000..2e00238
+index 0000000..6c4b9c3
 --- /dev/null
 +++ b/src/CMakeLists.txt
 @@ -0,0 +1,61 @@
@@ -138,7 +141,7 @@ index 0000000..2e00238
 +  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  )
-+install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
 diff --git a/src/tls_openssl.c b/src/tls_openssl.c
 index 0e440c1..04f379e 100644
 --- a/src/tls_openssl.c

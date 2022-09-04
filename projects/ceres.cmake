@@ -32,6 +32,7 @@ function(build_ceres)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
     -DMINIGLOG:BOOL=ON
     -DGFLAGS:BOOL=OFF
@@ -52,9 +53,9 @@ function(build_ceres)
     list(APPEND XP_CONFIGURE -DLIB_SUFFIX:STRING=) # lib, not lib64
   endif()
   set(FIND_DEPS "xpFindPkg(PKGS eigen) # dependencies\n")
-  set(TARGETS_FILE lib/cmake/Ceres/CeresTargets.cmake)
+  set(TARGETS_FILE tgt-${NAME}/CeresTargets.cmake)
   set(LIBRARIES xpro::${NAME})
-  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

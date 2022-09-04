@@ -27,7 +27,7 @@ function(build_rapidxml)
   xpGetArgValue(${PRO_RAPIDXML} ARG VER VALUE VER)
   set(LIBRARY_HDR xpro::${NAME})
   set(LIBRARY_INCLUDEDIRS include/${NAME}_${VER})
-  configure_file(${PRO_DIR}/use/usexp-template-hdr-config.cmake
+  configure_file(${PRO_DIR}/use/template-hdr-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

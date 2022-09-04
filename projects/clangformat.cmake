@@ -18,9 +18,8 @@ function(build_clangformat)
   build_llvm(llvmTgt)
   xpGetArgValue(${PRO_CLANGFORMAT} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_LLVM} ARG VER VALUE VER)
-  set(TARGETS_FILE share/cmake/xpopts.cmake) # no targets-file, set to harmless .cmake
-  set(EXECUTABLE \${XP_ROOTDIR}/bin/clang-format\${CMAKE_EXECUTABLE_SUFFIX})
-  configure_file(${PRO_DIR}/use/usexp-template-exe-config.cmake
+  set(EXECUTABLE bin/clang-format\${CMAKE_EXECUTABLE_SUFFIX})
+  configure_file(${PRO_DIR}/use/template-exe.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

@@ -783,10 +783,10 @@ index 00000000..0f038f5a
 +endif()
 diff --git a/src/libsodium/CMakeLists.txt b/src/libsodium/CMakeLists.txt
 new file mode 100644
-index 00000000..98361872
+index 00000000..76ec9aff
 --- /dev/null
 +++ b/src/libsodium/CMakeLists.txt
-@@ -0,0 +1,694 @@
+@@ -0,0 +1,697 @@
 +set(lib_name sodium)
 +############################################################
 +set(root_srcs
@@ -1457,6 +1457,9 @@ index 00000000..98361872
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++endif()
 +############################################################
 +add_library(${lib_name} STATIC ${libsrcs})
 +target_compile_definitions(${lib_name} PUBLIC SODIUM_STATIC PRIVATE ${pvtDefs})
@@ -1479,7 +1482,7 @@ index 00000000..98361872
 +  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 +  )
-+install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
 +compareCmakeFilesys("${${lib_name}_libsrcs}")
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
 new file mode 100644

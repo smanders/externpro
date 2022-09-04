@@ -32,14 +32,15 @@ function(build_libssh2)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
     -DCRYPTO_BACKEND:STRING=OpenSSL
     -DENABLE_ZLIB_COMPRESSION=ON
     )
   set(FIND_DEPS "xpFindPkg(PKGS zlib openssl) # dependencies\n")
-  set(TARGETS_FILE lib/cmake/${NAME}/Libssh2Config.cmake)
+  set(TARGETS_FILE tgt-${NAME}/Libssh2Config.cmake)
   set(LIBRARIES xpro::${NAME})
-  configure_file(${PRO_DIR}/use/usexp-template-lib-config.cmake
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )

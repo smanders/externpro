@@ -1,22 +1,31 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c860dc4..1a8f8de 100644
+index c860dc4..398c386 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -6,7 +6,12 @@ include (DetectCPPZMQVersion)
+@@ -6,8 +6,20 @@ include (DetectCPPZMQVersion)
  
  project(cppzmq VERSION ${DETECTED_CPPZMQ_VERSION})
  
 -if (NOT TARGET libzmq AND NOT TARGET libzmq-static)
+-  find_package(ZeroMQ QUIET)
++include(flags OPTIONAL)
 +if(DEFINED XP_NAMESPACE)
++  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +  set(nSpace ${XP_NAMESPACE}::)
 +  set(nameSpace NAMESPACE ${nSpace})
 +endif()
 +
 +if (NOT TARGET ${nSpace}libzmq AND NOT TARGET ${nSpace}libzmq-static)
-   find_package(ZeroMQ QUIET)
++  if(COMMAND xpFindPkg)
++    xpFindPkg(PKGS libzmq)
++    set(ZeroMQ_FOUND TRUE)
++  else()
++    find_package(ZeroMQ QUIET)
++  endif()
  
    # libzmq autotools install: fallback to pkg-config
-@@ -21,7 +26,7 @@ if (NOT TARGET libzmq AND NOT TARGET libzmq-static)
+   if(NOT ZeroMQ_FOUND)
+@@ -21,7 +33,7 @@ if (NOT TARGET libzmq AND NOT TARGET libzmq-static)
      message(FATAL_ERROR "ZeroMQ was not found, neither as a CMake package nor via pkg-config")
    endif()
  
@@ -25,7 +34,7 @@ index c860dc4..1a8f8de 100644
      message(FATAL_ERROR "ZeroMQ version not supported!")
    endif()
  endif()
-@@ -48,11 +53,11 @@ set(CPPZMQ_HEADERS
+@@ -48,11 +60,11 @@ set(CPPZMQ_HEADERS
  foreach (target cppzmq cppzmq-static)
    add_library(${target} INTERFACE)
    target_include_directories(${target} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -40,7 +49,19 @@ index c860dc4..1a8f8de 100644
  
  include(GNUInstallDirs)
  include(CMakePackageConfigHelpers)
-@@ -88,7 +93,7 @@ write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Conf
+@@ -64,7 +76,10 @@ install(FILES ${CPPZMQ_HEADERS}
+         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+ 
+ # GNUInstallDirs "DATADIR" wrong here; CMake search path wants "share".
+-set(CPPZMQ_CMAKECONFIG_INSTALL_DIR "share/cmake/${PROJECT_NAME}" CACHE STRING "install path for cppzmqConfig.cmake")
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR share/cmake/${PROJECT_NAME})
++endif()
++set(CPPZMQ_CMAKECONFIG_INSTALL_DIR "${XP_INSTALL_CMAKEDIR}" CACHE STRING "install path for cppzmqConfig.cmake")
+ 
+ configure_file(libzmq-pkg-config/FindZeroMQ.cmake
+                libzmq-pkg-config/FindZeroMQ.cmake
+@@ -88,7 +103,7 @@ write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Conf
  set(CMAKE_SIZEOF_VOID_P ${CPPZMQ_SIZEOF_VOID_P})
  
  install(EXPORT ${PROJECT_NAME}-targets
