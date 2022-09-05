@@ -67,7 +67,7 @@ index 5401a9b..a063240 100644
 -find_package_handle_standard_args ( readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )
 +find_package_handle_standard_args ( Readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )
 diff --git a/cmake/dist.cmake b/cmake/dist.cmake
-index 310ef94..01b6435 100644
+index 310ef94..306c714 100644
 --- a/cmake/dist.cmake
 +++ b/cmake/dist.cmake
 @@ -50,11 +50,11 @@ message ( "DIST_DEPENDS: ${DIST_DEPENDS}")
@@ -87,11 +87,13 @@ index 310ef94..01b6435 100644
  
  # Secondary paths
  option ( INSTALL_VERSION
-@@ -142,7 +142,7 @@ macro ( install_executable )
+@@ -141,8 +141,8 @@ macro ( install_executable )
+       set_target_properties ( ${_file} PROPERTIES VERSION ${DIST_VERSION}
                                SOVERSION ${DIST_VERSION} )
      endif ()
-     install ( TARGETS ${_file} RUNTIME DESTINATION ${INSTALL_BIN}
+-    install ( TARGETS ${_file} RUNTIME DESTINATION ${INSTALL_BIN}
 -              COMPONENT Runtime )
++    install ( TARGETS ${_file} EXPORT ${targetsFile} RUNTIME DESTINATION ${INSTALL_BIN}
 +              COMPONENT Runtime CONFIGURATIONS Release )
    endforeach()
  endmacro ()

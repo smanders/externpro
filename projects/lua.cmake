@@ -43,8 +43,9 @@ function(build_lua)
     -DLUABRIDGE_INCDIR:STRING=include/luabridge_${VERB}
     )
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  set(EXECUTABLE xpro::${NAME})
   set(LIBRARIES xpro::lib${NAME})
-  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
+  configure_file(${PRO_DIR}/use/template-exe-lib-tgt.cmake
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
