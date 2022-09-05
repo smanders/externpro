@@ -1,16 +1,19 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cc303f5..12f1aae 100644
+index cc303f5..093a636 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -6,6 +6,7 @@
+@@ -5,7 +5,9 @@
+ # Please note that the package source code is licensed under its own license.
  
  project ( lua C )
- cmake_minimum_required ( VERSION 2.8 )
-+include ( flags OPTIONAL )
+-cmake_minimum_required ( VERSION 2.8 )
++cmake_minimum_required ( VERSION 2.8...3.21 )
++include(GNUInstallDirs)
++include(flags OPTIONAL)
  include ( cmake/dist.cmake )
  
  ## CONFIGURATION
-@@ -17,7 +18,7 @@ set ( LUA_INIT "LUA_INIT" CACHE STRING "Environment variable for initial script.
+@@ -17,7 +19,7 @@ set ( LUA_INIT "LUA_INIT" CACHE STRING "Environment variable for initial script.
  option ( LUA_ANSI "Use only ansi features." OFF )
  option ( LUA_USE_RELATIVE_LOADLIB "Use modified loadlib.c with support for relative paths on posix systems." ON )
  option ( LUA_COMPAT_ALL "Enable backwards compatibility options." ON )
@@ -19,7 +22,7 @@ index cc303f5..12f1aae 100644
  
  #2DO: LUAI_* and LUAL_* settings, for now defaults are used.
  set ( LUA_DIRSEP "/" )
-@@ -88,7 +89,7 @@ if ( LUA_USE_DLOPEN )
+@@ -88,7 +90,7 @@ if ( LUA_USE_DLOPEN )
    # Link to dynamic linker library "dl"
  	find_library ( DL_LIBRARY NAMES dl )
  	if ( DL_LIBRARY )
@@ -28,39 +31,28 @@ index cc303f5..12f1aae 100644
  	endif ( )
  endif ( )
  
-@@ -125,11 +126,25 @@ else ( )
-   list ( APPEND SRC_LIB src/loadlib.c )
- endif ( )
- 
-+## VERSION
-+if(NOT DEFINED LUA_VER)
-+  set(LUA_VER ${DIST_VERSION})
-+elseif(NOT ${LUA_VER} STREQUAL ${DIST_VERSION})
-+  message(AUTHOR_WARNING "version passed in (${LUA_VER}) doesn't match internal version (${DIST_VERSION})")
-+endif()
-+set(ver _${LUA_VER})
-+set(verDir /${PROJECT_NAME}${ver}/)
-+set(targetsFile ${PROJECT_NAME}${ver}-targets)
-+
+@@ -128,6 +130,10 @@ endif ( )
  ## BUILD
  # Create lua library
  add_library ( liblua ${SRC_CORE} ${SRC_LIB} ${LUA_DLL_RC} ${LUA_DEF} )
-+target_include_directories ( liblua PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INC}${verDir}> )
-+if ( DEFINED LUABRIDGE_INCDIR )
-+  target_include_directories ( liblua PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${INSTALL_INC}/${LUABRIDGE_INCDIR}> )
-+endif ()
++target_include_directories(liblua PUBLIC $<INSTALL_INTERFACE:${INSTALL_INC}>)
++if(DEFINED LUABRIDGE_INCDIR)
++  target_include_directories(liblua PUBLIC $<INSTALL_INTERFACE:${LUABRIDGE_INCDIR}>)
++endif()
  target_link_libraries ( liblua ${LIBS} )
--set_target_properties ( liblua PROPERTIES OUTPUT_NAME lua CLEAN_DIRECT_OUTPUT 1 )
-+set_target_properties ( liblua PROPERTIES OUTPUT_NAME lua${ver} CLEAN_DIRECT_OUTPUT 1 )
+ set_target_properties ( liblua PROPERTIES OUTPUT_NAME lua CLEAN_DIRECT_OUTPUT 1 )
  if ( LUA_BUILD_AS_DLL )
-   set_target_properties ( liblua PROPERTIES COMPILE_DEFINITIONS LUA_BUILD_AS_DLL )
- endif ()
-@@ -151,7 +166,7 @@ install_executable ( lua luac )
+@@ -147,11 +153,12 @@ if ( LUA_BUILD_WLUA )
+   install_executable ( wlua )
+ endif ( )
+ 
++set(targetsFile ${PROJECT_NAME}-targets)
+ install_executable ( lua luac )
  install_library ( liblua )
  install_data ( README.md )
  #install_lua_module ( strict etc/strict.lua )
 -install_header ( src/lua.h src/lualib.h src/lauxlib.h src/lua.hpp ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h )
-+install_header ( src/lua.h src/lualib.h src/lauxlib.h src/lua.hpp ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h INTO ${verDir}lua )
++install_header ( src/lua.h src/lualib.h src/lauxlib.h src/lua.hpp ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h INTO ${PROJECT_NAME} )
  install_doc ( doc/ )
  install_foo ( etc/ )
  #install_test ( test/ )
@@ -75,24 +67,28 @@ index 5401a9b..a063240 100644
 -find_package_handle_standard_args ( readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )
 +find_package_handle_standard_args ( Readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )
 diff --git a/cmake/dist.cmake b/cmake/dist.cmake
-index 310ef94..017fdd0 100644
+index 310ef94..01b6435 100644
 --- a/cmake/dist.cmake
 +++ b/cmake/dist.cmake
-@@ -59,7 +59,7 @@ set ( INSTALL_SHARE share CACHE PATH "Directory for shared data." )
+@@ -50,11 +50,11 @@ message ( "DIST_DEPENDS: ${DIST_DEPENDS}")
+ 
+ ## INSTALL DEFAULTS (Relative to CMAKE_INSTALL_PREFIX)
+ # Primary paths
+-set ( INSTALL_BIN bin CACHE PATH "Where to install binaries to." )
+-set ( INSTALL_LIB lib CACHE PATH "Where to install libraries to." )
+-set ( INSTALL_INC include CACHE PATH "Where to install headers to." )
+-set ( INSTALL_ETC etc CACHE PATH "Where to store configuration files" )
+-set ( INSTALL_SHARE share CACHE PATH "Directory for shared data." )
++set ( INSTALL_BIN ${CMAKE_INSTALL_BINDIR} CACHE PATH "Where to install binaries to." )
++set ( INSTALL_LIB ${CMAKE_INSTALL_LIBDIR} CACHE PATH "Where to install libraries to." )
++set ( INSTALL_INC ${CMAKE_INSTALL_INCLUDEDIR} CACHE PATH "Where to install headers to." )
++set ( INSTALL_ETC ${CMAKE_INSTALL_SYSCONFDIR} CACHE PATH "Where to store configuration files" )
++set ( INSTALL_SHARE ${CMAKE_INSTALL_DATADIR} CACHE PATH "Directory for shared data." )
+ 
  # Secondary paths
  option ( INSTALL_VERSION
-       "Install runtime libraries and executables with version information." OFF)
--set ( INSTALL_DATA ${INSTALL_SHARE}/${DIST_NAME} CACHE PATH
-+set ( INSTALL_DATA ${INSTALL_SHARE}/${DIST_NAME}_${DIST_VERSION} CACHE PATH
-       "Directory the package can store documentation, tests or other data in.")  
- set ( INSTALL_DOC  ${INSTALL_DATA}/doc CACHE PATH
-       "Recommended directory to install documentation into.")
-@@ -140,9 +140,11 @@ macro ( install_executable )
-     if ( INSTALL_VERSION )
-       set_target_properties ( ${_file} PROPERTIES VERSION ${DIST_VERSION}
+@@ -142,7 +142,7 @@ macro ( install_executable )
                                SOVERSION ${DIST_VERSION} )
-+    else ()
-+      set_target_properties ( ${_file} PROPERTIES OUTPUT_NAME ${_file}${ver} )
      endif ()
      install ( TARGETS ${_file} RUNTIME DESTINATION ${INSTALL_BIN}
 -              COMPONENT Runtime )
@@ -100,7 +96,7 @@ index 310ef94..017fdd0 100644
    endforeach()
  endmacro ()
  
-@@ -159,11 +161,15 @@ macro ( install_library )
+@@ -159,11 +159,18 @@ macro ( install_library )
        set_target_properties ( ${_file} PROPERTIES VERSION ${DIST_VERSION}
                                SOVERSION ${DIST_VERSION} )
      endif ()
@@ -110,10 +106,13 @@ index 310ef94..017fdd0 100644
                LIBRARY DESTINATION ${INSTALL_LIB} COMPONENT Runtime 
                ARCHIVE DESTINATION ${INSTALL_LIB} COMPONENT Library )
    endforeach()
-+  if ( DEFINED XP_NAMESPACE )
-+    set ( nameSpace NAMESPACE ${XP_NAMESPACE}:: )
-+  endif ()
-+  install ( EXPORT ${targetsFile} DESTINATION ${INSTALL_LIB}/cmake ${nameSpace} )
++  if(DEFINED XP_NAMESPACE)
++    set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++  endif()
++  if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++    set(XP_INSTALL_CMAKEDIR ${INSTALL_SHARE}/cmake)
++  endif()
++  install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
  endmacro ()
  
  # helper function for various install_* functions, for PATTERN/REGEX args.

@@ -29,30 +29,36 @@ function(build_lua)
   if(NOT (XP_DEFAULT OR XP_PRO_LUA))
     return()
   endif()
+  xpGetArgValue(${PRO_LUA} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_LUA} ARG VER VALUE VER)
   xpGetArgValue(${PRO_LUABRIDGE} ARG VER VALUE VERB)
-  configure_file(${PRO_DIR}/use/usexp-lua-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
   set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=xpro
     -DBUILD_SHARED_LIBS=OFF
     -DLUA_USE_READLINE=OFF
     -DLUA_USE_CURSES=OFF
-    -DLUA_VER=${VER}
-    -DXP_NAMESPACE:STRING=xpro
-    -DLUABRIDGE_INCDIR:STRING=luabridge_${VERB}
+    -DLUABRIDGE_INCDIR:STRING=include/luabridge_${VERB}
     )
-  xpCmakeBuild(lua "" "${XP_CONFIGURE}")
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::lib${NAME})
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+    @ONLY NEWLINE_STYLE LF
+    )
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
   if(NOT TARGET luabridge_bld)
-    ExternalProject_Get_Property(lua SOURCE_DIR)
-    ExternalProject_Add(lua_luabridge_bld DEPENDS lua_luabridge
+    ExternalProject_Get_Property(${NAME} SOURCE_DIR)
+    ExternalProject_Add(${NAME}_luabridge_bld DEPENDS ${NAME}_luabridge
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} CONFIGURE_COMMAND ""
       SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
       BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory
         <SOURCE_DIR>/luabridge/Source ${STAGE_DIR}/include/luabridge_${VERB}
       INSTALL_COMMAND ""
       )
-    set_property(TARGET lua_luabridge_bld PROPERTY FOLDER ${bld_folder})
-    message(STATUS "target lua_luabridge_bld")
+    set_property(TARGET ${NAME}_luabridge_bld PROPERTY FOLDER ${bld_folder})
+    message(STATUS "target ${NAME}_luabridge_bld")
   endif()
 endfunction()
