@@ -1,6 +1,6 @@
 # protobuf
 xpProOption(protobuf DBG)
-set(VER 3.13.0)
+set(VER 3.21.5)
 set(REPO github.com/protocolbuffers/protobuf)
 set(FORK github.com/smanders/protobuf)
 set(PRO_PROTOBUF
@@ -17,7 +17,7 @@ set(PRO_PROTOBUF
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/v${VER}.tar.gz
-  DLMD5 1a6274bc4a65b55a6fa70e264d796490
+  DLMD5 fc2a640b83143b2c42cf838cf2925934
   DLNAME protobuf-${VER}.tar.gz
   PATCH ${PATCH_DIR}/protobuf.patch
   DIFF https://${FORK}/compare/protocolbuffers:
