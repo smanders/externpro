@@ -1,13 +1,15 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 000000000..1ecf27eea
+index 000000000..02ba81859
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,10 @@
+@@ -0,0 +1,12 @@
 +cmake_minimum_required(VERSION 3.1.3)
 +project(protobuf_root)
 +include(flags OPTIONAL)
 +if(DEFINED XP_NAMESPACE)
++  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
++  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
 +  set(nsPrefix ${XP_NAMESPACE}::)
 +  set(nameSpace ${nsPrefix})
 +else ()
@@ -15,27 +17,25 @@ index 000000000..1ecf27eea
 +endif()
 +add_subdirectory(cmake)
 diff --git a/cmake/CMakeLists.txt b/cmake/CMakeLists.txt
-index 9ca31ac0b..60acd67b5 100644
+index 9ca31ac0b..eff8922b6 100644
 --- a/cmake/CMakeLists.txt
 +++ b/cmake/CMakeLists.txt
-@@ -124,7 +124,15 @@ if (CMAKE_USE_PTHREADS_INIT)
+@@ -124,7 +124,13 @@ if (CMAKE_USE_PTHREADS_INIT)
  endif (CMAKE_USE_PTHREADS_INIT)
  
  set(_protobuf_FIND_ZLIB)
 -if (protobuf_WITH_ZLIB)
-+option(ZLIB_MODULE_PATH "Find zlib in CMAKE_MODULE_PATH" OFF)
-+mark_as_advanced(ZLIB_MODULE_PATH)
-+if (ZLIB_MODULE_PATH)
-+  find_package(usexp-ZLIB REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
-+  if (ZLIB_FOUND)
++if(COMMAND xpFindPkg)
++  xpFindPkg(PKGS zlib)
++  if(ZLIB_FOUND)
 +    set(HAVE_ZLIB 1)
 +    set(ZLIB_INCLUDE_DIRECTORIES) # NOTE: bundled with library (INTERFACE_INCLUDE_DIRECTORIES)
-+  endif (ZLIB_FOUND)
++  endif()
 +elseif (protobuf_WITH_ZLIB)
    find_package(ZLIB)
    if (ZLIB_FOUND)
      set(HAVE_ZLIB 1)
-@@ -143,7 +151,7 @@ if (protobuf_WITH_ZLIB)
+@@ -143,7 +149,7 @@ if (protobuf_WITH_ZLIB)
      set(ZLIB_INCLUDE_DIRECTORIES)
      set(ZLIB_LIBRARIES)
    endif (ZLIB_FOUND)
@@ -44,24 +44,8 @@ index 9ca31ac0b..60acd67b5 100644
  
  if (HAVE_ZLIB)
    add_definitions(-DHAVE_ZLIB)
-@@ -249,6 +257,15 @@ if (protobuf_UNICODE)
-   add_definitions(-DUNICODE -D_UNICODE)
- endif (protobuf_UNICODE)
- 
-+if(NOT DEFINED PROTOBUF_VER)
-+  set(PROTOBUF_VER ${protobuf_VERSION})
-+elseif(NOT PROTOBUF_VER STREQUAL protobuf_VERSION)
-+  message(AUTHOR_WARNING "version passed in (${PROTOBUF_VER}) doesn't match internal version (${protobuf_VERSION})")
-+endif()
-+set(ver _${PROTOBUF_VER})
-+set(verDir /${PROJECT_NAME}${ver})
-+set(CMAKE_INSTALL_INCLUDEDIR include${verDir})
-+
- include(libprotobuf-lite.cmake)
- include(libprotobuf.cmake)
- if (protobuf_BUILD_LIBPROTOC)
 diff --git a/cmake/install.cmake b/cmake/install.cmake
-index be47c54a1..c66f92bad 100644
+index be47c54a1..96adac2f6 100644
 --- a/cmake/install.cmake
 +++ b/cmake/install.cmake
 @@ -29,7 +29,7 @@ foreach(_library ${_protobuf_libraries})
@@ -78,7 +62,7 @@ index be47c54a1..c66f92bad 100644
  endif (protobuf_BUILD_PROTOC_BINARIES)
  
 -install(FILES ${CMAKE_CURRENT_BINARY_DIR}/protobuf.pc ${CMAKE_CURRENT_BINARY_DIR}/protobuf-lite.pc DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-+#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/protobuf.pc ${CMAKE_CURRENT_BINARY_DIR}/protobuf-lite.pc DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/protobuf.pc ${CMAKE_CURRENT_BINARY_DIR}/protobuf-lite.pc ${XP_OPT_INSTALL} DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
  
  file(STRINGS extract_includes.bat.in _extract_strings
    REGEX "^copy")
@@ -106,31 +90,27 @@ index be47c54a1..c66f92bad 100644
  
  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_CMAKEDIR}/
 diff --git a/cmake/libprotobuf-lite.cmake b/cmake/libprotobuf-lite.cmake
-index 6bf86a277..951bcf300 100644
+index 6bf86a277..3133db684 100644
 --- a/cmake/libprotobuf-lite.cmake
 +++ b/cmake/libprotobuf-lite.cmake
-@@ -75,6 +75,6 @@ if(MSVC AND protobuf_BUILD_SHARED_LIBS)
- endif()
+@@ -76,5 +76,5 @@ endif()
  set_target_properties(libprotobuf-lite PROPERTIES
      VERSION ${protobuf_VERSION}
--    OUTPUT_NAME ${LIB_PREFIX}protobuf-lite
+     OUTPUT_NAME ${LIB_PREFIX}protobuf-lite
 -    DEBUG_POSTFIX "${protobuf_DEBUG_POSTFIX}")
 -add_library(protobuf::libprotobuf-lite ALIAS libprotobuf-lite)
-+    OUTPUT_NAME ${LIB_PREFIX}protobuf-lite${ver}
 +    DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 +add_library(${nameSpace}libprotobuf-lite ALIAS libprotobuf-lite)
 diff --git a/cmake/libprotobuf.cmake b/cmake/libprotobuf.cmake
-index 0c12596c2..5e0d5bab9 100644
+index 0c12596c2..e5b943687 100644
 --- a/cmake/libprotobuf.cmake
 +++ b/cmake/libprotobuf.cmake
-@@ -129,6 +129,6 @@ if(MSVC AND protobuf_BUILD_SHARED_LIBS)
- endif()
+@@ -130,5 +130,5 @@ endif()
  set_target_properties(libprotobuf PROPERTIES
      VERSION ${protobuf_VERSION}
--    OUTPUT_NAME ${LIB_PREFIX}protobuf
+     OUTPUT_NAME ${LIB_PREFIX}protobuf
 -    DEBUG_POSTFIX "${protobuf_DEBUG_POSTFIX}")
 -add_library(protobuf::libprotobuf ALIAS libprotobuf)
-+    OUTPUT_NAME ${LIB_PREFIX}protobuf${ver}
 +    DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 +add_library(${nameSpace}libprotobuf ALIAS libprotobuf)
 diff --git a/cmake/libprotoc.cmake b/cmake/libprotoc.cmake
@@ -204,10 +184,10 @@ index 74c548872..c44cb4f99 100644
  endif()
  
 diff --git a/cmake/protoc.cmake b/cmake/protoc.cmake
-index f90e525e8..241ecbd53 100644
+index f90e525e8..033852351 100644
 --- a/cmake/protoc.cmake
 +++ b/cmake/protoc.cmake
-@@ -10,7 +10,8 @@ endif()
+@@ -10,7 +10,7 @@ endif()
  
  add_executable(protoc ${protoc_files} ${protoc_rc_files})
  target_link_libraries(protoc libprotoc libprotobuf)
@@ -216,5 +196,4 @@ index f90e525e8..241ecbd53 100644
  
  set_target_properties(protoc PROPERTIES
 -    VERSION ${protobuf_VERSION})
-+  DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}"
-+  OUTPUT_NAME protoc${ver})
++  DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")

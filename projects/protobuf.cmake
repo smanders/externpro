@@ -28,17 +28,19 @@ function(build_protobuf)
     return()
   endif()
   xpBuildDeps(depTgts ${PRO_PROTOBUF})
+  xpGetArgValue(${PRO_PROTOBUF} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_PROTOBUF} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-protobuf-config.cmake ${STAGE_DIR}/share/cmake/
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DCMAKE_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=xpro
+    -Dprotobuf_BUILD_TESTS=OFF # no gmock, unless switch to release tar ball
+    )
+  set(FIND_DEPS "xpFindPkg(PKGS zlib) # dependencies\n")
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-config.cmake)
+  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
-  set(XP_CONFIGURE
-    -Dprotobuf_BUILD_TESTS=OFF # we don't have gmock, unless we switch to a release tar ball
-    -DZLIB_MODULE_PATH=ON # with this option ON, we don't need -DZLIB=ON
-    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-    -DXP_NAMESPACE:STRING=xpro
-    -DPROTOBUF_VER=${VER}.0
-    -DCMAKE_INSTALL_CMAKEDIR=lib/cmake/protobuf_${VER}
-    )
-  xpCmakeBuild(protobuf "${depTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()
