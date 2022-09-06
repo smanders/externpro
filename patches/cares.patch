@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 194485a..99e3066 100644
+index 194485a..b876084 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -13,6 +13,7 @@ PROJECT (c-ares LANGUAGES C VERSION "1.18.0" )
@@ -10,11 +10,13 @@ index 194485a..99e3066 100644
  INCLUDE (GNUInstallDirs) # include this *AFTER* PROJECT(), otherwise paths are wrong.
  
  # This is for libtool compatibility, and specified in a form that is easily
-@@ -626,10 +627,13 @@ IF (CARES_BUILD_TESTS OR CARES_BUILD_CONTAINER_TESTS)
+@@ -626,10 +627,15 @@ IF (CARES_BUILD_TESTS OR CARES_BUILD_CONTAINER_TESTS)
  	ADD_SUBDIRECTORY (test)
  ENDIF ()
  
-+if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++if(DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
++else()
 +  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME})
 +endif()
  
@@ -25,3 +27,12 @@ index 194485a..99e3066 100644
  	INCLUDE (CMakePackageConfigHelpers)
  	CONFIGURE_PACKAGE_CONFIG_FILE (${PROJECT_NAME}-config.cmake.in ${PROJECT_NAME}-config.cmake
  		INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR}
+@@ -649,7 +655,7 @@ IF (CARES_INSTALL)
+ 		ENDFOREACH ()
+ 	ENDIF ()
+ 	CONFIGURE_FILE("libcares.pc.cmake" "libcares.pc" @ONLY)
+-	INSTALL (FILES "${CMAKE_CURRENT_BINARY_DIR}/libcares.pc" COMPONENT Devel DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
++	INSTALL (FILES "${CMAKE_CURRENT_BINARY_DIR}/libcares.pc" ${XP_OPT_INSTALL} COMPONENT Devel DESTINATION "${CMAKE_INSTALL_DATADIR}/pkgconfig")
+ ENDIF ()
+ 
+ 
