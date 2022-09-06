@@ -1,39 +1,41 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 04cb3303a..e413dbf1f 100644
---- a/CMakeLists.txt
+new file mode 100644
+index 000000000..02ba81859
+--- /dev/null
 +++ b/CMakeLists.txt
-@@ -23,6 +23,17 @@ endif()
- # Project
- project(protobuf C CXX)
- 
-+# externpro
+@@ -0,0 +1,12 @@
++cmake_minimum_required(VERSION 3.1.3)
++project(protobuf_root)
 +include(flags OPTIONAL)
 +if(DEFINED XP_NAMESPACE)
 +  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
 +  set(nsPrefix ${XP_NAMESPACE}::)
 +  set(nameSpace ${nsPrefix})
-+else()
++else ()
 +  set(nameSpace protobuf::)
 +endif()
-+
- if(protobuf_DEPRECATED_CMAKE_SUBDIRECTORY_USAGE)
-   if(CMAKE_PROJECT_NAME STREQUAL "protobuf")
-     get_filename_component(CMAKE_SOURCE_DIR ${CMAKE_SOURCE_DIR} DIRECTORY)
-@@ -163,7 +174,11 @@ file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/cmaketest.map)
- find_package(Threads REQUIRED)
++add_subdirectory(cmake)
+diff --git a/cmake/CMakeLists.txt b/cmake/CMakeLists.txt
+index 52661f522..021f4d54f 100644
+--- a/cmake/CMakeLists.txt
++++ b/cmake/CMakeLists.txt
+@@ -123,7 +123,13 @@ if (CMAKE_USE_PTHREADS_INIT)
+ endif (CMAKE_USE_PTHREADS_INIT)
  
  set(_protobuf_FIND_ZLIB)
 -if (protobuf_WITH_ZLIB)
 +if(COMMAND xpFindPkg)
 +  xpFindPkg(PKGS zlib)
-+  set(HAVE_ZLIB 1)
-+  set(ZLIB_INCLUDE_DIRECTORIES) # NOTE: bundled with library (INTERFACE_INCLUDE_DIRECTORIES)
++  if(ZLIB_FOUND)
++    set(HAVE_ZLIB 1)
++    set(ZLIB_INCLUDE_DIRECTORIES) # NOTE: bundled with library (INTERFACE_INCLUDE_DIRECTORIES)
++  endif()
 +elseif (protobuf_WITH_ZLIB)
    find_package(ZLIB)
    if (ZLIB_FOUND)
      set(HAVE_ZLIB 1)
-@@ -182,7 +197,7 @@ if (protobuf_WITH_ZLIB)
+@@ -142,7 +148,7 @@ if (protobuf_WITH_ZLIB)
      set(ZLIB_INCLUDE_DIRECTORIES)
      set(ZLIB_LIBRARIES)
    endif (ZLIB_FOUND)
@@ -43,7 +45,7 @@ index 04cb3303a..e413dbf1f 100644
  if (HAVE_ZLIB)
    add_definitions(-DHAVE_ZLIB)
 diff --git a/cmake/install.cmake b/cmake/install.cmake
-index 825cb25fc..210c7f4d7 100644
+index 4091bc8af..a64fd498b 100644
 --- a/cmake/install.cmake
 +++ b/cmake/install.cmake
 @@ -29,7 +29,7 @@ foreach(_library ${_protobuf_libraries})
@@ -52,19 +54,19 @@ index 825cb25fc..210c7f4d7 100644
  if (protobuf_BUILD_PROTOC_BINARIES)
 -  install(TARGETS protoc EXPORT protobuf-targets
 +  install(TARGETS protoc EXPORT protobuf-targets CONFIGURATIONS Release
-     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT protoc
-     BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT protoc)
+     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT protoc)
    if (UNIX AND NOT APPLE)
-@@ -41,7 +41,7 @@ if (protobuf_BUILD_PROTOC_BINARIES)
+     set_property(TARGET protoc
+@@ -40,7 +40,7 @@ if (protobuf_BUILD_PROTOC_BINARIES)
    endif()
  endif (protobuf_BUILD_PROTOC_BINARIES)
  
 -install(FILES ${CMAKE_CURRENT_BINARY_DIR}/protobuf.pc ${CMAKE_CURRENT_BINARY_DIR}/protobuf-lite.pc DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 +install(FILES ${CMAKE_CURRENT_BINARY_DIR}/protobuf.pc ${CMAKE_CURRENT_BINARY_DIR}/protobuf-lite.pc ${XP_OPT_INSTALL} DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
  
- file(STRINGS ${protobuf_SOURCE_DIR}/cmake/extract_includes.bat.in _extract_strings
+ file(STRINGS extract_includes.bat.in _extract_strings
    REGEX "^copy")
-@@ -127,19 +127,19 @@ configure_file(${protobuf_SOURCE_DIR}/cmake/protobuf-options.cmake
+@@ -122,19 +122,19 @@ configure_file(protobuf-options.cmake
  
  if (protobuf_BUILD_PROTOC_BINARIES)
    export(TARGETS libprotobuf-lite libprotobuf libprotoc protoc
@@ -88,68 +90,67 @@ index 825cb25fc..210c7f4d7 100644
  
  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_CMAKEDIR}/
 diff --git a/cmake/libprotobuf-lite.cmake b/cmake/libprotobuf-lite.cmake
-index 83e970312..756341bbf 100644
+index 6d325d5dc..5c2a76b6d 100644
 --- a/cmake/libprotobuf-lite.cmake
 +++ b/cmake/libprotobuf-lite.cmake
-@@ -114,5 +114,5 @@ set_target_properties(libprotobuf-lite PROPERTIES
+@@ -81,5 +81,5 @@ endif()
+ set_target_properties(libprotobuf-lite PROPERTIES
      VERSION ${protobuf_VERSION}
-     SOVERSION 32
      OUTPUT_NAME ${LIB_PREFIX}protobuf-lite
 -    DEBUG_POSTFIX "${protobuf_DEBUG_POSTFIX}")
 -add_library(protobuf::libprotobuf-lite ALIAS libprotobuf-lite)
 +    DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 +add_library(${nameSpace}libprotobuf-lite ALIAS libprotobuf-lite)
 diff --git a/cmake/libprotobuf.cmake b/cmake/libprotobuf.cmake
-index 07e4bcf57..23b650985 100644
+index a5be494fb..9434f3fe0 100644
 --- a/cmake/libprotobuf.cmake
 +++ b/cmake/libprotobuf.cmake
-@@ -130,5 +130,5 @@ set_target_properties(libprotobuf PROPERTIES
+@@ -133,5 +133,5 @@ endif()
+ set_target_properties(libprotobuf PROPERTIES
      VERSION ${protobuf_VERSION}
-     SOVERSION 32
      OUTPUT_NAME ${LIB_PREFIX}protobuf
 -    DEBUG_POSTFIX "${protobuf_DEBUG_POSTFIX}")
 -add_library(protobuf::libprotobuf ALIAS libprotobuf)
 +    DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 +add_library(${nameSpace}libprotobuf ALIAS libprotobuf)
 diff --git a/cmake/libprotoc.cmake b/cmake/libprotoc.cmake
-index 15a47e53f..23a77155d 100644
+index b71f2f1ba..a49f50794 100644
 --- a/cmake/libprotoc.cmake
 +++ b/cmake/libprotoc.cmake
-@@ -132,5 +132,5 @@ set_target_properties(libprotoc PROPERTIES
+@@ -177,6 +177,6 @@ set_target_properties(libprotoc PROPERTIES
+     COMPILE_DEFINITIONS LIBPROTOC_EXPORTS
      VERSION ${protobuf_VERSION}
-     SOVERSION 32
      OUTPUT_NAME ${LIB_PREFIX}protoc
 -    DEBUG_POSTFIX "${protobuf_DEBUG_POSTFIX}")
 -add_library(protobuf::libprotoc ALIAS libprotoc)
 +    DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 +add_library(${nameSpace}libprotoc ALIAS libprotoc)
+ 
 diff --git a/cmake/protobuf-config.cmake.in b/cmake/protobuf-config.cmake.in
-index 61669118c..9d0f6bb11 100644
+index fac5efe44..71801de41 100644
 --- a/cmake/protobuf-config.cmake.in
 +++ b/cmake/protobuf-config.cmake.in
-@@ -146,9 +146,9 @@ function(protobuf_generate)
+@@ -129,9 +129,9 @@ function(protobuf_generate)
  
      add_custom_command(
        OUTPUT ${_generated_srcs}
--      COMMAND protobuf::protoc
-+      COMMAND @nsPrefix@protoc
-       ARGS ${protobuf_generate_PROTOC_OPTIONS} --${protobuf_generate_LANGUAGE}_out ${_plugin_options}:${protobuf_generate_PROTOC_OUT_DIR} ${_plugin} ${_protobuf_include_path} ${_abs_file}
+-      COMMAND  protobuf::protoc
++      COMMAND  @nsPrefix@protoc
+       ARGS --${protobuf_generate_LANGUAGE}_out ${_dll_export_decl}${protobuf_generate_PROTOC_OUT_DIR} ${_plugin} ${_protobuf_include_path} ${_abs_file}
 -      DEPENDS ${_abs_file} protobuf::protoc
 +      DEPENDS ${_abs_file} @nsPrefix@protoc
-       COMMENT ${_comment}
+       COMMENT "Running ${protobuf_generate_LANGUAGE} protocol buffer compiler on ${_proto}"
        VERBATIM )
    endforeach()
 diff --git a/cmake/protobuf-module.cmake.in b/cmake/protobuf-module.cmake.in
-index 0bb05e38f..6953b12fa 100644
+index 810256e54..aaa62bfcb 100644
 --- a/cmake/protobuf-module.cmake.in
 +++ b/cmake/protobuf-module.cmake.in
-@@ -94,14 +94,14 @@ function(_protobuf_find_libraries name filename)
-   elseif(${name}_LIBRARY)
+@@ -95,13 +95,13 @@ function(_protobuf_find_libraries name filename)
      # Honor cache entry used by CMake 3.5 and lower.
      set(${name}_LIBRARIES "${${name}_LIBRARY}" PARENT_SCOPE)
--  elseif(TARGET protobuf::lib${filename})
+   else()
 -    get_target_property(${name}_LIBRARY_RELEASE protobuf::lib${filename}
-+  elseif(TARGET @nsPrefix@lib${filename})
 +    get_target_property(${name}_LIBRARY_RELEASE @nsPrefix@lib${filename}
        LOCATION_RELEASE)
 -    get_target_property(${name}_LIBRARY_RELWITHDEBINFO protobuf::lib${filename}
@@ -163,8 +164,8 @@ index 0bb05e38f..6953b12fa 100644
        LOCATION_DEBUG)
  
      select_library_configurations(${name})
-@@ -130,27 +130,27 @@ _protobuf_find_libraries(Protobuf_LITE protobuf-lite)
- _protobuf_find_libraries(Protobuf_PROTOC protoc)
+@@ -144,26 +144,26 @@ if(UNIX)
+ endif()
  
  # Set the include directory
 -get_target_property(Protobuf_INCLUDE_DIRS protobuf::libprotobuf
@@ -172,43 +173,54 @@ index 0bb05e38f..6953b12fa 100644
    INTERFACE_INCLUDE_DIRECTORIES)
  
  # Set the protoc Executable
--if(NOT Protobuf_PROTOC_EXECUTABLE AND TARGET protobuf::protoc)
+-get_target_property(Protobuf_PROTOC_EXECUTABLE protobuf::protoc
++get_target_property(Protobuf_PROTOC_EXECUTABLE @nsPrefix@protoc
+   IMPORTED_LOCATION_RELEASE)
+ if(NOT EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
 -  get_target_property(Protobuf_PROTOC_EXECUTABLE protobuf::protoc
-+if(NOT Protobuf_PROTOC_EXECUTABLE AND TARGET @nsPrefix@protoc)
 +  get_target_property(Protobuf_PROTOC_EXECUTABLE @nsPrefix@protoc
-     IMPORTED_LOCATION_RELEASE)
-   if(NOT EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
--    get_target_property(Protobuf_PROTOC_EXECUTABLE protobuf::protoc
-+    get_target_property(Protobuf_PROTOC_EXECUTABLE @nsPrefix@protoc
-       IMPORTED_LOCATION_RELWITHDEBINFO)
-   endif()
-   if(NOT EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
--    get_target_property(Protobuf_PROTOC_EXECUTABLE protobuf::protoc
-+    get_target_property(Protobuf_PROTOC_EXECUTABLE @nsPrefix@protoc
-       IMPORTED_LOCATION_MINSIZEREL)
-   endif()
-   if(NOT EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
--    get_target_property(Protobuf_PROTOC_EXECUTABLE protobuf::protoc
-+    get_target_property(Protobuf_PROTOC_EXECUTABLE @nsPrefix@protoc
-       IMPORTED_LOCATION_DEBUG)
-   endif()
-   if(NOT EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
--    get_target_property(Protobuf_PROTOC_EXECUTABLE protobuf::protoc
-+    get_target_property(Protobuf_PROTOC_EXECUTABLE @nsPrefix@protoc
-       IMPORTED_LOCATION_NOCONFIG)
-   endif()
+     IMPORTED_LOCATION_RELWITHDEBINFO)
  endif()
+ if(NOT EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
+-  get_target_property(Protobuf_PROTOC_EXECUTABLE protobuf::protoc
++  get_target_property(Protobuf_PROTOC_EXECUTABLE @nsPrefix@protoc
+     IMPORTED_LOCATION_MINSIZEREL)
+ endif()
+ if(NOT EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
+-  get_target_property(Protobuf_PROTOC_EXECUTABLE protobuf::protoc
++  get_target_property(Protobuf_PROTOC_EXECUTABLE @nsPrefix@protoc
+     IMPORTED_LOCATION_DEBUG)
+ endif()
+ if(NOT EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
+-  get_target_property(Protobuf_PROTOC_EXECUTABLE protobuf::protoc
++  get_target_property(Protobuf_PROTOC_EXECUTABLE @nsPrefix@protoc
+     IMPORTED_LOCATION_NOCONFIG)
+ endif()
+ 
 diff --git a/cmake/protoc.cmake b/cmake/protoc.cmake
-index 472b6421b..11532e672 100644
+index f90e525e8..033852351 100644
 --- a/cmake/protoc.cmake
 +++ b/cmake/protoc.cmake
-@@ -7,7 +7,7 @@ target_link_libraries(protoc
-   libprotoc
-   libprotobuf
- )
+@@ -10,7 +10,7 @@ endif()
+ 
+ add_executable(protoc ${protoc_files} ${protoc_rc_files})
+ target_link_libraries(protoc libprotoc libprotobuf)
 -add_executable(protobuf::protoc ALIAS protoc)
 +add_executable(${nameSpace}protoc ALIAS protoc)
  
  set_target_properties(protoc PROPERTIES
 -    VERSION ${protobuf_VERSION})
-+    DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
++  DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
+diff --git a/examples/CMakeLists.txt b/examples/CMakeLists.txt
+index 3e8e65414..57b8688d9 100644
+--- a/examples/CMakeLists.txt
++++ b/examples/CMakeLists.txt
+@@ -41,7 +41,7 @@ foreach(example add_person list_people)
+     target_include_directories(${executable_name} PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+     target_link_libraries(${executable_name} ${PROTOBUF_LIBRARIES})
+   else()
+-    target_link_libraries(${executable_name} protobuf::libprotobuf)
++    target_link_libraries(${executable_name} ${nameSpace}libprotobuf)
+     protobuf_generate(TARGET ${executable_name})
+   endif()
+ 
