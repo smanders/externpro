@@ -1,14 +1,16 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 75f35c7cd..247678b95 100644
+index 75f35c7cd..cfe2b3548 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -17,15 +17,22 @@
+@@ -15,17 +15,23 @@
+ #
+ # Read README.cmake before using this.
  
++CMAKE_MINIMUM_REQUIRED(VERSION 2.8...3.21)
  PROJECT(APR C)
  
 -CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-+CMAKE_MINIMUM_REQUIRED(VERSION 2.8...3.21)
- 
+-
 +INCLUDE(flags OPTIONAL)
  OPTION(APR_INSTALL_PRIVATE_H  "Install selected private .h files (for httpd)"  OFF)
  OPTION(APR_HAVE_IPV6        "IPv6 support"                 ON)
@@ -26,7 +28,7 @@ index 75f35c7cd..247678b95 100644
  
  # create 1-or-0 representation of feature tests for apr.h
  
-@@ -35,6 +42,7 @@ IF(APR_HAVE_IPV6)
+@@ -35,6 +41,7 @@ IF(APR_HAVE_IPV6)
    SET(apr_have_ipv6_10 1)
  ENDIF()
  
@@ -34,7 +36,7 @@ index 75f35c7cd..247678b95 100644
  IF("${MIN_WINDOWS_VER}" STREQUAL "")
    SET(win32_winnt_str "0x0600")
  ELSEIF(${MIN_WINDOWS_VER} STREQUAL "Vista")
-@@ -47,13 +55,15 @@ ENDIF()
+@@ -47,13 +54,15 @@ ENDIF()
  
  CONFIGURE_FILE(include/apr.hwc
                 ${PROJECT_BINARY_DIR}/apr.h)
@@ -52,7 +54,7 @@ index 75f35c7cd..247678b95 100644
    OUTPUT ${PROJECT_BINARY_DIR}/apr_escape_test_char.h
  )
  ADD_CUSTOM_TARGET(
-@@ -71,16 +81,22 @@ ADD_CUSTOM_TARGET(
+@@ -71,16 +80,22 @@ ADD_CUSTOM_TARGET(
  SET(APR_INCLUDE_DIRECTORIES
    ${PROJECT_BINARY_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -78,7 +80,7 @@ index 75f35c7cd..247678b95 100644
  
  INCLUDE_DIRECTORIES(${APR_INCLUDE_DIRECTORIES})
  
-@@ -127,6 +143,7 @@ SET(APR_PUBLIC_HEADERS_GENERATED
+@@ -127,6 +142,7 @@ SET(APR_PUBLIC_HEADERS_GENERATED
    ${PROJECT_BINARY_DIR}/apr.h
  )
  
@@ -86,7 +88,7 @@ index 75f35c7cd..247678b95 100644
  SET(APR_SOURCES
    atomic/win32/apr_atomic.c
    dso/win32/dso.c
-@@ -201,6 +218,90 @@ SET(APR_SOURCES
+@@ -201,6 +217,90 @@ SET(APR_SOURCES
    user/win32/groupinfo.c
    user/win32/userinfo.c
  )
@@ -177,7 +179,7 @@ index 75f35c7cd..247678b95 100644
  
  SET(APR_TEST_SOURCES
    test/abts.c
-@@ -255,27 +356,43 @@ SET(install_targets)
+@@ -255,27 +355,43 @@ SET(install_targets)
  SET(install_bin_pdb)
  
  # libapr-1 is shared, apr-1 is static
@@ -221,7 +223,7 @@ index 75f35c7cd..247678b95 100644
  
  IF(APR_BUILD_TESTAPR)
    ENABLE_TESTING()
-@@ -303,8 +420,12 @@ IF(APR_BUILD_TESTAPR)
+@@ -303,8 +419,12 @@ IF(APR_BUILD_TESTAPR)
    ENDIF()
  
    ADD_EXECUTABLE(testapp test/testapp.c)
@@ -234,7 +236,7 @@ index 75f35c7cd..247678b95 100644
    IF(apiflag)
      SET_TARGET_PROPERTIES(testapp PROPERTIES COMPILE_FLAGS ${apiflag})
    ENDIF()
-@@ -319,12 +440,14 @@ IF(APR_BUILD_TESTAPR)
+@@ -319,12 +439,14 @@ IF(APR_BUILD_TESTAPR)
  
    ADD_LIBRARY(mod_test MODULE test/mod_test.c)
    TARGET_LINK_LIBRARIES(mod_test ${whichapr} ${APR_SYSTEM_LIBS})
@@ -249,7 +251,7 @@ index 75f35c7cd..247678b95 100644
    IF(apiflag)
      SET_TARGET_PROPERTIES(mod_test PROPERTIES COMPILE_FLAGS ${apiflag})
    ENDIF()
-@@ -345,8 +468,10 @@ IF(APR_BUILD_TESTAPR)
+@@ -345,8 +467,10 @@ IF(APR_BUILD_TESTAPR)
      test/testshmproducer.c
      test/testshmconsumer.c
      test/tryread.c
@@ -261,7 +263,7 @@ index 75f35c7cd..247678b95 100644
  
    FOREACH(sourcefile ${single_source_programs})
      STRING(REGEX REPLACE ".*/([^\\]+)\\.c" "\\1" proggie ${sourcefile})
-@@ -362,6 +487,9 @@ IF(APR_BUILD_TESTAPR)
+@@ -362,6 +486,9 @@ IF(APR_BUILD_TESTAPR)
      testmutexscope
      testucs
    )
@@ -271,7 +273,7 @@ index 75f35c7cd..247678b95 100644
  
    FOREACH(simple ${simple_tests})
      ADD_TEST(NAME ${simple} COMMAND ${simple})
-@@ -381,19 +509,29 @@ ENDIF (APR_BUILD_TESTAPR)
+@@ -381,19 +508,29 @@ ENDIF (APR_BUILD_TESTAPR)
  
  # Installation
  
@@ -307,7 +309,7 @@ index 75f35c7cd..247678b95 100644
  IF(APR_INSTALL_PRIVATE_H)
    # Kludges for unexpected dependencies of httpd 2.x, not installed by default
    SET(APR_PRIVATE_H_FOR_HTTPD
-@@ -402,8 +540,8 @@ IF(APR_INSTALL_PRIVATE_H)
+@@ -402,8 +539,8 @@ IF(APR_INSTALL_PRIVATE_H)
      include/arch/win32/apr_arch_utf8.h
      include/arch/win32/apr_private.h
      )
@@ -318,7 +320,7 @@ index 75f35c7cd..247678b95 100644
  ENDIF()
  
  STRING(TOUPPER "${CMAKE_BUILD_TYPE}" buildtype)
-@@ -417,7 +555,9 @@ MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
+@@ -417,7 +554,9 @@ MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
  MESSAGE(STATUS "  Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
  MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
  MESSAGE(STATUS "  IPv6 ............................ : ${APR_HAVE_IPV6}")
