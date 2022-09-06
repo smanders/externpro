@@ -17,7 +17,7 @@ set(PRO_BOOST
   DLURL https://boostorg.jfrog.io/artifactory/main/release/${VER}/source/boost_${VER_}.tar.bz2
   DLMD5 33334dd7f862e8ac9fe1cc7c6584fb6d
   DEPS_FUNC build_boost
-  SUBPRO boostdll boostgil boostgraph boostinstall boostinterprocess boostprogram_options boostprogram_optionshpp boostregex boostunits
+  SUBPRO boostbeast boostdll boostgil boostgraph boostinstall boostinterprocess boostprogram_options boostprogram_optionshpp boostregex boostunits
   )
 function(build_boost)
   if(NOT (XP_DEFAULT OR XP_PRO_BOOST))
