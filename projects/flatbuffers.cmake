@@ -25,15 +25,20 @@ function(build_flatbuffers)
   if(NOT (XP_DEFAULT OR XP_PRO_FLATBUFFERS))
     return()
   endif()
+  xpGetArgValue(${PRO_FLATBUFFERS} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_FLATBUFFERS} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-flatbuffers-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-    -DCMAKE_INSTALL_INCLUDEDIR=include/flatbuffers_${VER}
-    -DFLATBUFFERS_VER=${VER}
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
     )
-  xpCmakeBuild(flatbuffers "" "${XP_CONFIGURE}")
+  set(TARGETS_FILE tgt-${NAME}/FlatbuffersConfig.cmake)
+  set(TARGETS_FILE2 tgt-${NAME}/BuildFlatBuffers.cmake) # build_flatbuffers cmake func
+  set(EXECUTABLE xpro::flatc)
+  set(LIBRARIES xpro::flatbuffers)
+  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
 endfunction()

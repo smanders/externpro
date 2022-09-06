@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 21e90151..5778ad56 100644
+index 21e90151..e55fdf31 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -25,6 +25,7 @@ else()
@@ -10,48 +10,30 @@ index 21e90151..5778ad56 100644
  include(CMake/Version.cmake)
  
  # generate compile_commands.json
-@@ -108,6 +109,17 @@ if(NOT DEFINED FLATBUFFERS_LOCALE_INDEPENDENT)
- endif()
- add_definitions(-DFLATBUFFERS_LOCALE_INDEPENDENT=$<BOOL:${FLATBUFFERS_LOCALE_INDEPENDENT}>)
- 
-+# version
-+if(DEFINED FLATBUFFERS_VER)
-+  set(_ver _${FLATBUFFERS_VER})
-+endif()
-+# NAMESPACE
-+if(DEFINED XP_NAMESPACE)
-+  set(nameSpace ${XP_NAMESPACE}::)
-+else()
-+  set(nameSpace flatbuffers::)
-+endif()
-+
- set(FlatBuffers_Library_SRCS
-   include/flatbuffers/allocator.h
-   include/flatbuffers/array.h
-@@ -406,6 +418,7 @@ if(FLATBUFFERS_BUILD_FLATLIB)
-   if(FLATBUFFERS_ENABLE_PCH)
-     add_pch_to_target(flatbuffers include/flatbuffers/pch/pch.h)
-   endif()
-+  set_target_properties(flatbuffers PROPERTIES OUTPUT_NAME flatbuffers${_ver})
- endif()
- 
- if(FLATBUFFERS_BUILD_FLATC)
-@@ -427,6 +440,9 @@ if(FLATBUFFERS_BUILD_FLATC)
+@@ -427,6 +428,7 @@ if(FLATBUFFERS_BUILD_FLATC)
    if(FLATBUFFERS_STATIC_FLATC AND NOT MSVC)
      target_link_libraries(flatc PRIVATE -static)
    endif()
-+  set_target_properties(flatc PROPERTIES
-+    DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}"
-+    OUTPUT_NAME flatc${_ver})
++  set_target_properties(flatc PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
  endif()
  
  if(FLATBUFFERS_BUILD_FLATHASH)
-@@ -647,11 +663,12 @@ if(FLATBUFFERS_INSTALL)
+@@ -647,11 +649,22 @@ if(FLATBUFFERS_INSTALL)
  
    install(DIRECTORY include/flatbuffers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
  
 -  set(FB_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/flatbuffers")
-+  set(FB_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/flatbuffers${_ver}")
++  if(DEFINED XP_NAMESPACE)
++    set(nameSpace ${XP_NAMESPACE}::)
++    set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
++  else()
++    set(nameSpace flatbuffers::)
++  endif()
++  if(DEFINED XP_INSTALL_CMAKEDIR)
++    set(FB_CMAKE_DIR ${XP_INSTALL_CMAKEDIR})
++  else()
++    set(FB_CMAKE_DIR "${CMAKE_INSTALL_DATADIR}/cmake/flatbuffers")
++  endif()
  
    configure_file(CMake/FlatbuffersConfigVersion.cmake.in FlatbuffersConfigVersion.cmake @ONLY)
    install(
@@ -60,7 +42,7 @@ index 21e90151..5778ad56 100644
        DESTINATION ${FB_CMAKE_DIR}
    )
  
-@@ -664,7 +681,7 @@ if(FLATBUFFERS_INSTALL)
+@@ -664,7 +677,7 @@ if(FLATBUFFERS_INSTALL)
  
      install(EXPORT FlatbuffersTargets
        FILE FlatbuffersTargets.cmake
@@ -69,7 +51,7 @@ index 21e90151..5778ad56 100644
        DESTINATION ${FB_CMAKE_DIR}
      )
    endif()
-@@ -673,12 +690,13 @@ if(FLATBUFFERS_INSTALL)
+@@ -673,12 +686,13 @@ if(FLATBUFFERS_INSTALL)
      install(
        TARGETS flatc EXPORT FlatcTargets
        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -84,7 +66,7 @@ index 21e90151..5778ad56 100644
        DESTINATION ${FB_CMAKE_DIR}
      )
    endif()
-@@ -695,7 +713,7 @@ if(FLATBUFFERS_INSTALL)
+@@ -695,7 +709,7 @@ if(FLATBUFFERS_INSTALL)
      install(
        EXPORT FlatbuffersSharedTargets
        FILE FlatbuffersSharedTargets.cmake
@@ -93,7 +75,15 @@ index 21e90151..5778ad56 100644
        DESTINATION ${FB_CMAKE_DIR}
      )
    endif()
-@@ -756,4 +774,4 @@ add_library(FlatBuffers::FlatBuffers ALIAS FlatBuffers)
+@@ -704,6 +718,7 @@ if(FLATBUFFERS_INSTALL)
+       configure_file(CMake/flatbuffers.pc.in flatbuffers.pc @ONLY)
+       install(
+         FILES "${CMAKE_CURRENT_BINARY_DIR}/flatbuffers.pc"
++        ${XP_OPT_INSTALL}
+         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+       )
+   endif()
+@@ -756,4 +771,4 @@ add_library(FlatBuffers::FlatBuffers ALIAS FlatBuffers)
  target_include_directories(
    FlatBuffers
    INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
