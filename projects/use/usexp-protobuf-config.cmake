@@ -13,5 +13,5 @@ set(${PRJ}_PROTOC_EXECUTABLE ${nsPrefix}protoc) # TRICKY: match name in -module.
 get_target_property(PROTOBUF_INCLUDE_DIR ${nsPrefix}libprotobuf INTERFACE_INCLUDE_DIRECTORIES)
 set(reqVars ${PRJ}_VER ${PRJ}_INCLUDE_DIR ${PRJ}_LIBRARIES ${PRJ}_PROTOC_EXECUTABLE)
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(${prj} REQUIRED_VARS ${reqVars})
+find_package_handle_standard_args(@NAME@ REQUIRED_VARS ${reqVars})
 mark_as_advanced(${reqVars})
