@@ -27,6 +27,11 @@ function(build_yasm)
   if(NOT (XP_DEFAULT OR XP_PRO_YASM))
     return()
   endif()
+  find_package(PythonInterp)
+  if(NOT PYTHONINTERP_FOUND)
+    message(FATAL_ERROR "Unable to build yasm, required python not found")
+    return()
+  endif()
   xpGetArgValue(${PRO_YASM} ARG NAME VALUE NAME)
   set(XP_CONFIGURE
     -DXP_INSTALL_YASM_EXE_ONLY:BOOL=ON
