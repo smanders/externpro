@@ -27,10 +27,19 @@ function(build_shapelib)
   if(NOT (XP_DEFAULT OR XP_PRO_SHAPELIB))
     return()
   endif()
+  xpGetArgValue(${PRO_SHAPELIB} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_SHAPELIB} ARG VER VALUE VER)
-  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro -DSHAPELIB_VER=${VER})
-  configure_file(${PRO_DIR}/use/usexp-shapelib-config.cmake ${STAGE_DIR}/share/cmake/
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=xpro
+    )
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::shape)
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(shapelib "" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
 endfunction()
