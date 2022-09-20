@@ -1,13 +1,14 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cc303f5..093a636 100644
+index cc303f5..4312488 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -5,7 +5,9 @@
+@@ -4,8 +4,10 @@
+ # For details see the COPYRIGHT file distributed with LuaDist.
  # Please note that the package source code is licensed under its own license.
  
++cmake_minimum_required ( VERSION 2.8...3.21 )
  project ( lua C )
 -cmake_minimum_required ( VERSION 2.8 )
-+cmake_minimum_required ( VERSION 2.8...3.21 )
 +include(GNUInstallDirs)
 +include(flags OPTIONAL)
  include ( cmake/dist.cmake )
