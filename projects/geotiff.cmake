@@ -30,13 +30,13 @@ function(build_geotiff)
   if(NOT (XP_DEFAULT OR XP_PRO_GEOTIFF))
     return()
   endif()
-  build_wx() # determine gtk version
   set(wxver 31) # specify the wx version to build geotiff against
   if(NOT (XP_DEFAULT OR XP_PRO_WX${wxver}))
     message(STATUS "geotiff.cmake: requires wx${wxver}")
     set(XP_PRO_WX${wxver} ON CACHE BOOL "include wx${wxver}" FORCE)
     xpPatchProject(${PRO_WX${wxver}})
   endif()
+  build_wx() # determine gtk version
   build_wxv(VER ${wxver} TARGETS wxTgts INCDIR wxInc)
   xpGetArgValue(${PRO_GEOTIFF} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_GEOTIFF} ARG VER VALUE VER)
