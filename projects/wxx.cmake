@@ -22,26 +22,26 @@ function(build_wxx)
   if(NOT (XP_DEFAULT OR XP_PRO_WXX))
     return()
   endif()
-  build_wx() # determine WX_VERSIONS
-  foreach(ver ${WX_VERSIONS})
-    build_wxxv(${ver})
-  endforeach()
-endfunction()
-function(build_wxxv ver)
-  if(NOT (XP_DEFAULT OR XP_PRO_WX${ver}))
-    message(STATUS "wxx.cmake: requires wx${ver}")
-    set(XP_PRO_WX${ver} ON CACHE BOOL "include wx${ver}" FORCE)
-    xpPatchProject(${PRO_WX${ver}})
-  endif()
-  configure_file(${PRO_DIR}/use/usexp-wxx-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
-  build_wxv(VER ${ver} TARGETS wxTgts SRCDIR wxSrc)
-  set(XP_DEPS ${wxTgts})
+  xpBuildDeps(depTgts ${PRO_WXX}) # defines WX_INCDIR WX_SRCDIR
   xpGetArgValue(${PRO_WXX} ARG SUBPRO VALUES subs)
   foreach(sub ${subs})
-    list(APPEND XP_DEPS wxx_${sub})
+    list(APPEND depTgts wxx_${sub})
   endforeach()
-  set(XP_CONFIGURE -DWX_SOURCE:PATH=${wxSrc} -DXP_NAMESPACE:STRING=wxx)
-  xpCmakeBuild(wxx "${XP_DEPS}" "${XP_CONFIGURE}" "" TGT ${ver})
+  xpGetArgValue(${PRO_WXX} ARG NAME VALUE NAME)
+  xpGetArgValue(${PRO_WXX} ARG VER VALUE VER)
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=${WX_INCDIR}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=${NAME}
+    -DWX_SOURCE:PATH=${WX_SRCDIR}
+    )
+  set(FIND_DEPS "xpFindPkg(PKGS wxwidgets) # dependencies\n")
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  set(LIBRARIES "${NAME}::plotctrl ${NAME}::things ${NAME}::tlc")
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+    @ONLY NEWLINE_STYLE LF
+    )
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()

@@ -22,10 +22,10 @@ index f0c3c2c..42469fc 100644
  ".# c #000000",
 diff --git a/build/CMakeLists.txt b/build/CMakeLists.txt
 new file mode 100644
-index 0000000..67df5c2
+index 0000000..3a88ded
 --- /dev/null
 +++ b/build/CMakeLists.txt
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,64 @@
 +set(lib_name plotctrl)
 +#######################################
 +set(plot_srcs
@@ -63,7 +63,7 @@ index 0000000..67df5c2
 +endif()
 +#######################################
 +add_library(${lib_name} STATIC ${${lib_name}_libsrcs})
-+target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${wxInc}>
++target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 +  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
 +  PRIVATE
 +  # wxplotctrl plotdraw.cpp needs to include wx/gtk/dcclient.h when building against gtk2
@@ -74,15 +74,11 @@ index 0000000..67df5c2
 +set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${WXX_OUTPUT_NAME})
 +#######################################
 +install(TARGETS ${lib_name} EXPORT ${targetsFile}
-+  RUNTIME DESTINATION bin
-+  LIBRARY DESTINATION lib
-+  ARCHIVE DESTINATION lib
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  )
-+install(FILES ${plot_hdrs} DESTINATION ${wxInc}/wx/${lib_name})
-+if(DEFINED XP_NAMESPACE)
-+  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
-+endif()
-+install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
++install(FILES ${plot_hdrs} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/wx/${lib_name})
 +#######################################
 +set(samples_plotctrl_srcs
 +  ../samples/plotctrl/wxplotctrl.cpp

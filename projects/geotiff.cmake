@@ -30,14 +30,7 @@ function(build_geotiff)
   if(NOT (XP_DEFAULT OR XP_PRO_GEOTIFF))
     return()
   endif()
-  set(wxver 31) # specify the wx version to build geotiff against
-  if(NOT (XP_DEFAULT OR XP_PRO_WX${wxver}))
-    message(STATUS "geotiff.cmake: requires wx${wxver}")
-    set(XP_PRO_WX${wxver} ON CACHE BOOL "include wx${wxver}" FORCE)
-    xpPatchProject(${PRO_WX${wxver}})
-  endif()
-  build_wx() # determine gtk version
-  build_wxv(VER ${wxver} TARGETS wxTgts INCDIR wxInc)
+  xpBuildDeps(depTgts ${PRO_GEOTIFF}) # defines WX_INCDIR
   xpGetArgValue(${PRO_GEOTIFF} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_GEOTIFF} ARG VER VALUE VER)
   set(XP_CONFIGURE
@@ -45,7 +38,7 @@ function(build_geotiff)
     -DCMAKE_INSTALL_LIBDIR=lib
     -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
-    -DWX_INCLUDE:PATH=${wxInc}
+    -DWX_INCLUDE=${WX_INCDIR}
     )
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
   set(LIBRARIES xpro::${NAME})
@@ -53,5 +46,5 @@ function(build_geotiff)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(${NAME} "${wxTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()

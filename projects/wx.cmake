@@ -1,30 +1,37 @@
 # wx
-set(WX_OLDVER 3.0)
-set(WX_NEWVER 3.1)
+set(VER 3.1.0)
+xpProOption(wx DBG_MSVC)
+set(REPO github.com/wxWidgets/wxWidgets)
+set(FORK github.com/smanders/wxWidgets)
+set(PRO_WX
+  NAME wx
+  WEB "wxWidgets" http://wxwidgets.org/ "wxWidgets website"
+  LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License: essentially LGPL with an exception"
+  DESC "Cross-Platform GUI Library"
+  REPO "repo" https://${REPO} "wxWidgets repo on github"
+  GRAPH GRAPH_NODE wx
+  VER ${VER}
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
+  GIT_TAG xp${VER} # what to 'git checkout'
+  GIT_REF v${VER}_220421 # patch from REF to TAG
+  DLURL https://${REPO}/releases/download/v${VER}/wxWidgets-${VER}.tar.bz2
+  DLMD5 ba4cd1f3853d0cd49134c5ae028ad080
+  DLMD5 e20c14bb9bf5d4ec0979a3cd7510dece
+  PATCH ${PATCH_DIR}/wx.patch
+  DIFF https://${FORK}/compare/
+  DEPS_FUNC build_wx
+  DEPS_VARS WX_INCDIR WX_SRCDIR
+  SUBPRO wxcmake
+  )
 if(UNIX AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
   set(GTK_VER_RECORDED FALSE CACHE BOOL "gtk version not recorded" FORCE)
   set_property(CACHE GTK_VER_RECORDED PROPERTY TYPE INTERNAL)
 endif()
 ########################################
-function(build_wx)
-  string(REGEX REPLACE "([0-9])\\.([0-9])?" "\\1\\2" ov ${WX_OLDVER})
-  string(REGEX REPLACE "([0-9])\\.([0-9])?" "\\1\\2" nv ${WX_NEWVER})
-  if(NOT (XP_DEFAULT OR XP_PRO_WX${ov} OR XP_PRO_WX${nv}))
-    return()
-  endif()
-  if(XP_DEFAULT)
-    set(WX_VERSIONS ${nv})
-  else()
-    if(XP_PRO_WX${ov})
-      set(WX_VERSIONS ${ov})
-    endif()
-    if(XP_PRO_WX${nv})
-      list(APPEND WX_VERSIONS ${nv})
-    endif()
-  endif()
-  set(WX_VERSIONS ${WX_VERSIONS} PARENT_SCOPE)
+function(wxFindDeps)
   if(UNIX AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
-    # TODO: detect package required to build on rhel6:
+    # TODO: detect package required to build on rhel:
     #   yum install libSM-devel.x86_64
     find_package(PkgConfig)
     #####
@@ -56,6 +63,7 @@ function(build_wx)
           )
       endif()
     endif()
+    set(GTK_VER ${GTK_VER} PARENT_SCOPE)
     ########
     # OpenGL
     find_package(OpenGL)
@@ -66,26 +74,32 @@ function(build_wx)
         "  yum install mesa-libGL-devel.x86_64 mesa-libGLU-devel.x86_64\n"
         )
     endif()
-  else()
-    set(GTK_VER UNDEFINED)
   endif()
-  set(GTK_VER ${GTK_VER} PARENT_SCOPE)
-  configure_file(${PRO_DIR}/use/usexp-wxwidgets-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
-  foreach(ver ${WX_VERSIONS})
-    build_wxv(VER ${ver})
-  endforeach()
 endfunction()
 ########################################
-function(build_wxv)
-  set(oneValueArgs VER TARGETS INCDIR SRCDIR)
-  cmake_parse_arguments(wx "" "${oneValueArgs}" "" ${ARGN})
+function(build_wx)
+  if(NOT (XP_DEFAULT OR XP_PRO_WX))
+    return()
+  endif()
+  wxFindDeps() # sets GTK_VER
+  set(NAME wxwidgets)
+  xpGetArgValue(${PRO_WX} ARG VER VALUE VER)
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake ${STAGE_DIR}/share/cmake/
+    @ONLY NEWLINE_STYLE LF
+    )
+  string(REGEX REPLACE "([0-9])\\.([0-9])\\.([0-9])?"
+    "include/wx-\\1.\\2" wxIncDir ${VER}
+    )
   if(MSVC)
-    set(XP_CONFIGURE -DWX_VERSION:STRING=${wx_VER})
-    xpCmakeBuild(wx${wx_VER} wx${wx_VER}_wxcmake${wx_VER} "${XP_CONFIGURE}")
+    set(XP_CONFIGURE
+      -DCMAKE_INSTALL_INCLUDEDIR=${wxIncDir}
+      -DCMAKE_INSTALL_LIBDIR=lib
+      -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+      )
+    xpCmakeBuild(wx wx_wxcmake "${XP_CONFIGURE}")
     set(config msvc)
-    list(APPEND wx${wx_VER}targets wx${wx_VER}_${config})
+    list(APPEND wxtargets wx_${config})
   else()
     xpGetConfigureFlags(CXX wx_CONFIGURE_FLAGS)
     if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
@@ -140,28 +154,26 @@ function(build_wxv)
     set(BUILD_CONFIGS Release)
     foreach(cfg ${BUILD_CONFIGS})
       set(XP_CONFIGURE_CMD ${XP_CONFIGURE_${cfg}} ${XP_CONFIGURE_Install})
-      addproject_wx(wx${wx_VER} ${cfg})
+      addproject_wx(${cfg})
     endforeach()
     list(GET BUILD_CONFIGS 0 config)
   endif()
-  ExternalProject_Get_Property(wx${wx_VER} SOURCE_DIR)
-  ExternalProject_Get_Property(wx${wx_VER}_${config} BINARY_DIR)
+  ExternalProject_Get_Property(wx SOURCE_DIR)
+  ExternalProject_Get_Property(wx_${config} BINARY_DIR)
   set(wxSOURCE_DIR ${SOURCE_DIR})
   set(wxBINARY_DIR ${BINARY_DIR})
+  if(NOT MSVC)
+    set(wxTARGETS ${wxSOURCE_DIR}/build/cmake/wxwidgets-targets.cmake)
+  endif()
   set(wxWINUNDEF ${wxSOURCE_DIR}/include/wx/msw/winundef.h)
   set(TIFF_HDRS "src/tiff/libtiff/*.h")
-  if(${wx_VER} EQUAL 31)
-    set(wxSTAGE_DIR ${STAGE_DIR}/include/wx-3.1)
-  elseif(${wx_VER} EQUAL 30)
-    set(wxSTAGE_DIR ${STAGE_DIR}/include/wx-3.0)
-  else()
-    message(FATAL_ERROR "wx.cmake: wx version ${wx_VER} support lacking")
-  endif()
-  if(NOT TARGET wx${wx_VER}_stage_hdrs)
-    ExternalProject_Add(wx${wx_VER}_stage_hdrs DEPENDS ${wx${wx_VER}targets}
+  if(NOT TARGET wx_stage_hdrs)
+    ExternalProject_Add(wx_stage_hdrs DEPENDS ${wxtargets}
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} BINARY_DIR ${NULL_DIR}
-      SOURCE_DIR ${wxSOURCE_DIR}  INSTALL_DIR ${wxSTAGE_DIR}
-      PATCH_COMMAND ""
+      SOURCE_DIR ${wxSOURCE_DIR}  INSTALL_DIR ${STAGE_DIR}/${wxIncDir}
+      PATCH_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${wxTARGETS}
+        -Ddst:STRING=${STAGE_DIR}/share/cmake/tgt-${NAME}/
+        -P ${MODULES_DIR}/cmscopyfiles.cmake
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${wxWINUNDEF}
         -Ddst:STRING=<INSTALL_DIR>/externpro/
         -P ${MODULES_DIR}/cmscopyfiles.cmake
@@ -173,24 +185,19 @@ function(build_wxv)
         -Ddst:STRING=<INSTALL_DIR>/wx/tiff/
         -P ${MODULES_DIR}/cmscopyfiles.cmake
       )
-    set_property(TARGET wx${wx_VER}_stage_hdrs PROPERTY FOLDER ${bld_folder})
+    set_property(TARGET wx_stage_hdrs PROPERTY FOLDER ${bld_folder})
   endif()
-  if(DEFINED wx_TARGETS)
-    xpListAppendIfDne(${wx_TARGETS} ${wx${wx_VER}targets})
-    xpListAppendIfDne(${wx_TARGETS} wx${wx_VER}_stage_hdrs)
-    set(${wx_TARGETS} "${${wx_TARGETS}}" PARENT_SCOPE)
-  endif()
-  if(DEFINED wx_INCDIR)
-    set(${wx_INCDIR} ${wxSTAGE_DIR} PARENT_SCOPE)
-  endif()
-  if(DEFINED wx_SRCDIR)
-    set(${wx_SRCDIR} ${wxSOURCE_DIR} PARENT_SCOPE)
+  xpListAppendIfDne(wxtargets wx_stage_hdrs)
+  if(ARGN)
+    set(${ARGN} "${wxtargets}" PARENT_SCOPE)
+    set(WX_INCDIR ${wxIncDir} PARENT_SCOPE)
+    set(WX_SRCDIR ${wxSOURCE_DIR} PARENT_SCOPE)
   endif()
 endfunction()
 ####################
-macro(addproject_wx basename cfg)
-  set(XP_TARGET ${basename}_${cfg})
-  ExternalProject_Get_Property(${basename} SOURCE_DIR)
+macro(addproject_wx cfg)
+  set(XP_TARGET wx_${cfg})
+  ExternalProject_Get_Property(wx SOURCE_DIR)
   set(wxSOURCE_DIR ${SOURCE_DIR})
   if(NOT TARGET ${XP_TARGET})
     if(XP_BUILD_VERBOSE)
@@ -199,7 +206,7 @@ macro(addproject_wx basename cfg)
     else()
       message(STATUS "target ${XP_TARGET}")
     endif()
-    ExternalProject_Add(${XP_TARGET} DEPENDS ${basename}
+    ExternalProject_Add(${XP_TARGET} DEPENDS wx wx_wxcmake
       DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} SOURCE_DIR ${wxSOURCE_DIR}
       CONFIGURE_COMMAND ${XP_CONFIGURE_CMD}
       BUILD_COMMAND   # use default
@@ -226,5 +233,5 @@ macro(addproject_wx basename cfg)
       )
     set_property(TARGET ${XP_TARGET}_wxconfig PROPERTY FOLDER ${bld_folder})
   endif()
-  list(APPEND ${basename}targets ${XP_TARGET} ${XP_TARGET}_wxconfig)
+  list(APPEND wxtargets ${XP_TARGET} ${XP_TARGET}_wxconfig)
 endmacro()
