@@ -36,7 +36,7 @@ function(patch_patch)
       xpGetArgValue(${PRO_PATCH} ARG DLURL_MSW VALUE dwnldUrl)
       xpGetArgValue(${PRO_PATCH} ARG DLMD5_MSW VALUE dwnldMd5)
       ExternalProject_Add(patch
-        DOWNLOAD_DIR ${DWNLD_DIR}
+        DOWNLOAD_DIR ${DWNLD_DIR} DOWNLOAD_EXTRACT_TIMESTAMP true
         URL ${dwnldUrl}  URL_MD5 ${dwnldMd5}
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -49,7 +49,7 @@ function(patch_patch)
       xpGetArgValue(${PRO_PATCH} ARG DLURL VALUE dwnldUrl)
       xpGetArgValue(${PRO_PATCH} ARG DLMD5 VALUE dwnldMd5)
       ExternalProject_Add(patch
-        DOWNLOAD_DIR ${DWNLD_DIR}
+        DOWNLOAD_DIR ${DWNLD_DIR} DOWNLOAD_EXTRACT_TIMESTAMP true
         URL ${dwnldUrl}  URL_MD5 ${dwnldMd5}
         CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix=${patchbld_DIR}
         BUILD_COMMAND   # use default

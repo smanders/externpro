@@ -101,3 +101,35 @@ index 0e2cc7a..28d1a6f 100644
          "${CMAKE_CURRENT_BINARY_DIR}/zmqpp_export.h"
 -        DESTINATION "include")
 +        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+diff --git a/src/zmqpp/socket.cpp b/src/zmqpp/socket.cpp
+index 5cb98fd..928792f 100644
+--- a/src/zmqpp/socket.cpp
++++ b/src/zmqpp/socket.cpp
+@@ -640,6 +640,7 @@ void socket::set(socket_option const option, char const* value, size_t const len
+ #if (ZMQ_VERSION_MAJOR > 4 || ZMQ_VERSION_MAJOR == 4 && ZMQ_VERSION_MINOR >= 2)
+ 	case socket_option::gssapi_principal:
+ 	case socket_option::gssapi_service_principal:
++	case socket_option::metadata:
+ 	case socket_option::socks_proxy:
+ 	case socket_option::xpub_welcome_message:
+ #endif
+@@ -868,6 +869,7 @@ void socket::get(socket_option const option, std::string& value) const
+ #if (ZMQ_VERSION_MAJOR > 4 || ZMQ_VERSION_MAJOR == 4 && ZMQ_VERSION_MINOR >= 2)
+ 	case socket_option::gssapi_principal:
+ 	case socket_option::gssapi_service_principal:
++	case socket_option::metadata:
+ 	case socket_option::socks_proxy:
+ #endif
+ 		if(0 != zmq_getsockopt(_socket, static_cast<int>(option), buffer.data(), &size))
+diff --git a/src/zmqpp/socket_options.hpp b/src/zmqpp/socket_options.hpp
+index e46cbde..1920514 100644
+--- a/src/zmqpp/socket_options.hpp
++++ b/src/zmqpp/socket_options.hpp
+@@ -116,6 +116,7 @@ ZMQPP_COMPARABLE_ENUM socket_option {
+ 	heartbeat_timeout         = ZMQ_HEARTBEAT_TIMEOUT, /*< ZMPT heartbeat timeout - set only */
+ 	heartbeat_ttl             = ZMQ_HEARTBEAT_TTL, /*< ZMPT heartbeat interval - set only */
+ 	invert_matching           = ZMQ_INVERT_MATCHING, /*< ZMPT invert state for PUB/SUB message filters */
++	metadata                  = ZMQ_METADATA, /*< socket metadata key-value pairs */
+ 	multicast_max_tpdu        = ZMQ_MULTICAST_MAXTPDU, /*< Max size for multicast messages */
+ 	socks_proxy               = ZMQ_SOCKS_PROXY, /*< SOCKS5 proxy address for routing tcp connections */
+ 	stream_notify             = ZMQ_STREAM_NOTIFY, /*< Event state on connect/disconnection of peers */

@@ -198,7 +198,7 @@ index 3f16e595..bae7e24f 100644
    endif()
  endif()
 diff --git a/include/zmq.h b/include/zmq.h
-index d05659f7..37648330 100644
+index d05659f7..e6a6b054 100644
 --- a/include/zmq.h
 +++ b/include/zmq.h
 @@ -478,6 +478,9 @@ ZMQ_EXPORT const char *zmq_msg_gets (const zmq_msg_t *msg_,
@@ -211,6 +211,18 @@ index d05659f7..37648330 100644
  ZMQ_EXPORT int zmq_close (void *s_);
  ZMQ_EXPORT int
  zmq_setsockopt (void *s_, int option_, const void *optval_, size_t optvallen_);
+@@ -778,6 +781,11 @@ ZMQ_EXPORT int zmq_socket_monitor_pipes_stats (void *s);
+ 
+ #endif // ZMQ_BUILD_DRAFT_API
+ 
++// expose socket option ZMQ_METADATA, which is currently only available in the
++// draft API:
++#ifndef ZMQ_METADATA
++#define ZMQ_METADATA 95
++#endif
+ 
+ #undef ZMQ_EXPORT
+ 
 diff --git a/src/ctx.cpp b/src/ctx.cpp
 index 2b64c510..34f26edd 100644
 --- a/src/ctx.cpp
@@ -276,6 +288,106 @@ index 0ccd68fa..1201e1a8 100644
      void destroy_socket (zmq::socket_base_t *socket_);
  
      //  Send command to the destination thread.
+diff --git a/src/curve_server.cpp b/src/curve_server.cpp
+index fadfc746..5104b5a4 100644
+--- a/src/curve_server.cpp
++++ b/src/curve_server.cpp
+@@ -410,13 +410,19 @@ int zmq::curve_server_t::process_initiate (msg_t *msg_)
+                               _cn_secret);
+     zmq_assert (rc == 0);
+ 
++    // parse the metadata BEFORE doing ZAP authentication so that ZAP can use
++    // any applicable metadata:
++    auto retMetadata = parse_metadata (
++      &initiate_plaintext[crypto_box_ZEROBYTES + 128],
++      clen - crypto_box_ZEROBYTES - 128);
++
+     //  Given this is a backward-incompatible change, it's behind a socket
+     //  option disabled by default.
+     if (zap_required () || !options.zap_enforce_domain) {
+         //  Use ZAP protocol (RFC 27) to authenticate the user.
+         rc = session->zap_connect ();
+         if (rc == 0) {
+-            send_zap_request (client_key);
++            send_zap_request (client_key, _signature);
+             state = waiting_for_zap_reply;
+ 
+             //  TODO actually, it is quite unlikely that we can read the ZAP
+@@ -439,8 +445,7 @@ int zmq::curve_server_t::process_initiate (msg_t *msg_)
+         state = sending_ready;
+     }
+ 
+-    return parse_metadata (&initiate_plaintext[crypto_box_ZEROBYTES + 128],
+-                           clen - crypto_box_ZEROBYTES - 128);
++    return retMetadata;
+ }
+ 
+ int zmq::curve_server_t::produce_ready (msg_t *msg_)
+@@ -497,10 +502,34 @@ int zmq::curve_server_t::produce_error (msg_t *msg_) const
+     return 0;
+ }
+ 
+-void zmq::curve_server_t::send_zap_request (const uint8_t *key_)
++void zmq::curve_server_t::send_zap_request (const uint8_t *key_,
++                                            const std::string& signature_)
++{
++    // send not only the key but also an optional signature for the key, if one
++    // was present in the metadata:
++    if (signature_.empty())
++    {
++        zap_client_t::send_zap_request ("CURVE", 5, key_,
++                                        crypto_box_PUBLICKEYBYTES);
++    }
++    else
++    {
++        const uint8_t* credentials[2] = { key_,
++          static_cast<const uint8_t*>(
++            static_cast<const void*>(signature_.data())) };
++        size_t credentialSizes[2] = { crypto_box_PUBLICKEYBYTES,
++                                      signature_.size() };
++        zap_client_t::send_zap_request ("CURVE", 5, credentials,
++                                        credentialSizes, 2);
++    }
++}
++
++int zmq::curve_server_t::property (const std::string &name_, const void *value_,
++                                   size_t length_)
+ {
+-    zap_client_t::send_zap_request ("CURVE", 5, key_,
+-                                    crypto_box_PUBLICKEYBYTES);
++    if (name_ == "X-ClientKeySignature" && value_ && length_)
++        _signature.assign(static_cast<const char*>(value_), length_);
++    return 0; // success
+ }
+ 
+ #endif
+diff --git a/src/curve_server.hpp b/src/curve_server.hpp
+index 995efce0..e1fd3b6a 100644
+--- a/src/curve_server.hpp
++++ b/src/curve_server.hpp
+@@ -74,13 +74,21 @@ class curve_server_t ZMQ_FINAL : public zap_client_common_handshake_t,
+     //  Key used to produce cookie
+     uint8_t _cookie_key[crypto_secretbox_KEYBYTES];
+ 
++    //  Signature for client's public key, empty() if not provided
++    std::string _signature;
++
+     int process_hello (msg_t *msg_);
+     int produce_welcome (msg_t *msg_);
+     int process_initiate (msg_t *msg_);
+     int produce_ready (msg_t *msg_);
+     int produce_error (msg_t *msg_) const;
+ 
+-    void send_zap_request (const uint8_t *key_);
++    void send_zap_request (const uint8_t *key_,
++                           const std::string& signature_);
++
++    int property (const std::string &name_, const void *value_, size_t length_)
++      override;
++
+ };
+ #ifdef _MSC_VER
+ #pragma warning(pop)
 diff --git a/src/rep.cpp b/src/rep.cpp
 index 99707f89..b1dad7d2 100644
 --- a/src/rep.cpp

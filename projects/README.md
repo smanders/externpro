@@ -18,13 +18,13 @@
 |[ffmpeg](https://www.ffmpeg.org/ 'ffmpeg website')|[LGPL](https://www.ffmpeg.org/legal.html 'Lesser GPL v2.1')|pre-built (MSW-only) complete, cross-platform solution to record, convert and stream audio and video|2.6.2.1|[repo](https://github.com/smanders/ffmpegBin 'ffmpeg binary repo on github')|[diff](https://github.com/smanders/ffmpegBin/compare/v2.6.2.1...xp2.6.2.1 'patch/diff')|
 |[ffmpeg](https://www.ffmpeg.org/ 'ffmpeg website')|[LGPL](https://www.ffmpeg.org/legal.html 'Lesser GPL v2.1')|complete, cross-platform solution to record, convert and stream audio and video|2.6.2|[repo](https://github.com/FFmpeg/FFmpeg 'ffmpeg repo on github')|[diff](https://github.com/ndrasmussen/FFmpeg/compare/FFmpeg:n2.6.2...xp2.6.2 'patch/diff')|
 |[flatbuffers](http://google.github.io/flatbuffers/ 'FlatBuffers website')|[open](https://github.com/google/flatbuffers/blob/v2.0.6/LICENSE.txt 'Apache license, v2')|efficient cross platform serialization library|2.0.6|[repo](https://github.com/google/flatbuffers 'flatbuffers repo on github')|[diff](https://github.com/smanders/flatbuffers/compare/google:v2.0.6...xp2.0.6 'patch/diff')|
+|[geotiff](http://trac.osgeo.org/geotiff/ 'GeoTIFF trac website')|[open](http://trac.osgeo.org/geotiff/ 'trac site states it is an open source library (no specific license mentioned)')|georeferencing info embedded within TIFF file|1.2.4|[repo](https://github.com/smanders/libgeotiff 'libgeotiff repo on github')|[diff](https://github.com/smanders/libgeotiff/compare/v1.2.4...xp1.2.4 'patch/diff')|
 |[GEOTRANS](http://earth-info.nga.mil/GandG/geotrans/ 'GEOTRANS website')|[open](http://earth-info.nga.mil/GandG/geotrans/docs/MSP_GeoTrans_Terms_of_Use.pdf 'GEOTRANS Terms of Use (no specific license mentioned)')|geographic translator (convert coordinates)|2.4.2|[repo](https://github.com/smanders/geotranz 'geotranz repo on github')|[diff](https://github.com/smanders/geotranz/compare/v2.4.2...xp2.4.2 'patch/diff')|
 |[GLEW](http://glew.sourceforge.net 'GLEW on sourceforge.net')|[open](http://glew.sourceforge.net/credits.html 'Modified BSD, Mesa 3-D (MIT), and Khronos (MIT)')|The OpenGL Extension Wrangler Library|1.13.0|[repo](https://github.com/nigels-com/glew 'GLEW repo on github')|[diff](https://github.com/smanders/glew/compare/nigels-com:glew-1.13.0...xp-1.13.0 'patch/diff')|
 |[GLEW](http://glew.sourceforge.net 'GLEW on sourceforge.net')|[open](http://glew.sourceforge.net/credits.html 'Modified BSD, Mesa 3-D (MIT), and Khronos (MIT)')|pre-built (MSW-only) The OpenGL Extension Wrangler Library|1.7.0|[repo](https://github.com/nigels-com/glew 'GLEW repo on github')|none|
 |[JasPer](http://www.ece.uvic.ca/~frodo/jasper/ 'JasPer website')|[open](http://www.ece.uvic.ca/~frodo/jasper/#license 'JasPer License (based on MIT license)')|JPEG 2000 Part-1 codec implementation|1.900.1|[repo](https://github.com/smanders/jasper 'forked jasper repo on github')|[diff](https://github.com/smanders/jasper/compare/version-1.900.1...xp-1.900.1 'patch/diff')|
 |[jpegxp](http://www.ijg.org/ 'Independent JPEG Group website')|[open](https://github.com/smanders/libjpeg/blob/upstream/README 'libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)')|JPEG codec with mods for Lossless, 12-bit lossy (XP)|22.04|[repo](https://github.com/smanders/jpegxp 'jpegxp repo on github')|[diff](https://github.com/smanders/jpegxp/compare/jxp.220421...jxp 'patch/diff')|
 |[jxrlib](https://jxrlib.codeplex.com/ 'jxrlib project hosted on CodePlex')|[open](https://jxrlib.codeplex.com/license 'New BSD License (BSD)')|open source implementation of the jpegxr image format standard|15.08|[repo](https://github.com/smanders/jxrlib 'forked jxrlib repo on github')|[diff](https://github.com/smanders/jxrlib/compare/v15.08...xp15.08 'patch/diff')|
-|[libgeotiff](http://trac.osgeo.org/geotiff/ 'GeoTIFF trac website')|[open](http://trac.osgeo.org/geotiff/ 'trac site states it is an open source library (no specific license mentioned)')|georeferencing info embedded within TIFF file|1.2.4|[repo](https://github.com/smanders/libgeotiff 'libgeotiff repo on github')|[diff](https://github.com/smanders/libgeotiff/compare/v1.2.4...xp1.2.4 'patch/diff')|
 |[libgit2](https://libgit2.github.com/ 'libgit2 website')|[open](https://github.com/libgit2/libgit2/blob/master/README.md#license 'GPL2 with linking exception')|portable, pure C implementation of the Git core methods|1.3.0|[repo](https://github.com/libgit2/libgit2 'libgit2 repo on github')|[diff](https://github.com/smanders/libgit2/compare/libgit2:v1.3.0...xp1.3.0 'patch/diff')|
 |[libssh2](http://www.libssh2.org/ 'libssh2 website')|[open](http://www.libssh2.org/license.html 'BSD 3-Clause License - https://www.openhub.net/licenses/BSD-3-Clause')|client-side C library implementing SSH2 protocol|1.9.0|[repo](https://github.com/libssh2/libssh2 'libssh2 repo on github')|[diff](https://github.com/smanders/libssh2/compare/libssh2:libssh2-1.9.0...xp-1.9.0 'patch/diff')|
 |[libstrophe](http://strophe.im/libstrophe/ 'libstrophe website')|[open](https://github.com/strophe/libstrophe/blob/0.9.1/LICENSE.txt 'dual licensed under MIT and GPLv3')|A simple, lightweight C library for writing XMPP client|0.9.1|[repo](https://github.com/strophe/libstrophe 'libstrophe repo on github')|[diff](https://github.com/smanders/libstrophe/compare/strophe:0.9.1...xp0.9.1 'patch/diff')|
@@ -79,10 +79,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_b15e94783729b006093b32796a0a9912?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_c0d2d8c18f109be8c73c926f53b33875?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_b15e94783729b006093b32796a0a9912
+depgraph_c0d2d8c18f109be8c73c926f53b33875
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
@@ -115,8 +115,8 @@ digraph GG {
   ffmpeg [shape=diamond];
   ffmpeg -> openh264;
   ffmpeg -> yasm;
-  libgeotiff [shape=diamond];
-  libgeotiff -> wx;
+  geotiff [shape=diamond];
+  geotiff -> wx;
   libgit2 [shape=diamond];
   libgit2 -> libssh2;
   libssh2 [shape=diamond];
@@ -152,5 +152,5 @@ digraph GG {
   zmqpp [shape=diamond];
   zmqpp -> libzmq;
 }
-depgraph_b15e94783729b006093b32796a0a9912
+depgraph_c0d2d8c18f109be8c73c926f53b33875
 </details>

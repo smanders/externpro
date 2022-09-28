@@ -24,14 +24,23 @@ function(build_jpegxp)
   if(NOT (XP_DEFAULT OR XP_PRO_JPEGXP))
     return()
   endif()
+  xpGetArgValue(${PRO_JPEGXP} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_JPEGXP} ARG VER VALUE VER)
-  set(XP_CONFIGURE -DXP_NAMESPACE:STRING=xpro -DJPEGXP_VER=${VER})
-  configure_file(${PRO_DIR}/use/usexp-jpegxp-config.cmake ${STAGE_DIR}/share/cmake/
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=xpro
+    )
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::${NAME})
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpGetArgValue(${PRO_JPEGXP} ARG SUBPRO VALUES subs)
   foreach(sub ${subs})
-    list(APPEND XP_DEPS jpegxp_${sub})
+    list(APPEND XP_DEPS ${NAME}_${sub})
   endforeach()
-  xpCmakeBuild(jpegxp "${XP_DEPS}" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "${XP_DEPS}" "${XP_CONFIGURE}")
 endfunction()
