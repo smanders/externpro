@@ -94,7 +94,6 @@ if(NOT @CMAKE_PROJECT_NAME@_DIR)
     message(STATUS "${XP_INSTALLED_NAME} not found.\nAttempting download of ${archive_name} ...")
     file(DOWNLOAD @XP_DOWNLOAD_URL@/${@CMAKE_PROJECT_NAME@_REV}/${archive_name}
       $ENV{extern_DIR}/${archive_name}
-      EXPECTED_MD5 8d3a2b40b1521320ab52514a4ff5b51b
       )
     message(STATUS "Attempting extraction of ${archive_name} ...")
     file(ARCHIVE_EXTRACT
