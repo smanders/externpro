@@ -1,7 +1,7 @@
 # azmq
 xpProOption(azmq DBG)
-set(VER 21.06.02)
-set(TAG fc6b42acaaeaa65692e031d796a02011d2924713) # 2021.06.02 commit, head of master branch
+set(VER 21.12.05)
+set(TAG e0058a38976399006f535a9010d29e763b43fcd8) # 2021.12.05 commit
 set(REPO github.com/zeromq/azmq)
 set(FORK github.com/smanders/azmq)
 set(PRO_AZMQ
@@ -17,7 +17,7 @@ set(PRO_AZMQ
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${TAG} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/${TAG}.tar.gz
-  DLMD5 d3b3d48168a53d03c08be59bdc596709
+  DLMD5 814c9b8d8655dda9ef82f6018b8a8384
   DLNAME azmq-${VER}.tar.gz
   PATCH ${PATCH_DIR}/azmq.patch
   DIFF https://${FORK}/compare/zeromq:

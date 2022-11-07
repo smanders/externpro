@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 762fa31..405da42 100644
+index 42ace9a..e22b437 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,7 +1,8 @@
@@ -18,22 +18,22 @@ index 762fa31..405da42 100644
  
 -set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config")
 -
--find_package(Boost 1.48 COMPONENTS system date_time thread chrono regex random REQUIRED)
+-find_package(Boost 1.48 COMPONENTS system date_time thread chrono random REQUIRED)
 -find_package(ZeroMQ 4.0 REQUIRED)
 +if(COMMAND xpFindPkg)
 +    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +    xpFindPkg(PKGS boost libzmq)
-+    set(Boost_LIBRARIES Boost::regex Boost::system Boost::thread)
++    set(Boost_LIBRARIES Boost::system Boost::thread)
 +    set(ZeroMQ_LIBRARIES xpro::libzmq-static)
 +else()
 +    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config")
-+    find_package(Boost 1.48 COMPONENTS system date_time thread chrono regex random REQUIRED)
++    find_package(Boost 1.48 COMPONENTS system date_time thread chrono random REQUIRED)
 +    find_package(ZeroMQ 4.0 REQUIRED)
 +endif()
  
  set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
  find_package(Threads REQUIRED)
-@@ -70,5 +77,18 @@ if(NOT AZMQ_NO_TESTS)
+@@ -64,5 +71,18 @@ if(NOT AZMQ_NO_TESTS)
      add_subdirectory(doc)
  endif()
  
@@ -54,10 +54,10 @@ index 762fa31..405da42 100644
 -        DESTINATION include)
 +        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 diff --git a/azmq/detail/socket_ops.hpp b/azmq/detail/socket_ops.hpp
-index 7557ed3..f4ecc40 100644
+index 5259abe..0dfa28a 100644
 --- a/azmq/detail/socket_ops.hpp
 +++ b/azmq/detail/socket_ops.hpp
-@@ -79,9 +79,15 @@ namespace detail {
+@@ -78,9 +78,15 @@ namespace detail {
  
          static socket_type create_socket(context_ops::context_type context,
                                           int type,
@@ -75,29 +75,11 @@ index 7557ed3..f4ecc40 100644
              if (!res) {
                  ec = make_error_code();
                  return socket_type();
-@@ -263,7 +269,7 @@ namespace detail {
-                 ec = make_error_code();
-                 return 0;
-             }
--            return rc;
-+            return static_cast<size_t>(rc);
-         }
- 
-         template<typename ConstBufferSequence>
-@@ -295,7 +301,7 @@ namespace detail {
-                 ec = make_error_code();
-                 return 0;
-             }
--            return rc;
-+            return static_cast<size_t>(rc);
-         }
- 
-         template<typename MutableBufferSequence>
 diff --git a/azmq/detail/socket_service.hpp b/azmq/detail/socket_service.hpp
-index 1992804..83508bf 100644
+index 8250ee0..d816834 100644
 --- a/azmq/detail/socket_service.hpp
 +++ b/azmq/detail/socket_service.hpp
-@@ -101,9 +101,11 @@ namespace detail {
+@@ -97,9 +97,11 @@ namespace detail {
                           context_type & ctx,
                           int type,
                           bool optimize_single_threaded,
@@ -111,7 +93,7 @@ index 1992804..83508bf 100644
                  if (ec) return;
  
                  sd_ = socket_ops::get_stream_descriptor(ios, socket_, ec);
-@@ -233,12 +235,14 @@ namespace detail {
+@@ -227,12 +229,14 @@ namespace detail {
          boost::system::error_code do_open(implementation_type & impl,
                                            int type,
                                            bool optimize_single_threaded,
@@ -130,10 +112,10 @@ index 1992804..83508bf 100644
              if (ec)
                  impl.reset();
 diff --git a/azmq/socket.hpp b/azmq/socket.hpp
-index 720fba1..aa8d7e6 100644
+index 533c1ef..aeae925 100644
 --- a/azmq/socket.hpp
 +++ b/azmq/socket.hpp
-@@ -103,10 +103,12 @@ public:
+@@ -105,10 +105,12 @@ public:
       */
      explicit socket(boost::asio::io_service& ios,
                      int type,
@@ -148,7 +130,7 @@ index 720fba1..aa8d7e6 100644
              throw boost::system::system_error(ec);
      }
  
-@@ -709,6 +711,39 @@ namespace detail {
+@@ -711,6 +713,39 @@ namespace detail {
              return *this;
          }
      };
