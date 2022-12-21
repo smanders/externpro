@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4a5bba6..2ee740a 100644
+index 4a5bba6..d9fe257 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1,11 +1,30 @@
+@@ -1,11 +1,22 @@
  cmake_minimum_required(VERSION 3.8)
  project(SQLite3
 -    VERSION   3.31.1
@@ -15,31 +15,20 @@ index 4a5bba6..2ee740a 100644
 +#------------------------------------------------------------------------------
 +# externpro
 +include(flags OPTIONAL)
-+
-+if(DEFINED SQLITE_VER)
-+  if(NOT SQLITE_VER STREQUAL PROJECT_VERSION)
-+    message(AUTHOR_WARNING "version passed in (${SQLITE_VER}) doesn't match project VERSION (${PROJECT_VERSION})")
-+  endif()
-+  set(verEmbed _${PROJECT_VERSION})
-+endif()
-+
-+if(DEFINED XP_NAMESPACE)
-+  set(nameSpace ${XP_NAMESPACE})
-+  set(cfgDir ${CMAKE_INSTALL_LIBDIR}/)
-+else()
-+  set(nameSpace SQLite)
++if(NOT DEFINED XP_NAMESPACE)
++  set(XP_NAMESPACE SQLite)
 +  set(debugPostfix DEBUG_POSTFIX d)
++endif()
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR cmake)
 +endif()
 +
  #------------------------------------------------------------------------------
  # build options and optional modules:
  option(SQLITE_ENABLE_DBSTAT_VTAB    "enables dbstat virtual table"                    OFF)
-@@ -31,11 +50,11 @@ endif()
- # SQLite3 as static library:
- add_library(${PROJECT_NAME} STATIC sqlite3.c)
+@@ -33,9 +44,9 @@ add_library(${PROJECT_NAME} STATIC sqlite3.c)
  set_target_properties(${PROJECT_NAME} PROPERTIES
--    OUTPUT_NAME   sqlite3
-+    OUTPUT_NAME   sqlite3${verEmbed}
+     OUTPUT_NAME   sqlite3
      PUBLIC_HEADER sqlite3.h
 -    DEBUG_POSTFIX d
 +    ${debugPostfix}
@@ -49,7 +38,7 @@ index 4a5bba6..2ee740a 100644
  target_compile_definitions(${PROJECT_NAME} PUBLIC # inject user's options
      $<BUILD_INTERFACE:
          $<$<BOOL:${SQLITE_ENABLE_DBSTAT_VTAB}>:SQLITE_ENABLE_DBSTAT_VTAB>
-@@ -79,18 +98,25 @@ elseif(WIN32 AND ${CMAKE_SIZEOF_VOID_P} LESS 8) # this is a 32bit windows
+@@ -79,6 +90,13 @@ elseif(WIN32 AND ${CMAKE_SIZEOF_VOID_P} LESS 8) # this is a 32bit windows
              )
      endif()
  endif()
@@ -63,29 +52,24 @@ index 4a5bba6..2ee740a 100644
  
  #------------------------------------------------------------------------------
  configure_file(sqlite3_config.h.in ${CMAKE_BINARY_DIR}/sqlite3_config.h)
- 
--install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config
-+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config${verEmbed}
-     ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
-     LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+@@ -89,8 +107,8 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config
      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
      )
--install(EXPORT  ${PROJECT_NAME}Config
+ install(EXPORT  ${PROJECT_NAME}Config
 -    NAMESPACE   SQLite::
 -    DESTINATION cmake
-+install(EXPORT  ${PROJECT_NAME}Config${verEmbed}
-+    NAMESPACE   ${nameSpace}::
-+    DESTINATION ${cfgDir}cmake
++    NAMESPACE   ${XP_NAMESPACE}::
++    DESTINATION ${XP_INSTALL_CMAKEDIR}
      )
  install(FILES
      ${CMAKE_BINARY_DIR}/sqlite3_config.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-@@ -120,7 +146,7 @@ if(BUILD_SHELL)
+@@ -120,7 +138,7 @@ if(BUILD_SHELL)
              set(${flag} "${${flag}}" CACHE STRING "msvc flags" FORCE)
          endforeach()
      endif()
 -    install(TARGETS shell_app
 -        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-+    install(TARGETS shell_app EXPORT ${PROJECT_NAME}Config${verEmbed}
++    install(TARGETS shell_app EXPORT ${PROJECT_NAME}Config
 +        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} CONFIGURATIONS Release
          )
  endif()

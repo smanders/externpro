@@ -25,16 +25,20 @@ function(build_sqlite)
   if(NOT (XP_DEFAULT OR XP_PRO_SQLITE))
     return()
   endif()
+  xpGetArgValue(${PRO_SQLITE} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_SQLITE} ARG VER VALUE VER)
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-    -DCMAKE_INSTALL_INCLUDEDIR=include/sqlite_${VER}
-    -DBUILD_SHELL=ON
-    -DSQLITE_VER=${VER}
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
+    -DBUILD_SHELL=ON
     )
-  configure_file(${PRO_DIR}/use/usexp-sqlite-config.cmake ${STAGE_DIR}/share/cmake/
+  set(TARGETS_FILE tgt-${NAME}/SQLite3Config.cmake)
+  set(LIBRARIES xpro::SQLite3)
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(sqlite "" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
 endfunction()
