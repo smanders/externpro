@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index acf97f4..ef4c6de 100644
+index acf97f4..a53f3c7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
@@ -22,7 +22,7 @@ index acf97f4..ef4c6de 100644
          WirehairCodec.cpp
          WirehairCodec.h
          WirehairTools.cpp
-@@ -58,26 +61,46 @@ set(GEN_TABLES
+@@ -58,26 +61,42 @@ set(GEN_TABLES
          tables/TableGenerator.cpp
          tables/HeavyRowGenerator.cpp
          tables/HeavyRowGenerator.h
@@ -60,9 +60,6 @@ index acf97f4..ef4c6de 100644
 -if(MARCH_NATIVE)
 -    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -march=native")
 -    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
-+if(DEFINED WIREHAIR_VER)
-+  set(_ver _${WIREHAIR_VER})
-+endif()
 +if(DONT_INSTALL_PYTHON)
 +  set(optionalInstall EXCLUDE_FROM_ALL)
  endif()
@@ -71,14 +68,13 @@ index acf97f4..ef4c6de 100644
  set_target_properties(wirehair PROPERTIES VERSION 2)
  set_target_properties(wirehair PROPERTIES SOVERSION 2)
 -target_include_directories(wirehair PUBLIC ${PROJECT_SOURCE_DIR}/include)
-+set_target_properties(wirehair PROPERTIES OUTPUT_NAME wirehair${_ver})
 +target_include_directories(wirehair PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 +  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 +  )
  
  add_executable(unit_test ${UNIT_TEST_SOURCE_FILES})
  target_link_libraries(unit_test wirehair)
-@@ -95,12 +118,18 @@ add_executable(gen_dcounts ${GEN_DCOUNTS})
+@@ -95,12 +114,21 @@ add_executable(gen_dcounts ${GEN_DCOUNTS})
  target_link_libraries(gen_dcounts wirehair)
  
  add_executable(gen_tables ${GEN_TABLES})
@@ -87,7 +83,7 @@ index acf97f4..ef4c6de 100644
  include(GNUInstallDirs)
  
 -install(TARGETS wirehair
-+set(targetsFile ${PROJECT_NAME}${_ver}-targets)
++set(targetsFile ${PROJECT_NAME}-targets)
 +install(TARGETS wirehair EXPORT ${targetsFile}
      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -97,7 +93,10 @@ index acf97f4..ef4c6de 100644
 +if(DEFINED XP_NAMESPACE)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
-+install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++endif()
++install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})
 +install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 +install(DIRECTORY python DESTINATION ${CMAKE_INSTALL_PREFIX} ${optionalInstall})
 diff --git a/WirehairTools.h b/WirehairTools.h

@@ -26,17 +26,21 @@ function(build_wirehair)
   if(NOT (XP_DEFAULT OR XP_PRO_WIREHAIR))
     return()
   endif()
+  xpGetArgValue(${PRO_WIREHAIR} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_WIREHAIR} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-wirehair-config.cmake ${STAGE_DIR}/share/cmake/
-    @ONLY NEWLINE_STYLE LF
-    )
   set(XP_CONFIGURE
-    -DCMAKE_INSTALL_LIBDIR=lib # without this *some* platforms (RHEL, but not Ubuntu) install to lib64
-    -DCMAKE_INSTALL_INCLUDEDIR=include/wirehair_${VER}
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=xpro
     -DDONT_INSTALL_PYTHON:BOOL=TRUE
     -DMARCH_NATIVE=OFF
-    -DWIREHAIR_VER=${VER}
-    -DXP_NAMESPACE:STRING=xpro
     )
-  xpCmakeBuild(wirehair "" "${XP_CONFIGURE}")
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  set(LIBRARIES xpro::${NAME})
+  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+    @ONLY NEWLINE_STYLE LF
+    )
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
 endfunction()
