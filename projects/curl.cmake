@@ -44,10 +44,11 @@ function(build_curl)
     )
   set(FIND_DEPS "xpFindPkg(PKGS libssh2 cares) # dependencies\n")
   set(TARGETS_FILE tgt-${NAME}/CURLTargets.cmake)
-  set(EXECUTABLE xpro::${NAME})
-  set(LIBRARIES xpro::lib${NAME})
-  configure_file(${PRO_DIR}/use/template-exe-lib-tgt.cmake
-    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "set(${PRJ}_EXE xpro::${NAME})\n")
+  set(USE_VARS "${USE_VARS}set(${PRJ}_LIBRARIES xpro::lib${NAME})\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_EXE ${PRJ}_LIBRARIES)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
