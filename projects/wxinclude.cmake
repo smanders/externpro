@@ -39,9 +39,10 @@ function(build_wxinclude)
     -DXP_NAMESPACE:STRING=xpro
     )
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
-  set(EXECUTABLE xpro::wxInclude)
-  configure_file(${PRO_DIR}/use/template-exe-tgt.cmake
-    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "set(${PRJ}_EXE xpro::wxInclude)\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_EXE)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   set(BUILD_CONFIGS Release) # we only need a release executable
