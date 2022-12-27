@@ -18,9 +18,13 @@ function(build_clangformat)
   build_llvm(llvmTgt)
   xpGetArgValue(${PRO_CLANGFORMAT} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_LLVM} ARG VER VALUE VER)
-  set(EXECUTABLE bin/clang-format\${CMAKE_EXECUTABLE_SUFFIX})
-  configure_file(${PRO_DIR}/use/template-exe.cmake
-    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  set(TARGETS_FILE xpopts.cmake) # "dummy" targets file for project that doesn't have one
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "get_filename_component(XP_ROOTDIR \${CMAKE_CURRENT_LIST_DIR}/../.. ABSOLUTE)\n")
+  set(USE_VARS "${USE_VARS}get_filename_component(XP_ROOTDIR \${XP_ROOTDIR} ABSOLUTE) # remove relative parts\n")
+  set(USE_VARS "${USE_VARS}set(${PRJ}_EXE \${XP_ROOTDIR}/bin/clang-format\${CMAKE_EXECUTABLE_SUFFIX})\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_EXE)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   ExternalProject_Get_Property(${llvmTgt} BINARY_DIR)
