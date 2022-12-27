@@ -1,13 +1,13 @@
-# geotranz
+# geotrans
 # http://packages.debian.org/sid/geotranz
 # http://geotranz.sourcearchive.com/
-xpProOption(geotranz DBG)
+xpProOption(geotrans DBG)
 set(VER 2.4.2)
 set(REPO github.com/smanders/geotranz)
 set(DLCSV https://download.osgeo.org/geotiff/tables)
 set(DLDIR data)
-set(PRO_GEOTRANZ
-  NAME geotranz
+set(PRO_GEOTRANS
+  NAME geotrans
   WEB "GEOTRANS" http://earth-info.nga.mil/GandG/geotrans/ "GEOTRANS website"
   LICENSE "open" http://earth-info.nga.mil/GandG/geotrans/docs/MSP_GeoTrans_Terms_of_Use.pdf "GEOTRANS Terms of Use (no specific license mentioned)"
   DESC "geographic translator (convert coordinates)"
@@ -17,7 +17,7 @@ set(PRO_GEOTRANZ
   GIT_TRACKING_BRANCH xp2.4.2 # not master, to avoid Git-LFS bandwidth
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  PATCH ${PATCH_DIR}/geotranz.patch
+  PATCH ${PATCH_DIR}/geotrans.patch
   DIFF https://${REPO}/compare/
   DLURL https://github.com/smanders/externpro/releases/download/18.04.1/geotranz_${VER}.orig.tar.gz
   DLMD5 1d370d5b0daed2a541a9aa14bd3172a8
@@ -46,15 +46,27 @@ set(PRO_GEOTRANZ
   DLADD _01 _02 _03 _04 _05 _06 _07 _08 _09 _10 _11 _12 _13 _14 _15 _16 _17 _18 _19 _20 _21 _22
   )
 ########################################
-function(build_geotranz)
-  if(NOT (XP_DEFAULT OR XP_PRO_GEOTRANZ))
+function(build_geotrans)
+  if(NOT (XP_DEFAULT OR XP_PRO_GEOTRANS))
     return()
   endif()
-  xpGetArgValue(${PRO_GEOTRANZ} ARG VER VALUE VER)
-  set(verDir /geotrans_${VER})
-  configure_file(${PRO_DIR}/use/usexp-geotrans-config.cmake ${STAGE_DIR}/share/cmake/
+  xpGetArgValue(${PRO_GEOTRANS} ARG NAME VALUE NAME)
+  xpGetArgValue(${PRO_GEOTRANS} ARG VER VALUE VER)
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=xpro
+    -DCSV_DIR=${DWNLD_DIR}/data
+    )
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "set(${PRJ}_LIBRARIES xpro::geotrans)\n")
+  set(USE_VARS "${USE_VARS}get_target_property(incDir xpro::geotrans INTERFACE_INCLUDE_DIRECTORIES)\n")
+  set(USE_VARS "${USE_VARS}set(${PRJ}_DATA_DIR \${incDir}/${NAME}/data)\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DATA_DIR)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  set(XP_CONFIGURE -DGEOTRANS_VER=${VER} -DXP_NAMESPACE:STRING=xpro -DCSV_DIR=${DWNLD_DIR}/data)
-  xpCmakeBuild(geotranz "" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
 endfunction()
