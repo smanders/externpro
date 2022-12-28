@@ -33,9 +33,10 @@ function(build_jpegxp)
     -DXP_NAMESPACE:STRING=xpro
     )
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
-  set(LIBRARIES xpro::${NAME})
-  configure_file(${PRO_DIR}/use/template-lib-tgt.cmake
-    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpGetArgValue(${PRO_JPEGXP} ARG SUBPRO VALUES subs)
