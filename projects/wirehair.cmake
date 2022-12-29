@@ -8,7 +8,7 @@ set(PRO_WIREHAIR
   NAME wirehair
   WEB "wirehair" https://${REPO} "wirehair repo on github"
   LICENSE "open" https://${REPO}/blob/master/LICENSE.txt "BSD 3-Clause New or Revised License"
-  DESC "fast and portable fountain codes in C"
+  DESC "fast and portable fountain codes in C [cmake-patch]"
   REPO "repo" https://${REPO} "wirehair repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git

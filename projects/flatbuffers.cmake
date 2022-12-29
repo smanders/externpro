@@ -7,7 +7,7 @@ set(PRO_FLATBUFFERS
   NAME flatbuffers
   WEB "flatbuffers" http://google.github.io/flatbuffers/ "FlatBuffers website"
   LICENSE "open" https://${REPO}/blob/v${VER}/LICENSE.txt "Apache license, v2"
-  DESC "efficient cross platform serialization library"
+  DESC "efficient cross platform serialization library [cmake-patch]"
   REPO "repo" https://${REPO} "flatbuffers repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git

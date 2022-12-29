@@ -7,7 +7,7 @@ set(PRO_BOOST
   NAME boost
   WEB "boost" http://www.boost.org/ "Boost website"
   LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
-  DESC "libraries that give C++ a boost"
+  DESC "libraries that give C++ a boost [b2]"
   REPO "repo" https://${REPO} "boost repo on github"
   GRAPH GRAPH_NODE boost
   BUILD_DEPS zlib bzip2

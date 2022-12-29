@@ -7,7 +7,7 @@ set(PRO_LIBSTROPHE
   NAME libstrophe
   WEB "libstrophe" http://strophe.im/libstrophe/ "libstrophe website"
   LICENSE "open" "https://${REPO}/blob/${VER}/LICENSE.txt" "dual licensed under MIT and GPLv3"
-  DESC "A simple, lightweight C library for writing XMPP client"
+  DESC "A simple, lightweight C library for writing XMPP client [cmake-scratch]"
   REPO "repo" https://${REPO} "libstrophe repo on github"
   GRAPH BUILD_DEPS expat openssl
   VER ${VER}

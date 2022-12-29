@@ -9,7 +9,7 @@ set(PRO_EXPAT
   NAME expat
   WEB "Expat" https://libexpat.github.io "Expat website"
   LICENSE "open" https://${REPO}/blob/${TAG}/expat/COPYING "Expat License (MIT/X Consortium license)"
-  DESC "a stream-oriented XML parser library written in C"
+  DESC "a stream-oriented XML parser library written in C [cmake-patch]"
   REPO "repo" https://${REPO} "libexpat repo on github"
   GRAPH
   VER ${VER}

@@ -7,7 +7,7 @@ set(PRO_LIBSSH2
   NAME libssh2
   WEB "libssh2" http://www.libssh2.org/ "libssh2 website"
   LICENSE "open" http://www.libssh2.org/license.html "BSD 3-Clause License - https://www.openhub.net/licenses/BSD-3-Clause"
-  DESC "client-side C library implementing SSH2 protocol"
+  DESC "client-side C library implementing SSH2 protocol [cmake-patch]"
   REPO "repo" https://${REPO} "libssh2 repo on github"
   GRAPH BUILD_DEPS zlib openssl
   VER ${VER}

@@ -7,7 +7,7 @@ set(PRO_BZIP2
   NAME bzip2
   WEB "bzip2" https://en.wikipedia.org/wiki/Bzip2 "bzip2 on wikipedia"
   LICENSE "open" https://spdx.org/licenses/bzip2-1.0.6.html "bzip2 BSD-style license"
-  DESC "lossless block-sorting data compression library"
+  DESC "lossless block-sorting data compression library [cmake-scratch]"
   REPO "repo" https://${FORK} "forked bzip2 repo on github"
   GRAPH
   VER ${VER}

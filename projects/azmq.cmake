@@ -8,7 +8,7 @@ set(PRO_AZMQ
   NAME azmq
   WEB "azmq" https://zeromq.org/ "ZeroMQ website"
   LICENSE "open" https://${REPO}/blob/master/LICENSE-BOOST_1_0 "Boost Software License 1.0"
-  DESC "provides Boost Asio style bindings for ZeroMQ"
+  DESC "provides Boost Asio style bindings for ZeroMQ [cmake-patch]"
   REPO "repo" https://${REPO} "zeromq/azmq repo on github"
   GRAPH BUILD_DEPS libzmq boost
   VER ${VER}

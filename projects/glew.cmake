@@ -7,7 +7,7 @@ set(PRO_GLEW
   NAME glew
   WEB "GLEW" http://glew.sourceforge.net "GLEW on sourceforge.net"
   LICENSE "open" http://glew.sourceforge.net/credits.html "Modified BSD, Mesa 3-D (MIT), and Khronos (MIT)"
-  DESC "The OpenGL Extension Wrangler Library"
+  DESC "The OpenGL Extension Wrangler Library [cmake-patch]"
   REPO "repo" https://${REPO} "GLEW repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git

@@ -7,7 +7,7 @@ set(PRO_SQLITE
   NAME sqlite
   WEB "SQLite" https://www.sqlite.org/index.html "SQLite website"
   LICENSE "open" https://www.sqlite.org/copyright.html "Public Domain"
-  DESC "C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine"
+  DESC "C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine [cmake-patch]"
   REPO "repo" https://${REPO} "sqlite-amalgamation repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git

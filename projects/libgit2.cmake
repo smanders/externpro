@@ -7,7 +7,7 @@ set(PRO_LIBGIT2
   NAME libgit2
   WEB "libgit2" https://libgit2.github.com/ "libgit2 website"
   LICENSE "open" "https://${REPO}/blob/master/README.md#license" "GPL2 with linking exception"
-  DESC "portable, pure C implementation of the Git core methods"
+  DESC "portable, pure C implementation of the Git core methods [cmake-patch]"
   REPO "repo" https://${REPO} "libgit2 repo on github"
   GRAPH BUILD_DEPS libssh2
   VER ${VER}

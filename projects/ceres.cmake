@@ -7,7 +7,7 @@ set(PRO_CERES
   NAME ceres
   WEB "ceres-solver" http://ceres-solver.org "Ceres Solver website"
   LICENSE "open" "http://ceres-solver.org/license.html" "New BSD License"
-  DESC "C++ library for modeling and solving large, complicated optimization problems"
+  DESC "C++ library for modeling and solving large, complicated optimization problems [cmake-patch]"
   REPO "repo" https://${REPO} "ceres-solver repo on github"
   GRAPH BUILD_DEPS eigen
   VER ${VER}

@@ -7,7 +7,7 @@ set(PRO_PROTOBUF
   NAME protobuf
   WEB "protobuf" https://developers.google.com/protocol-buffers/ "Protocol Buffers website"
   LICENSE "open" https://${REPO}/blob/v${VER}/LICENSE "3-clause BSD license"
-  DESC "language-neutral, platform-neutral extensible mechanism for serializing structured data"
+  DESC "language-neutral, platform-neutral extensible mechanism for serializing structured data [cmake-patch]"
   REPO "repo" https://${REPO} "protobuf repo on github"
   GRAPH BUILD_DEPS zlib
   VER ${VER}

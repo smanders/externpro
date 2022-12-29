@@ -7,7 +7,7 @@ set(PRO_NODEJS
   NAME nodejs
   WEB "Node.js" http://nodejs.org "Node.js website"
   LICENSE "open" https://raw.githubusercontent.com/nodejs/node/v${VER}/LICENSE "MIT license"
-  DESC "platform to build scalable network applications"
+  DESC "platform to build scalable network applications [gyp]"
   REPO "repo" https://${REPO} "node repo on github"
   GRAPH GRAPH_NODE nodejs BUILD_DEPS nasm
   VER ${VER}

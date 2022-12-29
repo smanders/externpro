@@ -8,7 +8,7 @@ set(PRO_CARES
   NAME cares
   WEB "c-ares" http://c-ares.haxx.se/ "c-ares website"
   LICENSE "open" http://c-ares.haxx.se/license.html "c-ares license: MIT license"
-  DESC "C library for asynchronous DNS requests (including name resolves)"
+  DESC "C library for asynchronous DNS requests (including name resolves) [cmake-patch]"
   REPO "repo" https://${REPO} "c-ares repo on github"
   GRAPH GRAPH_LABEL "c-ares"
   VER ${VER}

@@ -7,7 +7,7 @@ set(PRO_YASM
   NAME yasm
   WEB "yasm" http://yasm.tortall.net/ "yasm website"
   LICENSE "open" https://${REPO}/blob/v${VER}/COPYING "new BSD license"
-  DESC "assembler and disassembler for the Intel x86 architecture"
+  DESC "assembler and disassembler for the Intel x86 architecture [cmake-patch]"
   REPO "repo" https://${REPO} "yasm repo on github"
   GRAPH GRAPH_SHAPE box
   VER ${VER}

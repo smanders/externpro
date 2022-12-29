@@ -7,7 +7,7 @@ set(PRO_FECPP
   NAME fecpp
   WEB "fecpp" http://www.randombit.net/code/fecpp/ "C++ forward error correction with SIMD optimizations"
   LICENSE "open" http://www.randombit.net/code/fecpp/ "BSD License"
-  DESC "fecpp is a Forward Error Correction Library"
+  DESC "fecpp is a Forward Error Correction Library [cmake-scratch]"
   REPO "repo" https://${REPO} "fecpp repo on github"
   GRAPH BUILD_DEPS boost # library test code depends on boost
   VER ${VER}

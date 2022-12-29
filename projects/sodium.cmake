@@ -8,7 +8,7 @@ set(PRO_SODIUM
   NAME sodium
   WEB "sodium" https://doc.libsodium.org/ "libsodium website"
   LICENSE "open" "https://doc.libsodium.org/#license" "ISC license"
-  DESC "library for encryption, decryption, signatures, password hashing and more"
+  DESC "library for encryption, decryption, signatures, password hashing and more [cmake-scratch]"
   REPO "repo" https://${REPO} "libsodium repo on github"
   GRAPH
   VER ${VER}

@@ -9,7 +9,7 @@ set(PRO_JPEGXP
   NAME jpegxp
   WEB "jpegxp" http://www.ijg.org/ "Independent JPEG Group website"
   LICENSE "open" https://github.com/smanders/libjpeg/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
-  DESC "JPEG codec with mods for Lossless, 12-bit lossy (XP)"
+  DESC "JPEG codec with mods for Lossless, 12-bit lossy (XP) [cmake-scratch]"
   REPO "repo" https://${REPO} "jpegxp repo on github"
   VER ${VER}
   GIT_ORIGIN https://${REPO}.git

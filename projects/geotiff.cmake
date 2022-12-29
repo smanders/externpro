@@ -8,7 +8,7 @@ set(PRO_GEOTIFF
   NAME geotiff
   WEB "geotiff" http://trac.osgeo.org/geotiff/ "GeoTIFF trac website"
   LICENSE "open" http://trac.osgeo.org/geotiff/ "trac site states it is an open source library (no specific license mentioned)"
-  DESC "georeferencing info embedded within TIFF file"
+  DESC "georeferencing info embedded within TIFF file [cmake-scratch]"
   REPO "repo" https://${REPO} "libgeotiff repo on github"
   GRAPH BUILD_DEPS wx
   VER ${VER}

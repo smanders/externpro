@@ -7,7 +7,7 @@ set(PRO_JXRLIB
   NAME jxrlib
   WEB "jxrlib" https://jxrlib.codeplex.com/ "jxrlib project hosted on CodePlex"
   LICENSE "open" https://jxrlib.codeplex.com/license "New BSD License (BSD)"
-  DESC "open source implementation of the jpegxr image format standard"
+  DESC "open source implementation of the jpegxr image format standard [cmake-scratch]"
   REPO "repo" https://${FORK} "forked jxrlib repo on github"
   VER ${VER}
   GIT_ORIGINAL_UPSTREAM https://git01.codeplex.com/jxrlib # CodePlex is shutting down!

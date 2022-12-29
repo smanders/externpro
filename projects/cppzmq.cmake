@@ -7,7 +7,7 @@ set(PRO_CPPZMQ
   NAME cppzmq
   WEB "cppzmq" https://zeromq.org/ "ZeroMQ website"
   LICENSE "open" http://wiki.zeromq.org/area:licensing "GNU LGPL plus static linking exception"
-  DESC "header-only C++ binding for libzmq"
+  DESC "header-only C++ binding for libzmq [cmake-patch]"
   REPO "repo" https://${REPO} "zeromq/cppzmq repo on github"
   GRAPH BUILD_DEPS libzmq
   VER ${VER}

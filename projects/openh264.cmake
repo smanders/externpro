@@ -7,7 +7,7 @@ set(PRO_OPENH264
   NAME openh264
   WEB "OpenH264" http://www.openh264.org/ "OpenH264 website"
   LICENSE "open" http://www.openh264.org/faq.html "Two-Clause BSD license"
-  DESC "a codec library which supports H.264 encoding and decoding"
+  DESC "a codec library which supports H.264 encoding and decoding [cmake-scratch]"
   REPO "repo" https://${REPO} "openh264 repo on github"
   GRAPH BUILD_DEPS yasm
   VER ${VER}

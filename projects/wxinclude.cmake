@@ -11,7 +11,7 @@ set(PRO_WXINCLUDE
   NAME wxinclude
   WEB "wxInclude" http://wiki.wxwidgets.org/Embedding_PNG_Images "wxInclude mentioned in this wxWiki page"
   LICENSE "open" http://wiki.wxwidgets.org/Embedding_PNG_Images "assumed wxWindows license, since source can be downloaded from wxWiki"
-  DESC "embed resources into cross-platform code"
+  DESC "embed resources into cross-platform code [cmake-scratch]"
   REPO "repo" https://${REPO} "wxInclude repo on github"
   GRAPH GRAPH_SHAPE box BUILD_DEPS boost
   VER ${VER}

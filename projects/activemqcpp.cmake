@@ -8,7 +8,7 @@ set(PRO_ACTIVEMQCPP
   NAME activemqcpp
   WEB "ActiveMQ-CPP" http://activemq.apache.org/cms/ "ActiveMQ CMS website"
   LICENSE "open" http://www.apache.org/licenses/LICENSE-2.0.html "Apache 2.0"
-  DESC "ActiveMQ C++ Messaging Service (CMS) client library"
+  DESC "ActiveMQ C++ Messaging Service (CMS) client library [cmake-scratch]"
   REPO "repo" https://${REPO} "${PROJ} repo on github"
   GRAPH BUILD_DEPS apr openssl
   VER ${VER}

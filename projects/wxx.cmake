@@ -6,7 +6,7 @@ set(PRO_WXX
   NAME wxx
   WEB "wxx" https://${REPO} "wxx project on github"
   LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
-  DESC "wxWidget-based extra components"
+  DESC "wxWidget-based extra components [cmake-scratch]"
   REPO "repo" https://${REPO} "wxx repo on github"
   GRAPH BUILD_DEPS wx
   VER 2022.04.21 # latest xpro branch commit date

@@ -7,7 +7,7 @@ set(PRO_WX
   NAME wx
   WEB "wxWidgets" http://wxwidgets.org/ "wxWidgets website"
   LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License: essentially LGPL with an exception"
-  DESC "Cross-Platform GUI Library"
+  DESC "Cross-Platform GUI Library [msw:cmake-scratch,linux:configure-make]"
   REPO "repo" https://${REPO} "wxWidgets repo on github"
   GRAPH GRAPH_NODE wx
   VER ${VER}

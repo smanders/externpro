@@ -8,7 +8,7 @@ set(PRO_CURL
   NAME curl
   WEB "cURL" http://curl.haxx.se/libcurl/ "libcurl website"
   LICENSE "open" http://curl.haxx.se/docs/copyright.html "curl license: MIT/X derivate license"
-  DESC "the multiprotocol file transfer library"
+  DESC "the multiprotocol file transfer library [cmake-patch]"
   REPO "repo" https://${REPO} "curl repo on github"
   GRAPH BUILD_DEPS libssh2 cares
   VER ${VER}

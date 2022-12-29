@@ -8,7 +8,7 @@ set(PRO_ZMQPP
   NAME zmqpp
   WEB "zmqpp" https://zeromq.github.io/zmqpp/ "zmqpp website"
   LICENSE "open" https://${REPO}/blob/develop/LICENSE "Mozilla Public License 2.0"
-  DESC "high-level binding for libzmq"
+  DESC "high-level binding for libzmq [cmake-patch]"
   REPO "repo" https://${REPO} "zeromq/zmqpp repo on github"
   GRAPH BUILD_DEPS libzmq
   VER ${VER}

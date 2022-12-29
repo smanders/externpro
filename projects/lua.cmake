@@ -7,7 +7,7 @@ set(PRO_LUA
   NAME lua
   WEB "Lua" http://www.lua.org/ "Lua website"
   LICENSE "open" http://www.lua.org/license.html "MIT license"
-  DESC "a powerful, fast, lightweight, embeddable scripting language"
+  DESC "a powerful, fast, lightweight, embeddable scripting language [cmake-patch]"
   REPO "repo" https://${REPO} "lua repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git

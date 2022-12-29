@@ -9,7 +9,7 @@ set(PRO_OPENSSL
   NAME openssl
   WEB "OpenSSL" http://www.openssl.org/ "OpenSSL website"
   LICENSE "open" http://www.openssl.org/source/license.html "OpenSSL, SSLeay License: BSD-style"
-  DESC "Cryptography and SSL/TLS Toolkit"
+  DESC "Cryptography and SSL/TLS Toolkit [cmake-scratch]"
   REPO "repo" https://${REPO} "openssl repo on github"
   GRAPH BUILD_DEPS opensslasm nasm
   VER ${VER}

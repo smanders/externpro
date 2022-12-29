@@ -7,7 +7,7 @@ set(PRO_JASPER
   NAME jasper
   WEB "JasPer" http://www.ece.uvic.ca/~frodo/jasper/ "JasPer website"
   LICENSE "open" "http://www.ece.uvic.ca/~frodo/jasper/#license" "JasPer License (based on MIT license)"
-  DESC "JPEG 2000 Part-1 codec implementation"
+  DESC "JPEG 2000 Part-1 codec implementation [cmake-scratch]"
   REPO "repo" https://${FORK} "forked jasper repo on github"
   VER ${VER}
   GIT_UPSTREAM https://${REPO}.git

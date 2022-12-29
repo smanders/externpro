@@ -7,7 +7,7 @@ set(PRO_ZLIB
   NAME zlib
   WEB "zlib" http://zlib.net/ "zlib website"
   LICENSE "open" http://zlib.net/zlib_license.html "zlib license"
-  DESC "compression library"
+  DESC "compression library [cmake-patch]"
   REPO "repo" https://${REPO} "zlib repo on github"
   GRAPH
   VER ${VER}

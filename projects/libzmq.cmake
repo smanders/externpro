@@ -7,7 +7,7 @@ set(PRO_LIBZMQ
   NAME libzmq
   WEB "libzmq" https://zeromq.org/ "ZeroMQ website"
   LICENSE "open" http://wiki.zeromq.org/area:licensing "GNU LGPL plus static linking exception"
-  DESC "high-performance asynchronous messaging library"
+  DESC "high-performance asynchronous messaging library [cmake-patch]"
   REPO "repo" https://${REPO} "zeromq/libzmq repo on github"
   GRAPH BUILD_DEPS sodium
   VER ${VER}

@@ -6,7 +6,7 @@ set(PRO_LLVM
   NAME llvm
   WEB "LLVM" http://llvm.org/ "LLVM website"
   LICENSE "open" https://releases.llvm.org/${VER}/LICENSE.TXT "Apache License v2.0 with LLVM Exceptions"
-  DESC "The LLVM Compiler Infrastructure"
+  DESC "The LLVM Compiler Infrastructure [cmake]"
   REPO "repo" https://${REPO} "llvm repo on github"
   GRAPH GRAPH_SHAPE box
   VER ${VER}
