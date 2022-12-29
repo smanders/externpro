@@ -25,20 +25,18 @@ function(build_rapidxml)
   endif()
   xpGetArgValue(${PRO_RAPIDXML} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_RAPIDXML} ARG VER VALUE VER)
-  set(LIBRARY_HDR xpro::${NAME})
-  set(LIBRARY_INCLUDEDIRS include/${NAME}_${VER})
-  configure_file(${PRO_DIR}/use/template-hdr-tgt.cmake
-    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=xpro
+    )
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  ExternalProject_Get_Property(${NAME} SOURCE_DIR)
-  ExternalProject_Add(${NAME}_bld DEPENDS ${NAME}
-    DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} CONFIGURE_COMMAND ""
-    SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${NULL_DIR} INSTALL_DIR ${NULL_DIR}
-    BUILD_COMMAND ${CMAKE_COMMAND} -E copy_directory
-      <SOURCE_DIR> ${STAGE_DIR}/${LIBRARY_INCLUDEDIRS}/${NAME}
-    INSTALL_COMMAND ""
-    )
-  set_property(TARGET ${NAME}_bld PROPERTY FOLDER ${bld_folder})
-  message(STATUS "target ${NAME}_bld")
+  set(BUILD_CONFIGS Release) # this project is only copying headers
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
 endfunction()
