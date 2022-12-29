@@ -2,12 +2,12 @@
 # xpbuild:cmake-patch
 xpProOption(rapidjson)
 set(VER 1.1.0)
-set(REPO github.com/miloyip/rapidjson)
+set(REPO github.com/Tencent/rapidjson)
 set(FORK github.com/smanders/rapidjson)
 set(PRO_RAPIDJSON
   NAME rapidjson
-  WEB "RapidJSON" http://miloyip.github.io/rapidjson/ "RapidJSON on githubio"
-  LICENSE "open" https://raw.githubusercontent.com/miloyip/rapidjson/master/license.txt "The MIT License - http://opensource.org/licenses/mit-license.php"
+  WEB "RapidJSON" http://Tencent.github.io/rapidjson/ "RapidJSON on githubio"
+  LICENSE "open" https://raw.githubusercontent.com/Tencent/rapidjson/master/license.txt "The MIT License - http://opensource.org/licenses/mit-license.php"
   DESC "C++ library for parsing and generating JSON"
   REPO "repo" https://${REPO} "rapidjson repo on github"
   VER ${VER}
@@ -19,7 +19,7 @@ set(PRO_RAPIDJSON
   DLMD5 badd12c511e081fec6c89c43a7027bce
   DLNAME rapidjson-${VER}.tar.gz
   PATCH ${PATCH_DIR}/rapidjson.patch
-  DIFF https://${FORK}/compare/miloyip:
+  DIFF https://${FORK}/compare/Tencent:
   )
 ########################################
 function(build_rapidjson)
