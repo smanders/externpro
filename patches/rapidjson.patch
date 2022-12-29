@@ -1,0 +1,111 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ceda71b1..793a2c21 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
++CMAKE_MINIMUM_REQUIRED(VERSION 2.8...3.24)
+ if(POLICY CMP0025)
+   # detect Apple's Clang
+   cmake_policy(SET CMP0025 NEW)
+@@ -11,6 +11,13 @@ SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
+ 
+ PROJECT(RapidJSON CXX)
+ 
++include(GNUInstallDirs)
++include(flags OPTIONAL)
++if(DEFINED XP_NAMESPACE)
++  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
++  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
++endif()
++
+ set(LIB_MAJOR_VERSION "1")
+ set(LIB_MINOR_VERSION "1")
+ set(LIB_PATCH_VERSION "0")
+@@ -93,19 +100,23 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+ endif()
+ 
+ #add extra search paths for libraries and includes
+-SET(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "The directory the headers are installed in")
+-SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE STRING "Directory where lib will install")
+-SET(DOC_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}" CACHE PATH "Path to the documentation")
+-
+-IF(UNIX OR CYGWIN)
+-    SET(_CMAKE_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME}")
+-ELSEIF(WIN32)
+-    SET(_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/cmake")
+-ENDIF()
+-SET(CMAKE_INSTALL_DIR "${_CMAKE_INSTALL_DIR}" CACHE PATH "The directory cmake fiels are installed in")
++SET(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}" CACHE PATH "The directory the headers are installed in")
++SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Directory where lib will install")
++SET(DOC_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/doc/${PROJECT_NAME}" CACHE PATH "Path to the documentation")
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
++endif()
++SET(CMAKE_INSTALL_DIR "${XP_INSTALL_CMAKEDIR}" CACHE PATH "The directory cmake files are installed in")
+ 
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+ 
++string(TOLOWER ${PROJECT_NAME} lib_name)
++add_library(${lib_name} INTERFACE)
++target_include_directories(${lib_name} INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
++set(targetsFile ${lib_name}-targets)
++install(TARGETS ${lib_name} EXPORT ${targetsFile})
++install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_DIR} ${nameSpace})
++
+ if(RAPIDJSON_BUILD_DOC)
+     add_subdirectory(doc)
+ endif()
+@@ -133,11 +144,13 @@ IF (UNIX OR CYGWIN)
+                   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
+                   @ONLY)
+   INSTALL (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc
++      ${XP_OPT_INSTALL}
+       DESTINATION "${LIB_INSTALL_DIR}/pkgconfig"
+       COMPONENT pkgconfig)
+ ENDIF()
+ 
+ install(FILES readme.md
++        ${XP_OPT_INSTALL}
+         DESTINATION "${DOC_INSTALL_DIR}"
+         COMPONENT doc)
+ 
+@@ -146,6 +159,7 @@ install(DIRECTORY include/rapidjson
+     COMPONENT dev)
+ 
+ install(DIRECTORY example/
++    ${XP_OPT_INSTALL}
+     DESTINATION "${DOC_INSTALL_DIR}/examples"
+     COMPONENT examples
+     # Following patterns are for excluding the intermediate/object files
+@@ -169,5 +183,6 @@ CONFIGURE_FILE(${PROJECT_NAME}ConfigVersion.cmake.in
+ INSTALL(FILES
+     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
++    ${XP_OPT_INSTALL}
+     DESTINATION "${CMAKE_INSTALL_DIR}"
+     COMPONENT dev)
+diff --git a/example/CMakeLists.txt b/example/CMakeLists.txt
+index 4d448ccc..36e0fd9d 100644
+--- a/example/CMakeLists.txt
++++ b/example/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8)
++cmake_minimum_required(VERSION 2.8...3.24)
+ 
+ if(POLICY CMP0054)
+   cmake_policy(SET CMP0054 NEW)
+diff --git a/include/rapidjson/internal/regex.h b/include/rapidjson/internal/regex.h
+index 422a5240..d4039716 100644
+--- a/include/rapidjson/internal/regex.h
++++ b/include/rapidjson/internal/regex.h
+@@ -29,6 +29,9 @@ RAPIDJSON_DIAG_OFF(implicit-fallthrough)
+ #ifdef __GNUC__
+ RAPIDJSON_DIAG_PUSH
+ RAPIDJSON_DIAG_OFF(effc++)
++#if __GNUC__ >= 7
++RAPIDJSON_DIAG_OFF(implicit-fallthrough)
++#endif
+ #endif
+ 
+ #ifdef _MSC_VER
