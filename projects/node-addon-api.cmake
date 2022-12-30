@@ -1,7 +1,9 @@
 # node-addon-api
+# xpbuild:cmake-scratch
 xpProOption(node-addon-api)
 set(VER 3.0.2)
 set(REPO github.com/nodejs/node-addon-api)
+set(FORK github.com/smanders/node-addon-api)
 set(PRO_NODE-ADDON-API
   NAME node-addon-api
   WEB "node-addon-api" https://${REPO} "node-addon-api on github"
@@ -10,11 +12,16 @@ set(PRO_NODE-ADDON-API
   REPO "repo" https://${REPO} "node-addon-api repo on github"
   GRAPH BUILD_DEPS nodejs
   VER ${VER}
-  GIT_ORIGIN https://${REPO}.git
-  GIT_TAG ${VER}
+  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM https://${REPO}.git
+  GIT_TRACKING_BRANCH main
+  GIT_TAG xp${VER} # what to 'git checkout'
+  GIT_REF ${VER} # create patch from this tag to 'git checkout'
   DLURL https://${REPO}/archive/${VER}.tar.gz
   DLMD5 020c40cbb9af791f7934fa66f87c904c
   DLNAME node-addon-api-${VER}.tar.gz
+  PATCH ${PATCH_DIR}/node-addon-api.patch
+  DIFF https://${FORK}/compare/nodejs:
   )
 ########################################
 function(build_node_addon_api)
@@ -24,26 +31,19 @@ function(build_node_addon_api)
   xpBuildDeps(depTgts ${PRO_NODE-ADDON-API})
   xpGetArgValue(${PRO_NODE-ADDON-API} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_NODE-ADDON-API} ARG VER VALUE VER)
+  set(XP_CONFIGURE
+    -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_NAMESPACE:STRING=xpro
+    )
   set(FIND_DEPS "xpFindPkg(PKGS node)\n")
-  set(LIBRARY_HDR xpro::${NAME})
-  set(LIBRARY_INCLUDEDIRS include/${NAME}_${VER})
-  set(INTERFACE_PROPERTIES "
-    INTERFACE_LINK_LIBRARIES xpro::node
-    INTERFACE_COMPILE_DEFINITIONS \"NODE_ADDON_API_DISABLE_DEPRECATED;NAPI_CPP_EXCEPTIONS\"")
-  configure_file(${PRO_DIR}/use/template-hdr-tgt.cmake
-    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  ExternalProject_Get_Property(${NAME} SOURCE_DIR)
-  set(headers ${SOURCE_DIR}/*.h)
-  ExternalProject_Add(${NAME}_bld DEPENDS ${depTgts} ${NAME}
-    DOWNLOAD_COMMAND "" DOWNLOAD_DIR ${NULL_DIR} CONFIGURE_COMMAND ""
-    SOURCE_DIR ${SOURCE_DIR} BINARY_DIR ${NULL_DIR}
-    INSTALL_DIR ${STAGE_DIR}/${LIBRARY_INCLUDEDIRS}/${NAME}
-    BUILD_COMMAND ${CMAKE_COMMAND} -Dsrc:STRING=${headers}
-      -Ddst:STRING=<INSTALL_DIR> -P ${MODULES_DIR}/cmscopyfiles.cmake
-    INSTALL_COMMAND ""
-    )
-  set_property(TARGET ${NAME}_bld PROPERTY FOLDER ${bld_folder})
-  message(STATUS "target ${NAME}_bld")
+  set(BUILD_CONFIGS Release) # this project is only copying headers
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
 endfunction()
