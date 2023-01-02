@@ -1,4 +1,5 @@
 # cares
+# xpbuild:cmake-patch
 xpProOption(cares DBG)
 set(VER 1.18.1)
 string(REPLACE "." "_" VER_ ${VER})
@@ -8,7 +9,7 @@ set(PRO_CARES
   NAME cares
   WEB "c-ares" http://c-ares.haxx.se/ "c-ares website"
   LICENSE "open" http://c-ares.haxx.se/license.html "c-ares license: MIT license"
-  DESC "C library for asynchronous DNS requests (including name resolves) [cmake-patch]"
+  DESC "C library for asynchronous DNS requests (including name resolves)"
   REPO "repo" https://${REPO} "c-ares repo on github"
   GRAPH GRAPH_LABEL "c-ares"
   VER ${VER}
@@ -42,7 +43,8 @@ function(build_cares)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES c-ares::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)

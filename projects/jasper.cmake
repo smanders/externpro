@@ -1,4 +1,5 @@
 # jasper
+# xpbuild:cmake-scratch
 xpProOption(jasper DBG)
 set(VER 1.900.1)
 set(REPO github.com/mdadams/jasper)
@@ -7,7 +8,7 @@ set(PRO_JASPER
   NAME jasper
   WEB "JasPer" http://www.ece.uvic.ca/~frodo/jasper/ "JasPer website"
   LICENSE "open" "http://www.ece.uvic.ca/~frodo/jasper/#license" "JasPer License (based on MIT license)"
-  DESC "JPEG 2000 Part-1 codec implementation [cmake-scratch]"
+  DESC "JPEG 2000 Part-1 codec implementation"
   REPO "repo" https://${FORK} "forked jasper repo on github"
   VER ${VER}
   GIT_UPSTREAM https://${REPO}.git
@@ -36,7 +37,8 @@ function(build_jasper)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::lib${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")

@@ -1,4 +1,5 @@
 # curl
+# xpbuild:cmake-patch
 set(VER 7.80.0)
 xpProOption(curl DBG)
 string(REPLACE "." "_" VER_ ${VER})
@@ -8,7 +9,7 @@ set(PRO_CURL
   NAME curl
   WEB "cURL" http://curl.haxx.se/libcurl/ "libcurl website"
   LICENSE "open" http://curl.haxx.se/docs/copyright.html "curl license: MIT/X derivate license"
-  DESC "the multiprotocol file transfer library [cmake-patch]"
+  DESC "the multiprotocol file transfer library"
   REPO "repo" https://${REPO} "curl repo on github"
   GRAPH BUILD_DEPS libssh2 cares
   VER ${VER}
@@ -48,7 +49,8 @@ function(build_curl)
   set(USE_VARS "set(${PRJ}_EXE xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}set(${PRJ}_LIBRARIES xpro::lib${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_EXE ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")

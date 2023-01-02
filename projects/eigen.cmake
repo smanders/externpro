@@ -8,7 +8,7 @@ set(PRO_EIGEN
   NAME eigen
   WEB "Eigen" http://eigen.tuxfamily.org/ "Eigen website"
   LICENSE "open" "http://eigen.tuxfamily.org/index.php?title=Main_Page#License" "Eigen license: MPL2 (aka Mozilla Public License)"
-  DESC "C++ template library for linear algebra [cmake-patch]"
+  DESC "C++ template library for linear algebra"
   REPO "repo" ${REPO} "eigen repo on gitlab"
   GRAPH
   VER ${VER}

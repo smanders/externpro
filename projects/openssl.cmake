@@ -1,4 +1,5 @@
 # openssl
+# xpbuild:cmake-scratch
 set(BRANCH 1.1.1)
 set(VER ${BRANCH}l)
 xpProOption(openssl DBG)
@@ -9,7 +10,7 @@ set(PRO_OPENSSL
   NAME openssl
   WEB "OpenSSL" http://www.openssl.org/ "OpenSSL website"
   LICENSE "open" http://www.openssl.org/source/license.html "OpenSSL, SSLeay License: BSD-style"
-  DESC "Cryptography and SSL/TLS Toolkit [cmake-scratch]"
+  DESC "Cryptography and SSL/TLS Toolkit"
   REPO "repo" https://${REPO} "openssl repo on github"
   GRAPH BUILD_DEPS opensslasm nasm
   VER ${VER}
@@ -54,7 +55,8 @@ function(build_openssl)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::crypto xpro::ssl)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}" ${NAME}Targets)

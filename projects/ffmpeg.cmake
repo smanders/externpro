@@ -35,7 +35,8 @@ function(build_ffmpeg)
   else()
     set(VER ${cfgVer})
   endif()
-  configure_file(${PRO_DIR}/use/usexp-ffmpeg-config.cmake ${STAGE_DIR}/share/cmake/
+  configure_file(${PRO_DIR}/use/usexp-ffmpeg-config.cmake
+    ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   foreach(ver ${FFMPEG_VERSIONS})

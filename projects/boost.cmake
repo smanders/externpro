@@ -1,4 +1,5 @@
 # boost
+# xpbuild:b2
 set(VER 1.76.0)
 string(REPLACE "." "_" VER_ ${VER}) # 1_76_0
 xpProOption(boost DBG)
@@ -7,7 +8,7 @@ set(PRO_BOOST
   NAME boost
   WEB "boost" http://www.boost.org/ "Boost website"
   LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
-  DESC "libraries that give C++ a boost [b2]"
+  DESC "libraries that give C++ a boost"
   REPO "repo" https://${REPO} "boost repo on github"
   GRAPH GRAPH_NODE boost
   BUILD_DEPS zlib bzip2
@@ -28,7 +29,8 @@ function(build_boost)
   xpGetArgValue(${PRO_BOOST} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_BOOST} ARG VER VALUE VER)
   set(FIND_DEPS "xpFindPkg(PKGS bzip2 zlib) # iostream dependencies\n")
-  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake ${STAGE_DIR}/share/cmake/
+  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake
+    ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   ExternalProject_Get_Property(boost SOURCE_DIR)

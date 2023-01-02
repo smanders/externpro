@@ -1,4 +1,5 @@
 # wxinclude
+# xpbuild:cmake-scratch
 # original source: http://users.skynet.be/towp/wxInclude.zip
 # referenced from: http://wiki.wxwidgets.org/Embedding_PNG_Images
 # another version: https://github.com/Forkk/MultiMC4/tree/master/src/wxinclude
@@ -11,7 +12,7 @@ set(PRO_WXINCLUDE
   NAME wxinclude
   WEB "wxInclude" http://wiki.wxwidgets.org/Embedding_PNG_Images "wxInclude mentioned in this wxWiki page"
   LICENSE "open" http://wiki.wxwidgets.org/Embedding_PNG_Images "assumed wxWindows license, since source can be downloaded from wxWiki"
-  DESC "embed resources into cross-platform code [cmake-scratch]"
+  DESC "embed resources into cross-platform code"
   REPO "repo" https://${REPO} "wxInclude repo on github"
   GRAPH GRAPH_SHAPE box BUILD_DEPS boost
   VER ${VER}
@@ -42,7 +43,8 @@ function(build_wxinclude)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_EXE xpro::wxInclude)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_EXE)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   set(BUILD_CONFIGS Release) # we only need a release executable

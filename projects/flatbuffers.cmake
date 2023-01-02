@@ -1,4 +1,5 @@
 # flatbuffers
+# xpbuild:cmake-patch
 xpProOption(flatbuffers DBG)
 set(VER 2.0.6)
 set(REPO github.com/google/flatbuffers)
@@ -7,7 +8,7 @@ set(PRO_FLATBUFFERS
   NAME flatbuffers
   WEB "flatbuffers" http://google.github.io/flatbuffers/ "FlatBuffers website"
   LICENSE "open" https://${REPO}/blob/v${VER}/LICENSE.txt "Apache license, v2"
-  DESC "efficient cross platform serialization library [cmake-patch]"
+  DESC "efficient cross platform serialization library"
   REPO "repo" https://${REPO} "flatbuffers repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
@@ -37,7 +38,8 @@ function(build_flatbuffers)
   set(TARGETS_FILE2 tgt-${NAME}/BuildFlatBuffers.cmake) # build_flatbuffers cmake func
   set(EXECUTABLE xpro::flatc)
   set(LIBRARIES xpro::flatbuffers)
-  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake ${STAGE_DIR}/share/cmake/
+  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake
+    ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")

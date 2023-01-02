@@ -1,4 +1,5 @@
 # expat
+# xpbuild:cmake-patch
 xpProOption(expat DBG)
 set(VER 2.2.5)
 string(REPLACE "." "_" VER_ ${VER})
@@ -9,7 +10,7 @@ set(PRO_EXPAT
   NAME expat
   WEB "Expat" https://libexpat.github.io "Expat website"
   LICENSE "open" https://${REPO}/blob/${TAG}/expat/COPYING "Expat License (MIT/X Consortium license)"
-  DESC "a stream-oriented XML parser library written in C [cmake-patch]"
+  DESC "a stream-oriented XML parser library written in C"
   REPO "repo" https://${REPO} "libexpat repo on github"
   GRAPH
   VER ${VER}
@@ -43,7 +44,8 @@ function(build_expat)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)

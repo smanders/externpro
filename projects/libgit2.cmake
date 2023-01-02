@@ -1,4 +1,5 @@
 # libgit2
+# xpbuild:cmake-patch
 set(VER 1.3.0)
 xpProOption(libgit2 DBG)
 set(REPO github.com/libgit2/libgit2)
@@ -7,7 +8,7 @@ set(PRO_LIBGIT2
   NAME libgit2
   WEB "libgit2" https://libgit2.github.com/ "libgit2 website"
   LICENSE "open" "https://${REPO}/blob/master/README.md#license" "GPL2 with linking exception"
-  DESC "portable, pure C implementation of the Git core methods [cmake-patch]"
+  DESC "portable, pure C implementation of the Git core methods"
   REPO "repo" https://${REPO} "libgit2 repo on github"
   GRAPH BUILD_DEPS libssh2
   VER ${VER}
@@ -50,7 +51,8 @@ function(build_libgit2)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::git2)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")

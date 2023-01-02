@@ -1,4 +1,5 @@
 # ceres
+# xpbuild:cmake-patch
 xpProOption(ceres DBG)
 set(VER 1.14.0)
 set(REPO github.com/ceres-solver/ceres-solver)
@@ -7,7 +8,7 @@ set(PRO_CERES
   NAME ceres
   WEB "ceres-solver" http://ceres-solver.org "Ceres Solver website"
   LICENSE "open" "http://ceres-solver.org/license.html" "New BSD License"
-  DESC "C++ library for modeling and solving large, complicated optimization problems [cmake-patch]"
+  DESC "C++ library for modeling and solving large, complicated optimization problems"
   REPO "repo" https://${REPO} "ceres-solver repo on github"
   GRAPH BUILD_DEPS eigen
   VER ${VER}
@@ -57,7 +58,8 @@ function(build_ceres)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")

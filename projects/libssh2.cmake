@@ -1,4 +1,5 @@
 # libssh2
+# xpbuild:cmake-patch
 set(VER 1.9.0)
 xpProOption(libssh2 DBG)
 set(REPO github.com/libssh2/libssh2)
@@ -7,7 +8,7 @@ set(PRO_LIBSSH2
   NAME libssh2
   WEB "libssh2" http://www.libssh2.org/ "libssh2 website"
   LICENSE "open" http://www.libssh2.org/license.html "BSD 3-Clause License - https://www.openhub.net/licenses/BSD-3-Clause"
-  DESC "client-side C library implementing SSH2 protocol [cmake-patch]"
+  DESC "client-side C library implementing SSH2 protocol"
   REPO "repo" https://${REPO} "libssh2 repo on github"
   GRAPH BUILD_DEPS zlib openssl
   VER ${VER}
@@ -42,7 +43,8 @@ function(build_libssh2)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}" ${NAME}Targets)

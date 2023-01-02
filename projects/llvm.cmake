@@ -1,4 +1,5 @@
 # llvm
+# xpbuild:cmake
 xpProOption(llvm)
 set(VER 11.0.0)
 set(REPO github.com/llvm/llvm-project)
@@ -6,7 +7,7 @@ set(PRO_LLVM
   NAME llvm
   WEB "LLVM" http://llvm.org/ "LLVM website"
   LICENSE "open" https://releases.llvm.org/${VER}/LICENSE.TXT "Apache License v2.0 with LLVM Exceptions"
-  DESC "The LLVM Compiler Infrastructure [cmake]"
+  DESC "The LLVM Compiler Infrastructure"
   REPO "repo" https://${REPO} "llvm repo on github"
   GRAPH GRAPH_SHAPE box
   VER ${VER}

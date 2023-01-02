@@ -1,4 +1,5 @@
 # bzip2
+# xpbuild:cmake-scratch
 xpProOption(bzip2 DBG)
 set(VER 1.0.6)
 set(REPO github.com/LuaDist/bzip2)
@@ -7,7 +8,7 @@ set(PRO_BZIP2
   NAME bzip2
   WEB "bzip2" https://en.wikipedia.org/wiki/Bzip2 "bzip2 on wikipedia"
   LICENSE "open" https://spdx.org/licenses/bzip2-1.0.6.html "bzip2 BSD-style license"
-  DESC "lossless block-sorting data compression library [cmake-scratch]"
+  DESC "lossless block-sorting data compression library"
   REPO "repo" https://${FORK} "forked bzip2 repo on github"
   GRAPH
   VER ${VER}
@@ -39,7 +40,8 @@ function(build_bzip2)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::bz2)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)

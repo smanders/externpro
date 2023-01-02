@@ -1,4 +1,5 @@
 # geotiff
+# xpbuild:cmake-scratch
 xpProOption(geotiff DBG)
 # http://packages.debian.org/sid/libgeotiff-dev
 # http://libgeotiff-dfsg.sourcearchive.com/
@@ -8,7 +9,7 @@ set(PRO_GEOTIFF
   NAME geotiff
   WEB "geotiff" http://trac.osgeo.org/geotiff/ "GeoTIFF trac website"
   LICENSE "open" http://trac.osgeo.org/geotiff/ "trac site states it is an open source library (no specific license mentioned)"
-  DESC "georeferencing info embedded within TIFF file [cmake-scratch]"
+  DESC "georeferencing info embedded within TIFF file"
   REPO "repo" https://${REPO} "libgeotiff repo on github"
   GRAPH BUILD_DEPS wx
   VER ${VER}
@@ -44,7 +45,8 @@ function(build_geotiff)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")

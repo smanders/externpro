@@ -1,4 +1,5 @@
 # wxx
+# xpbuild:cmake-scratch
 xpProOption(wxx DBG) # include wx extras
 set(REPO github.com/smanders/wxx)
 set(WXX_TARGETS wxxplotctrl wxxthings wxxtlc)
@@ -6,7 +7,7 @@ set(PRO_WXX
   NAME wxx
   WEB "wxx" https://${REPO} "wxx project on github"
   LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
-  DESC "wxWidget-based extra components [cmake-scratch]"
+  DESC "wxWidget-based extra components"
   REPO "repo" https://${REPO} "wxx repo on github"
   GRAPH BUILD_DEPS wx
   VER 2022.04.21 # latest xpro branch commit date
@@ -41,7 +42,8 @@ function(build_wxx)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES ${NAME}::plotctrl ${NAME}::things ${NAME}::tlc)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")

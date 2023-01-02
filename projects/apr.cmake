@@ -1,4 +1,5 @@
 # apr
+# xpbuild:cmake-patch
 xpProOption(apr DBG)
 set(VER 1.5.2)
 set(REPO github.com/apache/apr)
@@ -7,7 +8,7 @@ set(PRO_APR
   NAME apr
   WEB "APR" http://apr.apache.org/ "Apache Portable Runtime Project website"
   LICENSE "open" http://www.apache.org/licenses/LICENSE-2.0.html "Apache 2.0"
-  DESC "Apache Portable Runtime project [cmake-patch]"
+  DESC "Apache Portable Runtime project"
   REPO "repo" https://${REPO} "apr repo on github"
   GRAPH
   VER ${VER}
@@ -47,7 +48,8 @@ function(build_apr)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME}-1)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)

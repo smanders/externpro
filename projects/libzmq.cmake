@@ -1,4 +1,5 @@
 # libzmq
+# xpbuild:cmake-patch
 xpProOption(libzmq DBG)
 set(VER 4.3.4)
 set(REPO github.com/zeromq/libzmq)
@@ -7,7 +8,7 @@ set(PRO_LIBZMQ
   NAME libzmq
   WEB "libzmq" https://zeromq.org/ "ZeroMQ website"
   LICENSE "open" http://wiki.zeromq.org/area:licensing "GNU LGPL plus static linking exception"
-  DESC "high-performance asynchronous messaging library [cmake-patch]"
+  DESC "high-performance asynchronous messaging library"
   REPO "repo" https://${REPO} "zeromq/libzmq repo on github"
   GRAPH BUILD_DEPS sodium
   VER ${VER}
@@ -43,7 +44,8 @@ function(build_libzmq)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME}-static)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depsTgts}" "${XP_CONFIGURE}" ${NAME}Targets)

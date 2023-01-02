@@ -1,4 +1,5 @@
 # shapelib
+# xpbuild:cmake-scratch
 # http://freecode.com/projects/shapelib
 # http://packages.debian.org/sid/shapelib
 # http://shapelib.sourcearchive.com/
@@ -10,7 +11,7 @@ set(PRO_SHAPELIB
   NAME shapelib
   WEB "shapelib" http://shapelib.maptools.org/ "Shapefile C Library website"
   LICENSE "open" http://shapelib.maptools.org/license.html "MIT Style -or- LGPL"
-  DESC "reading, writing, updating ESRI Shapefiles [cmake-scratch]"
+  DESC "reading, writing, updating ESRI Shapefiles"
   REPO "repo" https://${FORK} "forked shapelib repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
@@ -39,7 +40,8 @@ function(build_shapelib)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::shape)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")

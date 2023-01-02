@@ -1,4 +1,5 @@
 # cppzmq
+# xpbuild:cmake-patch
 xpProOption(cppzmq DBG)
 set(VER 4.7.1)
 set(REPO github.com/zeromq/cppzmq)
@@ -7,7 +8,7 @@ set(PRO_CPPZMQ
   NAME cppzmq
   WEB "cppzmq" https://zeromq.org/ "ZeroMQ website"
   LICENSE "open" http://wiki.zeromq.org/area:licensing "GNU LGPL plus static linking exception"
-  DESC "header-only C++ binding for libzmq [cmake-patch]"
+  DESC "header-only C++ binding for libzmq"
   REPO "repo" https://${REPO} "zeromq/cppzmq repo on github"
   GRAPH BUILD_DEPS libzmq
   VER ${VER}
@@ -41,7 +42,8 @@ function(build_cppzmq)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME}-static)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")

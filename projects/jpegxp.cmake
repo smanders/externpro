@@ -1,4 +1,5 @@
 # jpegxp
+# xpbuild:cmake-scratch
 # http://packages.debian.org/sid/libjpeg-dev
 # http://libjpeg6b.sourcearchive.com/
 # http://libjpeg8.sourcearchive.com/
@@ -9,7 +10,7 @@ set(PRO_JPEGXP
   NAME jpegxp
   WEB "jpegxp" http://www.ijg.org/ "Independent JPEG Group website"
   LICENSE "open" https://github.com/smanders/libjpeg/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
-  DESC "JPEG codec with mods for Lossless, 12-bit lossy (XP) [cmake-scratch]"
+  DESC "JPEG codec with mods for Lossless, 12-bit lossy (XP)"
   REPO "repo" https://${REPO} "jpegxp repo on github"
   VER ${VER}
   GIT_ORIGIN https://${REPO}.git
@@ -36,7 +37,8 @@ function(build_jpegxp)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpGetArgValue(${PRO_JPEGXP} ARG SUBPRO VALUES subs)

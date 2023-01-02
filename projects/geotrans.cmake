@@ -1,4 +1,5 @@
 # geotrans
+# xpbuild:cmake-scratch
 # http://packages.debian.org/sid/geotranz
 # http://geotranz.sourcearchive.com/
 xpProOption(geotrans DBG)
@@ -10,7 +11,7 @@ set(PRO_GEOTRANS
   NAME geotrans
   WEB "GEOTRANS" http://earth-info.nga.mil/GandG/geotrans/ "GEOTRANS website"
   LICENSE "open" http://earth-info.nga.mil/GandG/geotrans/docs/MSP_GeoTrans_Terms_of_Use.pdf "GEOTRANS Terms of Use (no specific license mentioned)"
-  DESC "geographic translator (convert coordinates) [cmake-scratch]"
+  DESC "geographic translator (convert coordinates)"
   REPO "repo" https://${REPO} "geotranz repo on github"
   VER ${VER}
   GIT_ORIGIN https://${REPO}.git
@@ -65,7 +66,8 @@ function(build_geotrans)
   set(USE_VARS "${USE_VARS}get_target_property(incDir xpro::geotrans INTERFACE_INCLUDE_DIRECTORIES)\n")
   set(USE_VARS "${USE_VARS}set(${PRJ}_DATA_DIR \${incDir}/${NAME}/data)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DATA_DIR)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")

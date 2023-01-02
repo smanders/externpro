@@ -24,7 +24,8 @@ function(build_clangformat)
   set(USE_VARS "${USE_VARS}get_filename_component(XP_ROOTDIR \${XP_ROOTDIR} ABSOLUTE) # remove relative parts\n")
   set(USE_VARS "${USE_VARS}set(${PRJ}_EXE \${XP_ROOTDIR}/bin/clang-format\${CMAKE_EXECUTABLE_SUFFIX})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_EXE)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   ExternalProject_Get_Property(${llvmTgt} BINARY_DIR)

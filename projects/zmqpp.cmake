@@ -1,4 +1,5 @@
 # zmqpp
+# xpbuild:cmake-patch
 xpProOption(zmqpp DBG)
 set(VER 21.07.09)
 set(TAG ba4230d5d03d29ced9ca788e3bd1095477db08ae) # 2021.07.09 commit, head of develop branch
@@ -8,7 +9,7 @@ set(PRO_ZMQPP
   NAME zmqpp
   WEB "zmqpp" https://zeromq.github.io/zmqpp/ "zmqpp website"
   LICENSE "open" https://${REPO}/blob/develop/LICENSE "Mozilla Public License 2.0"
-  DESC "high-level binding for libzmq [cmake-patch]"
+  DESC "high-level binding for libzmq"
   REPO "repo" https://${REPO} "zeromq/zmqpp repo on github"
   GRAPH BUILD_DEPS libzmq
   VER ${VER}
@@ -43,7 +44,8 @@ function(build_zmqpp)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME}-static)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")

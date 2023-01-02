@@ -1,4 +1,5 @@
 # SQLite
+# xpbuild:cmake-patch
 xpProOption(sqlite DBG)
 set(REPO github.com/azadkuh/sqlite-amalgamation)
 set(FORK github.com/smanders/sqlite-amalgamation)
@@ -7,7 +8,7 @@ set(PRO_SQLITE
   NAME sqlite
   WEB "SQLite" https://www.sqlite.org/index.html "SQLite website"
   LICENSE "open" https://www.sqlite.org/copyright.html "Public Domain"
-  DESC "C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine [cmake-patch]"
+  DESC "C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine"
   REPO "repo" https://${REPO} "sqlite-amalgamation repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
@@ -38,7 +39,8 @@ function(build_sqlite)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::SQLite3)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")

@@ -1,4 +1,5 @@
 # nodejs
+# xpbuild:gyp
 set(VER 14.17.6)
 xpProOption(nodejs)
 set(REPO github.com/nodejs/node)
@@ -7,7 +8,7 @@ set(PRO_NODEJS
   NAME nodejs
   WEB "Node.js" http://nodejs.org "Node.js website"
   LICENSE "open" https://raw.githubusercontent.com/nodejs/node/v${VER}/LICENSE "MIT license"
-  DESC "platform to build scalable network applications [gyp]"
+  DESC "platform to build scalable network applications"
   REPO "repo" https://${REPO} "node repo on github"
   GRAPH GRAPH_NODE nodejs BUILD_DEPS nasm
   VER ${VER}
@@ -40,7 +41,8 @@ function(build_nodejs)
     endif()
   endif()
   xpGetArgValue(${PRO_NODEJS} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-node-config.cmake ${STAGE_DIR}/share/cmake/
+  configure_file(${PRO_DIR}/use/usexp-node-config.cmake
+    ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")

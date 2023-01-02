@@ -1,4 +1,5 @@
 # wirehair
+# xpbuild:cmake-patch
 xpProOption(wirehair DBG)
 set(VER 21.07.31) # upstream repo has no tags
 set(TAG 6d84fad40cbbbb29d4eb91204750ddffe0dcacfe) # 2021.07.31 commit, head of master branch
@@ -8,7 +9,7 @@ set(PRO_WIREHAIR
   NAME wirehair
   WEB "wirehair" https://${REPO} "wirehair repo on github"
   LICENSE "open" https://${REPO}/blob/master/LICENSE.txt "BSD 3-Clause New or Revised License"
-  DESC "fast and portable fountain codes in C [cmake-patch]"
+  DESC "fast and portable fountain codes in C"
   REPO "repo" https://${REPO} "wirehair repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
@@ -40,7 +41,8 @@ function(build_wirehair)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")

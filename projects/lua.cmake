@@ -1,4 +1,5 @@
 # lua
+# xpbuild:cmake-patch
 xpProOption(lua DBG)
 set(VER 5.2.3)
 set(REPO github.com/LuaDist/lua)
@@ -7,7 +8,7 @@ set(PRO_LUA
   NAME lua
   WEB "Lua" http://www.lua.org/ "Lua website"
   LICENSE "open" http://www.lua.org/license.html "MIT license"
-  DESC "a powerful, fast, lightweight, embeddable scripting language [cmake-patch]"
+  DESC "a powerful, fast, lightweight, embeddable scripting language"
   REPO "repo" https://${REPO} "lua repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
@@ -47,7 +48,8 @@ function(build_lua)
   set(USE_VARS "set(${PRJ}_EXE xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}set(${PRJ}_LIBRARIES xpro::lib${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_EXE ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")

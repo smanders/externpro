@@ -1,4 +1,5 @@
 # glew
+# xpbuild:cmake-patch
 xpProOption(glew DBG)
 set(VER 1.13.0)
 set(REPO github.com/nigels-com/glew)
@@ -7,7 +8,7 @@ set(PRO_GLEW
   NAME glew
   WEB "GLEW" http://glew.sourceforge.net "GLEW on sourceforge.net"
   LICENSE "open" http://glew.sourceforge.net/credits.html "Modified BSD, Mesa 3-D (MIT), and Khronos (MIT)"
-  DESC "The OpenGL Extension Wrangler Library [cmake-patch]"
+  DESC "The OpenGL Extension Wrangler Library"
   REPO "repo" https://${REPO} "GLEW repo on github"
   VER ${VER}
   GIT_ORIGIN https://${FORK}.git
@@ -38,7 +39,8 @@ function(build_glew)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES GLEW::glew_s) # GLEW::glewmx_s also exists\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")

@@ -1,4 +1,5 @@
 # sodium
+# xpbuild:cmake-scratch
 xpProOption(sodium DBG)
 set(VER 21.11.18)
 set(TAG aa099f5e82ae78175f9c1c48372a123cb634dd92) # 2021.11.18 commit, head of stable branch
@@ -8,7 +9,7 @@ set(PRO_SODIUM
   NAME sodium
   WEB "sodium" https://doc.libsodium.org/ "libsodium website"
   LICENSE "open" "https://doc.libsodium.org/#license" "ISC license"
-  DESC "library for encryption, decryption, signatures, password hashing and more [cmake-scratch]"
+  DESC "library for encryption, decryption, signatures, password hashing and more"
   REPO "repo" https://${REPO} "libsodium repo on github"
   GRAPH
   VER ${VER}
@@ -41,7 +42,8 @@ function(build_sodium)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)

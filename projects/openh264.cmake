@@ -1,4 +1,5 @@
 # openh264
+# xpbuild:cmake-scratch
 xpProOption(openh264 DBG)
 set(VER 1.4.0)
 set(REPO github.com/cisco/openh264)
@@ -7,7 +8,7 @@ set(PRO_OPENH264
   NAME openh264
   WEB "OpenH264" http://www.openh264.org/ "OpenH264 website"
   LICENSE "open" http://www.openh264.org/faq.html "Two-Clause BSD license"
-  DESC "a codec library which supports H.264 encoding and decoding [cmake-scratch]"
+  DESC "a codec library which supports H.264 encoding and decoding"
   REPO "repo" https://${REPO} "openh264 repo on github"
   GRAPH BUILD_DEPS yasm
   VER ${VER}
@@ -42,7 +43,8 @@ function(build_openh264)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}" ${NAME}Targets)

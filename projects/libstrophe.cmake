@@ -1,4 +1,5 @@
 # libstrophe
+# xpbuild:cmake-scratch
 xpProOption(libstrophe DBG)
 set(VER 0.9.1)
 set(REPO github.com/strophe/libstrophe)
@@ -7,7 +8,7 @@ set(PRO_LIBSTROPHE
   NAME libstrophe
   WEB "libstrophe" http://strophe.im/libstrophe/ "libstrophe website"
   LICENSE "open" "https://${REPO}/blob/${VER}/LICENSE.txt" "dual licensed under MIT and GPLv3"
-  DESC "A simple, lightweight C library for writing XMPP client [cmake-scratch]"
+  DESC "A simple, lightweight C library for writing XMPP client"
   REPO "repo" https://${REPO} "libstrophe repo on github"
   GRAPH BUILD_DEPS expat openssl
   VER ${VER}
@@ -39,7 +40,8 @@ function(build_libstrophe)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")

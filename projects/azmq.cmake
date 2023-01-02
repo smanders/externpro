@@ -1,4 +1,5 @@
 # azmq
+# xpbuild:cmake-patch
 xpProOption(azmq DBG)
 set(VER 21.12.05)
 set(TAG e0058a38976399006f535a9010d29e763b43fcd8) # 2021.12.05 commit
@@ -8,7 +9,7 @@ set(PRO_AZMQ
   NAME azmq
   WEB "azmq" https://zeromq.org/ "ZeroMQ website"
   LICENSE "open" https://${REPO}/blob/master/LICENSE-BOOST_1_0 "Boost Software License 1.0"
-  DESC "provides Boost Asio style bindings for ZeroMQ [cmake-patch]"
+  DESC "provides Boost Asio style bindings for ZeroMQ"
   REPO "repo" https://${REPO} "zeromq/azmq repo on github"
   GRAPH BUILD_DEPS libzmq boost
   VER ${VER}
@@ -41,7 +42,8 @@ function(build_azmq)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depsTgts}" "${XP_CONFIGURE}")

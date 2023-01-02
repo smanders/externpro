@@ -1,4 +1,5 @@
 # protobuf
+# xpbuild:cmake-patch
 xpProOption(protobuf DBG)
 set(VER 3.14.0)
 set(REPO github.com/protocolbuffers/protobuf)
@@ -7,7 +8,7 @@ set(PRO_PROTOBUF
   NAME protobuf
   WEB "protobuf" https://developers.google.com/protocol-buffers/ "Protocol Buffers website"
   LICENSE "open" https://${REPO}/blob/v${VER}/LICENSE "3-clause BSD license"
-  DESC "language-neutral, platform-neutral extensible mechanism for serializing structured data [cmake-patch]"
+  DESC "language-neutral, platform-neutral extensible mechanism for serializing structured data"
   REPO "repo" https://${REPO} "protobuf repo on github"
   GRAPH BUILD_DEPS zlib
   VER ${VER}
@@ -39,7 +40,8 @@ function(build_protobuf)
     )
   set(FIND_DEPS "xpFindPkg(PKGS zlib) # dependencies\n")
   set(TARGETS_FILE tgt-${NAME}/${NAME}-config.cmake)
-  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake ${STAGE_DIR}/share/cmake/
+  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake
+    ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")

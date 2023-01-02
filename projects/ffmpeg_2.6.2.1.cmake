@@ -1,4 +1,5 @@
 # ffmpeg
+# xpbuild:cmake-scratch
 set(VER ${FFMPEG_MSWVER})
 xpProOption(ffmpeg_${VER})
 set(REPO github.com/smanders/ffmpegBin)
@@ -6,7 +7,7 @@ set(PRO_FFMPEG_${VER}
   NAME ffmpeg_${VER}
   WEB "ffmpeg" https://www.ffmpeg.org/ "ffmpeg website"
   LICENSE "LGPL" https://www.ffmpeg.org/legal.html "Lesser GPL v2.1"
-  DESC "pre-built (MSW-only) complete, cross-platform solution to record, convert and stream audio and video [cmake-scratch]"
+  DESC "pre-built (MSW-only) complete, cross-platform solution to record, convert and stream audio and video"
   REPO "repo" https://${REPO} "ffmpeg binary repo on github"
   VER ${VER}
   GIT_ORIGIN https://${REPO}.git

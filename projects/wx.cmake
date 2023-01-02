@@ -1,4 +1,5 @@
 # wx
+# xpbuild:msw_cmake-scratch,linux_configure-make
 set(VER 3.1.0)
 xpProOption(wx DBG_MSVC)
 set(REPO github.com/wxWidgets/wxWidgets)
@@ -7,7 +8,7 @@ set(PRO_WX
   NAME wx
   WEB "wxWidgets" http://wxwidgets.org/ "wxWidgets website"
   LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License: essentially LGPL with an exception"
-  DESC "Cross-Platform GUI Library [msw:cmake-scratch,linux:configure-make]"
+  DESC "Cross-Platform GUI Library"
   REPO "repo" https://${REPO} "wxWidgets repo on github"
   GRAPH GRAPH_NODE wx
   VER ${VER}
@@ -84,7 +85,8 @@ function(build_wx)
   set(NAME wxwidgets)
   xpGetArgValue(${PRO_WX} ARG VER VALUE VER)
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
-  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake ${STAGE_DIR}/share/cmake/
+  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake
+    ${STAGE_DIR}/share/cmake/
     @ONLY NEWLINE_STYLE LF
     )
   string(REGEX REPLACE "([0-9])\\.([0-9])\\.([0-9])?"

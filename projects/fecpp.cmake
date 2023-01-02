@@ -1,4 +1,5 @@
 # fecpp
+# xpbuild:cmake-scratch
 xpProOption(fecpp DBG)
 set(REPO github.com/randombit/fecpp)
 set(FORK github.com/smanders/fecpp)
@@ -7,7 +8,7 @@ set(PRO_FECPP
   NAME fecpp
   WEB "fecpp" http://www.randombit.net/code/fecpp/ "C++ forward error correction with SIMD optimizations"
   LICENSE "open" http://www.randombit.net/code/fecpp/ "BSD License"
-  DESC "fecpp is a Forward Error Correction Library [cmake-scratch]"
+  DESC "fecpp is a Forward Error Correction Library"
   REPO "repo" https://${REPO} "fecpp repo on github"
   GRAPH BUILD_DEPS boost # library test code depends on boost
   VER ${VER}
@@ -38,7 +39,8 @@ function(build_fecpp)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "${depsTgts}" "${XP_CONFIGURE}")

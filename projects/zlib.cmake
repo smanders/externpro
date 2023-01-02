@@ -1,4 +1,5 @@
 # zlib
+# xpbuild:cmake-patch
 xpProOption(zlib DBG)
 set(VER 1.2.8)
 set(REPO github.com/madler/zlib)
@@ -7,7 +8,7 @@ set(PRO_ZLIB
   NAME zlib
   WEB "zlib" http://zlib.net/ "zlib website"
   LICENSE "open" http://zlib.net/zlib_license.html "zlib license"
-  DESC "compression library [cmake-patch]"
+  DESC "compression library"
   REPO "repo" https://${REPO} "zlib repo on github"
   GRAPH
   VER ${VER}
@@ -40,7 +41,8 @@ function(build_zlib)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME}static)\n")
   set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
-  configure_file(${MODULES_DIR}/usexp.cmake.in ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
