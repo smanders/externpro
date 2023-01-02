@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2bfb6d560..2bcad61c4 100644
+index 2bfb6d560..a294ddc01 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,7 +1,6 @@
@@ -11,6 +11,27 @@ index 2bfb6d560..2bcad61c4 100644
  # guard against in-source builds
  
  if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+@@ -398,8 +397,11 @@ else()
+       CACHE PATH "The directory relative to CMAKE_PREFIX_PATH where Eigen header files are installed"
+       )
+ endif()
++if(NOT DEFINED XP_INSTALL_CMAKEDIR)
++  set(XP_INSTALL_CMAKEDIR "${CMAKE_INSTALL_DATADIR}/eigen3/cmake")
++endif()
+ set(CMAKEPACKAGE_INSTALL_DIR
+-    "${CMAKE_INSTALL_DATADIR}/eigen3/cmake"
++    "${XP_INSTALL_CMAKEDIR}"
+     CACHE PATH "The directory relative to CMAKE_PREFIX_PATH where Eigen3Config.cmake is installed"
+     )
+ set(PKGCONFIG_INSTALL_DIR
+@@ -540,6 +542,7 @@ if (NOT CMAKE_VERSION VERSION_LESS 3.0)
+   target_include_directories (eigen INTERFACE
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+     $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
++    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+   )
+ 
+   # Export as title case Eigen
 diff --git a/cmake/FindAdolc.cmake b/cmake/FindAdolc.cmake
 index 937e54990..ced7d6994 100644
 --- a/cmake/FindAdolc.cmake

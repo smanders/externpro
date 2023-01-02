@@ -1,4 +1,5 @@
 # eigen
+# xpbuild:cmake-patch
 xpProOption(eigen)
 set(VER 3.3.7)
 set(REPO https://gitlab.com/libeigen/eigen)
@@ -32,11 +33,14 @@ function(build_eigen)
   set(incDir include/${NAME}_${VER})
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=${incDir}
+    -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DEIGEN_BUILD_PKGCONFIG:BOOL=OFF
     )
-  set(LIBRARY_HDR xpro::${NAME})
-  set(LIBRARY_INCLUDEDIRS "${incDir} ${incDir}/eigen3")
-  configure_file(${PRO_DIR}/use/template-hdr-tgt.cmake
+  set(TARGETS_FILE tgt-${NAME}/Eigen3Targets.cmake)
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "set(${PRJ}_LIBRARIES Eigen3::${NAME})\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
