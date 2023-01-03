@@ -4,24 +4,24 @@ xpProOption(expat DBG)
 set(VER 2.2.5)
 string(REPLACE "." "_" VER_ ${VER})
 set(TAG R_${VER_})
-set(REPO github.com/libexpat/libexpat)
-set(FORK github.com/smanders/libexpat)
+set(REPO https://github.com/libexpat/libexpat)
+set(FORK https://github.com/smanders/libexpat)
 set(PRO_EXPAT
   NAME expat
   WEB "Expat" https://libexpat.github.io "Expat website"
-  LICENSE "open" https://${REPO}/blob/${TAG}/expat/COPYING "Expat License (MIT/X Consortium license)"
+  LICENSE "open" ${REPO}/blob/${TAG}/expat/COPYING "Expat License (MIT/X Consortium license)"
   DESC "a stream-oriented XML parser library written in C"
-  REPO "repo" https://${REPO} "libexpat repo on github"
+  REPO "repo" ${REPO} "libexpat repo on github"
   GRAPH
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${TAG} # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/expat.patch
   PATCH_STRIP 2 # Strip NUM leading components from file names
-  DIFF https://${FORK}/compare/libexpat:
-  DLURL https://${REPO}/releases/download/${TAG}/expat-${VER}.tar.bz2
+  DIFF ${FORK}/compare/libexpat:
+  DLURL ${REPO}/releases/download/${TAG}/expat-${VER}.tar.bz2
   DLMD5 789e297f547980fc9ecc036f9a070d49
   DEPS_FUNC build_expat
   )

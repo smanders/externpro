@@ -2,24 +2,24 @@
 # xpbuild:cmake-patch
 xpProOption(rapidjson)
 set(VER 1.1.0)
-set(REPO github.com/Tencent/rapidjson)
-set(FORK github.com/smanders/rapidjson)
+set(REPO https://github.com/Tencent/rapidjson)
+set(FORK https://github.com/smanders/rapidjson)
 set(PRO_RAPIDJSON
   NAME rapidjson
   WEB "RapidJSON" http://Tencent.github.io/rapidjson/ "RapidJSON on githubio"
   LICENSE "open" https://raw.githubusercontent.com/Tencent/rapidjson/master/license.txt "The MIT License - http://opensource.org/licenses/mit-license.php"
   DESC "C++ library for parsing and generating JSON"
-  REPO "repo" https://${REPO} "rapidjson repo on github"
+  REPO "repo" ${REPO} "rapidjson repo on github"
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL https://${REPO}/archive/v${VER}.tar.gz
+  DLURL ${REPO}/archive/v${VER}.tar.gz
   DLMD5 badd12c511e081fec6c89c43a7027bce
   DLNAME rapidjson-${VER}.tar.gz
   PATCH ${PATCH_DIR}/rapidjson.patch
-  DIFF https://${FORK}/compare/Tencent:
+  DIFF ${FORK}/compare/Tencent:
   )
 ########################################
 function(build_rapidjson)

@@ -5,23 +5,23 @@
 # http://shapelib.sourcearchive.com/
 xpProOption(shapelib DBG)
 set(VER 1.2.10)
-set(REPO github.com/asapnet/shapelib)
-set(FORK github.com/smanders/shapelib)
+set(REPO https://github.com/asapnet/shapelib)
+set(FORK https://github.com/smanders/shapelib)
 set(PRO_SHAPELIB
   NAME shapelib
   WEB "shapelib" http://shapelib.maptools.org/ "Shapefile C Library website"
   LICENSE "open" http://shapelib.maptools.org/license.html "MIT Style -or- LGPL"
   DESC "reading, writing, updating ESRI Shapefiles"
-  REPO "repo" https://${FORK} "forked shapelib repo on github"
+  REPO "repo" ${FORK} "forked shapelib repo on github"
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://download.osgeo.org/shapelib/shapelib-${VER}.tar.gz
   DLMD5 4d96bd926167193d27bf14d56e2d484e
   PATCH ${PATCH_DIR}/shapelib.patch
-  DIFF https://${FORK}/compare/
+  DIFF ${FORK}/compare/
   )
 ########################################
 function(build_shapelib)

@@ -3,7 +3,7 @@
 xpProOption(eigen)
 set(VER 3.3.7)
 set(REPO https://gitlab.com/libeigen/eigen)
-set(FORK github.com/smanders/eigen)
+set(FORK https://github.com/smanders/eigen)
 set(PRO_EIGEN
   NAME eigen
   WEB "Eigen" http://eigen.tuxfamily.org/ "Eigen website"
@@ -12,14 +12,14 @@ set(PRO_EIGEN
   REPO "repo" ${REPO} "eigen repo on gitlab"
   GRAPH
   VER ${VER}
-  GIT_UPSTREAM ${REPO}.git
-  GIT_ORIGIN https://${FORK}.git
+  GIT_UPSTREAM ${REPO}
+  GIT_ORIGIN ${FORK}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
   DLURL ${REPO}/-/archive/${VER}/eigen-${VER}.tar.bz2
   DLMD5 b9e98a200d2455f06db9c661c5610496
   PATCH ${PATCH_DIR}/eigen.patch
-  DIFF https://${FORK}/compare/
+  DIFF ${FORK}/compare/
   DEPS_FUNC build_eigen
   DEPS_VARS EIGEN_INCDIR
   )

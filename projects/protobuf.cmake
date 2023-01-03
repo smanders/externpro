@@ -2,26 +2,26 @@
 # xpbuild:cmake-patch
 xpProOption(protobuf DBG)
 set(VER 3.14.0)
-set(REPO github.com/protocolbuffers/protobuf)
-set(FORK github.com/smanders/protobuf)
+set(REPO https://github.com/protocolbuffers/protobuf)
+set(FORK https://github.com/smanders/protobuf)
 set(PRO_PROTOBUF
   NAME protobuf
   WEB "protobuf" https://developers.google.com/protocol-buffers/ "Protocol Buffers website"
-  LICENSE "open" https://${REPO}/blob/v${VER}/LICENSE "3-clause BSD license"
+  LICENSE "open" ${REPO}/blob/v${VER}/LICENSE "3-clause BSD license"
   DESC "language-neutral, platform-neutral extensible mechanism for serializing structured data"
-  REPO "repo" https://${REPO} "protobuf repo on github"
+  REPO "repo" ${REPO} "protobuf repo on github"
   GRAPH BUILD_DEPS zlib
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TRACKING_BRANCH main
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL https://${REPO}/archive/v${VER}.tar.gz
+  DLURL ${REPO}/archive/v${VER}.tar.gz
   DLMD5 0c9d2a96f3656ba7ef3b23b533fb6170
   DLNAME protobuf-${VER}.tar.gz
   PATCH ${PATCH_DIR}/protobuf.patch
-  DIFF https://${FORK}/compare/protocolbuffers:
+  DIFF ${FORK}/compare/protocolbuffers:
   )
 ########################################
 function(build_protobuf)

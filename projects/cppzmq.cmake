@@ -2,25 +2,25 @@
 # xpbuild:cmake-patch
 xpProOption(cppzmq DBG)
 set(VER 4.7.1)
-set(REPO github.com/zeromq/cppzmq)
-set(FORK github.com/smanders/cppzmq)
+set(REPO https://github.com/zeromq/cppzmq)
+set(FORK https://github.com/smanders/cppzmq)
 set(PRO_CPPZMQ
   NAME cppzmq
   WEB "cppzmq" https://zeromq.org/ "ZeroMQ website"
   LICENSE "open" http://wiki.zeromq.org/area:licensing "GNU LGPL plus static linking exception"
   DESC "header-only C++ binding for libzmq"
-  REPO "repo" https://${REPO} "zeromq/cppzmq repo on github"
+  REPO "repo" ${REPO} "zeromq/cppzmq repo on github"
   GRAPH BUILD_DEPS libzmq
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL https://${REPO}/archive/v${VER}.tar.gz
+  DLURL ${REPO}/archive/v${VER}.tar.gz
   DLMD5 e85cf23b5aed263c2c5c89657737d107
   DLNAME cppzmq-${VER}.tar.gz
   PATCH ${PATCH_DIR}/cppzmq.patch
-  DIFF https://${FORK}/compare/zeromq:
+  DIFF ${FORK}/compare/zeromq:
   )
 ########################################
 function(build_cppzmq)

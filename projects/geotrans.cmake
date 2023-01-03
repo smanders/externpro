@@ -4,7 +4,7 @@
 # http://geotranz.sourcearchive.com/
 xpProOption(geotrans DBG)
 set(VER 2.4.2)
-set(REPO github.com/smanders/geotranz)
+set(REPO https://github.com/smanders/geotranz)
 set(DLCSV https://download.osgeo.org/geotiff/tables)
 set(DLDIR data)
 set(PRO_GEOTRANS
@@ -12,14 +12,14 @@ set(PRO_GEOTRANS
   WEB "GEOTRANS" http://earth-info.nga.mil/GandG/geotrans/ "GEOTRANS website"
   LICENSE "open" http://earth-info.nga.mil/GandG/geotrans/docs/MSP_GeoTrans_Terms_of_Use.pdf "GEOTRANS Terms of Use (no specific license mentioned)"
   DESC "geographic translator (convert coordinates)"
-  REPO "repo" https://${REPO} "geotranz repo on github"
+  REPO "repo" ${REPO} "geotranz repo on github"
   VER ${VER}
-  GIT_ORIGIN https://${REPO}.git
+  GIT_ORIGIN ${REPO}
   GIT_TRACKING_BRANCH xp2.4.2 # not master, to avoid Git-LFS bandwidth
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/geotrans.patch
-  DIFF https://${REPO}/compare/
+  DIFF ${REPO}/compare/
   DLURL https://github.com/smanders/externpro/releases/download/18.04.1/geotranz_${VER}.orig.tar.gz
   DLMD5 1d370d5b0daed2a541a9aa14bd3172a8
   DLMD5_01 48cffaef0651db24c43b8afaee7fbeaf DLDIR_01 ${DLDIR} DLURL_01 ${DLCSV}/README

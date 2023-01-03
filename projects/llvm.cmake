@@ -2,18 +2,18 @@
 # xpbuild:cmake
 xpProOption(llvm)
 set(VER 11.0.0)
-set(REPO github.com/llvm/llvm-project)
+set(REPO https://github.com/llvm/llvm-project)
 set(PRO_LLVM
   NAME llvm
   WEB "LLVM" http://llvm.org/ "LLVM website"
   LICENSE "open" https://releases.llvm.org/${VER}/LICENSE.TXT "Apache License v2.0 with LLVM Exceptions"
   DESC "The LLVM Compiler Infrastructure"
-  REPO "repo" https://${REPO} "llvm repo on github"
+  REPO "repo" ${REPO} "llvm repo on github"
   GRAPH GRAPH_SHAPE box
   VER ${VER}
-  GIT_ORIGIN https://${REPO}.git
+  GIT_ORIGIN ${REPO}
   GIT_TAG llvmorg-${VER}
-  DLURL https://${REPO}/releases/download/llvmorg-${VER}/llvm-${VER}.src.tar.xz
+  DLURL ${REPO}/releases/download/llvmorg-${VER}/llvm-${VER}.src.tar.xz
   DLMD5 85844102335b2e01b3c64b6734fb56f2
   SUBPRO clang
   )

@@ -2,25 +2,25 @@
 # xpbuild:cmake-patch
 xpProOption(ceres DBG)
 set(VER 1.14.0)
-set(REPO github.com/ceres-solver/ceres-solver)
-set(FORK github.com/smanders/ceres-solver)
+set(REPO https://github.com/ceres-solver/ceres-solver)
+set(FORK https://github.com/smanders/ceres-solver)
 set(PRO_CERES
   NAME ceres
   WEB "ceres-solver" http://ceres-solver.org "Ceres Solver website"
   LICENSE "open" "http://ceres-solver.org/license.html" "New BSD License"
   DESC "C++ library for modeling and solving large, complicated optimization problems"
-  REPO "repo" https://${REPO} "ceres-solver repo on github"
+  REPO "repo" ${REPO} "ceres-solver repo on github"
   GRAPH BUILD_DEPS eigen
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
-  PATCH ${PATCH_DIR}/ceres.patch
-  DIFF https://${FORK}/compare/ceres-solver:
-  DLURL https://${REPO}/archive/${VER}.tar.gz
+  DLURL ${REPO}/archive/${VER}.tar.gz
   DLMD5 c3a63fa496468cbe65536f1f34c5609b
   DLNAME ceres-solver-${VER}.tar.gz
+  PATCH ${PATCH_DIR}/ceres.patch
+  DIFF ${FORK}/compare/ceres-solver:
   )
 ########################################
 function(build_ceres)

@@ -2,24 +2,24 @@
 # xpbuild:cmake-patch
 xpProOption(flatbuffers DBG)
 set(VER 2.0.6)
-set(REPO github.com/google/flatbuffers)
-set(FORK github.com/smanders/flatbuffers)
+set(REPO https://github.com/google/flatbuffers)
+set(FORK https://github.com/smanders/flatbuffers)
 set(PRO_FLATBUFFERS
   NAME flatbuffers
   WEB "flatbuffers" http://google.github.io/flatbuffers/ "FlatBuffers website"
-  LICENSE "open" https://${REPO}/blob/v${VER}/LICENSE.txt "Apache license, v2"
+  LICENSE "open" ${REPO}/blob/v${VER}/LICENSE.txt "Apache license, v2"
   DESC "efficient cross platform serialization library"
-  REPO "repo" https://${REPO} "flatbuffers repo on github"
+  REPO "repo" ${REPO} "flatbuffers repo on github"
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL https://${REPO}/archive/v${VER}.tar.gz
+  DLURL ${REPO}/archive/v${VER}.tar.gz
   DLMD5 231d9070d4b58ed91da539815543e07f
   DLNAME flatbuffers-${VER}.tar.gz
   PATCH ${PATCH_DIR}/flatbuffers.patch
-  DIFF https://${FORK}/compare/google:
+  DIFF ${FORK}/compare/google:
   )
 ########################################
 function(build_flatbuffers)

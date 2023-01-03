@@ -4,25 +4,25 @@ set(BRANCH 1.1.1)
 set(VER ${BRANCH}l)
 xpProOption(openssl DBG)
 string(REPLACE "." "_" VER_ ${VER})
-set(REPO github.com/openssl/openssl)
-set(FORK github.com/smanders/openssl)
+set(REPO https://github.com/openssl/openssl)
+set(FORK https://github.com/smanders/openssl)
 set(PRO_OPENSSL
   NAME openssl
   WEB "OpenSSL" http://www.openssl.org/ "OpenSSL website"
   LICENSE "open" http://www.openssl.org/source/license.html "OpenSSL, SSLeay License: BSD-style"
   DESC "Cryptography and SSL/TLS Toolkit"
-  REPO "repo" https://${REPO} "openssl repo on github"
+  REPO "repo" ${REPO} "openssl repo on github"
   GRAPH BUILD_DEPS opensslasm nasm
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp_${VER_} # what to 'git checkout'
   GIT_REF OpenSSL_${VER_} # create patch from this tag to 'git checkout'
   #DLURL https://www.openssl.org/source/old/${BRANCH}/openssl-${VER}.tar.gz
   DLURL https://www.openssl.org/source/openssl-${VER}.tar.gz
   DLMD5 ac0d4387f3ba0ad741b0580dd45f6ff3
   PATCH ${PATCH_DIR}/openssl.patch
-  DIFF https://${FORK}/compare/openssl:
+  DIFF ${FORK}/compare/openssl:
   DEPS_FUNC build_openssl
   SUBPRO opensslasm
   )

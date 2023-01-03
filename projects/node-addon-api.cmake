@@ -2,26 +2,26 @@
 # xpbuild:cmake-scratch
 xpProOption(node-addon-api)
 set(VER 3.0.2)
-set(REPO github.com/nodejs/node-addon-api)
-set(FORK github.com/smanders/node-addon-api)
+set(REPO https://github.com/nodejs/node-addon-api)
+set(FORK https://github.com/smanders/node-addon-api)
 set(PRO_NODE-ADDON-API
   NAME node-addon-api
-  WEB "node-addon-api" https://${REPO} "node-addon-api on github"
-  LICENSE "open" https://${REPO}/blob/${VER}/LICENSE.md "The MIT License - http://opensource.org/licenses/mit-license.php"
+  WEB "node-addon-api" ${REPO} "node-addon-api on github"
+  LICENSE "open" ${REPO}/blob/${VER}/LICENSE.md "The MIT License - http://opensource.org/licenses/mit-license.php"
   DESC "Module for using N-API from C++"
-  REPO "repo" https://${REPO} "node-addon-api repo on github"
+  REPO "repo" ${REPO} "node-addon-api repo on github"
   GRAPH BUILD_DEPS nodejs
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TRACKING_BRANCH main
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
-  DLURL https://${REPO}/archive/${VER}.tar.gz
+  DLURL ${REPO}/archive/${VER}.tar.gz
   DLMD5 020c40cbb9af791f7934fa66f87c904c
   DLNAME node-addon-api-${VER}.tar.gz
   PATCH ${PATCH_DIR}/node-addon-api.patch
-  DIFF https://${FORK}/compare/nodejs:
+  DIFF ${FORK}/compare/nodejs:
   )
 ########################################
 function(build_node_addon_api)

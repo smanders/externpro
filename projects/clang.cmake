@@ -10,6 +10,6 @@ set(PRO_CLANG
   DESC "clang: a C language family frontend for LLVM"
   GRAPH GRAPH_SHAPE box BUILD_DEPS llvm
   VER ${llvmVer}
-  DLURL https://${REPO}/releases/download/llvmorg-${llvmVer}/clang-${llvmVer}.src.tar.xz
+  DLURL ${REPO}/releases/download/llvmorg-${llvmVer}/clang-${llvmVer}.src.tar.xz
   DLMD5 d8fbc5b1d27f44922cfbbf199d0bab78
   )

@@ -2,24 +2,24 @@
 # xpbuild:msw_cmake-scratch,linux_configure-make
 set(VER 3.1.0)
 xpProOption(wx DBG_MSVC)
-set(REPO github.com/wxWidgets/wxWidgets)
-set(FORK github.com/smanders/wxWidgets)
+set(REPO https://github.com/wxWidgets/wxWidgets)
+set(FORK https://github.com/smanders/wxWidgets)
 set(PRO_WX
   NAME wx
   WEB "wxWidgets" http://wxwidgets.org/ "wxWidgets website"
   LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License: essentially LGPL with an exception"
   DESC "Cross-Platform GUI Library"
-  REPO "repo" https://${REPO} "wxWidgets repo on github"
+  REPO "repo" ${REPO} "wxWidgets repo on github"
   GRAPH GRAPH_NODE wx
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER}_220421 # patch from REF to TAG
-  DLURL https://${REPO}/releases/download/v${VER}/wxWidgets-${VER}.tar.bz2
+  DLURL ${REPO}/releases/download/v${VER}/wxWidgets-${VER}.tar.bz2
   DLMD5 e20c14bb9bf5d4ec0979a3cd7510dece
   PATCH ${PATCH_DIR}/wx.patch
-  DIFF https://${FORK}/compare/
+  DIFF ${FORK}/compare/
   DEPS_FUNC build_wx
   DEPS_VARS WX_INCDIR WX_SRCDIR
   SUBPRO wxcmake

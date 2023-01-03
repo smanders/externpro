@@ -1,21 +1,21 @@
 # wxx
 # xpbuild:cmake-scratch
 xpProOption(wxx DBG) # include wx extras
-set(REPO github.com/smanders/wxx)
+set(REPO https://github.com/smanders/wxx)
 set(WXX_TARGETS wxxplotctrl wxxthings wxxtlc)
 set(PRO_WXX
   NAME wxx
-  WEB "wxx" https://${REPO} "wxx project on github"
+  WEB "wxx" ${REPO} "wxx project on github"
   LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
   DESC "wxWidget-based extra components"
-  REPO "repo" https://${REPO} "wxx repo on github"
+  REPO "repo" ${REPO} "wxx repo on github"
   GRAPH BUILD_DEPS wx
   VER 2022.04.21 # latest xpro branch commit date
-  GIT_ORIGIN https://${REPO}.git
+  GIT_ORIGIN ${REPO}
   GIT_TAG xpro # what to 'git checkout'
   GIT_REF wxx.02 # create patch from this tag to 'git checkout'
   PATCH ${PATCH_DIR}/wxx.xpro.patch
-  DIFF https://${REPO}/compare/
+  DIFF ${REPO}/compare/
   SUBPRO ${WXX_TARGETS}
   )
 ########################################

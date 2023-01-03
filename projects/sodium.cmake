@@ -3,25 +3,25 @@
 xpProOption(sodium DBG)
 set(VER 21.11.18)
 set(TAG aa099f5e82ae78175f9c1c48372a123cb634dd92) # 2021.11.18 commit, head of stable branch
-set(REPO github.com/jedisct1/libsodium)
-set(FORK github.com/smanders/libsodium)
+set(REPO https://github.com/jedisct1/libsodium)
+set(FORK https://github.com/smanders/libsodium)
 set(PRO_SODIUM
   NAME sodium
   WEB "sodium" https://doc.libsodium.org/ "libsodium website"
   LICENSE "open" "https://doc.libsodium.org/#license" "ISC license"
   DESC "library for encryption, decryption, signatures, password hashing and more"
-  REPO "repo" https://${REPO} "libsodium repo on github"
+  REPO "repo" ${REPO} "libsodium repo on github"
   GRAPH
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${TAG} # create patch from this tag to 'git checkout'
-  DLURL https://${REPO}/archive/${TAG}.tar.gz
+  DLURL ${REPO}/archive/${TAG}.tar.gz
   DLMD5 44dc8965223c87b10321d18a15616d8f
   DLNAME libsodium-${VER}.tar.gz
   PATCH ${PATCH_DIR}/sodium.patch
-  DIFF https://${FORK}/compare/jedisct1:
+  DIFF ${FORK}/compare/jedisct1:
   DEPS_FUNC build_sodium
   )
 ########################################

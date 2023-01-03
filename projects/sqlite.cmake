@@ -1,25 +1,25 @@
 # SQLite
 # xpbuild:cmake-patch
 xpProOption(sqlite DBG)
-set(REPO github.com/azadkuh/sqlite-amalgamation)
-set(FORK github.com/smanders/sqlite-amalgamation)
+set(REPO https://github.com/azadkuh/sqlite-amalgamation)
+set(FORK https://github.com/smanders/sqlite-amalgamation)
 set(VER 3.37.2)
 set(PRO_SQLITE
   NAME sqlite
   WEB "SQLite" https://www.sqlite.org/index.html "SQLite website"
   LICENSE "open" https://www.sqlite.org/copyright.html "Public Domain"
   DESC "C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine"
-  REPO "repo" https://${REPO} "sqlite-amalgamation repo on github"
+  REPO "repo" ${REPO} "sqlite-amalgamation repo on github"
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
-  DLURL https://${REPO}/archive/${VER}.tar.gz
+  DLURL ${REPO}/archive/${VER}.tar.gz
   DLMD5 3c0ea08d0fdadb8927d536a50a3967aa
   DLNAME sqlite-${VER}.tar.gz
   PATCH ${PATCH_DIR}/sqlite.patch
-  DIFF https://${FORK}/compare/
+  DIFF ${FORK}/compare/
   )
 ########################################
 function(build_sqlite)

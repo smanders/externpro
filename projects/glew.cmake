@@ -2,23 +2,23 @@
 # xpbuild:cmake-patch
 xpProOption(glew DBG)
 set(VER 1.13.0)
-set(REPO github.com/nigels-com/glew)
-set(FORK github.com/smanders/glew)
+set(REPO https://github.com/nigels-com/glew)
+set(FORK https://github.com/smanders/glew)
 set(PRO_GLEW
   NAME glew
   WEB "GLEW" http://glew.sourceforge.net "GLEW on sourceforge.net"
   LICENSE "open" http://glew.sourceforge.net/credits.html "Modified BSD, Mesa 3-D (MIT), and Khronos (MIT)"
   DESC "The OpenGL Extension Wrangler Library"
-  REPO "repo" https://${REPO} "GLEW repo on github"
+  REPO "repo" ${REPO} "GLEW repo on github"
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp-${VER}
   GIT_REF glew-${VER}
   DLURL https://downloads.sourceforge.net/project/glew/glew/${VER}/glew-${VER}.tgz
   DLMD5 7cbada3166d2aadfc4169c4283701066
   PATCH ${PATCH_DIR}/glew.patch
-  DIFF https://${FORK}/compare/nigels-com:
+  DIFF ${FORK}/compare/nigels-com:
   )
 ########################################
 function(build_glew)

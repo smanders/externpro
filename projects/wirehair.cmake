@@ -3,24 +3,24 @@
 xpProOption(wirehair DBG)
 set(VER 21.07.31) # upstream repo has no tags
 set(TAG 6d84fad40cbbbb29d4eb91204750ddffe0dcacfe) # 2021.07.31 commit, head of master branch
-set(REPO github.com/catid/wirehair)
-set(FORK github.com/smanders/wirehair)
+set(REPO https://github.com/catid/wirehair)
+set(FORK https://github.com/smanders/wirehair)
 set(PRO_WIREHAIR
   NAME wirehair
-  WEB "wirehair" https://${REPO} "wirehair repo on github"
-  LICENSE "open" https://${REPO}/blob/master/LICENSE.txt "BSD 3-Clause New or Revised License"
+  WEB "wirehair" ${REPO} "wirehair repo on github"
+  LICENSE "open" ${REPO}/blob/master/LICENSE.txt "BSD 3-Clause New or Revised License"
   DESC "fast and portable fountain codes in C"
-  REPO "repo" https://${REPO} "wirehair repo on github"
+  REPO "repo" ${REPO} "wirehair repo on github"
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${TAG} # create patch from this tag to 'git checkout'
-  DLURL https://${REPO}/archive/${TAG}.tar.gz
+  DLURL ${REPO}/archive/${TAG}.tar.gz
   DLMD5 1c2c8d59ed98c4a4dc3fb93f5d03b70f
   DLNAME wirehair-${VER}.tar.gz
   PATCH ${PATCH_DIR}/wirehair.patch
-  DIFF https://${FORK}/compare/catid:
+  DIFF ${FORK}/compare/catid:
   )
 ########################################
 function(build_wirehair)

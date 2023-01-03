@@ -7,23 +7,23 @@
 # -- according to the discussion here: http://forums.wxwidgets.org/viewtopic.php?f=1&t=37288
 xpProOption(wxinclude)
 set(VER 1.0)
-set(REPO github.com/smanders/wxInclude)
+set(REPO https://github.com/smanders/wxInclude)
 set(PRO_WXINCLUDE
   NAME wxinclude
   WEB "wxInclude" http://wiki.wxwidgets.org/Embedding_PNG_Images "wxInclude mentioned in this wxWiki page"
   LICENSE "open" http://wiki.wxwidgets.org/Embedding_PNG_Images "assumed wxWindows license, since source can be downloaded from wxWiki"
   DESC "embed resources into cross-platform code"
-  REPO "repo" https://${REPO} "wxInclude repo on github"
+  REPO "repo" ${REPO} "wxInclude repo on github"
   GRAPH GRAPH_SHAPE box BUILD_DEPS boost
   VER ${VER}
-  GIT_ORIGIN https://${REPO}.git
+  GIT_ORIGIN ${REPO}
   GIT_TAG rel # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
-  DLURL https://${REPO}/archive/v${VER}.tar.gz
+  DLURL ${REPO}/archive/v${VER}.tar.gz
   DLMD5 d4e482e18589df5eb05b862583e802fa
   DLNAME wxinclude-v${VER}.tar.gz
   PATCH ${PATCH_DIR}/wxInclude.patch
-  DIFF https://${REPO}/compare/
+  DIFF ${REPO}/compare/
   )
 ########################################
 function(build_wxinclude)

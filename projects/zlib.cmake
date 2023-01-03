@@ -2,24 +2,24 @@
 # xpbuild:cmake-patch
 xpProOption(zlib DBG)
 set(VER 1.2.8)
-set(REPO github.com/madler/zlib)
-set(FORK github.com/smanders/zlib)
+set(REPO https://github.com/madler/zlib)
+set(FORK https://github.com/smanders/zlib)
 set(PRO_ZLIB
   NAME zlib
   WEB "zlib" http://zlib.net/ "zlib website"
   LICENSE "open" http://zlib.net/zlib_license.html "zlib license"
   DESC "compression library"
-  REPO "repo" https://${REPO} "zlib repo on github"
+  REPO "repo" ${REPO} "zlib repo on github"
   GRAPH
   VER ${VER}
-  GIT_ORIGIN https://${FORK}.git
-  GIT_UPSTREAM https://${REPO}.git
+  GIT_ORIGIN ${FORK}
+  GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF v${VER} # create patch from this tag to 'git checkout'
   DLURL http://zlib.net/fossils/zlib-${VER}.tar.gz
   DLMD5 44d667c142d7cda120332623eab69f40
   PATCH ${PATCH_DIR}/zlib.patch
-  DIFF https://${FORK}/compare/madler:
+  DIFF ${FORK}/compare/madler:
   DEPS_FUNC build_zlib
   )
 ########################################
