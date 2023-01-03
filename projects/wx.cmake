@@ -85,8 +85,18 @@ function(build_wx)
   set(NAME wxwidgets)
   xpGetArgValue(${PRO_WX} ARG VER VALUE VER)
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
-  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake
-    ${STAGE_DIR}/share/cmake/
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "# http://docs.wxwidgets.org/trunk/page_libs.html\n")
+  set(USE_VARS "${USE_VARS}# TRICKY: reverse dependency order (base should be last)\n")
+  set(USE_VARS "${USE_VARS}set(wx_all_libs aui propgrid richtext adv gl html core net xml base)\n")
+  set(USE_VARS "${USE_VARS}if(NOT DEFINED wx_libs)\n")
+  set(USE_VARS "${USE_VARS}  set(wx_libs \${wx_all_libs})\n")
+  set(USE_VARS "${USE_VARS}endif()\n")
+  set(USE_VARS "${USE_VARS}set(${PRJ}_LIBRARIES wx_libs)\n")
+  set(USE_VARS "${USE_VARS}list(TRANSFORM ${PRJ}_LIBRARIES PREPEND wx::) # prepend NAMESPACE\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   string(REGEX REPLACE "([0-9])\\.([0-9])\\.([0-9])?"
