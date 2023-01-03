@@ -1,17 +1,3 @@
-# FLATBUFFERS_VER - flatbuffers version
-# FLATBUFFERS_LIBRARIES - the flatbuffers libraries
-# FLATBUFFERS_FLATC_EXECUTABLE - the flatbuffers compiler executable
-string(TOUPPER @NAME@ PRJ)
-set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
-include(${CMAKE_CURRENT_LIST_DIR}/@TARGETS_FILE@)
-include(${CMAKE_CURRENT_LIST_DIR}/@TARGETS_FILE2@)
-set(${PRJ}_FLATC_EXECUTABLE @EXECUTABLE@)
-set(${PRJ}_LIBRARIES @LIBRARIES@)
-set(reqVars ${PRJ}_VER ${PRJ}_FLATC_EXECUTABLE ${PRJ}_LIBRARIES)
-include(FindPackageHandleStandardArgs)
-set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
-find_package_handle_standard_args(@NAME@ REQUIRED_VARS ${reqVars})
-mark_as_advanced(${reqVars})
 function(xpFlatBuffersBuild)
   set(options PUBLIC_INCLUDES)
   set(oneValueArgs TARGET CUSTOM_TARGET_NAME GENERATED_INCLUDES_DIR BINARY_SCHEMAS_DIR COPY_TEXT_SCHEMAS_DIR)
@@ -41,6 +27,7 @@ function(xpFlatBuffersBuild)
     target_include_directories(${P_TARGET} ${scope} ${P_GENERATED_INCLUDES_DIR})
   endif()
 endfunction()
+
 function(xpFlatBuffersBuildTS)
   set(oneValueArgs OUTPUT_DIR TARGET)
   set(multiValueArgs SCHEMAS)

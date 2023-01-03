@@ -35,11 +35,14 @@ function(build_flatbuffers)
     -DXP_NAMESPACE:STRING=xpro
     )
   set(TARGETS_FILE tgt-${NAME}/FlatbuffersConfig.cmake)
-  set(TARGETS_FILE2 tgt-${NAME}/BuildFlatBuffers.cmake) # build_flatbuffers cmake func
-  set(EXECUTABLE xpro::flatc)
-  set(LIBRARIES xpro::flatbuffers)
-  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake
-    ${STAGE_DIR}/share/cmake/
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "include(\${CMAKE_CURRENT_LIST_DIR}/tgt-${NAME}/BuildFlatBuffers.cmake) # build_flatbuffers cmake func\n")
+  set(USE_VARS "${USE_VARS}include(\${CMAKE_CURRENT_LIST_DIR}/xpflatbuffers.cmake) # xpFlatBuffersBuild[TS] cmake funcs\n")
+  set(USE_VARS "${USE_VARS}set(${PRJ}_FLATC_EXECUTABLE xpro::flatc)\n")
+  set(USE_VARS "${USE_VARS}set(${PRJ}_LIBRARIES xpro::flatbuffers)\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_FLATC_EXECUTABLE ${PRJ}_LIBRARIES)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
