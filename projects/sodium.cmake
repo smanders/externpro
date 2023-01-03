@@ -37,7 +37,9 @@ function(build_sodium)
     -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
     )
-  set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\nfind_package(Threads REQUIRED) # ${NAME} depends on Threads::Threads\n")
+  set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\n")
+  set(FIND_DEPS "${FIND_DEPS}find_package(Threads REQUIRED)")
+  set(FIND_DEPS "${FIND_DEPS} # ${NAME} depends on Threads::Threads\n")
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")

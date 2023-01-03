@@ -50,7 +50,9 @@ function(build_openssl)
     -DXP_NAMESPACE:STRING=xpro
     ${NASM_EXE}
     )
-  set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\nfind_package(Threads REQUIRED) # crypto depends on Threads::Threads\n")
+  set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\n")
+  set(FIND_DEPS "${FIND_DEPS}find_package(Threads REQUIRED)")
+  set(FIND_DEPS "${FIND_DEPS} # crypto depends on Threads::Threads\n")
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::crypto xpro::ssl)\n")
