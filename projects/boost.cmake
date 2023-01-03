@@ -29,8 +29,13 @@ function(build_boost)
   xpGetArgValue(${PRO_BOOST} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_BOOST} ARG VER VALUE VER)
   set(FIND_DEPS "xpFindPkg(PKGS bzip2 zlib) # iostream dependencies\n")
-  configure_file(${PRO_DIR}/use/usexp-${NAME}-config.cmake
-    ${STAGE_DIR}/share/cmake/
+  set(FIND_DEPS "${FIND_DEPS}set(boostVer ${VER}) # for xpboost.cmake\n")
+  set(TARGETS_FILE xpboost.cmake)
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "set(${PRJ}_LIBRARIES \${Boost_LIBRARIES}) # from xpboost.cmake\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   ExternalProject_Get_Property(boost SOURCE_DIR)

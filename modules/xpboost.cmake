@@ -1,13 +1,11 @@
-string(TOUPPER @NAME@ PRJ)
-set(${PRJ}_VER "@VER@ [@PROJECT_NAME@]")
-@FIND_DEPS@# see BoostConfig.cmake for details on the following variables
+# see BoostConfig.cmake for details on the following variables
 set(Boost_FIND_QUIETLY TRUE)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME ON)
 #set(Boost_VERBOSE TRUE) # enable verbose output of BoostConfig.cmake
 #set(Boost_DEBUG TRUE) # enable debug (even more verbose) output of BoostConfig.cmake
-find_package(Boost @VER@ REQUIRED ALL PATHS ${CMAKE_CURRENT_LIST_DIR}/tgt-boost/Boost-@VER@ NO_DEFAULT_PATH)
+find_package(Boost ${boostVer} REQUIRED ALL PATHS ${CMAKE_CURRENT_LIST_DIR}/tgt-boost/Boost-${boostVer} NO_DEFAULT_PATH)
 mark_as_advanced(Boost_DIR)
 if(UNIX)
   include(CheckLibraryExists)
@@ -30,9 +28,3 @@ if(UNIX)
     set_target_properties(Boost::headers PROPERTIES INTERFACE_LINK_LIBRARIES "${libs}")
   endif()
 endif()
-set(${PRJ}_LIBRARIES ${Boost_LIBRARIES})
-set(reqVars ${PRJ}_VER ${PRJ}_LIBRARIES)
-include(FindPackageHandleStandardArgs)
-set(FPHSA_NAME_MISMATCHED TRUE) # find_package_handle_standard_args NAME_MISMATCHED (prefix usexp-)
-find_package_handle_standard_args(@NAME@ REQUIRED_VARS ${reqVars})
-mark_as_advanced(${reqVars})
