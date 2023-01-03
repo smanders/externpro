@@ -2,7 +2,7 @@
 # xpbuild:cmake-patch
 xpProOption(eigen)
 set(VER 3.3.7)
-set(REPO https://gitlab.com/libeigen/eigen)
+set(REPO https://gitlab.com/libeigen/eigen.git)
 set(FORK https://github.com/smanders/eigen)
 set(PRO_EIGEN
   NAME eigen
