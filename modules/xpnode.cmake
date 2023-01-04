@@ -15,6 +15,10 @@ else()
     add_library(xpro::node INTERFACE IMPORTED)
   endif()
 endif()
+set(incDirs
+  ${XP_ROOTDIR}/include/node_${nodeVer}
+  ${XP_ROOTDIR}/include/node_${nodeVer}/node
+  )
 set_target_properties(xpro::node PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${XP_ROOTDIR}/include/node_${nodeVer};${XP_ROOTDIR}/include/node_${nodeVer}/node)"
+  INTERFACE_INCLUDE_DIRECTORIES "${incDirs}"
   )
