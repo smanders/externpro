@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dd3d8eb9..94c3d492 100644
+index dd3d8eb9..08894734 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,12 +1,7 @@
@@ -119,7 +119,7 @@ index dd3d8eb9..94c3d492 100644
  
    if(NOT ZMQ_BUILD_FRAMEWORK)
 -    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${readme}.txt DESTINATION share/zmq)
-+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${readme}.txt DESTINATION ${CMAKE_INSTALL_DATADIR}/zmq)
++    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${readme}.txt DESTINATION ${CMAKE_INSTALL_DOCDIR})
    endif()
  endforeach()
  
@@ -128,7 +128,7 @@ index dd3d8eb9..94c3d492 100644
      install(
        FILES ${html-docs}
 -      DESTINATION doc/zmq
-+      DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/zmq
++      DESTINATION ${CMAKE_INSTALL_DOCDIR}
        COMPONENT RefGuide)
    endif()
  endif()

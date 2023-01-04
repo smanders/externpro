@@ -68,10 +68,10 @@ index 5401a9b..a063240 100644
 -find_package_handle_standard_args ( readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )
 +find_package_handle_standard_args ( Readline DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR )
 diff --git a/cmake/dist.cmake b/cmake/dist.cmake
-index 310ef94..306c714 100644
+index 310ef94..4b1b776 100644
 --- a/cmake/dist.cmake
 +++ b/cmake/dist.cmake
-@@ -50,11 +50,11 @@ message ( "DIST_DEPENDS: ${DIST_DEPENDS}")
+@@ -50,24 +50,24 @@ message ( "DIST_DEPENDS: ${DIST_DEPENDS}")
  
  ## INSTALL DEFAULTS (Relative to CMAKE_INSTALL_PREFIX)
  # Primary paths
@@ -88,6 +88,25 @@ index 310ef94..306c714 100644
  
  # Secondary paths
  option ( INSTALL_VERSION
+       "Install runtime libraries and executables with version information." OFF)
+-set ( INSTALL_DATA ${INSTALL_SHARE}/${DIST_NAME} CACHE PATH
+-      "Directory the package can store documentation, tests or other data in.")  
+-set ( INSTALL_DOC  ${INSTALL_DATA}/doc CACHE PATH
++set ( INSTALL_DATA ${CMAKE_INSTALL_DOCDIR} CACHE PATH
++      "Directory the package can store documentation, tests or other data in.")
++set ( INSTALL_DOC  ${CMAKE_INSTALL_DOCDIR}/doc CACHE PATH
+       "Recommended directory to install documentation into.")
+-set ( INSTALL_EXAMPLE ${INSTALL_DATA}/example CACHE PATH
++set ( INSTALL_EXAMPLE ${CMAKE_INSTALL_DOCDIR}/example CACHE PATH
+       "Recommended directory to install examples into.")
+-set ( INSTALL_TEST ${INSTALL_DATA}/test CACHE PATH
++set ( INSTALL_TEST ${CMAKE_INSTALL_DOCDIR}/test CACHE PATH
+       "Recommended directory to install tests into.")
+-set ( INSTALL_FOO  ${INSTALL_DATA}/etc CACHE PATH
++set ( INSTALL_FOO  ${CMAKE_INSTALL_DOCDIR}/etc CACHE PATH
+       "Where to install additional files")
+ 
+ # Tweaks and other defaults
 @@ -141,8 +141,8 @@ macro ( install_executable )
        set_target_properties ( ${_file} PROPERTIES VERSION ${DIST_VERSION}
                                SOVERSION ${DIST_VERSION} )
