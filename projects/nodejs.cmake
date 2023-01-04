@@ -40,9 +40,16 @@ function(build_nodejs)
       xpPatchProject(${PRO_NASM})
     endif()
   endif()
+  set(NAME node)
   xpGetArgValue(${PRO_NODEJS} ARG VER VALUE VER)
-  configure_file(${PRO_DIR}/use/usexp-node-config.cmake
-    ${STAGE_DIR}/share/cmake/
+  set(FIND_DEPS "set(nodeVer ${VER}) # for xpnode.cmake\n")
+  set(TARGETS_FILE xpnode.cmake)
+  string(TOUPPER ${NAME} PRJ)
+  set(USE_VARS "set(${PRJ}_LIBRARIES xpro::${NAME})\n")
+  set(USE_VARS "${USE_VARS}set(${PRJ}_EXE \${XP_ROOTDIR}/bin/${NAME}\${CMAKE_EXECUTABLE_SUFFIX})\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_EXE)\n")
+  configure_file(${MODULES_DIR}/usexp.cmake.in
+    ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
   if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
