@@ -91,7 +91,8 @@ find_path(@CMAKE_PROJECT_NAME@_DIR
 if(NOT @CMAKE_PROJECT_NAME@_DIR)
   if(EXISTS $ENV{extern_DIR})
     set(archive_name "${XP_INSTALLED_NAME}.tar.xz")
-    message(STATUS "${XP_INSTALLED_NAME} not found.\nAttempting download of ${archive_name} ...")
+    message(STATUS "${XP_INSTALLED_NAME} not found.")
+    message(STATUS "Attempting download of ${archive_name} ...")
     file(DOWNLOAD @XP_DOWNLOAD_URL@/${@CMAKE_PROJECT_NAME@_REV}/${archive_name}
       $ENV{extern_DIR}/${archive_name}
       )
@@ -104,6 +105,8 @@ if(NOT @CMAKE_PROJECT_NAME@_DIR)
     file(REMOVE $ENV{extern_DIR}/${archive_name})
     if(EXISTS $ENV{extern_DIR}/${XP_INSTALLED_NAME})
       set(@CMAKE_PROJECT_NAME@_DIR $ENV{extern_DIR}/${XP_INSTALLED_NAME})
+    else()
+      message(AUTHOR_WARNING "Automatic download and extraction failed. Verify @XP_DOWNLOAD_URL@/${@CMAKE_PROJECT_NAME@_REV}/${archive_name} exists and can be accessed.")
     endif()
   endif()
 endif()
