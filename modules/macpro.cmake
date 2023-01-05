@@ -301,10 +301,13 @@ macro(proSetStageDir) # NOTE: called by cmake-generated xpbase/pro/build.cmake f
       set(XP_INSTALL_INFO
         "${XP_INSTALL_INFO}\\n tar -xf /path/to/${CMAKE_PROJECT_NAME}*.tar.xz --directory=/path/to/install/"
         )
+      set(XP_INSTALL_INFO
+        "${XP_INSTALL_INFO}\\n ** or set extern_DIR in ENV for automatic download and extraction"
+        )
     endif()
   endif()
   if(DEFINED XP_INSTALL_INFO)
-    set(XP_INSTALL_INFO "\".\\n ${XP_INSTALL_INFO}\"")
+    set(XP_INSTALL_INFO "\".\\n ${XP_INSTALL_INFO}\\n\"")
   endif()
   # copy modules to stage
   configure_file(${MODULES_DIR}/Findscript.cmake.in
