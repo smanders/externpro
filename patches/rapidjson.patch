@@ -95,6 +95,48 @@ index 4d448ccc..36e0fd9d 100644
  
  if(POLICY CMP0054)
    cmake_policy(SET CMP0054 NEW)
+diff --git a/include/rapidjson/document.h b/include/rapidjson/document.h
+index e3e20dfb..5526913a 100644
+--- a/include/rapidjson/document.h
++++ b/include/rapidjson/document.h
+@@ -1425,7 +1425,7 @@ public:
+         MemberIterator pos = MemberBegin() + (first - MemberBegin());
+         for (MemberIterator itr = pos; itr != last; ++itr)
+             itr->~Member();
+-        std::memmove(&*pos, &*last, static_cast<size_t>(MemberEnd() - last) * sizeof(Member));
++        std::memmove(static_cast<void*>(&*pos), &*last, static_cast<size_t>(MemberEnd() - last) * sizeof(Member));
+         data_.o.size -= static_cast<SizeType>(last - first);
+         return pos;
+     }
+@@ -1628,8 +1628,8 @@ public:
+         RAPIDJSON_ASSERT(last <= End());
+         ValueIterator pos = Begin() + (first - Begin());
+         for (ValueIterator itr = pos; itr != last; ++itr)
+-            itr->~GenericValue();       
+-        std::memmove(pos, last, static_cast<size_t>(End() - last) * sizeof(GenericValue));
++            itr->~GenericValue();
++        std::memmove(static_cast<void*>(pos), last, static_cast<size_t>(End() - last) * sizeof(GenericValue));
+         data_.a.size -= static_cast<SizeType>(last - first);
+         return pos;
+     }
+@@ -1936,7 +1936,7 @@ private:
+         if (count) {
+             GenericValue* e = static_cast<GenericValue*>(allocator.Malloc(count * sizeof(GenericValue)));
+             SetElementsPointer(e);
+-            std::memcpy(e, values, count * sizeof(GenericValue));
++            std::memcpy(static_cast<void*>(e), values, count * sizeof(GenericValue));
+         }
+         else
+             SetElementsPointer(0);
+@@ -1949,7 +1949,7 @@ private:
+         if (count) {
+             Member* m = static_cast<Member*>(allocator.Malloc(count * sizeof(Member)));
+             SetMembersPointer(m);
+-            std::memcpy(m, members, count * sizeof(Member));
++            std::memcpy(static_cast<void*>(m), members, count * sizeof(Member));
+         }
+         else
+             SetMembersPointer(0);
 diff --git a/include/rapidjson/internal/regex.h b/include/rapidjson/internal/regex.h
 index 422a5240..d4039716 100644
 --- a/include/rapidjson/internal/regex.h
