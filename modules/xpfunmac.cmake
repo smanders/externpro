@@ -1046,8 +1046,12 @@ macro(xpSourceListAppend)
     ${_dir}/.git*
     ${_dir}/*clang-format
     ${_dir}/.crtoolrc
+    ${_dir}/.eslintrc.json
+    ${_dir}/.prettierrc
     ${_dir}/docker-compose.*
+    ${_dir}/package.json
     ${_dir}/README.md
+    ${_dir}/tsconfig.json
     ${_dir}/version.cmake
     )
   if(miscFiles)
