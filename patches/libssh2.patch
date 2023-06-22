@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ae55942..74cc9c5 100644
+index ae559428..74cc9c58 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -33,13 +33,28 @@
@@ -34,7 +34,7 @@ index ae55942..74cc9c5 100644
  if (CMAKE_VERSION VERSION_LESS "3.1")
    if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 diff --git a/docs/CMakeLists.txt b/docs/CMakeLists.txt
-index 6abf0e4..5002089 100644
+index 6abf0e49..5002089d 100644
 --- a/docs/CMakeLists.txt
 +++ b/docs/CMakeLists.txt
 @@ -207,4 +207,4 @@ set(MAN_PAGES
@@ -44,7 +44,7 @@ index 6abf0e4..5002089 100644
 -install(FILES ${MAN_PAGES} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 +install(FILES ${MAN_PAGES} ${XP_OPT_INSTALL} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 2eaf4cc..4586671 100644
+index 2eaf4cc2..4586671a 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -60,7 +60,11 @@ endif()
@@ -124,7 +124,7 @@ index 2eaf4cc..4586671 100644
 -  DESTINATION lib/cmake/libssh2)
 +  DESTINATION ${XP_INSTALL_CMAKEDIR})
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
-index c8c5253..ffbd835 100644
+index c8c5253d..ffbd835b 100644
 --- a/tests/CMakeLists.txt
 +++ b/tests/CMakeLists.txt
 @@ -36,7 +36,6 @@
