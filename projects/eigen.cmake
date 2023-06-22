@@ -16,8 +16,9 @@ set(PRO_EIGEN
   GIT_ORIGIN ${FORK}
   GIT_TAG xp${VER} # what to 'git checkout'
   GIT_REF ${VER} # create patch from this tag to 'git checkout'
-  DLURL ${REPO}/-/archive/${VER}/eigen-${VER}.tar.bz2
-  DLMD5 b9e98a200d2455f06db9c661c5610496
+  DLURL ${FORK}/archive/${VER}.tar.gz
+  DLMD5 9e30f67e8531477de4117506fe44669b
+  DLNAME eigen-${VER}.tar.gz
   PATCH ${PATCH_DIR}/eigen.patch
   DIFF ${FORK}/compare/
   DEPS_FUNC build_eigen
