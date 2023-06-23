@@ -7,7 +7,6 @@ set(PRO_BOOSTINSTALL
   SUPERPRO boost
   SUBDIR tools/boost_install
   WEB "boost_install" ${REPO} "boost_install repo"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "implementation of the boost-install rule"
   REPO "repo" ${REPO} "boost_install repo on github"
   VER ${VER}

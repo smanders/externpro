@@ -5,7 +5,6 @@ set(PRO_WXCMAKE
   SUPERPRO wxWidgets
   SUBDIR build/cmake
   WEB "wxcmake" ${REPO} "wxcmake project on github"
-  LICENSE "open" http://www.wxwidgets.org/about/newlicen.htm "wxWindows License -- essentially LGPL with an exception stating that derived works in binary form may be distributed on the user's own terms"
   DESC "build wxWidgets via cmake"
   REPO "repo" ${REPO} "wxcmake repo on github"
   VER 2019.11.08 # latest wx31 branch commit date

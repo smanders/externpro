@@ -7,7 +7,6 @@ set(PRO_BOOSTREGEX
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/regex
   WEB "regex" http://boost.org/libs/regex "boost regex website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "Regular expression library"
   REPO "repo" ${REPO} "regex repo on github"
   VER ${VER}

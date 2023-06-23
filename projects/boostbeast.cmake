@@ -7,7 +7,6 @@ set(PRO_BOOSTBEAST
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/beast
   WEB "beast" http://boost.org/libs/beast "Boost.Beast website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "HTTP and WebSocket built on Boost.Asio in C++11"
   REPO "repo" ${REPO} "beast repo on github"
   VER ${VER}

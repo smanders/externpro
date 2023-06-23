@@ -9,7 +9,6 @@ set(PRO_WXXTHINGS
   SUPERPRO wxx
   SUBDIR wxthings
   WEB "wxThings" http://wxcode.sourceforge.net/showcomp.php?name=wxThings "wxthings on sourceforge"
-  LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
   DESC "a variety of data containers and controls"
   REPO "repo" ${REPO} "wxthings repo on github"
   VER ${VER}

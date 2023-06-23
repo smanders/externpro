@@ -8,7 +8,6 @@ set(PRO_OPENSSLASM
   SUPERPRO openssl
   SUBDIR asmfromnode
   WEB "opensslasm" ${REPO} "opensslasm project on github"
-  LICENSE "open" http://www.openssl.org/source/license.html "OpenSSL, SSLeay License: BSD-style"
   DESC "openssl assembly"
   REPO "repo" ${REPO} "opensslasm repo on github"
   GRAPH

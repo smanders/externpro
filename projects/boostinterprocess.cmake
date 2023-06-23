@@ -7,7 +7,6 @@ set(PRO_BOOSTINTERPROCESS
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/interprocess
   WEB "interprocess" http://boost.org/libs/interprocess "Boost.Interprocess website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "Shared memory, memory mapped files, process-shared mutexes, condition variables, containers and allocators"
   REPO "repo" ${REPO} "interprocess repo on github"
   VER ${VER}

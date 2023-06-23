@@ -7,7 +7,6 @@ set(PRO_BOOSTGIL
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/gil
   WEB "gil" http://boost.org/libs/gil "boost gil website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "gil (generic image library)"
   REPO "repo" ${REPO} "gil repo on github"
   VER ${VER}

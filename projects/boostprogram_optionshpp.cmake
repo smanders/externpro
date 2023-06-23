@@ -7,7 +7,6 @@ set(PRO_BOOSTPROGRAM_OPTIONSHPP
   SUPERPRO boost
   SUBDIR . # this part of the patch is headers, apply to root of boost, not libs/program_options
   WEB "program_options" http://boost.org/libs/program_options "boost program_options website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "library allows program developers to obtain program options, that is (name, value) pairs from the user, via conventional methods such as command line and config file"
   REPO "repo" ${REPO} "program_options repo on github"
   VER ${VER}

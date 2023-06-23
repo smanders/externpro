@@ -9,7 +9,6 @@ set(PRO_WXXPLOTCTRL
   SUPERPRO wxx
   SUBDIR wxplotctrl
   WEB "wxPlotCtrl" http://wxcode.sourceforge.net/showcomp.php?name=wxPlotCtrl "wxplotctrl on sourceforge"
-  LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
   DESC "interactive xy data plotting widgets"
   REPO "repo" ${REPO} "wxplotctrl repo on github"
   VER ${VER}

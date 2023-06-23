@@ -7,7 +7,6 @@ set(PRO_JPEGLOSSLESS
   SUPERPRO jpegxp
   SUBDIR lossless
   WEB "jpeglossless" http://sourceforge.net/projects/jpeg/ "JPEG on sourceforge"
-  LICENSE "open" ${FORK}/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
   DESC "lossless decode"
   REPO "repo" ${FORK} "forked libjpeg repo on github"
   VER ${VER}

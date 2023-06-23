@@ -7,7 +7,6 @@ set(PRO_JPEGLOSSY8
   SUPERPRO jpegxp
   SUBDIR lossy8
   WEB "jpeglossy8" http://libjpeg.sourceforge.net/ "libjpeg on sourceforge"
-  LICENSE "open" ${FORK}/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
   DESC "lossy 8-bit encode and decode"
   REPO "repo" ${FORK} "forked libjpeg repo on github"
   VER ${VER}

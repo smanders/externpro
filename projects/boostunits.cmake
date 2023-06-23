@@ -7,7 +7,6 @@ set(PRO_BOOSTUNITS
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/units
   WEB "units" http://boost.org/libs/units "boost units website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "zero-overhead dimensional analysis and unit/quantity manipulation and conversion"
   REPO "repo" ${REPO} "units repo on github"
   VER ${VER}

@@ -7,7 +7,6 @@ set(PRO_BOOSTGRAPH
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/graph
   WEB "graph" http://boost.org/libs/graph "boost graph website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "a generic interface for traversing graphs, using C++ templates"
   REPO "repo" ${REPO} "graph repo on github"
   VER ${VER}

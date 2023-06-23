@@ -8,7 +8,6 @@ set(PRO_WXXTLC
   SUPERPRO wxx
   SUBDIR wxTLC
   WEB "wxTLC" http://wxcode.sourceforge.net/components/treelistctrl/ "wxTLC (treelistctrl) on sourceforge"
-  LICENSE "open" http://wxcode.sourceforge.net/rules.php "wxCode components must use wxWindows license"
   DESC "a multi column tree control"
   REPO "repo" ${REPO} "wxTLC repo on github"
   VER ${VER}

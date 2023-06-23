@@ -7,7 +7,6 @@ set(PRO_BOOSTDLL
   SUPERPRO boost
   SUBDIR . # since the patch is all headers, apply to root of boost, not libs/dll
   WEB "dll" http://boost.org/libs/dll "Boost.DLL website"
-  LICENSE "open" http://www.boost.org/users/license.html "Boost Software License"
   DESC "library for comfortable work with DLL and DSO"
   REPO "repo" ${REPO} "dll repo on github"
   VER ${VER}
