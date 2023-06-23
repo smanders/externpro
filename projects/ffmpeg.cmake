@@ -16,7 +16,7 @@ function(build_ffmpeg)
     else()
       xpListAppendIfDne(FFMPEG_VERSIONS ${cfgVer})
     endif()
-    xpListAppendIfDne(FFMPEG_VERSIONS ${FFMPEG_NEWVER})
+    #xpListAppendIfDne(FFMPEG_VERSIONS ${FFMPEG_NEWVER}) # TODO for now, don't build NEWVER by default
   else()
     if(XP_PRO_FFMPEG AND NOT (XP_PRO_FFMPEG_${mswVer} OR XP_PRO_FFMPEG_${cfgVer}))
       if(WIN32)
