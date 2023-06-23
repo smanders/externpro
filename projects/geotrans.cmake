@@ -65,7 +65,9 @@ function(build_geotrans)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::geotrans)\n")
   set(USE_VARS "${USE_VARS}get_target_property(incDir xpro::geotrans INTERFACE_INCLUDE_DIRECTORIES)\n")
   set(USE_VARS "${USE_VARS}set(${PRJ}_DATA_DIR \${incDir}/${NAME}/data)\n")
-  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DATA_DIR)\n")
+  set(USE_VARS "${USE_VARS}set(${PRJ}_CREDIT \"The product was developed using ${PRJ}, a product of the National Geospatial-")
+  set(USE_VARS "${USE_VARS}Intelligence Agency (NGA) and U.S. Army Engineering Research and Development Center.\")\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_DATA_DIR ${PRJ}_CREDIT)\n")
   configure_file(${MODULES_DIR}/usexp.cmake.in
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF

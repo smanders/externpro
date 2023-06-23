@@ -39,7 +39,9 @@ function(build_bzip2)
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
   string(TOUPPER ${NAME} PRJ)
   set(USE_VARS "set(${PRJ}_LIBRARIES xpro::bz2)\n")
-  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES)\n")
+  set(USE_VARS "${USE_VARS}set(${PRJ}_CREDIT \"If you use this software (${NAME}) in a product, an acknowledgment ")
+  set(USE_VARS "${USE_VARS}in the product documentation would be appreciated but is not required.\")\n")
+  set(USE_VARS "${USE_VARS}list(APPEND reqVars ${PRJ}_LIBRARIES ${PRJ}_CREDIT)\n")
   configure_file(${MODULES_DIR}/usexp.cmake.in
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
