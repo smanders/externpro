@@ -1880,6 +1880,93 @@ function(xpTestEnv)
   endif()
 endfunction()
 
+# CPP - Whether or not it has C++
+# CSharp - Whether or not it has C#
+# JS - Whether or not it has JS/TS
+function(xpAddCoverage)
+  set(optionArgs CPP CSharp JS)
+  cmake_parse_arguments(P "${optionArgs}" "" "" ${ARGN})
+  if(NOT P_CPP AND NOT P_CSharp AND NOT P_JS)
+    message(FATAL_ERROR "No coverage types passed in")
+  endif()
+  if(WIN32 OR NOT CMAKE_BUILD_TYPE STREQUAL Debug)
+    return()
+  endif()
+  if(P_CPP)
+    find_program(XP_PATH_LCOV lcov)
+    if(NOT XP_PATH_LCOV)
+      message(WARNING "lcov not found")
+    endif()
+    find_program(XP_PATH_GENHTML genhtml)
+    if(NOT XP_PATH_GENHTML)
+      message(WARNING "gcov not found")
+    endif()
+    add_custom_target(precoveragecpp
+      COMMAND ${CMAKE_COMMAND} -E make_directory coveragecpp
+      COMMAND ${XP_PATH_LCOV} --directory . --zerocounters
+      COMMAND ${XP_PATH_LCOV} --directory . --capture --initial --output-file coveragecpp/${PROJECT_NAME}-base.info
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      )
+    list(APPEND precoverage precoveragecpp)
+    add_custom_target(postcoveragecpp
+      COMMAND ${XP_PATH_LCOV} --directory . --capture --output-file coveragecpp/${PROJECT_NAME}-test.info
+      COMMAND ${XP_PATH_LCOV} -a coveragecpp/${PROJECT_NAME}-base.info
+        -a coveragecpp/${PROJECT_NAME}-test.info -o coveragecpp/${PROJECT_NAME}.info
+      COMMAND ${XP_PATH_LCOV} --remove coveragecpp/${PROJECT_NAME}.info ${XP_COVERAGE_RM} --output-file coveragecpp/${PROJECT_NAME}-cleaned.info
+      COMMAND ${XP_PATH_GENHTML} -o coveragecpp coveragecpp/${PROJECT_NAME}-cleaned.info
+      COMMAND ${CMAKE_COMMAND} -E remove coveragecpp/${PROJECT_NAME}*.info
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      )
+    list(APPEND postcoverage postcoveragecpp)
+  endif()
+  if(P_CSharp)
+    add_custom_target(precoveragecsharp
+      COMMAND ${CMAKE_COMMAND} -E make_directory coveragecsharp
+      COMMAND ${CMAKE_COMMAND} -E rm -rf coveragecsharp/*
+      COMMAND ${CMAKE_COMMAND} -E chdir coveragecsharp dotnet new tool-manifest --force
+      COMMAND ${CMAKE_COMMAND} -E chdir coveragecsharp dotnet tool install dotnet-reportgenerator-globaltool
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      )
+    list(APPEND precoverage precoveragecsharp)
+    add_custom_target(postcoveragecsharp
+      COMMAND dotnet tool run reportgenerator -reports:TestResults/**/coverage.cobertura.xml
+        -targetdir:${CMAKE_BINARY_DIR}/coveragecsharp -reporttypes:Html
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coveragecsharp
+      )
+    list(APPEND postcoverage postcoveragecsharp)
+    set(CSHARP_COVERAGE_FLAGS --collect:"XPlat Code Coverage" --results-directory:${CMAKE_BINARY_DIR}/coveragecsharp/TestResults)
+    set(CSHARP_COVERAGE_FLAGS ${CSHARP_COVERAGE_FLAGS} PARENT_SCOPE)
+  endif()
+  if(P_JS)
+    add_custom_target(precoveragejs
+      COMMAND ${CMAKE_COMMAND} -E make_directory coveragejs
+      COMMAND ${CMAKE_COMMAND} -E rm -rf coveragejs/*
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      )
+    list(APPEND precoverage precoveragejs)
+    xpGetPkgVar(Node EXE)
+    set(JS_SERVER_COVERAGE_FLAGS ${NODE_EXE} node_modules/nyc/bin/nyc.js --include @SRC_DIR@
+      --report-dir ${CMAKE_BINARY_DIR}/coveragejs/@BUILD_TARGET@
+      --temp-dir ${CMAKE_BINARY_DIR}/coveragejs/@BUILD_TARGET@/.nyc_output)
+    set(JS_SERVER_COVERAGE_FLAGS ${JS_SERVER_COVERAGE_FLAGS} PARENT_SCOPE)
+    set(JS_CLIENT_COVERAGE_FLAGS --code-coverage)
+    set(JS_CLIENT_COVERAGE_FLAGS ${JS_CLIENT_COVERAGE_FLAGS} PARENT_SCOPE)
+    set(JS_CLIENT_COVERAGE_LOC ${CMAKE_BINARY_DIR}/coveragejs)
+    set(JS_CLIENT_COVERAGE_LOC ${JS_CLIENT_COVERAGE_LOC} PARENT_SCOPE)
+  endif()
+  add_custom_target(precoverageall DEPENDS ${precoverage})
+  add_custom_target(postcoverageall DEPENDS ${postcoverage})
+  if(NOT DEFINED XP_TEST_CMD)
+    set(XP_TEST_CMD make test)
+  endif()
+  add_custom_target(coverageall
+    COMMAND make precoverageall
+    COMMAND ${XP_TEST_CMD}
+    COMMAND make postcoverageall
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+endfunction()
+
 function(xpEnforceOutOfSourceBuilds)
   # NOTE: could also check for in-source builds with the following:
   #if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
