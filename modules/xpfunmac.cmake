@@ -1814,6 +1814,72 @@ function(xpProjectInstall)
   endif()
 endfunction()
 
+function(xpTestEnv)
+  if(XP_SANITIZER STREQUAL "ASAN" AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(optional PRELOAD_ASAN)
+    # PRELOAD_ASAN: specify this option if running the test results in the error:
+    #  ASan runtime does not come first in initial library list; you should either
+    #  link runtime to your application or manually preload it with LD_PRELOAD
+    set(oneValueArgs TEST_TARGET)
+    # TEST_TARGET: the NAME argument used in add_test() call
+    set(multiValueArgs LEAK_SUPPRESSIONS)
+    # LEAK_SUPPRESSIONS: list of patterns to suppress in leak report
+    cmake_parse_arguments(P "${optional}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    if(NOT DEFINED P_TEST_TARGET)
+      message(FATAL_ERROR "xpTestEnv: TEST_TARGET must be defined")
+    elseif(NOT TEST ${P_TEST_TARGET})
+      # TRICKY: this may happen when XP_GENERATE_UNITTESTS is OFF
+      if(XP_VERBOSE)
+        message(STATUS "xpTestEnv TEST_TARGET ${P_TEST_TARGET} not a TEST")
+      endif()
+      return()
+    endif()
+    if(P_PRELOAD_ASAN)
+      execute_process(COMMAND ${CMAKE_C_COMPILER} -print-file-name=libasan.so
+        ERROR_QUIET OUTPUT_VARIABLE libasanPath OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+      if(EXISTS ${libasanPath})
+        # libasan.so may be a text file
+        execute_process(COMMAND file ${libasanPath}
+          ERROR_QUIET OUTPUT_VARIABLE fileType OUTPUT_STRIP_TRAILING_WHITESPACE
+          )
+        if(XP_VERBOSE)
+          message(STATUS "xpTestEnv fileType: ${fileType}")
+        endif()
+        # https://bugzilla.redhat.com/show_bug.cgi?id=1923196
+        if(fileType MATCHES "ASCII text")
+          file(STRINGS ${libasanPath} inputLine REGEX ^INPUT)
+          # https://stackoverflow.com/a/70153202
+          # https://regex101.com/r/POlV37/1
+          string(REGEX MATCH "\\(([^()]*)\\)" _ "${inputLine}")
+          string(STRIP ${CMAKE_MATCH_1} libasanPath)
+        endif()
+      endif()
+      if(EXISTS ${libasanPath})
+        set(env "LD_PRELOAD=${libasanPath}")
+      endif()
+    endif()
+    if(DEFINED P_LEAK_SUPPRESSIONS)
+      if(NOT "${env}" STREQUAL "")
+        set(env "${env};")
+      endif()
+      # https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer#suppressions
+      foreach(sup ${P_LEAK_SUPPRESSIONS})
+        set(allSups "${allSups}leak:${sup}\n")
+      endforeach()
+      set(asanSupFile ${CMAKE_CURRENT_BINARY_DIR}/asan_suppressions.txt)
+      file(WRITE ${asanSupFile} "${allSups}")
+      set(env "${env}LSAN_OPTIONS=suppressions=${asanSupFile}")
+    endif()
+    if(NOT "${env}" STREQUAL "")
+      if(XP_VERBOSE)
+        message(STATUS "xpTestEnv ENVIRONMENT: ${env}")
+      endif()
+      set_property(TEST ${P_TEST_TARGET} PROPERTY ENVIRONMENT "${env}")
+    endif()
+  endif()
+endfunction()
+
 function(xpEnforceOutOfSourceBuilds)
   # NOTE: could also check for in-source builds with the following:
   #if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
