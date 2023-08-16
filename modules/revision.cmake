@@ -1,6 +1,7 @@
 # generate a Revision.hpp file
-#  expected usage is to include this file so it runs at cmake-time
-#  at cmake-time it creates a Revision_hpp target, which runs as a cmake script at build-time
+#  expected usage is to call xpGenerateRevision() cmake function, which includes this file so
+#  it runs at cmake-time -- at cmake-time it creates a Revision_hpp target, which runs as a
+#  cmake script at build-time
 # @param[in] xpSourceDir : source directory to run git commands from
 # @param[in] xpRelBranch : name of release branch (revision shows differently if on release branch)
 # http://stackoverflow.com/questions/3780667/use-cmake-to-get-build-time-svn-revision
@@ -60,19 +61,20 @@ set(revision_txt ${CMAKE_BINARY_DIR}/revision.txt)
 file(WRITE ${revision_txt}
   "${xpRevision}\n"
   )
+set(revision_h ${CMAKE_BINARY_DIR}/revision.h.txt)
 # write a file with the SCM_REV_NUM define
-file(WRITE ${CMAKE_BINARY_DIR}/revision.h.txt
+file(WRITE ${revision_h}
   "#define SCM_REV_NUM \"${xpRevision}\"\n"
   )
 # copy the file to the final header only if the revision changes
 # reduces needless rebuilds
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${CMAKE_BINARY_DIR}/revision.h.txt ${CMAKE_BINARY_DIR}/Revision.hpp
+  ${revision_h} ${CMAKE_BINARY_DIR}/Revision.hpp
   )
 ################################################################################
 # do the following at cmake-time so the Revision_hpp target exists at build-time
 if(NOT TARGET Revision_hpp AND DEFINED CMAKE_SYSTEM_NAME)
-  add_custom_command(OUTPUT ${revision_txt}
+  add_custom_command(OUTPUT alwaysRun
     COMMAND ${CMAKE_COMMAND}
       -DxpSourceDir:FILEPATH="${xpSourceDir}"
       -DxpRelBranch:STRING="${xpRelBranch}"
@@ -80,9 +82,9 @@ if(NOT TARGET Revision_hpp AND DEFINED CMAKE_SYSTEM_NAME)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Generating Revision.hpp..."
     )
-  add_custom_target(Revision_hpp
+  add_custom_target(Revision_hpp ALL
+    DEPENDS alwaysRun
     SOURCES ${CMAKE_CURRENT_LIST_FILE}
-    DEPENDS ${revision_txt}
     )
   set_property(TARGET Revision_hpp PROPERTY FOLDER CMakeTargets)
 endif()
