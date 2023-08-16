@@ -1589,12 +1589,12 @@ function(xpClassifiedRepo)
     message(FATAL_ERROR "xpClassifiedRepo: REPO, HASH, and WORKING_TREE must be specified")
   endif()
   if(DEFINED P_PATH_URL)
-    set(repoPath git://${P_PATH_URL}/${P_REPO}.git)
+    set(repoPath https://${P_PATH_URL}/${P_REPO})
     xpGetPkgVar(cURL EXE) # sets CURL_EXE
     if(DEFINED CURL_EXE)
       get_target_property(curlExe ${CURL_EXE} IMPORTED_LOCATION_RELEASE)
       execute_process(
-        COMMAND ${curlExe} -k -s -o /dev/null -w "%{http_code}" https://${P_PATH_URL}/${P_REPO}
+        COMMAND ${curlExe} -k -s -o /dev/null -w "%{http_code}" ${repoPath}
         OUTPUT_VARIABLE statusCode ERROR_QUIET
         )
       if(statusCode EQUAL 200)
