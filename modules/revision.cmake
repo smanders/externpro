@@ -1,7 +1,7 @@
-# generate a Revision.hpp file
+# generate a Revision.hpp file, Revision INTERFACE library
 #  expected usage is to call xpGenerateRevision() cmake function, which includes this file so
 #  it runs at cmake-time -- at cmake-time it creates a Revision_hpp target, which runs as a
-#  cmake script at build-time
+#  cmake script at build-time -- a Revision INTERFACE library is also created
 # @param[in] xpSourceDir : source directory to run git commands from
 # @param[in] xpRelBranch : name of release branch (revision shows differently if on release branch)
 # http://stackoverflow.com/questions/3780667/use-cmake-to-get-build-time-svn-revision
@@ -54,22 +54,23 @@ else()
   set(xpRevision "Unknown-revision")
   message(AUTHOR_WARNING "Not a git repository? Using revision: ${xpRevision}.")
 endif()
-set(revision_txt ${CMAKE_BINARY_DIR}/revision.txt)
 # write a txt file with only the revision, so other cmake can get it:
 #  file(READ ${CMAKE_BINARY_DIR}/revision.txt revNum)
 #  string(STRIP ${revNum} revNum)
-file(WRITE ${revision_txt}
+set(revision_txt_file ${CMAKE_BINARY_DIR}/revision.txt)
+file(WRITE ${revision_txt_file}
   "${xpRevision}\n"
   )
-set(revision_h ${CMAKE_BINARY_DIR}/revision.h.txt)
 # write a file with the SCM_REV_NUM define
-file(WRITE ${revision_h}
+set(revision_h_file ${CMAKE_BINARY_DIR}/Revision/revision.h.txt)
+file(WRITE ${revision_h_file}
   "#define SCM_REV_NUM \"${xpRevision}\"\n"
   )
 # copy the file to the final header only if the revision changes
 # reduces needless rebuilds
+set(Revision_hpp_file ${CMAKE_BINARY_DIR}/Revision/Revision.hpp)
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${revision_h} ${CMAKE_BINARY_DIR}/Revision.hpp
+  ${revision_h_file} ${Revision_hpp_file}
   )
 ################################################################################
 # do the following at cmake-time so the Revision_hpp target exists at build-time
@@ -87,4 +88,11 @@ if(NOT TARGET Revision_hpp AND DEFINED CMAKE_SYSTEM_NAME)
     SOURCES ${CMAKE_CURRENT_LIST_FILE}
     )
   set_property(TARGET Revision_hpp PROPERTY FOLDER CMakeTargets)
+endif()
+if(NOT TARGET Revision AND DEFINED CMAKE_SYSTEM_NAME)
+  set(lib_name Revision)
+  add_library(${lib_name} INTERFACE ${Revision_hpp_file})
+  add_dependencies(${lib_name} Revision_hpp)
+  target_include_directories(${lib_name} INTERFACE ${CMAKE_BINARY_DIR}/${lib_name})
+  set_property(TARGET ${lib_name} PROPERTY FOLDER CMakeTargets)
 endif()
