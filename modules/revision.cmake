@@ -72,10 +72,11 @@ set(Revision_hpp_file ${CMAKE_BINARY_DIR}/Revision/Revision.hpp)
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
   ${revision_h_file} ${Revision_hpp_file}
   )
+file(REMOVE ${revision_h_file})
 ################################################################################
 # do the following at cmake-time so the Revision_hpp target exists at build-time
 if(NOT TARGET Revision_hpp AND DEFINED CMAKE_SYSTEM_NAME)
-  add_custom_command(OUTPUT alwaysRun
+  add_custom_command(OUTPUT ${revision_h_file}
     COMMAND ${CMAKE_COMMAND}
       -DxpSourceDir:FILEPATH="${xpSourceDir}"
       -DxpRelBranch:STRING="${xpRelBranch}"
@@ -84,10 +85,11 @@ if(NOT TARGET Revision_hpp AND DEFINED CMAKE_SYSTEM_NAME)
     COMMENT "Generating Revision.hpp..."
     )
   add_custom_target(Revision_hpp ALL
-    DEPENDS alwaysRun
+    DEPENDS ${revision_h_file}
     SOURCES ${CMAKE_CURRENT_LIST_FILE}
     )
   set_property(TARGET Revision_hpp PROPERTY FOLDER CMakeTargets)
+  set_source_files_properties(${revision_h_file} PROPERTIES SYMBOLIC "true")
 endif()
 if(NOT TARGET Revision AND DEFINED CMAKE_SYSTEM_NAME)
   set(lib_name Revision)
