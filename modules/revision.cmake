@@ -3,13 +3,9 @@
 #  it runs at cmake-time -- at cmake-time it creates a Revision_hpp target, which runs as a
 #  cmake script at build-time -- a Revision INTERFACE library is also created
 # @param[in] xpSourceDir : source directory to run git commands from
-# @param[in] xpRelBranch : name of release branch (revision shows differently if on release branch)
 # http://stackoverflow.com/questions/3780667/use-cmake-to-get-build-time-svn-revision
 if(NOT DEFINED xpSourceDir)
   message(FATAL_ERROR "xpSourceDir must be set before including revision.cmake")
-endif()
-if(NOT DEFINED xpRelBranch)
-  message(FATAL_ERROR "xpRelBranch must be set before including revision.cmake")
 endif()
 include(FindGit)
 if(NOT GIT_FOUND AND NOT UNIX)
@@ -22,21 +18,32 @@ if(NOT GIT_FOUND AND NOT UNIX)
   endif()
 endif()
 if(GIT_FOUND AND EXISTS "${xpSourceDir}/.git")
-  # xpRelBranch (release branch): date yyyymmdd-gitdescribe (20120518-gitdescribe)
-  # other branches: user-branch-gitdescribe (smanders-padawan-gitdescribe)
+  if(UNIX)
+    set(user $ENV{USER})
+  elseif(WIN32)
+    set(user $ENV{USERNAME})
+  endif()
+  set(isCM FALSE)
+  if(EXISTS "${xpSourceDir}/.codereview/CM.txt")
+    file(STRINGS ${xpSourceDir}/.codereview/CM.txt CM)
+    list(TRANSFORM CM REPLACE "#.*$" "") # remove trailing comments
+    list(TRANSFORM CM STRIP) # remove leading and trailing spaces
+    list(FIND CM ${user} idx)
+    if(NOT ${idx} EQUAL -1)
+      set(isCM TRUE)
+    endif()
+  endif()
   execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
     WORKING_DIRECTORY ${xpSourceDir}
     OUTPUT_VARIABLE refsBranchName
     OUTPUT_STRIP_TRAILING_WHITESPACE
     )
   string(REPLACE "remotes/origin/" "" branchName ${refsBranchName}) # submodules need this
-  if(${branchName} STREQUAL ${xpRelBranch})
+  if(isCM OR ${branchName} STREQUAL "master") # CM user: (date) yyyymmdd-gitdescribe (20120518-gitdescribe)
     string(TIMESTAMP ymd %Y%m%d)
     set(revisionPrefix "${ymd}")
-  elseif(UNIX)
-    set(revisionPrefix "$ENV{USER}-${branchName}")
-  else()
-    set(revisionPrefix "$ENV{USERNAME}-${branchName}")
+  else() # other users: user-branch-gitdescribe (smanders-padawan-gitdescribe)
+    set(revisionPrefix "${user}-${branchName}")
   endif()
   # 'git describe' favors annotated tags (created with the -a or -s flag)
   # execute 'git describe --tags' command to find lightweight tag
@@ -74,12 +81,11 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
   )
 file(REMOVE ${revision_h_file})
 ################################################################################
-# do the following at cmake-time so the Revision_hpp target exists at build-time
+# do the following at cmake-time so the targets exist at build-time
 if(NOT TARGET Revision_hpp AND DEFINED CMAKE_SYSTEM_NAME)
   add_custom_command(OUTPUT ${revision_h_file}
     COMMAND ${CMAKE_COMMAND}
       -DxpSourceDir:FILEPATH="${xpSourceDir}"
-      -DxpRelBranch:STRING="${xpRelBranch}"
       -P ${CMAKE_CURRENT_LIST_FILE}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Generating Revision.hpp..."
