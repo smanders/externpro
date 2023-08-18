@@ -2197,9 +2197,16 @@ macro(xpCommonFlags)
     # Turn on Multi-processor Compilation
     xpStringAppendIfDne(CMAKE_C_FLAGS "/MP")
     xpStringAppendIfDne(CMAKE_CXX_FLAGS "/MP")
-    # Add INSTALL and PACKAGE to the default build configuration
-    set(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1)
-    set(CMAKE_VS_INCLUDE_PACKAGE_TO_DEFAULT_BUILD 1)
+    # option to change default build configuration to include INSTALL and PACKAGE
+    option(XP_BUILD_INSTALL_PACKAGE "enable CMAKE_VS_INCLUDE_[INSTALL|PACKAGE]_TO_DEFAULT_BUILD" OFF)
+    if(XP_BUILD_INSTALL_PACKAGE)
+      # Add INSTALL and PACKAGE to the default build configuration
+      set(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1)
+      set(CMAKE_VS_INCLUDE_PACKAGE_TO_DEFAULT_BUILD 1)
+    else()
+      unset(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD)
+      unset(CMAKE_VS_INCLUDE_PACKAGE_TO_DEFAULT_BUILD)
+    endif()
     # Remove /Zm1000 - breaks optimizing compiler w/ IncrediBuild
     string(REPLACE "/Zm1000" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
     string(REPLACE "/Zm1000" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
