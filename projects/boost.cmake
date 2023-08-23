@@ -212,6 +212,31 @@ function(build_boostlibs)
     set(boost_FLAGS "${cxxflags}" "${cflags}" "${linkflags}")
     set(boost_RUNTIME_LINK static)
   endif()
+  # Boost.Python build
+  find_package(PythonInterp)
+  find_package(PythonLibs)
+  if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
+    if(XP_BUILD_VERBOSE)
+      message(STATUS "PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
+      message(STATUS "PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
+      message(STATUS "PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
+      message(STATUS "PYTHON_LIBRARIES: ${PYTHON_LIBRARIES}")
+    endif()
+    get_property(base_DIR DIRECTORY PROPERTY "EP_BASE")
+    set(boostbld_DIR ${base_DIR}/bld.${bl_PRO})
+    get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARIES} PATH)
+    file(WRITE ${boostbld_DIR}/python-config.jam
+      "using python\n"
+      "  : ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}\n"
+      "  : \"${PYTHON_EXECUTABLE}\"\n"
+      "  : \"${PYTHON_INCLUDE_DIRS}\"\n"
+      "  : \"${PYTHON_LIB_DIR}\"\n"
+      "  : <python-debugging>off ;"
+      )
+    list(APPEND boost_FLAGS "--user-config=${boostbld_DIR}/python-config.jam")
+  else()
+    list(APPEND boost_FLAGS "--without-python")
+  endif()
   set(boost_BUILD ${bl_B2PATH}
     --ignore-site-config --layout=versioned link=static threading=multi
     address-model=${BUILD_PLATFORM} variant=${boost_VARIANT}
@@ -219,7 +244,7 @@ function(build_boostlibs)
     --debug-configuration
     )
   # libraries with build issues
-  set(exclude_libs locale math mpi python)
+  set(exclude_libs locale math mpi)
   # libraries excluded until there's an argument to use them
   list(APPEND exclude_libs context contract coroutine fiber graph_parallel stacktrace type_erasure wave)
   foreach(lib ${exclude_libs})
