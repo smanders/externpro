@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
 pushd .. > /dev/null
-rel=$(grep FROM .devcontainer/centos7-pro.dockerfile)
-dkr=$(echo "${rel}" | cut -d" " -f2) # ghcr.io/smanders/buildpro/centos7-bld:TAG
+source ./.devcontainer/funcs.sh
+BPROTAG="$(findVer 'set(buildpro_REV' */toplevel.cmake */*/toplevel.cmake CMakeLists.txt)"
+if [ -z ${BPROTAG} ]; then
+  BPROTAG=`git describe --tags`
+  if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${BPROTAG} == *"-g"* ]]; then
+    BPROTAG=latest
+  fi
+fi
+dkr="$(findVer 'FROM' .devcontainer/centos7-bld.dockerfile .devcontainer/centos7-pro.dockerfile)"
+dkr=$(eval echo ${dkr}) # ghcr.io/smanders/buildpro/centos7-[bld|pro]:TAG, where TAG=${BPROTAG}
 hst=$(echo "${dkr}" | cut -d/ -f1) # ghcr.io
-rel=$(echo "${rel}" | cut -d- -f2) # bld:TAG
-rel=${rel//:}
-rel=bp${rel/./-}
+rel=$(echo "${dkr}" | cut -d- -f2) # bld:TAG
+rel=${rel//:} # parameter expansion substitution
+rel=bp${rel//./-}
 display_host=$(echo ${DISPLAY} | cut -d: -f1)
 if [[ -z "${display_host}" ]]; then
   display_env=${DISPLAY}
@@ -24,7 +32,8 @@ else
   display_env=${docker_host}:${display_screen}
   xauth_env=${xauth_file}
 fi
-env="HNAME=${rel}"
+env="BPROTAG=${BPROTAG}"
+env="${env}\nHNAME=${rel}"
 env="${env}\nUSERID=$(id -u ${USER})"
 env="${env}\nGROUPID=$(id -g ${USER})"
 dockerGID=$(stat -c %g /var/run/docker.sock)
@@ -69,20 +78,6 @@ fi
 # NOTE: EXTERN_DIR and GCC_VER need to match buildpro's public/centos7-pro.dockerfile
 EXTERN_DIR=/opt/extern
 GCC_VER=gcc931
-##############################
-function findVer
-{
-  local val=$1
-  shift
-  for loc in "$@"; do
-    if [ -f $loc ]; then
-      local gver=`grep "$val" $loc`
-      [[ ! -z "$gver" ]] && break
-    fi
-  done
-  local fver=`echo ${gver} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
-  echo "$fver"
-}
 ##############################
 wproVer="$(findVer 'set(webpro_REV' CMakeLists.txt */CMakeLists.txt */toplevel.cmake */*/toplevel.cmake */defaults.txt)"
 if [[ -n "${wproVer}" ]]; then
