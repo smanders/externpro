@@ -133,6 +133,8 @@ function(stringToList stringlist lvalue)
 endfunction()
 ####################
 function(userConfigJam jamFile)
+  ExternalProject_Get_Property(${bl_PRO} TMP_DIR)
+  set(cfgFile ${TMP_DIR}/user-config.jam)
   # TRICKY: need zlib, bzip2 include directories at cmake-time (before they're built)
   # so can't use xpGetPkgVar, xpFindPkg, etc - this complicates having multiple versions
   # of zlib and bzip2 (boost will have to choose a version here)
@@ -147,12 +149,32 @@ function(userConfigJam jamFile)
   xpSetPostfix()
   set(zlibName ${prefix}z${CMAKE_RELEASE_POSTFIX})
   set(bzip2Name bz2${CMAKE_RELEASE_POSTFIX})
-  ExternalProject_Get_Property(${bl_PRO} TMP_DIR)
-  set(cfgFile ${TMP_DIR}/user-config.jam)
   file(WRITE ${cfgFile}
     "using zlib : ${zlibVer} : <search>${STAGE_DIR}/lib <name>${zlibName} <include>${zlibInc} ;\n"
     "using bzip2 : ${bzip2Ver} : <search>${STAGE_DIR}/lib <name>${bzip2Name} <include>${bzip2Inc} ;\n"
     )
+  # Boost.Python build
+  find_package(PythonInterp)
+  find_package(PythonLibs)
+  if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
+    if(XP_BUILD_VERBOSE)
+      message(STATUS "PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
+      message(STATUS "PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
+      message(STATUS "PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
+      message(STATUS "PYTHON_LIBRARIES: ${PYTHON_LIBRARIES}")
+    endif()
+    get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARIES} PATH)
+    file(APPEND ${cfgFile}
+      "using python\n"
+      "  : ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}\n"
+      "  : \"${PYTHON_EXECUTABLE}\"\n"
+      "  : \"${PYTHON_INCLUDE_DIRS}\"\n"
+      "  : \"${PYTHON_LIB_DIR}\"\n"
+      "  : <python-debugging>off ;"
+      )
+  else()
+    message(FATAL_ERROR "Unable to build boost.python, required python not found")
+  endif()
   set(${jamFile} "${cfgFile}" PARENT_SCOPE)
 endfunction()
 ####################
@@ -211,31 +233,6 @@ function(build_boostlibs)
     stringToList("${CMAKE_EXE_LINKER_FLAGS}" linkflags)
     set(boost_FLAGS "${cxxflags}" "${cflags}" "${linkflags}")
     set(boost_RUNTIME_LINK static)
-  endif()
-  # Boost.Python build
-  find_package(PythonInterp)
-  find_package(PythonLibs)
-  if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
-    if(XP_BUILD_VERBOSE)
-      message(STATUS "PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
-      message(STATUS "PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
-      message(STATUS "PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
-      message(STATUS "PYTHON_LIBRARIES: ${PYTHON_LIBRARIES}")
-    endif()
-    get_property(base_DIR DIRECTORY PROPERTY "EP_BASE")
-    set(boostbld_DIR ${base_DIR}/bld.${bl_PRO})
-    get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARIES} PATH)
-    file(WRITE ${boostbld_DIR}/python-config.jam
-      "using python\n"
-      "  : ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}\n"
-      "  : \"${PYTHON_EXECUTABLE}\"\n"
-      "  : \"${PYTHON_INCLUDE_DIRS}\"\n"
-      "  : \"${PYTHON_LIB_DIR}\"\n"
-      "  : <python-debugging>off ;"
-      )
-    list(APPEND boost_FLAGS "--user-config=${boostbld_DIR}/python-config.jam")
-  else()
-    list(APPEND boost_FLAGS "--without-python")
   endif()
   set(boost_BUILD ${bl_B2PATH}
     --ignore-site-config --layout=versioned link=static threading=multi
