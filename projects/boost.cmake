@@ -163,7 +163,7 @@ function(userConfigJam jamFile)
       message(STATUS "PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
       message(STATUS "PYTHON_LIBRARIES: ${PYTHON_LIBRARIES}")
     endif()
-    get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARIES} PATH)
+    get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARIES} DIRECTORY)
     file(APPEND ${cfgFile}
       "using python\n"
       "  : ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}\n"

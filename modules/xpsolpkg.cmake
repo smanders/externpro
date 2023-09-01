@@ -10,7 +10,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL SunOS)
   return() # xpsolpkg.cmake is Solaris (aka SunOS) only.
 endif()
 
-get_filename_component(cmakePath ${CMAKE_COMMAND} PATH)
+get_filename_component(cmakePath ${CMAKE_COMMAND} DIRECTORY)
 find_program(XPKG_CPACK cpack ${cmakePath})
 find_program(XPKG_PKGPROTO pkgproto)
 find_program(XPKG_PKGMK pkgmk)
