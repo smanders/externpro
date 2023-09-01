@@ -1473,7 +1473,7 @@ macro(xpCreateVersionString prefix)
   set(${prefix}_STR "${${prefix}_VERSION_MAJOR}.${${prefix}_VERSION_MINOR}.${${prefix}_VERSION_PATCH}.${${prefix}_VERSION_TWEAK}")
 endmacro()
 
-# cmake-generates Version.hpp, resource.rc, resource.h in CMAKE_CURRENT_BINARY_DIR
+# cmake-generates Version.hpp, resource.rc, resource.h in ${CMAKE_CURRENT_BINARY_DIR}${versionDir}
 function(xpGenerateResources iconPath generatedFiles)
   include(${xpThisDir}/version.cmake)
   string(TIMESTAMP PACKAGE_CURRENT_YEAR %Y)
@@ -1495,15 +1495,48 @@ function(xpGenerateResources iconPath generatedFiles)
   # file (or substituted variables) are modified does it re-configure the output
   # file; in other words, running cmake shouldn't cause needless rebuilds because
   # these files shouldn't be touched by cmake unless they need to be...
-  configure_file(${xpThisDir}/Version.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/Version.hpp)
-  configure_file(${xpThisDir}/resource.rc.in ${CMAKE_CURRENT_BINARY_DIR}/resource.rc)
-  configure_file(${xpThisDir}/resource.h.in ${CMAKE_CURRENT_BINARY_DIR}/resource.h)
+  configure_file(${xpThisDir}/Version.hpp.in ${CMAKE_CURRENT_BINARY_DIR}${versionDir}/Version.hpp)
+  configure_file(${xpThisDir}/resource.rc.in ${CMAKE_CURRENT_BINARY_DIR}${versionDir}/resource.rc)
+  configure_file(${xpThisDir}/resource.h.in ${CMAKE_CURRENT_BINARY_DIR}${versionDir}/resource.h)
   set(${generatedFiles}
-    ${CMAKE_CURRENT_BINARY_DIR}/resource.h
-    ${CMAKE_CURRENT_BINARY_DIR}/resource.rc
-    ${CMAKE_CURRENT_BINARY_DIR}/Version.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}${versionDir}/resource.h
+    ${CMAKE_CURRENT_BINARY_DIR}${versionDir}/resource.rc
+    ${CMAKE_CURRENT_BINARY_DIR}${versionDir}/Version.hpp
     PARENT_SCOPE
     )
+endfunction()
+
+function(xpVersionLib)
+  set(BUILD_TARGET ${ARGV0})
+  set(verLib ${BUILD_TARGET}Version)
+  set(reqArgs ICON)
+  set(oneValueArgs ${reqArgs} FILE_DESC START_YEAR)
+  cmake_parse_arguments(P "" "${oneValueArgs}" "" ${ARGN})
+  foreach(arg ${reqArgs})
+    if(NOT DEFINED P_${arg})
+      message(FATAL_ERROR "xpVersionLib: missing required argument: ${arg}")
+    endif()
+  endforeach()
+  if(NOT EXISTS ${P_ICON})
+    message(FATAL_ERROR "xpVersionLib: icon does not exist: ${P_ICON}")
+  endif()
+  if(DEFINED P_FILE_DESC)
+    set(FILE_DESC ${P_FILE_DESC})
+  endif()
+  if(DEFINED P_START_YEAR)
+    set(PACKAGE_START_YEAR ${P_START_YEAR})
+  endif()
+  set(versionDir "/VersionLib")
+  xpGenerateResources(${P_ICON} cmakeGenerated_srcs)
+  source_group("" FILES ${cmakeGenerated_srcs})
+  add_library(${verLib} INTERFACE ${cmakeGenerated_srcs})
+  get_filename_component(iconDir ${P_ICON} DIRECTORY)
+  target_include_directories(${verLib} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}${versionDir} ${iconDir})
+  if(DEFINED folder)
+    set_property(TARGET ${verLib} PROPERTY FOLDER ${folder})
+  endif()
+  target_sources(${BUILD_TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}${versionDir}/resource.rc)
+  target_link_libraries(${BUILD_TARGET} PRIVATE ${verLib})
 endfunction()
 
 function(xpCreateHeaderResource _output) # .hrc
