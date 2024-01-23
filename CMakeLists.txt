@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 project(externpro)
-set(buildpro_REV 23.04.1)
+set(buildpro_REV 23.04.3)
 set(XP_DOWNLOAD_URL "https://github.com/smanders/externpro/releases/download")
 set(XP_INSTALL_INFO "Installers located at https://github.com/smanders/externpro/releases")
 set(XP_AUTO_INCLUDE xpfunmac)
