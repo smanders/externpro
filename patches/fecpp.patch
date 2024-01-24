@@ -94,11 +94,10 @@ index aa68bbe..b9888a4 100644
     private:
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
 new file mode 100644
-index 0000000..41f105e
+index 0000000..5c8d1c4
 --- /dev/null
 +++ b/test/CMakeLists.txt
-@@ -0,0 +1,15 @@
-+set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
+@@ -0,0 +1,14 @@
 +xpFindPkg(PKGS boost)
 +set(${PROJECT_NAME}_exes
 +  benchmark

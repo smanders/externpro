@@ -33,6 +33,7 @@ function(build_libstrophe)
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
     -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_MODULE_PATH=${CMAKE_DIR}
     -DXP_NAMESPACE:STRING=xpro
     )
   set(FIND_DEPS "xpFindPkg(PKGS expat openssl) # dependencies\n")

@@ -1,14 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3dccec310..79419cb16 100644
+index 3dccec310..8d1213416 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -32,6 +32,15 @@ INCLUDE(GNUInstallDirs)
+@@ -32,6 +32,14 @@ INCLUDE(GNUInstallDirs)
  INCLUDE(IdeSplitSources)
  INCLUDE(FeatureSummary)
  INCLUDE(EnableWarnings)
 +include(flags OPTIONAL)
 +if(DEFINED XP_NAMESPACE)
-+  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
 +  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 +endif()
@@ -18,7 +17,7 @@ index 3dccec310..79419cb16 100644
  
  # Build options
  #
-@@ -79,6 +88,10 @@ IF(MSVC)
+@@ -79,6 +87,10 @@ IF(MSVC)
  	# are linking statically
  	OPTION(STATIC_CRT		"Link the static CRT libraries"		 		 ON)
  
@@ -29,7 +28,7 @@ index 3dccec310..79419cb16 100644
  	# If you want to embed a copy of libssh2 into libgit2, pass a
  	# path to libssh2
  	OPTION(EMBED_SSH_PATH		"Path to libssh2 to embed (Windows)"			OFF)
-@@ -102,6 +115,8 @@ ENDIF()
+@@ -102,6 +114,8 @@ ENDIF()
  
  # Platform specific compilation flags
  IF (MSVC)
@@ -38,7 +37,7 @@ index 3dccec310..79419cb16 100644
  	IF (STDCALL)
  		MESSAGE(FATAL_ERROR "The STDCALL option is no longer supported; libgit2 is now always built as a cdecl library.  If you're using PInvoke, please add the CallingConventions.Cdecl attribute for support.")
  	ENDIF()
-@@ -191,6 +206,8 @@ IF (MSVC)
+@@ -191,6 +205,8 @@ IF (MSVC)
  	SET(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
  	SET(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
  	SET(CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL}")

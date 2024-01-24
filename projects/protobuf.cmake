@@ -35,6 +35,7 @@ function(build_protobuf)
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_MODULE_PATH=${CMAKE_DIR}
     -DXP_NAMESPACE:STRING=xpro
     -Dprotobuf_BUILD_TESTS=OFF # no gmock, unless switch to release tar ball
     )

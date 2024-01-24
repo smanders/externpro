@@ -33,6 +33,7 @@ function(build_fecpp)
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
     -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_MODULE_PATH=${CMAKE_DIR}
     -DXP_NAMESPACE:STRING=xpro
     )
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)

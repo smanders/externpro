@@ -1,15 +1,14 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..50585bd
+index 0000000..8b96b1d
 --- /dev/null
 +++ b/CMakeLists.txt
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,32 @@
 +cmake_minimum_required(VERSION 3.24)
 +project(node-addon-api)
 +include(GNUInstallDirs)
 +include(flags OPTIONAL)
 +if(COMMAND xpFindPkg)
-+  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +  xpFindPkg(PKGS node)
 +endif()
 +set(lib_name ${PROJECT_NAME})

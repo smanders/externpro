@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dd3d8eb9..08894734 100644
+index dd3d8eb9..ceeb3ce8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,12 +1,7 @@
@@ -24,14 +24,13 @@ index dd3d8eb9..08894734 100644
  
  list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}")
  set(ZMQ_CMAKE_MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/builds/cmake/Modules)
-@@ -262,20 +258,32 @@ option(ENABLE_CURVE "Enable CURVE security" ON)
+@@ -262,20 +258,31 @@ option(ENABLE_CURVE "Enable CURVE security" ON)
  
  if(ENABLE_CURVE)
    if(WITH_LIBSODIUM)
 -    find_package("Sodium")
 -    if(SODIUM_FOUND)
 +    if(COMMAND xpFindPkg)
-+      set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +      xpFindPkg(PKGS sodium)
        message(STATUS "Using libsodium for CURVE security")
 +      get_target_property(SODIUM_INCLUDE_DIRS xpro::sodium INTERFACE_INCLUDE_DIRECTORIES)
@@ -66,7 +65,7 @@ index dd3d8eb9..08894734 100644
      endif()
    endif()
    if(NOT ZMQ_HAVE_CURVE)
-@@ -1224,8 +1232,17 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
+@@ -1224,8 +1231,17 @@ set(VERSION ${ZMQ_VERSION_MAJOR}.${ZMQ_VERSION_MINOR}.${ZMQ_VERSION_PATCH})
  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/libzmq.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc @ONLY)
  set(zmq-pkgconfig ${CMAKE_CURRENT_BINARY_DIR}/libzmq.pc)
  
@@ -85,7 +84,7 @@ index dd3d8eb9..08894734 100644
  endif()
  
  if(MSVC)
-@@ -1350,7 +1367,8 @@ else()
+@@ -1350,7 +1366,8 @@ else()
      set_property(TARGET objects PROPERTY POSITION_INDEPENDENT_CODE ON)
      target_include_directories(
        objects PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -95,7 +94,7 @@ index dd3d8eb9..08894734 100644
    endif()
  
    if(BUILD_SHARED)
-@@ -1422,7 +1440,8 @@ endif()
+@@ -1422,7 +1439,8 @@ endif()
  foreach(target ${target_outputs})
    target_include_directories(
      ${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -105,7 +104,7 @@ index dd3d8eb9..08894734 100644
  endforeach()
  
  if(BUILD_SHARED)
-@@ -1566,7 +1585,7 @@ if(BUILD_SHARED)
+@@ -1566,7 +1584,7 @@ if(BUILD_SHARED)
            VERBATIM
            COMMENT "Perf tools")
        else()
@@ -114,7 +113,7 @@ index dd3d8eb9..08894734 100644
        endif()
        if(ZMQ_HAVE_WINDOWS_UWP)
          set_target_properties(${perf-tool} PROPERTIES LINK_FLAGS_DEBUG "/OPT:NOICF /OPT:NOREF")
-@@ -1650,7 +1669,7 @@ foreach(readme ${readme-docs})
+@@ -1650,7 +1668,7 @@ foreach(readme ${readme-docs})
    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${readme} ${CMAKE_CURRENT_BINARY_DIR}/${readme}.txt)
  
    if(NOT ZMQ_BUILD_FRAMEWORK)
@@ -123,7 +122,7 @@ index dd3d8eb9..08894734 100644
    endif()
  endforeach()
  
-@@ -1658,7 +1677,7 @@ if(WITH_DOC)
+@@ -1658,7 +1676,7 @@ if(WITH_DOC)
    if(NOT ZMQ_BUILD_FRAMEWORK)
      install(
        FILES ${html-docs}
@@ -132,7 +131,7 @@ index dd3d8eb9..08894734 100644
        COMPONENT RefGuide)
    endif()
  endif()
-@@ -1688,7 +1707,7 @@ write_basic_package_version_file(
+@@ -1688,7 +1706,7 @@ write_basic_package_version_file(
  if(BUILD_SHARED OR BUILD_STATIC)
    install(
      EXPORT ${PROJECT_NAME}-targets

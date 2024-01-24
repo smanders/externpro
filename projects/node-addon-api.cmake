@@ -34,6 +34,7 @@ function(build_node_addon_api)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_MODULE_PATH=${CMAKE_DIR}
     -DXP_NAMESPACE:STRING=xpro
     )
   set(FIND_DEPS "xpFindPkg(PKGS node)\n")

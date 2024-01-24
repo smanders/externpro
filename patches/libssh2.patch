@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ae559428..74cc9c58 100644
+index ae559428..09a8debb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -33,13 +33,28 @@
+@@ -33,13 +33,27 @@
  # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  # OF SUCH DAMAGE.
  
@@ -21,7 +21,6 @@ index ae559428..74cc9c58 100644
  set(PROJECT_DESCRIPTION "The SSH library")
 +include(flags OPTIONAL)
 +if(DEFINED XP_NAMESPACE)
-+  set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
 +  set(nameSpace ${XP_NAMESPACE}::)
 +else()

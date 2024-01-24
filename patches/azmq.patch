@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 42ace9a..e22b437 100644
+index 42ace9a..1258649 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,7 +1,8 @@
@@ -12,7 +12,7 @@ index 42ace9a..e22b437 100644
  
  set(CMAKE_CXX_STANDARD 11)
  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-@@ -37,10 +38,16 @@ if(USE_LIBCXX)
+@@ -37,10 +38,15 @@ if(USE_LIBCXX)
      set(ADDITIONAL_LIBS "pthread")
  endif()
  
@@ -21,7 +21,6 @@ index 42ace9a..e22b437 100644
 -find_package(Boost 1.48 COMPONENTS system date_time thread chrono random REQUIRED)
 -find_package(ZeroMQ 4.0 REQUIRED)
 +if(COMMAND xpFindPkg)
-+    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
 +    xpFindPkg(PKGS boost libzmq)
 +    set(Boost_LIBRARIES Boost::system Boost::thread)
 +    set(ZeroMQ_LIBRARIES xpro::libzmq-static)
@@ -33,7 +32,7 @@ index 42ace9a..e22b437 100644
  
  set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
  find_package(Threads REQUIRED)
-@@ -64,5 +71,18 @@ if(NOT AZMQ_NO_TESTS)
+@@ -64,5 +70,18 @@ if(NOT AZMQ_NO_TESTS)
      add_subdirectory(doc)
  endif()
  

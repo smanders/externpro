@@ -37,6 +37,7 @@ function(build_wxinclude)
   xpGetArgValue(${PRO_WXINCLUDE} ARG VER VALUE VER)
   set(XP_CONFIGURE
     -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
+    -DXP_MODULE_PATH=${CMAKE_DIR}
     -DXP_NAMESPACE:STRING=xpro
     )
   set(TARGETS_FILE tgt-${NAME}/${NAME}-targets.cmake)
