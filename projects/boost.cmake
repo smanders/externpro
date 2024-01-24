@@ -38,6 +38,7 @@ function(build_boost)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
+  configure_file(${MODULES_DIR}/xpboost.cmake ${STAGE_DIR}/share/cmake/ COPYONLY)
   ExternalProject_Get_Property(boost SOURCE_DIR)
   build_boostb2(PRO boost BOOTSTRAP ${SOURCE_DIR}/tools/build
     B2PATH b2path TARGETS boost_TARGETS

@@ -52,6 +52,7 @@ function(build_nodejs)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
+  configure_file(${MODULES_DIR}/xpnode.cmake ${STAGE_DIR}/share/cmake/ COPYONLY)
   if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
     if(${BUILD_PLATFORM} STREQUAL "64")
       set(destcpu arm64)

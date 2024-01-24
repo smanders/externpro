@@ -45,5 +45,6 @@ function(build_flatbuffers)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
+  configure_file(${MODULES_DIR}/xpflatbuffers.cmake ${STAGE_DIR}/share/cmake/ COPYONLY)
   xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
 endfunction()
