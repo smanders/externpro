@@ -15,7 +15,7 @@ set(PRO_WX
   GIT_ORIGIN ${FORK}
   GIT_UPSTREAM ${REPO}
   GIT_TAG xp${VER} # what to 'git checkout'
-  GIT_REF v${VER}_220421 # patch from REF to TAG
+  GIT_REF v${VER}_240125 # patch from REF to TAG
   DLURL ${REPO}/releases/download/v${VER}/wxWidgets-${VER}.tar.bz2
   DLMD5 e20c14bb9bf5d4ec0979a3cd7510dece
   PATCH ${PATCH_DIR}/wx.patch
