@@ -3,7 +3,7 @@
 # dwnl http://sourceforge.net/projects/wxcode/files/Components/wxThings/
 set(VER 2006.04.28)
 string(REPLACE "." "_" VER_ ${VER})
-set(REPO https://github.com/smanders/wxthings)
+set(REPO https://github.com/externpro/wxthings)
 set(PRO_WXXTHINGS
   NAME wxxthings
   SUPERPRO wxx

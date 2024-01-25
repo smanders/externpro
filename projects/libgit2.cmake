@@ -3,7 +3,7 @@
 set(VER 1.3.0)
 xpProOption(libgit2 DBG)
 set(REPO https://github.com/libgit2/libgit2)
-set(FORK https://github.com/smanders/libgit2)
+set(FORK https://github.com/externpro/libgit2)
 set(PRO_LIBGIT2
   NAME libgit2
   WEB "libgit2" https://libgit2.github.com/ "libgit2 website"

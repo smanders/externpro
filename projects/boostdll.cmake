@@ -1,7 +1,7 @@
 # boost dll
 set(VER 1.76.0)
 set(REPO https://github.com/boostorg/dll)
-set(FORK https://github.com/smanders/dll)
+set(FORK https://github.com/externpro/dll)
 set(PRO_BOOSTDLL
   NAME boostdll
   SUPERPRO boost

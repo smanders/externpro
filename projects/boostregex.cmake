@@ -1,7 +1,7 @@
 # boost regex
 set(VER 1.76.0)
 set(REPO https://github.com/boostorg/regex)
-set(FORK https://github.com/smanders/regex)
+set(FORK https://github.com/externpro/regex)
 set(PRO_BOOSTREGEX
   NAME boostregex
   SUPERPRO boost

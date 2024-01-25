@@ -4,7 +4,7 @@ xpProOption(cares DBG)
 set(VER 1.18.1)
 string(REPLACE "." "_" VER_ ${VER})
 set(REPO https://github.com/c-ares/c-ares)
-set(FORK https://github.com/smanders/c-ares)
+set(FORK https://github.com/externpro/c-ares)
 set(PRO_CARES
   NAME cares
   WEB "c-ares" http://c-ares.haxx.se/ "c-ares website"

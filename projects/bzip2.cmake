@@ -3,7 +3,7 @@
 xpProOption(bzip2 DBG)
 set(VER 1.0.6)
 set(REPO https://github.com/LuaDist/bzip2)
-set(FORK https://github.com/smanders/bzip2)
+set(FORK https://github.com/externpro/bzip2)
 set(PRO_BZIP2
   NAME bzip2
   WEB "bzip2" https://en.wikipedia.org/wiki/Bzip2 "bzip2 on wikipedia"

@@ -1,7 +1,7 @@
 # boost install
 set(VER 1.76.0)
 set(REPO https://github.com/boostorg/boost_install)
-set(FORK https://github.com/smanders/boost_install)
+set(FORK https://github.com/externpro/boost_install)
 set(PRO_BOOSTINSTALL
   NAME boostinstall
   SUPERPRO boost

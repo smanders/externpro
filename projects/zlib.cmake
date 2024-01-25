@@ -3,7 +3,7 @@
 xpProOption(zlib DBG)
 set(VER 1.2.8)
 set(REPO https://github.com/madler/zlib)
-set(FORK https://github.com/smanders/zlib)
+set(FORK https://github.com/externpro/zlib)
 set(PRO_ZLIB
   NAME zlib
   WEB "zlib" http://zlib.net/ "zlib website"

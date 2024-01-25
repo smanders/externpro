@@ -1,7 +1,7 @@
 # boost graph
 set(VER 1.76.0)
 set(REPO https://github.com/boostorg/graph)
-set(FORK https://github.com/smanders/graph)
+set(FORK https://github.com/externpro/graph)
 set(PRO_BOOSTGRAPH
   NAME boostgraph
   SUPERPRO boost

@@ -3,7 +3,7 @@
 xpProOption(libzmq DBG)
 set(VER 4.3.4)
 set(REPO https://github.com/zeromq/libzmq)
-set(FORK https://github.com/smanders/libzmq)
+set(FORK https://github.com/externpro/libzmq)
 set(PRO_LIBZMQ
   NAME libzmq
   WEB "libzmq" https://zeromq.org/ "ZeroMQ website"

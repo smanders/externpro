@@ -4,7 +4,7 @@ set(VER 7.80.0)
 xpProOption(curl DBG)
 string(REPLACE "." "_" VER_ ${VER})
 set(REPO https://github.com/curl/curl)
-set(FORK https://github.com/smanders/curl)
+set(FORK https://github.com/externpro/curl)
 set(PRO_CURL
   NAME curl
   WEB "cURL" http://curl.haxx.se/libcurl/ "libcurl website"

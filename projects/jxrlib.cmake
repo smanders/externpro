@@ -3,7 +3,7 @@
 xpProOption(jxrlib DBG)
 set(VER 15.08)
 set(REPO https://github.com/c0nk/jxrlib)
-set(FORK https://github.com/smanders/jxrlib)
+set(FORK https://github.com/externpro/jxrlib)
 set(PRO_JXRLIB
   NAME jxrlib
   WEB "jxrlib" https://jxrlib.codeplex.com/ "jxrlib project hosted on CodePlex"

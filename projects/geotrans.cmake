@@ -4,7 +4,7 @@
 # http://geotranz.sourcearchive.com/
 xpProOption(geotrans DBG)
 set(VER 2.4.2)
-set(REPO https://github.com/smanders/geotranz)
+set(REPO https://github.com/externpro/geotranz)
 set(DLCSV https://download.osgeo.org/geotiff/tables)
 set(DLDIR data)
 set(PRO_GEOTRANS

@@ -3,7 +3,7 @@
 set(VER 1.9.0)
 xpProOption(libssh2 DBG)
 set(REPO https://github.com/libssh2/libssh2)
-set(FORK https://github.com/smanders/libssh2)
+set(FORK https://github.com/externpro/libssh2)
 set(PRO_LIBSSH2
   NAME libssh2
   WEB "libssh2" http://www.libssh2.org/ "libssh2 website"

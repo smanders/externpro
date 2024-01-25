@@ -3,7 +3,7 @@
 xpProOption(glew DBG)
 set(VER 1.13.0)
 set(REPO https://github.com/nigels-com/glew)
-set(FORK https://github.com/smanders/glew)
+set(FORK https://github.com/externpro/glew)
 set(PRO_GLEW
   NAME glew
   WEB "GLEW" http://glew.sourceforge.net "GLEW on sourceforge.net"

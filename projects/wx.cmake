@@ -3,7 +3,7 @@
 set(VER 3.1.0)
 xpProOption(wx DBG_MSVC)
 set(REPO https://github.com/wxWidgets/wxWidgets)
-set(FORK https://github.com/smanders/wxWidgets)
+set(FORK https://github.com/externpro/wxWidgets)
 set(PRO_WX
   NAME wx
   WEB "wxWidgets" http://wxwidgets.org/ "wxWidgets website"

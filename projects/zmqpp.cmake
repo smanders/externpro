@@ -4,7 +4,7 @@ xpProOption(zmqpp DBG)
 set(VER 21.07.09)
 set(TAG ba4230d5d03d29ced9ca788e3bd1095477db08ae) # 2021.07.09 commit, head of develop branch
 set(REPO https://github.com/zeromq/zmqpp)
-set(FORK https://github.com/smanders/zmqpp)
+set(FORK https://github.com/externpro/zmqpp)
 set(PRO_ZMQPP
   NAME zmqpp
   WEB "zmqpp" https://zeromq.github.io/zmqpp/ "zmqpp website"

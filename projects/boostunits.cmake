@@ -1,7 +1,7 @@
 # boost units
 set(VER 1.76.0)
 set(REPO https://github.com/boostorg/units)
-set(FORK https://github.com/smanders/units)
+set(FORK https://github.com/externpro/units)
 set(PRO_BOOSTUNITS
   NAME boostunits
   SUPERPRO boost

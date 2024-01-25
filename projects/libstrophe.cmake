@@ -3,7 +3,7 @@
 xpProOption(libstrophe DBG)
 set(VER 0.9.1)
 set(REPO https://github.com/strophe/libstrophe)
-set(FORK https://github.com/smanders/libstrophe)
+set(FORK https://github.com/externpro/libstrophe)
 set(PRO_LIBSTROPHE
   NAME libstrophe
   WEB "libstrophe" http://strophe.im/libstrophe/ "libstrophe website"

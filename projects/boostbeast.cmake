@@ -1,7 +1,7 @@
 # boost beast
 set(VER 1.76.0)
 set(REPO https://github.com/boostorg/beast)
-set(FORK https://github.com/smanders/beast)
+set(FORK https://github.com/externpro/beast)
 set(PRO_BOOSTBEAST
   NAME boostbeast
   SUPERPRO boost

@@ -1,7 +1,7 @@
 # boost interprocess
 set(VER 1.76.0)
 set(REPO https://github.com/boostorg/interprocess)
-set(FORK https://github.com/smanders/interprocess)
+set(FORK https://github.com/externpro/interprocess)
 set(PRO_BOOSTINTERPROCESS
   NAME boostinterprocess
   SUPERPRO boost

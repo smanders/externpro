@@ -3,7 +3,7 @@
 xpProOption(apr DBG)
 set(VER 1.5.2)
 set(REPO https://github.com/apache/apr)
-set(FORK https://github.com/smanders/apr)
+set(FORK https://github.com/externpro/apr)
 set(PRO_APR
   NAME apr
   WEB "APR" http://apr.apache.org/ "Apache Portable Runtime Project website"

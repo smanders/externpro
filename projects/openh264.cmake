@@ -3,7 +3,7 @@
 xpProOption(openh264 DBG)
 set(VER 1.4.0)
 set(REPO https://github.com/cisco/openh264)
-set(FORK https://github.com/smanders/openh264)
+set(FORK https://github.com/externpro/openh264)
 set(PRO_OPENH264
   NAME openh264
   WEB "OpenH264" http://www.openh264.org/ "OpenH264 website"

@@ -2,7 +2,7 @@
 set(VER 1.1.1l) # openssl version of assembly from node
 # NOTE: node version where assembly came from:
 # https://github.com/nodejs/node/tree/v14.17.6/deps/openssl/config
-set(REPO https://github.com/smanders/opensslasm)
+set(REPO https://github.com/externpro/opensslasm)
 set(PRO_OPENSSLASM
   NAME opensslasm
   SUPERPRO openssl

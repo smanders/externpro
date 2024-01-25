@@ -2,7 +2,7 @@
 set(VER ${FFMPEG_NEWVER})
 xpProOption(ffmpeg_${VER})
 set(REPO https://github.com/FFmpeg/FFmpeg)
-set(FORK https://github.com/smanders/FFmpeg)
+set(FORK https://github.com/externpro/FFmpeg)
 # https://github.com/ndrasmussen/FFmpeg/tree/xp4.3.1
 set(PRO_FFMPEG_${VER}
   NAME ffmpeg_${VER}

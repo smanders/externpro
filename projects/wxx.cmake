@@ -1,7 +1,7 @@
 # wxx
 # xpbuild:cmake-scratch
 xpProOption(wxx DBG) # include wx extras
-set(REPO https://github.com/smanders/wxx)
+set(REPO https://github.com/externpro/wxx)
 set(WXX_TARGETS wxxplotctrl wxxthings wxxtlc)
 set(PRO_WXX
   NAME wxx

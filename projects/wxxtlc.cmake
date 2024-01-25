@@ -2,7 +2,7 @@
 # repo http://wxcode.svn.sourceforge.net/viewvc/wxcode/trunk/wxCode/components/treelistctrl/
 # dwnl http://sourceforge.net/projects/wxcode/files/Components/treelistctrl/
 set(VER 1208)
-set(REPO https://github.com/smanders/wxTLC)
+set(REPO https://github.com/externpro/wxTLC)
 set(PRO_WXXTLC
   NAME wxxtlc
   SUPERPRO wxx

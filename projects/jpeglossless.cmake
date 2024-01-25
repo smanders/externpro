@@ -1,7 +1,7 @@
 # jpeglossless
 set(VER 62.1)
 set(REPO https://github.com/LuaDist/libjpeg)
-set(FORK https://github.com/smanders/libjpeg)
+set(FORK https://github.com/externpro/libjpeg)
 set(PRO_JPEGLOSSLESS
   NAME jpeglossless
   SUPERPRO jpegxp

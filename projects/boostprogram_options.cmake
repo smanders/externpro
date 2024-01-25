@@ -1,7 +1,7 @@
 # boost program_options
 set(VER 1.76.0)
 set(REPO https://github.com/boostorg/program_options)
-set(FORK https://github.com/smanders/program_options)
+set(FORK https://github.com/externpro/program_options)
 set(PRO_BOOSTPROGRAM_OPTIONS
   NAME boostprogram_options
   SUPERPRO boost

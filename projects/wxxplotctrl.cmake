@@ -3,7 +3,7 @@
 # dwnl http://sourceforge.net/projects/wxcode/files/Components/wxPlotCtrl/
 set(VER 2006.04.28)
 string(REPLACE "." "_" VER_ ${VER})
-set(REPO https://github.com/smanders/wxplotctrl)
+set(REPO https://github.com/externpro/wxplotctrl)
 set(PRO_WXXPLOTCTRL
   NAME wxxplotctrl
   SUPERPRO wxx

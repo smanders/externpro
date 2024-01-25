@@ -2,7 +2,7 @@
 # xpbuild:cmake-scratch
 xpProOption(fecpp DBG)
 set(REPO https://github.com/randombit/fecpp)
-set(FORK https://github.com/smanders/fecpp)
+set(FORK https://github.com/externpro/fecpp)
 set(VER 0.9)
 set(PRO_FECPP
   NAME fecpp

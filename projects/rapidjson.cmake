@@ -3,7 +3,7 @@
 xpProOption(rapidjson)
 set(VER 1.1.0)
 set(REPO https://github.com/Tencent/rapidjson)
-set(FORK https://github.com/smanders/rapidjson)
+set(FORK https://github.com/externpro/rapidjson)
 set(PRO_RAPIDJSON
   NAME rapidjson
   WEB "RapidJSON" http://Tencent.github.io/rapidjson/ "RapidJSON on githubio"

@@ -3,7 +3,7 @@
 xpProOption(yasm)
 set(VER 1.3.0)
 set(REPO https://github.com/yasm/yasm)
-set(FORK https://github.com/smanders/yasm)
+set(FORK https://github.com/externpro/yasm)
 set(PRO_YASM
   NAME yasm
   WEB "yasm" http://yasm.tortall.net/ "yasm website"

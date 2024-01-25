@@ -4,7 +4,7 @@ xpProOption(sodium DBG)
 set(VER 21.11.18)
 set(TAG aa099f5e82ae78175f9c1c48372a123cb634dd92) # 2021.11.18 commit, head of stable branch
 set(REPO https://github.com/jedisct1/libsodium)
-set(FORK https://github.com/smanders/libsodium)
+set(FORK https://github.com/externpro/libsodium)
 set(PRO_SODIUM
   NAME sodium
   WEB "sodium" https://doc.libsodium.org/ "libsodium website"

@@ -7,7 +7,7 @@
 # -- according to the discussion here: http://forums.wxwidgets.org/viewtopic.php?f=1&t=37288
 xpProOption(wxinclude)
 set(VER 1.0)
-set(REPO https://github.com/smanders/wxInclude)
+set(REPO https://github.com/externpro/wxInclude)
 set(PRO_WXINCLUDE
   NAME wxinclude
   WEB "wxInclude" http://wiki.wxwidgets.org/Embedding_PNG_Images "wxInclude mentioned in this wxWiki page"

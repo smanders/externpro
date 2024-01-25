@@ -3,7 +3,7 @@
 xpProOption(jasper DBG)
 set(VER 1.900.1)
 set(REPO https://github.com/mdadams/jasper)
-set(FORK https://github.com/smanders/jasper)
+set(FORK https://github.com/externpro/jasper)
 set(PRO_JASPER
   NAME jasper
   WEB "JasPer" http://www.ece.uvic.ca/~frodo/jasper/ "JasPer website"

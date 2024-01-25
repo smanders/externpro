@@ -4,7 +4,7 @@ xpProOption(azmq DBG)
 set(VER 21.12.05)
 set(TAG e0058a38976399006f535a9010d29e763b43fcd8) # 2021.12.05 commit
 set(REPO https://github.com/zeromq/azmq)
-set(FORK https://github.com/smanders/azmq)
+set(FORK https://github.com/externpro/azmq)
 set(PRO_AZMQ
   NAME azmq
   WEB "azmq" https://zeromq.org/ "ZeroMQ website"

@@ -3,7 +3,7 @@
 # http://sourceforge.net/projects/rapidxml/files/rapidxml/
 xpProOption(rapidxml)
 set(VER 1.13)
-set(REPO https://github.com/smanders/rapidxml)
+set(REPO https://github.com/externpro/rapidxml)
 set(PRO_RAPIDXML
   NAME rapidxml
   WEB "RapidXml" http://rapidxml.sourceforge.net/ "RapidXml on sourceforge"

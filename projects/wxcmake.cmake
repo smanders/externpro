@@ -1,5 +1,5 @@
 # wxcmake
-set(REPO https://github.com/smanders/wxcmake)
+set(REPO https://github.com/externpro/wxcmake)
 set(PRO_WXCMAKE
   NAME wxcmake
   SUPERPRO wxWidgets

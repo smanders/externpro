@@ -6,7 +6,7 @@
 xpProOption(shapelib DBG)
 set(VER 1.2.10)
 set(REPO https://github.com/asapnet/shapelib)
-set(FORK https://github.com/smanders/shapelib)
+set(FORK https://github.com/externpro/shapelib)
 set(PRO_SHAPELIB
   NAME shapelib
   WEB "shapelib" http://shapelib.maptools.org/ "Shapefile C Library website"

@@ -5,7 +5,7 @@ set(VER 2.2.5)
 string(REPLACE "." "_" VER_ ${VER})
 set(TAG R_${VER_})
 set(REPO https://github.com/libexpat/libexpat)
-set(FORK https://github.com/smanders/libexpat)
+set(FORK https://github.com/externpro/libexpat)
 set(PRO_EXPAT
   NAME expat
   WEB "Expat" https://libexpat.github.io "Expat website"

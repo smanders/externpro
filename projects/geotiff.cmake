@@ -4,7 +4,7 @@ xpProOption(geotiff DBG)
 # http://packages.debian.org/sid/libgeotiff-dev
 # http://libgeotiff-dfsg.sourcearchive.com/
 set(VER 1.2.4)
-set(REPO https://github.com/smanders/libgeotiff)
+set(REPO https://github.com/externpro/libgeotiff)
 set(PRO_GEOTIFF
   NAME geotiff
   WEB "geotiff" http://trac.osgeo.org/geotiff/ "GeoTIFF trac website"

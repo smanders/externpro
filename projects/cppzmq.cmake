@@ -3,7 +3,7 @@
 xpProOption(cppzmq DBG)
 set(VER 4.7.1)
 set(REPO https://github.com/zeromq/cppzmq)
-set(FORK https://github.com/smanders/cppzmq)
+set(FORK https://github.com/externpro/cppzmq)
 set(PRO_CPPZMQ
   NAME cppzmq
   WEB "cppzmq" https://zeromq.org/ "ZeroMQ website"

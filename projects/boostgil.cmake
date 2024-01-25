@@ -1,7 +1,7 @@
 # boost gil
 set(VER 1.76.0)
 set(REPO https://github.com/boostorg/gil)
-set(FORK https://github.com/smanders/gil)
+set(FORK https://github.com/externpro/gil)
 set(PRO_BOOSTGIL
   NAME boostgil
   SUPERPRO boost

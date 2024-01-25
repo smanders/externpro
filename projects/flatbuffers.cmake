@@ -3,7 +3,7 @@
 xpProOption(flatbuffers DBG)
 set(VER 2.0.6)
 set(REPO https://github.com/google/flatbuffers)
-set(FORK https://github.com/smanders/flatbuffers)
+set(FORK https://github.com/externpro/flatbuffers)
 set(PRO_FLATBUFFERS
   NAME flatbuffers
   WEB "flatbuffers" http://google.github.io/flatbuffers/ "FlatBuffers website"

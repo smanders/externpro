@@ -2,7 +2,7 @@
 # xpbuild:cmake-patch
 xpProOption(sqlite DBG)
 set(REPO https://github.com/azadkuh/sqlite-amalgamation)
-set(FORK https://github.com/smanders/sqlite-amalgamation)
+set(FORK https://github.com/externpro/sqlite-amalgamation)
 set(VER 3.37.2)
 set(PRO_SQLITE
   NAME sqlite

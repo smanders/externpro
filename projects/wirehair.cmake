@@ -4,7 +4,7 @@ xpProOption(wirehair DBG)
 set(VER 21.07.31) # upstream repo has no tags
 set(TAG 6d84fad40cbbbb29d4eb91204750ddffe0dcacfe) # 2021.07.31 commit, head of master branch
 set(REPO https://github.com/catid/wirehair)
-set(FORK https://github.com/smanders/wirehair)
+set(FORK https://github.com/externpro/wirehair)
 set(PRO_WIREHAIR
   NAME wirehair
   WEB "wirehair" ${REPO} "wirehair repo on github"

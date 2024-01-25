@@ -5,11 +5,11 @@
 # http://libjpeg8.sourcearchive.com/
 xpProOption(jpegxp DBG)
 set(VER 22.04) # latest jxp branch commit date (yr.mo)
-set(REPO https://github.com/smanders/jpegxp)
+set(REPO https://github.com/externpro/jpegxp)
 set(PRO_JPEGXP
   NAME jpegxp
   WEB "jpegxp" http://www.ijg.org/ "Independent JPEG Group website"
-  LICENSE "open" https://github.com/smanders/libjpeg/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
+  LICENSE "open" https://github.com/externpro/libjpeg/blob/upstream/README "libjpeg: see LEGAL ISSUES, in README (no specific license mentioned)"
   DESC "JPEG codec with mods for Lossless, 12-bit lossy (XP)"
   REPO "repo" ${REPO} "jpegxp repo on github"
   VER ${VER}

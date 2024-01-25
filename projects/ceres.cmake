@@ -3,7 +3,7 @@
 xpProOption(ceres DBG)
 set(VER 1.14.0)
 set(REPO https://github.com/ceres-solver/ceres-solver)
-set(FORK https://github.com/smanders/ceres-solver)
+set(FORK https://github.com/externpro/ceres-solver)
 set(PRO_CERES
   NAME ceres
   WEB "ceres-solver" http://ceres-solver.org "Ceres Solver website"

@@ -3,7 +3,7 @@
 xpProOption(protobuf DBG)
 set(VER 3.14.0)
 set(REPO https://github.com/protocolbuffers/protobuf)
-set(FORK https://github.com/smanders/protobuf)
+set(FORK https://github.com/externpro/protobuf)
 set(PRO_PROTOBUF
   NAME protobuf
   WEB "protobuf" https://developers.google.com/protocol-buffers/ "Protocol Buffers website"

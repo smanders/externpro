@@ -5,7 +5,7 @@ set(VER ${BRANCH}l)
 xpProOption(openssl DBG)
 string(REPLACE "." "_" VER_ ${VER})
 set(REPO https://github.com/openssl/openssl)
-set(FORK https://github.com/smanders/openssl)
+set(FORK https://github.com/externpro/openssl)
 set(PRO_OPENSSL
   NAME openssl
   WEB "OpenSSL" http://www.openssl.org/ "OpenSSL website"

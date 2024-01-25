@@ -3,7 +3,7 @@
 xpProOption(lua DBG)
 set(VER 5.2.3)
 set(REPO https://github.com/LuaDist/lua)
-set(FORK https://github.com/smanders/lua)
+set(FORK https://github.com/externpro/lua)
 set(PRO_LUA
   NAME lua
   WEB "Lua" http://www.lua.org/ "Lua website"

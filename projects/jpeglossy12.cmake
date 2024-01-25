@@ -1,7 +1,7 @@
 # jpeglossy12
 set(VER 6b)
 set(REPO https://github.com/LuaDist/libjpeg)
-set(FORK https://github.com/smanders/libjpeg)
+set(FORK https://github.com/externpro/libjpeg)
 set(PRO_JPEGLOSSY12
   NAME jpeglossy12
   SUPERPRO jpegxp

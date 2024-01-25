@@ -2,7 +2,7 @@
 # xpbuild:cmake-scratch
 set(VER ${FFMPEG_MSWVER})
 xpProOption(ffmpeg_${VER})
-set(REPO https://github.com/smanders/ffmpegBin)
+set(REPO https://github.com/externpro/ffmpegBin)
 set(PRO_FFMPEG_${VER}
   NAME ffmpeg_${VER}
   WEB "ffmpeg" https://www.ffmpeg.org/ "ffmpeg website"

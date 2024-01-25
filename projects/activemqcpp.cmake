@@ -4,7 +4,7 @@ set(VER 3.9.5)
 xpProOption(activemqcpp DBG)
 set(PROJ activemq-cpp)
 set(REPO https://github.com/apache/${PROJ})
-set(FORK https://github.com/smanders/${PROJ})
+set(FORK https://github.com/externpro/${PROJ})
 set(PRO_ACTIVEMQCPP
   NAME activemqcpp
   WEB "ActiveMQ-CPP" http://activemq.apache.org/cms/ "ActiveMQ CMS website"
