@@ -155,26 +155,25 @@ function(userConfigJam jamFile)
     "using bzip2 : ${bzip2Ver} : <search>${STAGE_DIR}/lib <name>${bzip2Name} <include>${bzip2Inc} ;\n"
     )
   # Boost.Python build
-  find_package(PythonInterp)
-  find_package(PythonLibs)
-  if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
+  find_package(Python "3.6...<3.10" COMPONENTS Interpreter Development)
+  if(Python_Interpreter_FOUND AND Python_Development_FOUND)
     if(XP_BUILD_VERBOSE)
-      message(STATUS "PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
-      message(STATUS "PYTHON_VERSION_STRING: ${PYTHON_VERSION_STRING}")
-      message(STATUS "PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
-      message(STATUS "PYTHON_LIBRARIES: ${PYTHON_LIBRARIES}")
+      message(STATUS "Python_EXECUTABLE: ${Python_EXECUTABLE}")
+      message(STATUS "Python_VERSION: ${Python_VERSION}")
+      message(STATUS "Python_INCLUDE_DIRS: ${Python_INCLUDE_DIRS}")
+      message(STATUS "Python_LIBRARIES: ${Python_LIBRARIES}")
     endif()
-    get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARIES} DIRECTORY)
+    get_filename_component(Python_LIB_DIR ${Python_LIBRARIES} DIRECTORY)
     file(APPEND ${cfgFile}
       "using python\n"
-      "  : ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}\n"
-      "  : \"${PYTHON_EXECUTABLE}\"\n"
-      "  : \"${PYTHON_INCLUDE_DIRS}\"\n"
-      "  : \"${PYTHON_LIB_DIR}\"\n"
+      "  : ${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}\n"
+      "  : \"${Python_EXECUTABLE}\"\n"
+      "  : \"${Python_INCLUDE_DIRS}\"\n"
+      "  : \"${Python_LIB_DIR}\"\n"
       "  : <python-debugging>off ;"
       )
   else()
-    message(FATAL_ERROR "Unable to build boost.python, required python not found")
+    message(FATAL_ERROR "Unable to build boost.python, required Python not found")
   endif()
   set(${jamFile} "${cfgFile}" PARENT_SCOPE)
 endfunction()
