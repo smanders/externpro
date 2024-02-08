@@ -1,10 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 000000000..98f298c59
+index 000000000..e91e78559
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,11 @@
-+cmake_minimum_required(VERSION 3.1.3)
++cmake_minimum_required(VERSION 3.1.3...3.21)
 +project(protobuf_root)
 +include(flags OPTIONAL)
 +if(DEFINED XP_NAMESPACE)
@@ -16,9 +16,34 @@ index 000000000..98f298c59
 +endif()
 +add_subdirectory(cmake)
 diff --git a/cmake/CMakeLists.txt b/cmake/CMakeLists.txt
-index 52661f522..021f4d54f 100644
+index 52661f522..2282a8511 100644
 --- a/cmake/CMakeLists.txt
 +++ b/cmake/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ # Minimum CMake required
+-cmake_minimum_required(VERSION 3.1.3)
++cmake_minimum_required(VERSION 3.1.3...3.21)
+ 
+ if(protobuf_VERBOSE)
+   message(STATUS "Protocol Buffers Configuring...")
+@@ -94,7 +94,7 @@ string(REGEX REPLACE     "${protobuf_VERSION_REGEX}" "\\3"
+ string(REGEX REPLACE     "${protobuf_VERSION_REGEX}" "\\5"
+   protobuf_VERSION_PRERELEASE "${protobuf_VERSION_STRING}")
+ 
+-message(STATUS "${protobuf_VERSION_PRERELEASE}")
++message(STATUS "protobuf_VERSION_PRERELEASE: ${protobuf_VERSION_PRERELEASE}")
+ 
+ # Package version
+ set(protobuf_VERSION
+@@ -105,7 +105,7 @@ if(protobuf_VERSION_PRERELEASE)
+ else()
+   set(protobuf_VERSION "${protobuf_VERSION}.0")
+ endif()
+-message(STATUS "${protobuf_VERSION}")
++message(STATUS "protobuf_VERSION: ${protobuf_VERSION}")
+ 
+ if(protobuf_VERBOSE)
+   message(STATUS "Configuration script parsing status [")
 @@ -123,7 +123,13 @@ if (CMAKE_USE_PTHREADS_INIT)
  endif (CMAKE_USE_PTHREADS_INIT)
  

@@ -1,10 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..1c1da0f
+index 0000000..719abea
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,180 @@
-+cmake_minimum_required(VERSION 3.0)
++cmake_minimum_required(VERSION 3.20)
 +project(geotrans)
 +include(GNUInstallDirs)
 +include(flags OPTIONAL)

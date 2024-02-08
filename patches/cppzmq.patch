@@ -1,7 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c860dc4..3d9d03a 100644
+index c860dc4..ec2564e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.0.0)
++cmake_minimum_required(VERSION 3.0.0...3.21)
+ 
+ list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+ 
 @@ -6,8 +6,19 @@ include (DetectCPPZMQVersion)
  
  project(cppzmq VERSION ${DETECTED_CPPZMQ_VERSION})

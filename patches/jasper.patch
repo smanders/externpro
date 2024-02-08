@@ -1,10 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 0000000..898fe3f
+index 0000000..92cbdd1
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,7 @@
-+cmake_minimum_required(VERSION 3.0)
++cmake_minimum_required(VERSION 3.20)
 +project(jasper)
 +include(GNUInstallDirs)
 +include(flags OPTIONAL)

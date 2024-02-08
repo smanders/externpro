@@ -1,10 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 new file mode 100644
-index 00000000..0a4aa6c4
+index 00000000..73e240e5
 --- /dev/null
 +++ b/CMakeLists.txt
 @@ -0,0 +1,14 @@
-+cmake_minimum_required(VERSION 3.12)
++cmake_minimum_required(VERSION 3.20)
 +project(openh264)
 +include(GNUInstallDirs)
 +include(flags OPTIONAL)

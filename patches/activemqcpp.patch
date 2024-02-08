@@ -1,10 +1,10 @@
 diff --git a/activemq-cpp/CMakeLists.txt b/activemq-cpp/CMakeLists.txt
 new file mode 100644
-index 00000000..33cdb4c2
+index 00000000..acb9e738
 --- /dev/null
 +++ b/activemq-cpp/CMakeLists.txt
 @@ -0,0 +1,20 @@
-+cmake_minimum_required(VERSION 3.0)
++cmake_minimum_required(VERSION 3.20)
 +project(activemq-cpp)
 +include(flags OPTIONAL)
 +include(GNUInstallDirs)
