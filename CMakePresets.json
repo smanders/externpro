@@ -1,7 +1,7 @@
 {
   "version": 8,
   "include": [
-    ".devcontainer/cmake/presets/xpLinuxNinja.json",
-    ".devcontainer/cmake/presets/xpWindowsVs2019.json"
+    ".devcontainer/cmake/presets/xpLinuxMakefilesRelease.json",
+    ".devcontainer/cmake/presets/xpWindowsVs2019Package.json"
   ]
 }
