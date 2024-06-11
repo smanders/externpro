@@ -61,32 +61,7 @@ if you always plan to use an installed version the path to the source and build 
 unless you have a reason to use an old release (`git checkout <tag>`) or have a reason to use a development version (`git checkout -b dev origin/dev` -- where development == not ready for release), you should be using the master branch (which is always the latest release)
 
 ```bash
-git clone https://github.com/smanders/externpro.git
+git clone https://github.com/smanders/externpro
 cd externpro
-mkdir _bld
-cd _bld
+cmake --workflow --preset=[Linux|Windows]
 ```
-
-### windows
-
-choose the cmake generator you want all of the externpro projects to be built with (Visual Studio 2017, 64-bit in example below)
-
-```bash
-cmake -G "Visual Studio 15 2017" -A x64 ..
-cmake -DXP_STEP=build .
-explorer externpro.sln
-```
-
-build the solution for a build version of externpro or build the PACKAGE project for an installed version
-
-### unix
-
-you can also choose the cmake generator, usually the default is what you'll want (Unix Makefiles)
-
-```bash
-cmake -DXP_STEP=build ..
-make -j8
-make package
-```
-
-the first `make` gives you a build version of externpro, and the additional `make package` for an installed version
