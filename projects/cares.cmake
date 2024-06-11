@@ -18,7 +18,7 @@ set(PRO_CARES
   GIT_TRACKING_BRANCH main
   GIT_TAG xp-${VER_} # what to 'git checkout'
   GIT_REF cares-${VER_} # create patch from this tag to 'git checkout'
-  DLURL http://c-ares.haxx.se/download/c-ares-${VER}.tar.gz
+  DLURL ${REPO}/releases/download/cares-${VER_}/c-ares-${VER}.tar.gz
   DLMD5 bf770c0d3131ec0dd0575a0d2dcab226
   PATCH ${PATCH_DIR}/cares.patch
   DIFF ${FORK}/compare/c-ares:
