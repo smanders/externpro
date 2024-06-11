@@ -63,5 +63,7 @@ unless you have a reason to use an old release (`git checkout <tag>`) or have a 
 ```bash
 git clone https://github.com/smanders/externpro
 cd externpro
+git submodule init
+git submodule update
 cmake --workflow --preset=[Linux|Windows]
 ```
