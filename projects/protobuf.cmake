@@ -10,7 +10,6 @@ set(PRO_PROTOBUF
   LICENSE "open" ${REPO}/blob/v${VER}/LICENSE "3-clause BSD license"
   DESC "language-neutral, platform-neutral extensible mechanism for serializing structured data"
   REPO "repo" ${REPO} "protobuf repo on github"
-  GRAPH BUILD_DEPS zlib
   VER ${VER}
   GIT_ORIGIN ${FORK}
   GIT_UPSTREAM ${REPO}
@@ -28,14 +27,12 @@ function(build_protobuf)
   if(NOT (XP_DEFAULT OR XP_PRO_PROTOBUF))
     return()
   endif()
-  xpBuildDeps(depTgts ${PRO_PROTOBUF})
   xpGetArgValue(${PRO_PROTOBUF} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_PROTOBUF} ARG VER VALUE VER)
   set(XP_CONFIGURE
     -DCMAKE_INSTALL_INCLUDEDIR=include/${NAME}_${VER}
     -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
-    -DXP_MODULE_PATH=${CMAKE_DIR}
     -DXP_NAMESPACE:STRING=xpro
     -Dprotobuf_BUILD_TESTS=OFF # no gmock, unless switch to release tar ball
     )
@@ -55,5 +52,5 @@ function(build_protobuf)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}")
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}")
 endfunction()

@@ -10,7 +10,7 @@ set(PRO_LIBSSH2
   LICENSE "open" http://www.libssh2.org/license.html "BSD 3-Clause License - https://www.openhub.net/licenses/BSD-3-Clause"
   DESC "client-side C library implementing SSH2 protocol"
   REPO "repo" ${REPO} "libssh2 repo on github"
-  GRAPH BUILD_DEPS zlib openssl
+  GRAPH BUILD_DEPS openssl
   VER ${VER}
   GIT_ORIGIN ${FORK}
   GIT_UPSTREAM ${REPO}

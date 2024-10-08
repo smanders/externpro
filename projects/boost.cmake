@@ -11,7 +11,7 @@ set(PRO_BOOST
   DESC "libraries that give C++ a boost"
   REPO "repo" ${REPO} "boost repo on github"
   GRAPH GRAPH_NODE boost
-  BUILD_DEPS zlib bzip2
+  BUILD_DEPS bzip2
   VER ${VER}
   GIT_ORIGIN ${REPO}
   GIT_TAG boost-${VER} # what to 'git checkout'
@@ -136,24 +136,27 @@ endfunction()
 function(userConfigJam jamFile)
   ExternalProject_Get_Property(${bl_PRO} TMP_DIR)
   set(cfgFile ${TMP_DIR}/user-config.jam)
-  # TRICKY: need zlib, bzip2 include directories at cmake-time (before they're built)
-  # so can't use xpGetPkgVar, xpFindPkg, etc - this complicates having multiple versions
-  # of zlib and bzip2 (boost will have to choose a version here)
-  xpGetArgValue(${PRO_ZLIB} ARG VER VALUE zlibVer)
-  xpGetArgValue(${PRO_BZIP2} ARG VER VALUE bzip2Ver)
-  set(zlibInc ${STAGE_DIR}/include/zlib_${zlibVer}/zlib)
-  set(bzip2Inc ${STAGE_DIR}/include/bzip2_${bzip2Ver}/bzip2)
-  if(WIN32)
-    set(prefix lib)
+  xpFindPkg(PKGS zlib)
+  if(TARGET xpro::zlibstatic)
+    get_target_property(loc xpro::zlibstatic IMPORTED_LOCATION_RELEASE)
+    get_filename_component(libDir ${loc} DIRECTORY)
+    get_filename_component(libName ${loc} NAME)
+    string(REPLACE ${CMAKE_STATIC_LIBRARY_PREFIX} "" libName ${libName})
+    string(REPLACE ${CMAKE_STATIC_LIBRARY_SUFFIX} "" libName ${libName})
+    get_target_property(incDir xpro::zlibstatic INTERFACE_INCLUDE_DIRECTORIES)
+    list(FILTER incDir INCLUDE REGEX "zlib$") # include directory that ends with zlib
+    set(cfgContents "using zlib : ${ZLIB_VER} : <search>${libDir} <name>${libName} <include>${incDir} ;\n")
   endif()
+  # TRICKY: need bzip2 include directory at cmake-time (before it's built)
+  # so can't use xpGetPkgVar, xpFindPkg, etc - this complicates having multiple versions
+  # of bzip2 (boost will have to choose a version here)
+  xpGetArgValue(${PRO_BZIP2} ARG VER VALUE bzip2Ver)
+  set(bzip2Inc ${STAGE_DIR}/include/bzip2_${bzip2Ver}/bzip2)
   include(${STAGE_DIR}/share/cmake/xpopts.cmake)
   xpSetPostfix()
-  set(zlibName ${prefix}z${CMAKE_RELEASE_POSTFIX})
   set(bzip2Name bz2${CMAKE_RELEASE_POSTFIX})
-  file(WRITE ${cfgFile}
-    "using zlib : ${zlibVer} : <search>${STAGE_DIR}/lib <name>${zlibName} <include>${zlibInc} ;\n"
-    "using bzip2 : ${bzip2Ver} : <search>${STAGE_DIR}/lib <name>${bzip2Name} <include>${bzip2Inc} ;\n"
-    )
+  set(cfgContents "${cfgContents}using bzip2 : ${bzip2Ver} : <search>${STAGE_DIR}/lib <name>${bzip2Name} <include>${bzip2Inc} ;\n")
+  file(WRITE ${cfgFile} "${cfgContents}")
   # Boost.Python build
   find_package(Python "3.6...<3.10" COMPONENTS Interpreter Development)
   if(Python_Interpreter_FOUND AND Python_Development_FOUND)
