@@ -12,7 +12,7 @@ set(PRO_OPENSSL
   LICENSE "open" http://www.openssl.org/source/license.html "OpenSSL, SSLeay License: BSD-style"
   DESC "Cryptography and SSL/TLS Toolkit"
   REPO "repo" ${REPO} "openssl repo on github"
-  GRAPH BUILD_DEPS opensslasm nasm
+  GRAPH BUILD_DEPS opensslasm
   VER ${VER}
   GIT_ORIGIN ${FORK}
   GIT_UPSTREAM ${REPO}
@@ -32,14 +32,9 @@ function(build_openssl)
     return()
   endif()
   if(WIN32)
-    if(NOT (XP_DEFAULT OR XP_PRO_NASM))
-      message(STATUS "openssl.cmake: requires nasm")
-      set(XP_PRO_NASM ON CACHE BOOL "include nasm" FORCE)
-      xpPatchProject(${PRO_NASM})
-    endif()
-    ExternalProject_Get_Property(nasm SOURCE_DIR)
-    set(NASM_EXE "-DCMAKE_ASM_NASM_COMPILER=${SOURCE_DIR}/nasm.exe")
-    set(depTgts nasm)
+    xpFindPkg(PKGS nasm)
+    xpGetPkgVar(nasm EXE) # sets NASM_EXE
+    set(NASM_PATH "-DCMAKE_ASM_NASM_COMPILER=${NASM_EXE}")
   endif()
   xpGetArgValue(${PRO_OPENSSL} ARG NAME VALUE NAME)
   xpGetArgValue(${PRO_OPENSSL} ARG VER VALUE VER)
@@ -48,7 +43,7 @@ function(build_openssl)
     -DCMAKE_INSTALL_LIBDIR=lib
     -DXP_INSTALL_CMAKEDIR=share/cmake/tgt-${NAME}
     -DXP_NAMESPACE:STRING=xpro
-    ${NASM_EXE}
+    ${NASM_PATH}
     )
   set(FIND_DEPS "set(THREAD_PREFER_PTHREAD_FLAG ON)\n")
   set(FIND_DEPS "${FIND_DEPS}find_package(Threads REQUIRED)")
@@ -61,7 +56,7 @@ function(build_openssl)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}" ${NAME}Targets)
+  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
     set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
   endif()

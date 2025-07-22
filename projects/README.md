@@ -30,7 +30,6 @@
 |[libzmq](https://zeromq.org/ 'ZeroMQ website')|[open](http://wiki.zeromq.org/area:licensing 'GNU LGPL plus static linking exception')|high-performance asynchronous messaging library|4.3.4|[repo](https://github.com/zeromq/libzmq 'zeromq/libzmq repo on github')|[diff](https://github.com/externpro/libzmq/compare/zeromq:v4.3.4...xp4.3.4 'patch/diff')|
 |[LLVM](http://llvm.org/ 'LLVM website')|[open](https://releases.llvm.org/11.0.0/LICENSE.TXT 'Apache License v2.0 with LLVM Exceptions')|The LLVM Compiler Infrastructure|11.0.0|[repo](https://github.com/llvm/llvm-project 'llvm repo on github')|none|
 |[Lua](http://www.lua.org/ 'Lua website')|[open](http://www.lua.org/license.html 'MIT license')|a powerful, fast, lightweight, embeddable scripting language|5.2.3|[repo](https://github.com/LuaDist/lua 'lua repo on github')|[diff](https://github.com/externpro/lua/compare/LuaDist:5.2.3...xp5.2.3 'patch/diff')|
-|[nasm](https://www.nasm.us/ 'nasm website')|[BSD](https://www.nasm.us/ 'Simplified (2-clause) BSD license')|The Netwide Assembler - an 80x86 and x86-64 assembler|2.14.02|none|none|
 |[OpenH264](http://www.openh264.org/ 'OpenH264 website')|[open](http://www.openh264.org/faq.html 'Two-Clause BSD license')|a codec library which supports H.264 encoding and decoding|1.4.0|[repo](https://github.com/cisco/openh264 'openh264 repo on github')|[diff](https://github.com/externpro/openh264/compare/cisco:v1.4.0...xp1.4.0 'patch/diff')|
 |[OpenSSL](http://www.openssl.org/ 'OpenSSL website')|[open](http://www.openssl.org/source/license.html 'OpenSSL, SSLeay License: BSD-style')|Cryptography and SSL/TLS Toolkit|1.1.1l|[repo](https://github.com/openssl/openssl 'openssl repo on github')|[diff](https://github.com/externpro/openssl/compare/openssl:OpenSSL_1_1_1l...xp_1_1_1l 'patch/diff')|
 |[protobuf](https://developers.google.com/protocol-buffers/ 'Protocol Buffers website')|[open](https://github.com/protocolbuffers/protobuf/blob/v3.14.0/LICENSE '3-clause BSD license')|language-neutral, platform-neutral extensible mechanism for serializing structured data|3.14.0|[repo](https://github.com/protocolbuffers/protobuf 'protobuf repo on github')|[diff](https://github.com/externpro/protobuf/compare/protocolbuffers:v3.14.0...xp3.14.0 'patch/diff')|
@@ -73,10 +72,10 @@
 
 ## dependency graph
 
-![deps.dot graph](https://g.gravizo.com/source/depgraph_7cd73afe20728100d29c1541951cabaa?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
+![deps.dot graph](https://g.gravizo.com/source/depgraph_2b9c3efa0f7bf9aa5d4919eaaf1ad243?https%3A%2F%2Fraw.githubusercontent.com%2Fsmanders%2Fexternpro%2Fdev%2Fprojects%2FREADME.md)
 <details>
 <summary></summary>
-depgraph_7cd73afe20728100d29c1541951cabaa
+depgraph_2b9c3efa0f7bf9aa5d4919eaaf1ad243
 digraph GG {
   node [fontsize=12];
   activemqcpp [shape=diamond];
@@ -120,12 +119,10 @@ digraph GG {
   libzmq [shape=diamond];
   libzmq -> sodium;
   llvm [shape=box];
-  nasm [shape=box];
   openh264 [shape=diamond];
   openh264 -> yasm;
   openssl [shape=diamond];
   openssl -> opensslasm;
-  openssl -> nasm;
   opensslasm [shape=diamond];
   sodium [shape=diamond];
   wx [shape=diamond];
@@ -137,5 +134,5 @@ digraph GG {
   zmqpp [shape=diamond];
   zmqpp -> libzmq;
 }
-depgraph_7cd73afe20728100d29c1541951cabaa
+depgraph_2b9c3efa0f7bf9aa5d4919eaaf1ad243
 </details>
