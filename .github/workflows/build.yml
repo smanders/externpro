@@ -9,13 +9,17 @@ jobs:
   linux:
     uses: externpro/externpro/.github/workflows/build-linux.yml@legacy
     with:
+      cmake-workflow-preset: LinuxRelease
       runon: ubuntu-latest
     secrets: inherit
   linux-arm64:
     uses: externpro/externpro/.github/workflows/build-linux.yml@legacy
     with:
+      cmake-workflow-preset: LinuxRelease
       runon: ubuntu-24.04-arm
     secrets: inherit
   windows:
     uses: externpro/externpro/.github/workflows/build-windows.yml@legacy
+    with:
+      cmake-workflow-preset: WindowsRelease
     secrets: inherit
