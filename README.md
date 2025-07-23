@@ -4,6 +4,12 @@
 
 an extensible project to build (or copy pre-built) external (3rd-party) [projects](projects/README.md)
 
+## archived
+
+smanders/externpro is now archived -- it is the "legacy" externpro spoken of in the externpro/externpro README https://github.com/externpro/externpro?tab=readme-ov-file#legacy-externpro
+
+until all of the projects are building standalone and creating their own devel packages, https://github.com/externpro/exdlpro is a fork of smanders/externpro with a few minor changes: it is part of the externpro organization and utilizes github actions to build devel packages and will download and extract at cmake-time (where smanders/externpro was expected to be pre-installed prior to running cmake on a project that utilizes it)
+
 ## description
 
 externpro supports options for [4 steps](https://github.com/smanders/externpro/blob/15.10.2/modules/macpro.cmake#L67-L72): mkpatch (make patch), download, patch, build -- with patch being the default option
