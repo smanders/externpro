@@ -32,6 +32,7 @@ function(build_openssl)
     return()
   endif()
   if(WIN32)
+    xpBuildDeps(depTgts ${PRO_OPENSSL})
     xpFindPkg(PKGS nasm)
     xpGetPkgVar(nasm EXE) # sets NASM_EXE
     set(NASM_PATH "-DCMAKE_ASM_NASM_COMPILER=${NASM_EXE}")
@@ -56,7 +57,7 @@ function(build_openssl)
     ${STAGE_DIR}/share/cmake/usexp-${NAME}-config.cmake
     @ONLY NEWLINE_STYLE LF
     )
-  xpCmakeBuild(${NAME} "" "${XP_CONFIGURE}" ${NAME}Targets)
+  xpCmakeBuild(${NAME} "${depTgts}" "${XP_CONFIGURE}" ${NAME}Targets)
   if(ARGN)
     set(${ARGN} "${${NAME}Targets}" PARENT_SCOPE)
   endif()
